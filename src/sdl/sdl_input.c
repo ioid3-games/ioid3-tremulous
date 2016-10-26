@@ -383,7 +383,7 @@ static void IN_DeactivateMouse(void) {
 			int x, y;
 			IN_GetUIMousePosition(&x, &y);
 			SDL_WarpMouseInWindow(SDL_window, x, y);
-  }
+ }
 
 		mouseActive = qfalse;
 	}
@@ -759,8 +759,8 @@ static void IN_ProcessEvents(void) {
 							} else
 								Com_QueueEvent(0, SE_CHAR, utf32, 0, 0, NULL);
 						}
-        }
-      }
+       }
+     }
 
 				break;
 			case SDL_MOUSEMOTION:

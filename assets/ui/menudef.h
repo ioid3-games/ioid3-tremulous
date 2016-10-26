@@ -1,8 +1,7 @@
 #ifndef MENUDEF_H
 #define MENUDEF_H
 
-enum
-{
+enum {
   ITEM_TYPE_ANY = -1,     // invalid type
   ITEM_TYPE_NONE,         // no specified type
   ITEM_TYPE_TEXT,         // simple text
@@ -24,8 +23,7 @@ enum
 };
 
 // The first items in these enums are the defaults if menus do not specify
-enum
-{
+enum {
   ALIGN_LEFT,   // left alignment
   ALIGN_CENTER, // center alignment
   ALIGN_RIGHT,  // right alignment
@@ -33,16 +31,14 @@ enum
   ALIGN_NONE
 };
 
-enum
-{
+enum {
   VALIGN_BOTTOM, // bottom alignment
   VALIGN_CENTER, // center alignment
   VALIGN_TOP,    // top alignment
   VALIGN_NONE
 };
 
-enum
-{
+enum {
   ITEM_TEXTSTYLE_NORMAL,          // normal text
   ITEM_TEXTSTYLE_BLINK,           // fast blinking
   ITEM_TEXTSTYLE_PULSE,           // slow pulsing
@@ -53,8 +49,7 @@ enum
   ITEM_TEXTSTYLE_NEON             // glow (need a color for this)
 };
 
-enum
-{
+enum {
   WINDOW_BORDER_NONE,      // no border
   WINDOW_BORDER_FULL,      // full border based on border color (single pixel)
   WINDOW_BORDER_HORZ,      // horizontal borders only
@@ -62,8 +57,7 @@ enum
   WINDOW_BORDER_KCGRADIENT // horizontal border using the gradient bars
 };
 
-enum
-{
+enum {
   WINDOW_STYLE_EMPTY,     // no background
   WINDOW_STYLE_FILLED,    // filled with background color
   WINDOW_STYLE_GRADIENT,  // gradient bar based on background color
@@ -75,22 +69,19 @@ enum
 #define MENU_TRUE                         1     // uh.. true
 #define MENU_FALSE                        0     // and false
 
-enum
-{
+enum {
   HUD_VERTICAL,
   HUD_HORIZONTAL
 };
 
 // list box element types
-enum
-{
+enum {
   LISTBOX_TEXT,
   LISTBOX_IMAGE
 };
 
 // list feeders
-enum
-{
+enum {
   FEEDER_SERVERS,        // servers
   FEEDER_MAPS,           // all maps available, in graphic format
   FEEDER_ALIENTEAM_LIST, // alien team members
@@ -129,8 +120,7 @@ enum
 #define UI_SHOW_NOTSPECTATING             0x00000040
 
 // owner draw types
-enum
-{
+enum {
   CG_PLAYER_HEALTH,
   CG_PLAYER_HEALTH_CROSS,
   CG_PLAYER_AMMO_VALUE,

@@ -42,7 +42,7 @@ void G_BounceMissile(gentity_t *ent, trace_t *trace) {
     if (trace->plane.normal[2] > 0.2 && VectorLength(ent->s.pos.trDelta) < 40) {
       G_SetOrigin(ent, trace->endpos);
       return;
-  }
+ }
 }
 
   VectorAdd(ent->r.currentOrigin, trace->plane.normal, ent->r.currentOrigin);
@@ -128,7 +128,7 @@ void G_MissileImpact(gentity_t *ent, trace_t *trace) {
       other->client->lastLockTime = level.time;
       AngleVectors(other->client->ps.viewangles, dir, NULL, NULL);
       other->client->ps.stats[STAT_VIEWLOCK] = DirToByte(dir);
-  }
+ }
 }
   else if (!strcmp(ent->classname, "slowblob")) {
     if (other->client && other->client->ps.stats[STAT_TEAM] == TEAM_HUMANS) {
@@ -136,7 +136,7 @@ void G_MissileImpact(gentity_t *ent, trace_t *trace) {
       other->client->lastSlowTime = level.time;
       AngleVectors(other->client->ps.viewangles, dir, NULL, NULL);
       other->client->ps.stats[STAT_VIEWLOCK] = DirToByte(dir);
-  }
+ }
 }
   else if (!strcmp(ent->classname, "hive")) {
     if (other->s.eType == ET_BUILDABLE && other->s.modelindex == BA_A_HIVE) {
@@ -147,7 +147,7 @@ void G_MissileImpact(gentity_t *ent, trace_t *trace) {
 
       G_FreeEntity(ent);
       return;
-  }
+ }
     else
     {
      // prevent collision with the client when returning
@@ -161,7 +161,7 @@ void G_MissileImpact(gentity_t *ent, trace_t *trace) {
         returnAfterDamage = qtrue;
       else
         return;
-  }
+ }
 }
 
  // impact damage
@@ -176,7 +176,7 @@ void G_MissileImpact(gentity_t *ent, trace_t *trace) {
 
       G_Damage(other, ent, attacker, velocity, ent->s.origin, ent->damage, 
         DAMAGE_NO_LOCDAMAGE, ent->methodOfDeath);
-  }
+ }
 }
 
   if (returnAfterDamage)
@@ -242,7 +242,7 @@ void G_RunMissile(gentity_t *ent) {
     if (!ent->pointAgainstWorld || tr.contents & CONTENTS_BODY) {
      // We hit an entity or we don't care
       impact = qtrue;
-  }
+ }
     else
     {
       trap_Trace(&tr, ent->r.currentOrigin, NULL, NULL, origin, 
@@ -252,14 +252,14 @@ void G_RunMissile(gentity_t *ent) {
       {
        // Hit the world with point trace
         impact = qtrue;
-    }
+   }
       else
       {
         if (tr.contents & CONTENTS_BODY)
         {
          // Hit an entity
           impact = qtrue;
-      }
+     }
         else
         {
           trap_Trace(&tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, 
@@ -267,9 +267,9 @@ void G_RunMissile(gentity_t *ent) {
 
           if (tr.fraction < 1.0f)
             impact = qtrue;
-      }
-    }
-  }
+     }
+   }
+ }
 }
 
   VectorCopy(tr.endpos, ent->r.currentOrigin);
@@ -279,7 +279,7 @@ void G_RunMissile(gentity_t *ent) {
      // Never explode or bounce on sky
       G_FreeEntity(ent);
       return;
-  }
+ }
 
     G_MissileImpact(ent, &tr);
 
@@ -581,8 +581,8 @@ void AHive_SearchAndDestroy(gentity_t *self) {
       {
         nearest = d;
         self->target_ent = ent;
-    }
-  }
+   }
+ }
 }
     VectorSubtract(self->target_ent->r.currentOrigin, self->r.currentOrigin, dir);
     VectorNormalize(dir);

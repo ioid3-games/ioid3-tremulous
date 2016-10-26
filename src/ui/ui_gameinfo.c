@@ -60,12 +60,12 @@ int UI_ParseInfos(char *buf, int max, char *infos[]) {
     if (strcmp(token, "{")) {
       Com_Printf("Missing {in info file\n");
       break;
-  }
+ }
 
     if (count == max) {
       Com_Printf("Max infos exceeded\n");
       break;
-  }
+ }
 
     info[0] = '\0';
 
@@ -76,7 +76,7 @@ int UI_ParseInfos(char *buf, int max, char *infos[]) {
       {
         Com_Printf("Unexpected end of info file\n");
         break;
-    }
+   }
 
       if (!strcmp(token, "}"))
         break;
@@ -89,7 +89,7 @@ int UI_ParseInfos(char *buf, int max, char *infos[]) {
         strcpy(token, " < NULL > ");
 
       Info_SetValueForKey(info, key, token);
-  }
+ }
 
    // NOTE: extra space for arena number
     infos[count] = UI_Alloc(strlen(info) + strlen("\\num\\") + strlen(va("%d", MAX_ARENAS)) + 1);
@@ -97,7 +97,7 @@ int UI_ParseInfos(char *buf, int max, char *infos[]) {
     if (infos[count]) {
       strcpy(infos[count], info);
       count++;
-  }
+ }
 }
 
   return count;

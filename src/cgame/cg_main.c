@@ -858,7 +858,7 @@ void CG_BuildSpectatorString(void) {
     if (cgs.clientinfo[i].infoValid && cgs.clientinfo[i].team == TEAM_NONE) {
       Q_strcat(cg.spectatorList, sizeof(cg.spectatorList), 
           va(S_COLOR_WHITE "%s     ", cgs.clientinfo[i].name));
-  }
+ }
 }
 }
 
@@ -1016,7 +1016,7 @@ qboolean CG_Asset_Parse(int handle) {
 
       cgDC.registerFont(tempStr, pointSize, &cgDC.Assets.textFont);
       continue;
-  }
+ }
 
    // smallFont
     if (Q_stricmp(token.string, "smallFont") == 0) {
@@ -1027,7 +1027,7 @@ qboolean CG_Asset_Parse(int handle) {
 
       cgDC.registerFont(tempStr, pointSize, &cgDC.Assets.smallFont);
       continue;
-  }
+ }
 
    // font
     if (Q_stricmp(token.string, "bigfont") == 0) {
@@ -1038,7 +1038,7 @@ qboolean CG_Asset_Parse(int handle) {
 
       cgDC.registerFont(tempStr, pointSize, &cgDC.Assets.bigFont);
       continue;
-  }
+ }
 
    // gradientbar
     if (Q_stricmp(token.string, "gradientbar") == 0) {
@@ -1047,7 +1047,7 @@ qboolean CG_Asset_Parse(int handle) {
 
       cgDC.Assets.gradientBar = trap_R_RegisterShaderNoMip(tempStr);
       continue;
-  }
+ }
 
    // enterMenuSound
     if (Q_stricmp(token.string, "menuEnterSound") == 0) {
@@ -1056,7 +1056,7 @@ qboolean CG_Asset_Parse(int handle) {
 
       cgDC.Assets.menuEnterSound = trap_S_RegisterSound(tempStr, qfalse);
       continue;
-  }
+ }
 
    // exitMenuSound
     if (Q_stricmp(token.string, "menuExitSound") == 0) {
@@ -1065,7 +1065,7 @@ qboolean CG_Asset_Parse(int handle) {
 
       cgDC.Assets.menuExitSound = trap_S_RegisterSound(tempStr, qfalse);
       continue;
-  }
+ }
 
    // itemFocusSound
     if (Q_stricmp(token.string, "itemFocusSound") == 0) {
@@ -1074,7 +1074,7 @@ qboolean CG_Asset_Parse(int handle) {
 
       cgDC.Assets.itemFocusSound = trap_S_RegisterSound(tempStr, qfalse);
       continue;
-  }
+ }
 
    // menuBuzzSound
     if (Q_stricmp(token.string, "menuBuzzSound") == 0) {
@@ -1083,7 +1083,7 @@ qboolean CG_Asset_Parse(int handle) {
 
       cgDC.Assets.menuBuzzSound = trap_S_RegisterSound(tempStr, qfalse);
       continue;
-  }
+ }
 
     if (Q_stricmp(token.string, "cursor") == 0) {
       if (!PC_String_Parse(handle, &cgDC.Assets.cursorStr))
@@ -1091,42 +1091,42 @@ qboolean CG_Asset_Parse(int handle) {
 
       cgDC.Assets.cursor = trap_R_RegisterShaderNoMip(cgDC.Assets.cursorStr);
       continue;
-  }
+ }
 
     if (Q_stricmp(token.string, "fadeClamp") == 0) {
       if (!PC_Float_Parse(handle, &cgDC.Assets.fadeClamp))
         return qfalse;
 
       continue;
-  }
+ }
 
     if (Q_stricmp(token.string, "fadeCycle") == 0) {
       if (!PC_Int_Parse(handle, &cgDC.Assets.fadeCycle))
         return qfalse;
 
       continue;
-  }
+ }
 
     if (Q_stricmp(token.string, "fadeAmount") == 0) {
       if (!PC_Float_Parse(handle, &cgDC.Assets.fadeAmount))
         return qfalse;
 
       continue;
-  }
+ }
 
     if (Q_stricmp(token.string, "shadowX") == 0) {
       if (!PC_Float_Parse(handle, &cgDC.Assets.shadowX))
         return qfalse;
 
       continue;
-  }
+ }
 
     if (Q_stricmp(token.string, "shadowY") == 0) {
       if (!PC_Float_Parse(handle, &cgDC.Assets.shadowY))
         return qfalse;
 
       continue;
-  }
+ }
 
     if (Q_stricmp(token.string, "shadowColor") == 0) {
       if (!PC_Color_Parse(handle, &cgDC.Assets.shadowColor))
@@ -1134,7 +1134,7 @@ qboolean CG_Asset_Parse(int handle) {
 
       cgDC.Assets.shadowFadeClamp = cgDC.Assets.shadowColor[3];
       continue;
-  }
+ }
 }
 
   return qfalse;
@@ -1179,13 +1179,13 @@ void CG_ParseMenu(const char *menuFile) {
         continue;
       else
         break;
-  }
+ }
 
 
     if (Q_stricmp(token.string, "menudef") == 0) {
      // start a new menu
       Menu_New(handle);
-  }
+ }
 }
 
   trap_Parse_FreeSource(handle);
@@ -1273,7 +1273,7 @@ void CG_LoadMenus(const char *menuFile) {
         continue;
       else
         break;
-  }
+ }
 }
 
   Com_Printf("UI menu load time = %d milli seconds\n", trap_Milliseconds() - start);
@@ -1300,13 +1300,13 @@ static int CG_FeederCount(int feederID) {
     for (i = 0; i < cg.numScores; i++) {
       if (cg.scores[i].team == TEAM_ALIENS)
         count++;
-  }
+ }
 }
   else if (feederID == FEEDER_HUMANTEAM_LIST) {
     for (i = 0; i < cg.numScores; i++) {
       if (cg.scores[i].team == TEAM_HUMANS)
         count++;
-  }
+ }
 }
 
   return count;
@@ -1366,9 +1366,9 @@ static clientInfo_t *CG_InfoFromScoreIndex(int index, int team, int *scoreIndex)
       {
         *scoreIndex = i;
         return &cgs.clientinfo[cg.scores[i].client];
-    }
+   }
       count++;
-  }
+ }
 }
 
   *scoreIndex = index;
@@ -1422,7 +1422,7 @@ static const char *CG_FeederItemText(int feederID, int index, int column, qhandl
         {
           if (sp->weapon != WP_NONE)
             *handle = cg_weapons[sp->weapon].weaponIcon;
-      }
+     }
         break;
 
       case 1:
@@ -1443,9 +1443,9 @@ static const char *CG_FeederItemText(int feederID, int index, int column, qhandl
 
               default:
                 break;
-          }
-        }
-      }
+         }
+       }
+     }
         break;
 
       case 2:
@@ -1471,7 +1471,7 @@ static const char *CG_FeederItemText(int feederID, int index, int column, qhandl
 
         return va("%4d", sp->ping);
         break;
-  }
+ }
 }
 
   return "";
@@ -1502,7 +1502,7 @@ static void CG_FeederSelection(int feederID, int index) {
         cg.selectedScore = i;
 
       count++;
-  }
+ }
 }
 }
 
@@ -1856,10 +1856,10 @@ static char *CG_VoIPString(void) {
       {
         CG_Printf(S_COLOR_YELLOW "WARNING: voipString overflowed\n");
         break;
-    }
+   }
 
       slen += nlen;
-  }
+ }
 
    // Notice that if the snprintf was truncated, slen was not updated
    // so this will remove any trailing commas or partially - completed numbers

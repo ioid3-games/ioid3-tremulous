@@ -101,7 +101,7 @@ void Svcmd_EntityList_f(void) {
       default:
         G_Printf("% - 3i                 ", check->s.eType);
         break;
-  }
+ }
 
     if (check->classname)
       G_Printf("%s", check->classname);
@@ -206,7 +206,7 @@ static void Svcmd_LayoutSave_f(void) {
     if (isalnum(*s) || *s == '-' || *s == '_') {
       str2[i++] = *s;
       str2[i] = '\0';
-  }
+ }
     s++;
 }
 
@@ -362,7 +362,7 @@ static void Svcmd_EjectClient_f(void) {
       if (level.clients[i].pers.localClient)
         continue;
       trap_DropClient(i, reason);
-  }
+ }
 } else {
     gclient_t *cl = ClientForString(name);
     if (!cl)
@@ -370,7 +370,7 @@ static void Svcmd_EjectClient_f(void) {
     if (cl->pers.localClient) {
       G_Printf("eject: cannot eject local clients\n");
       return;
-  }
+ }
     trap_DropClient(cl - level.clients, reason);
 }
 }

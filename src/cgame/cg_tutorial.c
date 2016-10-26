@@ -74,8 +74,8 @@ static void CG_GetBindings(void) {
 
         if (numKeys > 1)
           break;
-    }
-  }
+   }
+ }
 }
 }
 
@@ -110,16 +110,16 @@ static const char *CG_KeyNameForCommand(const char *command) {
 
           for (j = firstKeyLength + 4; j < strlen(buffer); j++)
             buffer[j] = toupper(buffer[j]);
-      }
-    }
+     }
+   }
       else
       {
         Com_sprintf(buffer, MAX_STRING_CHARS, "\"%s\"(unbound)", 
           bindings[i].humanName);
-    }
+   }
 
       return buffer;
-  }
+ }
 }
 
   return "";
@@ -188,20 +188,20 @@ static void CG_AlienBuilderText(char *text, playerState_t *ps) {
         Q_strcat(text, MAX_TUTORIAL_TEXT, 
             va("Press %s to unmark this structure for replacement\n", 
               CG_KeyNameForCommand("deconstruct")));
-    }
+   }
       else
       {
         Q_strcat(text, MAX_TUTORIAL_TEXT, 
             va("Press %s to mark this structure for replacement\n", 
               CG_KeyNameForCommand("deconstruct")));
-    }
-  }
+   }
+ }
     else
     {
       Q_strcat(text, MAX_TUTORIAL_TEXT, 
           va("Press %s to destroy this structure\n", 
             CG_KeyNameForCommand("deconstruct")));
-  }
+ }
 }
 
   if ((ps->stats[STAT_BUILDABLE] & ~SB_VALID_TOGGLEBIT) == BA_NONE) {
@@ -348,20 +348,20 @@ static void CG_HumanCkitText(char *text, playerState_t *ps) {
         Q_strcat(text, MAX_TUTORIAL_TEXT, 
             va("Press %s to unmark this structure\n", 
               CG_KeyNameForCommand("deconstruct")));
-    }
+   }
       else
       {
         Q_strcat(text, MAX_TUTORIAL_TEXT, 
             va("Press %s to mark this structure\n", 
               CG_KeyNameForCommand("deconstruct")));
-    }
-  }
+   }
+ }
     else
     {
       Q_strcat(text, MAX_TUTORIAL_TEXT, 
           va("Press %s to destroy this structure\n", 
             CG_KeyNameForCommand("deconstruct")));
-  }
+ }
 }
 }
 
@@ -405,7 +405,7 @@ static void CG_HumanText(char *text, playerState_t *ps) {
 
       default:
         break;
-  }
+ }
 } else {
     switch (ps->weapon) {
       case WP_BLASTER:
@@ -456,7 +456,7 @@ static void CG_HumanText(char *text, playerState_t *ps) {
 
       default:
         break;
-  }
+ }
 }
 
   Q_strcat(text, MAX_TUTORIAL_TEXT, 
@@ -600,7 +600,7 @@ const char *CG_TutorialText(void) {
     if (ps->persistant[PERS_SPECSTATE] != SPECTATOR_NOT ||
         ps->pm_flags & PMF_FOLLOW) {
       CG_SpectatorText(text, ps);
-  }
+ }
     else if (ps->stats[STAT_HEALTH] > 0) {
       switch (ps->stats[STAT_CLASS])
       {
@@ -639,7 +639,7 @@ const char *CG_TutorialText(void) {
 
         default:
           break;
-    }
+   }
 
       if (ps->stats[STAT_TEAM] == TEAM_ALIENS)
       {
@@ -650,20 +650,20 @@ const char *CG_TutorialText(void) {
           Q_strcat(text, MAX_TUTORIAL_TEXT, 
               va("Press %s to evolve\n", 
                 CG_KeyNameForCommand("+button7")));
-      }
-    }
-  }
+     }
+   }
+ }
 }
   else if (!cg.demoPlayback) {
     if (!CG_ClientIsReady(ps->clientNum)) {
       Q_strcat(text, MAX_TUTORIAL_TEXT, 
           va("Press %s when ready to continue\n", 
             CG_KeyNameForCommand("+attack")));
-  }
+ }
     else
     {
       Q_strcat(text, MAX_TUTORIAL_TEXT, "Waiting for other players to be ready\n");
-  }
+ }
 }
 
   if (!cg.demoPlayback) {

@@ -48,12 +48,12 @@ void G_namelog_connect(gclient_t *client) {
     if (p) {
       p->next = n;
       n->id = p->id + 1;
-  }
+ }
     else
     {
       level.namelogs = n;
       n->id = MAX_CLIENTS;
-  }
+ }
 }
   client->pers.namelog = n;
   n->slot = client - level.clients;

@@ -968,10 +968,10 @@ static void readQuadInfo(byte *qData) {
 	if (cls.glconfig.hardwareType == GLHW_RAGEPRO || cls.glconfig.maxTextureSize <= 256) {
                 if (cinTable[currentHandle].drawX > 256) {
                         cinTable[currentHandle].drawX = 256;
-              }
+             }
                 if (cinTable[currentHandle].drawY > 256) {
                         cinTable[currentHandle].drawY = 256;
-              }
+             }
 
 		if (cinTable[currentHandle].CIN_WIDTH != 256 || cinTable[currentHandle].CIN_HEIGHT != 256) {
 			Com_Printf("HACK: approxmimating cinematic for Rage Pro or Voodoo\n");

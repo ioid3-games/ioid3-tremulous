@@ -1319,13 +1319,13 @@ vec_t DistanceBetweenLineSegmentsSquared(
       sN = 0.0;
       tN = e;
       tD = c;
-  }
+ }
     else if (sN > sD) {
      // sN > sD = > the s = 1 edge is visible
       sN = sD;
       tN = e + b;
       tD = c;
-  }
+ }
 }
 
   if (tN < 0.0) {
@@ -1341,7 +1341,7 @@ vec_t DistanceBetweenLineSegmentsSquared(
     {
       sN = -d;
       sD = a;
-  }
+ }
 }
   else if (tN > tD) {
    // tN > tD = > the t = 1 edge is visible
@@ -1356,7 +1356,7 @@ vec_t DistanceBetweenLineSegmentsSquared(
     {
       sN = (-d + b);
       sD = a;
-  }
+ }
 }
 
  // finally do the division to get *s and *t

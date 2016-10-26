@@ -163,8 +163,8 @@ qboolean G_FindPower(gentity_t *self, qboolean searchUnspawned) {
             if (ent2->parentNode == ent)
             {
               buildPoints -= BG_Buildable(ent2->s.modelindex)->buildPoints;
-          }
-        }
+         }
+       }
 
           buildPoints -= level.humanBuildPointQueue;
 
@@ -174,22 +174,22 @@ qboolean G_FindPower(gentity_t *self, qboolean searchUnspawned) {
           {
             self->parentNode = ent;
             return qtrue;
-        }
+       }
           else
           {
            // a buildable can still be built if it shares BP from two zones
 
            // TODO: handle combined power zones here
-        }
-      }
+       }
+     }
 
        // Dummy buildables don't need to look for zones
         else
         {
           self->parentNode = ent;
           return qtrue;
-      }
-    }
+     }
+   }
       else if (distance < minDistance)
       {
        // It's a repeater, so check that enough BP will be available to power
@@ -210,7 +210,7 @@ qboolean G_FindPower(gentity_t *self, qboolean searchUnspawned) {
 
             if (ent2->parentNode == ent)
               buildPoints -= BG_Buildable(ent2->s.modelindex)->buildPoints;
-        }
+       }
 
           if (ent->usesBuildPointZone && level.buildPointZones[ent->buildPointZone].active)
             buildPoints -= level.buildPointZones[ent->buildPointZone].queuedBuildPoints;
@@ -221,22 +221,22 @@ qboolean G_FindPower(gentity_t *self, qboolean searchUnspawned) {
           {
             closestPower = ent;
             minDistance = distance;
-        }
+       }
           else
           {
            // a buildable can still be built if it shares BP from two zones
 
            // TODO: handle combined power zones here
-        }
-      }     
+       }
+     }     
         else
         {
          // Dummy buildables don't need to look for zones
           closestPower = ent;
           minDistance = distance;
-      }
-    }
-  }
+     }
+   }
+ }
 }
 
   self->parentNode = closestPower;
@@ -320,7 +320,7 @@ int G_GetBuildPoints(const vec3_t pos, team_t team) {
         powerPoint->usesBuildPointZone && level.buildPointZones[powerPoint->buildPointZone].active) {
       return level.buildPointZones[powerPoint->buildPointZone].totalBuildPoints - 
              level.buildPointZones[powerPoint->buildPointZone].queuedBuildPoints;
-  }
+ }
 
    // Return the BP of the main zone by default
     return level.humanBuildPoints;
@@ -413,7 +413,7 @@ gentity_t *G_InPowerZone(gentity_t *self) {
         return ent;
       else if (ent->s.modelindex == BA_H_REPEATER && distance <= REPEATER_BASESIZE)
         return ent;
-  }
+ }
 }
 
   return NULL;
@@ -448,8 +448,8 @@ int G_FindDCC(gentity_t *self) {
       if (distance < DC_RANGE && ent->powered)
       {
         foundDCC++; 
-    }
-  }
+   }
+ }
 }
 
   return foundDCC;
@@ -563,15 +563,15 @@ qboolean G_FindCreep(gentity_t *self) {
         {
           closestSpawn = ent;
           minDistance = distance;
-      }
-    }
-  }
+     }
+   }
+ }
 
     if (minDistance <= CREEP_BASESIZE) {
       if (!self->client)
         self->parentNode = closestSpawn;
       return qtrue;
-  }
+ }
     else
       return qfalse;
 }
@@ -635,7 +635,7 @@ static void G_CreepSlow(gentity_t *self) {
         enemy->client->ps.groundEntityNum != ENTITYNUM_NONE) {
       enemy->client->ps.stats[STAT_STATE] |= SS_CREEPSLOWED;
       enemy->client->lastCreepSlowTime = level.time;
-  }
+ }
 }
 }
 
@@ -822,17 +822,17 @@ void ASpawn_Think(gentity_t *self) {
             G_Damage(ent, NULL, NULL, NULL, NULL, 10000, 0, MOD_SUICIDE);
 
           G_SetBuildableAnim(self, BANIM_SPAWN1, qtrue);
-      }
+     }
         else if (ent->s.number == ENTITYNUM_WORLD || ent->s.eType == ET_MOVER)
         {
           G_Damage(self, NULL, NULL, NULL, NULL, 10000, 0, MOD_SUICIDE);
           return;
-      }
+     }
 
         if (ent->s.eType == ET_CORPSE)
           G_FreeEntity(ent); // quietly remove
-    }
-  }
+   }
+ }
 }
 
   G_CreepSlow(self);
@@ -870,7 +870,7 @@ void AOvermind_Think(gentity_t *self) {
           self->splashRadius, self, MOD_OVERMIND, TEAM_ALIENS)) {
       self->timestamp = level.time;
       G_SetBuildableAnim(self, BANIM_ATTACK1, qfalse);
-  }
+ }
 
    // just in case an egg finishes building after we tell overmind to stfu
     if (level.numAlienSpawns > 0)
@@ -898,24 +898,24 @@ void AOvermind_Think(gentity_t *self) {
         {
           haveBuilder = qtrue;
           break;
-      }
-    }
+     }
+   }
      // aliens now know they have no eggs, but they're screwed, so stfu
       if (!haveBuilder || G_TimeTilSuddenDeath() <= 0)
         level.overmindMuted = qtrue;
-  }
+ }
 
    // overmind dying
     if (self->health < (OVERMIND_HEALTH / 10.0f) && level.time > self->overmindDyingTimer) {
       self->overmindDyingTimer = level.time + OVERMIND_DYING_PERIOD;
       G_BroadcastEvent(EV_OVERMIND_DYING, 0);
-  }
+ }
 
    // overmind under attack
     if (self->health < self->lastHealth && level.time > self->overmindAttackTimer) {
       self->overmindAttackTimer = level.time + OVERMIND_ATTACK_PERIOD;
       G_BroadcastEvent(EV_OVERMIND_ATTACK, 0);
-  }
+ }
 
     self->lastHealth = self->health;
 }
@@ -975,7 +975,7 @@ void ABarricade_Shrink(gentity_t *self, qboolean shrink) {
     if (self->spawned && self->health > 0 && anim != BANIM_DESTROYED) {
       G_SetIdleBuildableAnim(self, BANIM_DESTROYED);
       G_SetBuildableAnim(self, BANIM_ATTACK1, qtrue);
-  }
+ }
     return;
 }
 
@@ -993,7 +993,7 @@ void ABarricade_Shrink(gentity_t *self, qboolean shrink) {
     if (self->spawned && self->health > 0) {
       G_SetBuildableAnim(self, BANIM_ATTACK1, qtrue);
       G_SetIdleBuildableAnim(self, BANIM_DESTROYED);
-  }
+ }
 } else {
     trace_t tr;
 	int anim;
@@ -1003,7 +1003,7 @@ void ABarricade_Shrink(gentity_t *self, qboolean shrink) {
     if (tr.startsolid || tr.fraction < 1.0f) {
       self->r.maxs[2] = (int)(self->r.maxs[2] * BARRICADE_SHRINKPROP);
       return;
-  }
+ }
     self->shrunkTime = 0;
 
    // unshrink animation, IDLE2 has been hijacked for this
@@ -1012,7 +1012,7 @@ void ABarricade_Shrink(gentity_t *self, qboolean shrink) {
          anim != BANIM_CONSTRUCT1 && anim != BANIM_CONSTRUCT2) {
       G_SetIdleBuildableAnim(self, BG_Buildable(BA_A_BARRICADE)->idleAnim);
       G_SetBuildableAnim(self, BANIM_ATTACK2, qtrue);
-  }
+ }
 }
 
  // a change in size requires a relink
@@ -1115,14 +1115,14 @@ void AAcidTube_Think(gentity_t *self) {
           self->timestamp = level.time;
           G_SetBuildableAnim(self, BANIM_ATTACK1, qfalse);
           G_AddEvent(self, EV_ALIEN_ACIDTUBE, DirToByte(self->s.origin2));
-      }
+     }
         
         G_SelectiveRadiusDamage(self->s.pos.trBase, self, ACIDTUBE_DAMAGE, 
                                  ACIDTUBE_RANGE, self, MOD_ATUBE, TEAM_ALIENS);                           
         self->nextthink = level.time + ACIDTUBE_REPEAT;
         return;
-    }
-  }
+   }
+ }
 }
 }
 
@@ -1209,7 +1209,7 @@ void AHive_Think(gentity_t *self) {
     for (i = start; i < num + start; i++) {
       if (AHive_CheckTarget(self, g_entities + entityList[i % num]))
         return;
-  }
+ }
 }
 }
 
@@ -1449,7 +1449,7 @@ static qboolean G_SuicideIfNoPower(gentity_t *self) {
       else
         G_Damage(self, NULL, NULL, NULL, NULL, self->health, 0, MOD_NOCREEP);
       return qtrue;
-  }
+ }
 }
   else
     self->count = 0;
@@ -1584,17 +1584,17 @@ void HSpawn_Think(gentity_t *self) {
         {
           G_Damage(ent, NULL, NULL, NULL, NULL, self->health, 0, MOD_SUICIDE);
           G_SetBuildableAnim(self, BANIM_SPAWN1, qtrue);
-      }
+     }
         else if (ent->s.number == ENTITYNUM_WORLD || ent->s.eType == ET_MOVER)
         {
           G_Damage(self, NULL, NULL, NULL, NULL, self->health, 0, MOD_SUICIDE);
           return;
-      }
+     }
 
         if (ent->s.eType == ET_CORPSE)
           G_FreeEntity(ent); // quietly remove
-    }
-  }
+   }
+ }
 }
 
   self->nextthink = level.time + BG_Buildable(self->s.modelindex)->nextthink;
@@ -1688,8 +1688,8 @@ void HRepeater_Think(gentity_t *self) {
         self->usesBuildPointZone = qtrue;
 
         break;
-    }
-  }
+   }
+ }
 }
 
   self->nextthink = level.time + POWER_REFRESH_TIME;
@@ -1755,7 +1755,7 @@ void HReactor_Think(gentity_t *self) {
       tent->s.clientNum = enemy->s.number; // dest
       VectorCopy(self->s.pos.trBase, tent->s.origin2);
       fired = qtrue;
-  }
+ }
 
    // Actual damage is done by radius
     if (fired) {
@@ -1770,7 +1770,7 @@ void HReactor_Think(gentity_t *self) {
                                  REACTOR_ATTACK_DAMAGE, 
                                  REACTOR_ATTACK_RANGE, self, 
                                  MOD_REACTOR, TEAM_HUMANS);
-  }
+ }
 }
 
   if (self->dcc)
@@ -1899,7 +1899,7 @@ void HMedistat_Think(gentity_t *self) {
     if (self->active) {
       self->active = qfalse;
       self->enemy = NULL;
-  }
+ }
 
     self->nextthink = level.time + POWER_REFRESH_TIME;
     return;
@@ -1935,8 +1935,8 @@ void HMedistat_Think(gentity_t *self) {
       {
         occupied = qtrue;
         player->client->ps.stats[STAT_STATE] |= SS_HEALING_ACTIVE;
-    }
-  }
+   }
+ }
 
     if (!occupied) {
       self->enemy = NULL;
@@ -1963,13 +1963,13 @@ void HMedistat_Think(gentity_t *self) {
               G_SetBuildableAnim(self, BANIM_ATTACK1, qfalse);
               self->active = qtrue;
               player->client->ps.stats[STAT_STATE] |= SS_HEALING_ACTIVE;
-          }
-        }
+         }
+       }
           else if (!BG_InventoryContainsUpgrade(UP_MEDKIT, player->client->ps.stats))
             BG_AddUpgradeToInventory(UP_MEDKIT, player->client->ps.stats);
-      }
-    }
-  }
+     }
+   }
+ }
 
    // nothing left to heal so go back to idling
     if (!self->enemy && self->active) {
@@ -1977,7 +1977,7 @@ void HMedistat_Think(gentity_t *self) {
       G_SetIdleBuildableAnim(self, BANIM_IDLE1);
 
       self->active = qfalse;
-  }
+ }
     else if (self->enemy && self->enemy->client) // heal!
     {
       if (self->enemy->client->ps.stats[STAT_STAMINA] < STAMINA_MAX)
@@ -1994,8 +1994,8 @@ void HMedistat_Think(gentity_t *self) {
         self->enemy->health = self->enemy->client->ps.stats[STAT_MAX_HEALTH];
         if (!BG_InventoryContainsUpgrade(UP_MEDKIT, self->enemy->client->ps.stats))
           BG_AddUpgradeToInventory(UP_MEDKIT, self->enemy->client->ps.stats);
-    }
-  }
+   }
+ }
 }
 }
 
@@ -2167,14 +2167,14 @@ static qboolean HMGTurret_State(gentity_t *self, int state) {
       {
         self->speed = 0.25f;
         self->waterlevel = MGT_STATE_DROP;
-    }
+   }
       else
         self->speed *= 1.25f;
 
       self->s.angles2[PITCH] = 
         MIN(MGTURRET_VERTICALCAP, angle + self->speed);
       return qtrue;
-  }
+ }
     else
       self->waterlevel = MGT_STATE_INACTIVE;
 }
@@ -2183,7 +2183,7 @@ static qboolean HMGTurret_State(gentity_t *self, int state) {
       self->waterlevel = MGT_STATE_RISE;
       self->s.angles2[PITCH] = 
         MAX(0.0f, angle - MGTURRET_ANGULARSPEED * 0.5f);
-  }
+ }
     else
       self->waterlevel = MGT_STATE_ACTIVE;
 }
@@ -2320,7 +2320,7 @@ void HTeslaGen_Think(gentity_t *self) {
           self->enemy->client->ps.stats[STAT_TEAM] == TEAM_ALIENS &&
           Distance(origin, self->enemy->s.pos.trBase) <= TESLAGEN_RANGE)
         FireWeapon(self);
-  }
+ }
     self->enemy = NULL;
 
     if (self->s.eFlags & EF_FIRING) {
@@ -2330,7 +2330,7 @@ void HTeslaGen_Think(gentity_t *self) {
      // G_SetBuildableAnim(self, BANIM_ATTACK1, qfalse);
 
       self->timestamp = level.time + TESLAGEN_REPEAT;
-  }
+ }
 }
 }
 
@@ -2432,13 +2432,13 @@ void G_QueueBuildPoints(gentity_t *self) {
                 zone->nextQueueTime = level.time + nqt;
 
               zone->queuedBuildPoints += queuePoints;
-          }
+         }
             break;
 
           default:
             break;
-      }
-    }
+     }
+   }
 }
 }
 
@@ -2532,8 +2532,8 @@ void G_BuildableThink(gentity_t *ent, int msec) {
       if (ent->s.modelindex == BA_A_OVERMIND)
       {
         G_TeamCommand(TEAM_ALIENS, "cp \"The Overmind has awakened!\"");
-    }
-  }
+   }
+ }
 }
 
  // Timer actions
@@ -2548,20 +2548,20 @@ void G_BuildableThink(gentity_t *ent, int msec) {
        (ent->lastDamageTime + ALIEN_REGEN_DAMAGE_TIME) < level.time)
       {
         ent->health += regenRate;
-    }
+   }
       else if (ent->buildableTeam == TEAM_HUMANS && ent->dcc &&
        (ent->lastDamageTime + HUMAN_REGEN_DAMAGE_TIME) < level.time)
       {
         ent->health += DC_HEALRATE * ent->dcc;
-    }
-  }
+   }
+ }
 
     if (ent->health >= maxHealth) {
       int i;
       ent->health = maxHealth;
       for (i = 0; i < MAX_CLIENTS; i++)
         ent->credits[i] = 0;
-  }
+ }
 }
 
   if (ent->clientSpawnTime > 0)
@@ -2846,12 +2846,12 @@ void G_FreeMarkedBuildables(gentity_t *deconner, char *readable, int rsize,
            (totalListItems > 2) ? ", " : ""));
         else
           Q_strcat(readable, rsize, ", ");
-    }
+   }
       Q_strcat(readable, rsize, va("%s", BG_Buildable(i)->humanName));
       if (removalCounts[i] > 1)
         Q_strcat(readable, rsize, va("(%dx)", removalCounts[i]));
       listItems++;
-  }
+ }
 }
 }
 
@@ -2919,7 +2919,7 @@ static itemBuildError_t G_SufficientBPAvailable(buildable_t buildable,
 
       if (G_BuildablesIntersect(buildable, origin, ent->s.modelindex, ent->s.origin))
         return IBE_NOROOM;
-  }
+ }
 
     return IBE_NONE;
 }
@@ -2946,7 +2946,7 @@ static itemBuildError_t G_SufficientBPAvailable(buildable_t buildable,
      // Any other setting means anything goes
 
       collisionCount++;
-  }
+ }
 
    // Check if this is a repeater and it's in range
     if (buildable == BA_H_REPEATER &&
@@ -2954,7 +2954,7 @@ static itemBuildError_t G_SufficientBPAvailable(buildable_t buildable,
         Distance(ent->s.origin, origin) < REPEATER_BASESIZE) {
       repeaterInRange = qtrue;
       repeaterInRangeCount++;
-  }
+ }
     else
       repeaterInRange = qfalse;
 
@@ -3011,7 +3011,7 @@ static itemBuildError_t G_SufficientBPAvailable(buildable_t buildable,
         if (ent->powered)
           pointsYielded += BG_Buildable(ent->s.modelindex)->buildPoints;
         level.numBuildablesForRemoval++;
-    }
+   }
       else if (BG_Buildable(ent->s.modelindex)->uniqueTest &&
                ent->s.modelindex == buildable)
       {
@@ -3019,8 +3019,8 @@ static itemBuildError_t G_SufficientBPAvailable(buildable_t buildable,
         if (ent->powered)
           pointsYielded += BG_Buildable(ent->s.modelindex)->buildPoints;
         level.numBuildablesForRemoval++;
-    }
-  }
+   }
+ }
 }
 
   numRequired = level.numBuildablesForRemoval;
@@ -3071,7 +3071,7 @@ static itemBuildError_t G_SufficientBPAvailable(buildable_t buildable,
              * sizeof(gentity_t *));
       level.numBuildablesForRemoval--;
       changed = qtrue;
-  }
+ }
 }
 
   for (i = 0; i < level.numBuildablesForRemoval; i++) {
@@ -3178,13 +3178,13 @@ itemBuildError_t G_CanBuild(gentity_t *ent, buildable_t buildable, int distance,
     if (buildable != BA_A_OVERMIND) {
       if (!G_Overmind())
         reason = IBE_NOOVERMIND;
-  }
+ }
 
    // check there is creep near by for building on
     if (BG_Buildable(buildable)->creepTest) {
       if (!G_IsCreepHere(entity_origin))
         reason = IBE_NOCREEP;
-  }
+ }
 
    // Check permission to build here
     if (tr1.surfaceFlags & SURF_NOALIENBUILD || contents & CONTENTS_NOALIENBUILD)
@@ -3198,7 +3198,7 @@ itemBuildError_t G_CanBuild(gentity_t *ent, buildable_t buildable, int distance,
      // tell player to build a repeater to provide power
       if (buildable != BA_H_REACTOR && buildable != BA_H_REPEATER)
         reason = IBE_NOPOWERHERE;
-  }
+ }
 
    // this buildable requires a DCC
     if (BG_Buildable(buildable)->dccTest && !G_IsDCCBuilt())
@@ -3214,7 +3214,7 @@ itemBuildError_t G_CanBuild(gentity_t *ent, buildable_t buildable, int distance,
         reason = IBE_RPTPOWERHERE;
       else if (!g_markDeconstruct.integer && G_IsPowered(entity_origin))
         reason = IBE_RPTPOWERHERE;
-  }
+ }
 
    // Check permission to build here
     if (tr1.surfaceFlags & SURF_NOHUMANBUILD || contents & CONTENTS_NOHUMANBUILD)
@@ -3242,8 +3242,8 @@ itemBuildError_t G_CanBuild(gentity_t *ent, buildable_t buildable, int distance,
         default:
           Com_Error(ERR_FATAL, "No reason for denying build of %d\n", buildable);
           break;
-    }
-  }
+   }
+ }
 }
 
  // Relink buildables
@@ -3800,14 +3800,14 @@ void G_LayoutSelect(void) {
       Q_strcat(layouts, sizeof(layouts), " ");
       cnt++;
       continue;
-  }
+ }
 
     Com_sprintf(fileName, sizeof(fileName), "layouts /%s/%s.dat", map, s);
     if (trap_FS_FOpenFile(fileName, NULL, FS_READ) > 0) {
       Q_strcat(layouts, sizeof(layouts), s);
       Q_strcat(layouts, sizeof(layouts), " ");
       cnt++;
-  }
+ }
     else
       G_Printf(S_COLOR_YELLOW "WARNING: layout \"%s\" does not exist\n", s);
 }
@@ -3893,7 +3893,7 @@ void G_LayoutLoad(void) {
       G_Printf(S_COLOR_RED "ERROR: line overflow in %s before \"%s\"\n", 
        va("layouts /%s/%s.dat", map, level.layout), line);
       break;
-  }
+ }
     line[i++] = *layout;
     line[i] = '\0';
     if (*layout == '\n') {
@@ -3911,7 +3911,7 @@ void G_LayoutLoad(void) {
           " skipping\n", buildName);
       else
         G_LayoutBuildItem(buildable, origin, angles, origin2, angles2);
-  }
+ }
     layout++;
 }
   BG_Free(layoutHead);
@@ -3996,8 +3996,8 @@ void G_BuildLogRevertThink(gentity_t *ent) {
         VectorSet(push, crandom() * val, crandom() * val, random() * val);
         VectorAdd(targ->client->ps.velocity, push, targ->client->ps.velocity);
         victims++;
-    }
-  }
+   }
+ }
 
     ent->suicideTime--;
 
@@ -4005,7 +4005,7 @@ void G_BuildLogRevertThink(gentity_t *ent) {
      // still a blocker
       ent->nextthink = level.time + FRAMETIME;
       return;
-  }
+ }
 }
 
   built = G_FinishSpawningBuildable(ent, qtrue);
@@ -4049,10 +4049,10 @@ void G_BuildLogRevert(int id) {
                (int)(ent - g_entities), BG_Buildable(ent->s.modelindex)->name);
             G_FreeEntity(ent);
             break;
-        }
-      }
-    }
-  }
+       }
+     }
+   }
+ }
     else
     {
       gentity_t *builder = G_Spawn();
@@ -4081,14 +4081,14 @@ void G_BuildLogRevert(int id) {
         {
           level.alienBuildPointQueue = 
             MAX(0, level.alienBuildPointQueue - value);
-      }
+     }
         else
         {
           if (log->powerSource == BA_H_REACTOR)
           {
             level.humanBuildPointQueue = 
               MAX(0, level.humanBuildPointQueue - value);
-        }
+       }
           else if (log->powerSource == BA_H_REPEATER)
           {
             gentity_t *source;
@@ -4100,11 +4100,11 @@ void G_BuildLogRevert(int id) {
               zone = &level.buildPointZones[source->buildPointZone];
               zone->queuedBuildPoints = 
                 MAX(0, zone->queuedBuildPoints - value);
-          }
-        }
-      }
-    }
-  }
+         }
+       }
+     }
+   }
+ }
 }
 }
 

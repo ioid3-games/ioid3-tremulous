@@ -140,7 +140,7 @@ static void UI_Menu_f(void) {
     if (Menu_Count() > 0) {
       trap_Key_SetCatcher(KEYCATCH_UI);
       Menus_ActivateByName(UI_Argv(1));
-  }
+ }
 }
 
 static void UI_CloseMenus_f(void) {
@@ -149,7 +149,7 @@ static void UI_CloseMenus_f(void) {
       trap_Key_ClearStates();
       trap_Cvar_Set("cl_paused", "0");
       Menus_CloseAll();
-  }
+ }
 }
 
 static void UI_MessageMode_f(void) {

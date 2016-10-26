@@ -239,7 +239,7 @@ int CG_DrawStrlen(const char *str) {
     {
       count++;
       s++;
-  }
+ }
 }
 
   return count;
@@ -375,7 +375,7 @@ char *CG_KeyBinding(const char *bind) {
     if (!Q_stricmp(bindbuff, bind)) {
       trap_Key_KeynumToStringBuf(i, key, sizeof(key));
       break;
-  }
+ }
 }
 
   if (!key[0]) {

@@ -88,7 +88,7 @@ void G_AddCreditToClient(gclient_t *client, short credit, qboolean cap) {
       client->pers.credit += credit;
       if (client->pers.credit > capAmount)
         client->pers.credit = capAmount;
-  }
+ }
 }
   else
     client->pers.credit += credit;
@@ -167,7 +167,7 @@ static gentity_t *G_SelectRandomFurthestSpawnPoint(vec3_t avoidPoint, vec3_t ori
         {
           list_dist[j] = list_dist[j - 1];
           list_spot[j] = list_spot[j - 1];
-      }
+     }
 
         list_dist[i] = dist;
         list_spot[i] = spot;
@@ -177,14 +177,14 @@ static gentity_t *G_SelectRandomFurthestSpawnPoint(vec3_t avoidPoint, vec3_t ori
           numSpots = 64;
 
         break;
-    }
-  }
+   }
+ }
 
     if (i >= numSpots && numSpots < 64) {
       list_dist[numSpots] = dist;
       list_spot[numSpots] = spot;
       numSpots++;
-  }
+ }
 }
 
   if (!numSpots) {
@@ -454,7 +454,7 @@ static void SpawnCorpse(gentity_t *ent) {
       default:
         body->s.torsoAnim = body->s.legsAnim = BOTH_DEAD3;
         break;
-  }
+ }
 } else {
     switch (body->s.legsAnim & ~ANIM_TOGGLEBIT) {
       case NSPA_DEATH1:
@@ -470,7 +470,7 @@ static void SpawnCorpse(gentity_t *ent) {
       default:
         body->s.legsAnim = NSPA_DEAD3;
         break;
-  }
+ }
 }
 
   body->takedamage = qfalse;
@@ -542,10 +542,10 @@ void respawn(gentity_t *ent) {
       {
         if (!G_FollowNewClient(&g_entities[i], 1))
           G_StopFollowing(&g_entities[i]);
-    }
+   }
       else
         G_FollowLockView(&g_entities[i]);
-  }
+ }
 }
 }
 
@@ -571,10 +571,10 @@ static qboolean G_IsEmoticon(const char *s, qboolean *escaped) {
         {
           *escaped = escape;
           return qtrue;
-      }
-    }
+     }
+   }
       return qfalse;
-  }
+ }
     emoticon[i++] = *p;
     emoticon[i] = '\0';
     p++;
@@ -626,7 +626,7 @@ static void G_ClientCleanName(const char *in, char *out, int outSize) {
 
       len += 2;
       continue;
-  }
+ }
     else if (!g_emoticonsAllowedInNames.integer && G_IsEmoticon(in, &escaped)) {
      // make sure room in dest for both chars
       if (len > outSize - 2)
@@ -638,14 +638,14 @@ static void G_ClientCleanName(const char *in, char *out, int outSize) {
       if (escaped)
         in++;
       continue;
-  }
+ }
 
    // don't allow too many consecutive spaces
     if (*in == ' ') {
       spaces++;
       if (spaces > 3)
         continue;
-  }
+ }
     else
       spaces = 0;
 
@@ -788,29 +788,29 @@ char *ClientUserinfoChanged(int clientNum, qboolean forceName) {
         "print \"Name change spam protection(g_minNameChangePeriod = %d)\n\"", 
          g_minNameChangePeriod.integer));
       revertName = qtrue;
-  }
+ }
     else if (!forceName && g_maxNameChanges.integer > 0 && client->pers.namelog->nameChanges >= g_maxNameChanges.integer) {
       trap_SendServerCommand(ent - g_entities, va(
         "print \"Maximum name changes reached(g_maxNameChanges = %d)\n\"", 
          g_maxNameChanges.integer));
       revertName = qtrue;
-  }
+ }
     else if (!forceName && client->pers.namelog->muted) {
       trap_SendServerCommand(ent - g_entities, 
         "print \"You cannot change your name while you are muted\n\"");
       revertName = qtrue;
-  }
+ }
     else if (!G_admin_name_check(ent, newname, err, sizeof(err))) {
       trap_SendServerCommand(ent - g_entities, va("print \"%s\n\"", err));
       revertName = qtrue;
-  }
+ }
 
     if (revertName) {
       Q_strncpyz(client->pers.netname, *oldname ? oldname : "UnnamedPlayer", 
         sizeof(client->pers.netname));
       Info_SetValueForKey(userinfo, "name", oldname);
       trap_SetUserinfo(clientNum, userinfo);
-  }
+ }
     else
     {
       G_CensorString(client->pers.netname, newname, 
@@ -819,15 +819,15 @@ char *ClientUserinfoChanged(int clientNum, qboolean forceName) {
       {
         client->pers.namelog->nameChangeTime = level.time;
         client->pers.namelog->nameChanges++;
-    }
+   }
       if (*oldname)
       {
         G_LogPrintf("ClientRename: %i [%s](%s) \"%s ^ 7\" ->\"%s ^ 7\" \"%c%s%c ^ 7\"\n", 
                    clientNum, client->pers.ip.str, client->pers.guid, 
                    oldname, client->pers.netname, 
                    DECOLOR_OFF, client->pers.netname, DECOLOR_ON);
-    }
-  }
+   }
+ }
     G_namelog_update_name(client);
 }
 
@@ -1007,9 +1007,9 @@ char *ClientConnect(int clientNum, qboolean firstTime) {
       {
         trap_SendServerCommand(i, "cp \"Your GUID is not secure\"");
         return "Duplicate GUID";
-    }
+   }
       trap_DropClient(i, "Ghost");
-  }
+ }
 }
 
   client->pers.connected = CON_CONNECTING;
@@ -1180,7 +1180,7 @@ void ClientSpawn(gentity_t *ent, gentity_t *spawn, vec3_t origin, vec3_t angles)
     if (spawn == NULL) {
       G_Error("ClientSpawn: spawn is NULL\n");
       return;
-  }
+ }
 
     spawnPoint = spawn;
 
@@ -1192,7 +1192,7 @@ void ClientSpawn(gentity_t *ent, gentity_t *spawn, vec3_t origin, vec3_t angles)
         spawnPoint->clientSpawnTime = ALIEN_SPAWN_REPEAT_TIME;
       else if (spawnPoint->buildableTeam == TEAM_HUMANS)
         spawnPoint->clientSpawnTime = HUMAN_SPAWN_REPEAT_TIME;
-  }
+ }
 }
 
  // toggle the teleport bit so the client knows to not lerp
@@ -1312,7 +1312,7 @@ void ClientSpawn(gentity_t *ent, gentity_t *spawn, vec3_t origin, vec3_t angles)
     if (ent == spawn) {
      // evolution particle system
       G_AddPredictableEvent(ent, EV_ALIEN_EVOLVE, DirToByte(up));
-  }
+ }
     else
     {
       spawn_angles[YAW] += 180.0f;
@@ -1328,10 +1328,10 @@ void ClientSpawn(gentity_t *ent, gentity_t *spawn, vec3_t origin, vec3_t angles)
         VectorNormalize(dir);
 
         VectorScale(dir, UP_VEL, client->ps.velocity);
-    }
+   }
 
       G_AddPredictableEvent(ent, EV_PLAYER_RESPAWN, 0);
-  }
+ }
 }
   else if (client->sess.spectatorState == SPECTATOR_NOT &&
            client->ps.stats[STAT_TEAM] == TEAM_HUMANS) {

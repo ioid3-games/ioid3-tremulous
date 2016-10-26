@@ -75,9 +75,13 @@ void wt1(float a[], unsigned long n, int isign) {
 	}
 
 	if (isign >= 0) {
-		for (nn = n; nn >= inverseStartLength; nn >>= 1) daub4(a, nn, isign);
+		for (nn = n; nn >= inverseStartLength; nn >>= 1) {
+			daub4(a, nn, isign);
+		}
 	} else {
-		for (nn = inverseStartLength; nn <= n; nn <<= 1) daub4(a, nn, isign);
+		for (nn = inverseStartLength; nn <= n; nn <<= 1) {
+			daub4(a, nn, isign);
+		}
 	}
 }
 
@@ -104,11 +108,17 @@ byte MuLawEncode(short s) {
 
 	sign = (s < 0) ? 0 : 0x80;
 
-	if (s < 0) s = -s;
+	if (s < 0) {
+		s = -s;
+	}
+
 	adjusted = (long)s << (16 - sizeof(short) * 8);
 	adjusted += 128L + 4L;
 
-	if (adjusted > 32767) adjusted = 32767;
+	if (adjusted > 32767) {
+		adjusted = 32767;
+	}
+
 	exponent = numBits[(adjusted >> 7)&0xff] - 1;
 	mantissa = (adjusted >> (exponent + 3))&0xf;
 	return ~(sign|(exponent << 4)|mantissa);
@@ -199,7 +209,12 @@ void encodeWavelet(sfx_t *sfx, short *packets) {
 		for (i = 0; i < size; i++) {
 			temp = wksp[i];
 
-			if (temp > 32767) temp = 32767; else if (temp < -32768) temp = -32768;
+			if (temp > 32767) {
+				temp = 32767;
+			} else if (temp < -32768) {
+				temp = -32768;
+			}
+
 			out[i] = MuLawEncode((short)temp);
 		}
 
@@ -311,5 +326,3 @@ void decodeMuLaw(sndBuffer *chunk, short *to) {
 		to[i] = mulawToShort[out[i]];
 	}
 }
-
-

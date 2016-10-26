@@ -71,7 +71,7 @@ void *BG_Alloc(int size) {
           freeHead = next;     // Set head pointer to next
         ptr = (int *)fmn;
         break;             // Stop the loop, this is fine
-    }
+   }
       else
       {
        // Keep track of the smallest free slot
@@ -79,9 +79,9 @@ void *BG_Alloc(int size) {
         {
           smallest = fmn;
           smallestsize = fmn->size;
-      }
-    }
-  }
+     }
+   }
+ }
 }
 
   if (!ptr && smallest) {
@@ -121,7 +121,7 @@ void BG_Free(void *ptr) {
 
       fmn->size += *freeptr;   // Add size of node.
       return;
-  }
+ }
 }
  // No merging, add to head of list
 
@@ -168,16 +168,16 @@ void BG_DefragmentMemory(void) {
         {
           if (!(fmn->next->prev = fmn->prev))
             freeHead = fmn->next; // We're removing the head node
-      }
+     }
         startfmn->size += fmn->size;
         memset(fmn, 0, sizeof(freeMemNode_t)); // A redundant call, really.
 
         startfmn = freeHead;
         endfmn = fmn = NULL;       // Break out of current loop
-    }
+   }
       else
         fmn = fmn->next;
-  }
+ }
 
     if (endfmn)
       startfmn = startfmn->next;   // endfmn acts as a 'restart' flag here
@@ -202,7 +202,7 @@ void BG_MemoryInfo(void) {
       size += fmn->size;
       chunks++;
       fmn = (freeMemNode_t *) ((char *)fmn + fmn->size);
-  }
+ }
     if (size)
       Com_Printf("  %p: %d bytes free(%d chunks)\n", p, size, chunks);
     size = chunks = 0;
@@ -211,7 +211,7 @@ void BG_MemoryInfo(void) {
       size += *(int *)fmn;
       chunks++;
       fmn = (freeMemNode_t *) ((size_t)fmn + * (int *)fmn);
-  }
+ }
     if (size)
       Com_Printf("  %p: %d bytes allocated(%d chunks)\n", p, size, chunks);
 }

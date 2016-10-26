@@ -83,7 +83,7 @@ void G_TransposeMatrix(vec3_t matrix[3], vec3_t transpose[3]) {
   for (i = 0; i < 3; i++) {
     for (j = 0; j < 3; j++) {
       transpose[i][j] = matrix[j][i];
-  }
+ }
 }
 }
 
@@ -232,12 +232,12 @@ qboolean G_MoverPush(gentity_t *pusher, vec3_t move, vec3_t amove, gentity_t **o
       maxs[i] = pusher->r.currentOrigin[i] +move[i] + radius;
       totalMins[i] = mins[i] -move[i];
       totalMaxs[i] = maxs[i] -move[i];
-  }
+ }
 } else {
     for (i = 0; i < 3; i++) {
       mins[i] = pusher->r.absmin[i] +move[i];
       maxs[i] = pusher->r.absmax[i] +move[i];
-  }
+ }
 
     VectorCopy(pusher->r.absmin, totalMins);
     VectorCopy(pusher->r.absmax, totalMaxs);
@@ -246,7 +246,7 @@ qboolean G_MoverPush(gentity_t *pusher, vec3_t move, vec3_t amove, gentity_t **o
         totalMaxs[i] += move[i];
       else
         totalMins[i] += move[i];
-  }
+ }
 }
 
  // unlink the pusher so we don't get it in the entityList
@@ -284,7 +284,7 @@ qboolean G_MoverPush(gentity_t *pusher, vec3_t move, vec3_t amove, gentity_t **o
      // this does allow a fast moving object to pass through a thin entity...
       if (!G_TestEntityPosition(check))
         continue;
-  }
+ }
 
    // the entity needs to be pushed
     if (G_TryPushingEntity(check, pusher, move, amove))
@@ -296,7 +296,7 @@ qboolean G_MoverPush(gentity_t *pusher, vec3_t move, vec3_t amove, gentity_t **o
     if (pusher->s.pos.trType == TR_SINE || pusher->s.apos.trType == TR_SINE) {
       G_Damage(check, pusher, pusher, NULL, NULL, 99999, 0, MOD_CRUSH);
       continue;
-  }
+ }
 
 
    // save off the obstacle so we can call the block function(crush, etc)
@@ -313,10 +313,10 @@ qboolean G_MoverPush(gentity_t *pusher, vec3_t move, vec3_t amove, gentity_t **o
       {
         p->ent->client->ps.delta_angles[YAW] = p->deltayaw;
         VectorCopy(p->origin, p->ent->client->ps.origin);
-    }
+   }
 
       trap_LinkEntity(p->ent);
-  }
+ }
 
     return qfalse;
 }
@@ -358,7 +358,7 @@ void G_MoverTeam(gentity_t *ent) {
       BG_EvaluateTrajectory(&part->s.pos, level.time, part->r.currentOrigin);
       BG_EvaluateTrajectory(&part->s.apos, level.time, part->r.currentAngles);
       trap_LinkEntity(part);
-  }
+ }
 
    // if the pusher has a "blocked" function, call it
     if (ent->blocked)
@@ -375,15 +375,15 @@ void G_MoverTeam(gentity_t *ent) {
       {
         if (part->reached)
           part->reached(part);
-    }
-  }
+   }
+ }
     if (part->s.apos.trType == TR_LINEAR_STOP) {
       if (level.time >= part->s.apos.trTime + part->s.apos.trDuration) {
         if (part->reached) {
           part->reached(part);
-      }
-    }
-  }
+     }
+   }
+ }
 }
 }
 
@@ -1164,7 +1164,7 @@ void manualTriggerSpectator(gentity_t *trigger, gentity_t *player) {
     if (!trigger->inuse) {
       G_Printf("triggerity was removed while using targets\n");
       return;
-  }
+ }
 }
 
  // if more than 0 targets
@@ -1179,8 +1179,8 @@ void manualTriggerSpectator(gentity_t *trigger, gentity_t *player) {
       {
         minDistance = d;
         closest = targets[j];
-    }
-  }
+   }
+ }
 
    // try and skip the door
     manualDoorTriggerSpectator(closest, player);
@@ -1351,7 +1351,7 @@ void SP_func_door(gentity_t *ent) {
     if (ent->targetname || health) {
      // non touch / shoot doors
       ent->think = Think_MatchTeam;
-  }
+ }
     else
       ent->think = Think_SpawnNewDoorTrigger;
 }
@@ -1463,7 +1463,7 @@ void SP_func_door_rotating(gentity_t *ent) {
     if (ent->targetname || health) {
      // non touch / shoot doors
       ent->think = Think_MatchTeam;
-  }
+ }
     else
       ent->think = Think_SpawnNewDoorTrigger;
 }
@@ -1601,7 +1601,7 @@ void SP_func_door_model(gentity_t *ent) {
     if (!(ent->targetname || health)) {
       ent->nextthink = level.time + FRAMETIME;
       ent->think = Think_SpawnNewDoorTrigger;
-  }
+ }
 }
 }
 
@@ -2002,7 +2002,7 @@ void Think_SetupTrainTargets(gentity_t *ent) {
       G_Printf("Train corner at %s without a target\n", 
         vtos(path->s.origin));
       return;
-  }
+ }
 
    // find a path_corner among the targets
    // there may also be other targets that get fired when the corner
@@ -2017,8 +2017,8 @@ void Think_SetupTrainTargets(gentity_t *ent) {
         G_Printf("Train corner at %s without a target path_corner\n", 
           vtos(path->s.origin));
         return;
-    }
-  } while (strcmp(next->classname, "path_corner"));
+   }
+ } while (strcmp(next->classname, "path_corner"));
 
     path->nextTrain = next;
 }
@@ -2070,21 +2070,21 @@ void Blocked_Train(gentity_t *self, gentity_t *other) {
           VectorCopy(other->s.origin2, dir);
           tent = G_TempEntity(other->s.origin, EV_ALIEN_BUILDABLE_EXPLOSION);
           tent->s.eventParm = DirToByte(dir);
-      }
+     }
         else if (other->buildableTeam == TEAM_HUMANS)
         {
           VectorSet(dir, 0.0f, 0.0f, 1.0f);
           tent = G_TempEntity(other->s.origin, EV_HUMAN_BUILDABLE_EXPLOSION);
           tent->s.eventParm = DirToByte(dir);
-      }
-    }
+     }
+   }
 
      // if it's still around free it
       if (other)
         G_FreeEntity(other);
 
       return;
-  }
+ }
 
     G_Damage(other, self, self, NULL, NULL, 10000, 0, MOD_CRUSH);
 }

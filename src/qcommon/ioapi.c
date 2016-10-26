@@ -141,7 +141,7 @@ long ZCALLBACK fseek_file_func(opaque, stream, offset, origin)
         fseek_origin = SEEK_SET;
         break;
     default: return -1;
-  }
+ }
     ret = 0;
     fseek((FILE *)stream, offset, fseek_origin);
     return ret;

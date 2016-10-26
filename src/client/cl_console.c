@@ -148,14 +148,16 @@ void Con_Dump_f(void) {
 	for (; l <= con.current; l++) {
 		line = con.text + (l%con.totallines) * con.linewidth;
 
-		for (i = 0; i < con.linewidth; i++)
+		for (i = 0; i < con.linewidth; i++) {
 			buffer[i] = line[i] & 0xff;
+		}
 
 		for (x = con.linewidth - 1; x >= 0; x--) {
-			if (buffer[x] == ' ')
+			if (buffer[x] == ' ') {
 				buffer[x] = 0;
 			} else {
 				break;
+			}
 		}
 #ifdef _WIN32
 		Q_strcat(buffer, bufferlen, "\r\n");
@@ -572,10 +574,11 @@ Scroll it up or down.
 void Con_RunConsole(void) {
 
 	// decide on the destination height of the console
-	if (Key_GetCatcher() & KEYCATCH_CONSOLE)
-		con.finalFrac = 0.5;		// half screen
+	if (Key_GetCatcher() & KEYCATCH_CONSOLE) {
+		con.finalFrac = 0.5; // half screen
 	} else {
-		con.finalFrac = 0;				// none visible
+		con.finalFrac = 0; // none visible
+	}
 	// scroll towards the destination height
 	if (con.finalFrac < con.displayFrac) {
 		con.displayFrac -= con_conspeed->value * cls.realFrametime * 0.001;

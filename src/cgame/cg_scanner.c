@@ -67,7 +67,7 @@ void CG_UpdateEntityPositions(void) {
 
         if (entityPositions.numAlienBuildables < MAX_GENTITIES)
           entityPositions.numAlienBuildables++;
-    }
+   }
       else if (cent->currentState.modelindex2 == TEAM_HUMANS)
       {
         VectorCopy(cent->lerpOrigin, entityPositions.humanBuildablePos[
@@ -75,8 +75,8 @@ void CG_UpdateEntityPositions(void) {
 
         if (entityPositions.numHumanBuildables < MAX_GENTITIES)
           entityPositions.numHumanBuildables++;
-    }
-  }
+   }
+ }
     else if (cent->currentState.eType == ET_PLAYER) {
    int team = cent->currentState.misc & 0x00FF;
 
@@ -87,7 +87,7 @@ void CG_UpdateEntityPositions(void) {
 
         if (entityPositions.numAlienClients < MAX_CLIENTS)
           entityPositions.numAlienClients++;
-    }
+   }
       else if (team == TEAM_HUMANS)
       {
         VectorCopy(cent->lerpOrigin, entityPositions.humanClientPos[
@@ -95,8 +95,8 @@ void CG_UpdateEntityPositions(void) {
 
         if (entityPositions.numHumanClients < MAX_CLIENTS)
           entityPositions.numHumanClients++;
-    }
-  }
+   }
+ }
 }
 }
 

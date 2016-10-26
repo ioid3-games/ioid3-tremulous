@@ -85,12 +85,12 @@ void G_Physics(gentity_t *ent, int msec) {
       {
         ent->s.pos.trType = BG_Buildable(ent->s.modelindex)->traj;
         ent->s.pos.trTime = level.time;
-    }
-  }
+   }
+ }
     else if (ent->s.pos.trType != TR_GRAVITY) {
       ent->s.pos.trType = TR_GRAVITY;
       ent->s.pos.trTime = level.time;
-  }
+ }
 }
 
  // trace a line from the previous position to the current position
@@ -115,7 +115,7 @@ void G_Physics(gentity_t *ent, int msec) {
         ent->s.groundEntityNum = -1;
 
       ent->nextPhysicsTime = level.time + PHYSICS_TIME;
-  }
+ }
 
     return;
 }

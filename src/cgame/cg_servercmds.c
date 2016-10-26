@@ -81,7 +81,7 @@ CG_ParseTeamInfo;
     if (client < 0 || client >= MAX_CLIENTS) {
       CG_Printf("[skipnotify]CG_ParseTeamInfo: bad client number: %d\n", client);
       return;
-  }
+ }
 
     cgs.clientinfo[client].location = atoi(CG_Argv(++i));
     cgs.clientinfo[client].health = atoi(CG_Argv(++i));
@@ -185,7 +185,7 @@ void CG_ShaderStateChanged(void) {
       {
         strncpy(newShader, n, t - n);
         newShader[t - n] = 0;
-    }
+   }
       else
         break;
 
@@ -198,8 +198,8 @@ void CG_ShaderStateChanged(void) {
         timeOffset[o - t] = 0;
         o++;
         trap_R_RemapShader(originalShader, newShader, timeOffset);
-    }
-  }
+   }
+ }
     else
       break;
 }
@@ -265,11 +265,11 @@ static void CG_ConfigStringModified(void) {
 
       if (cgs.alienStage != oldAlienStage)
         CG_AnnounceAlienStageTransistion(oldAlienStage, cgs.alienStage);
-  }
+ }
     else
     {
       cgs.alienStage = cgs.alienCredits = cgs.alienNextStageThreshold = 0;
-  }
+ }
 }
   else if (num == CS_HUMAN_STAGES) {
     stage_t oldHumanStage = cgs.humanStage;
@@ -280,11 +280,11 @@ static void CG_ConfigStringModified(void) {
 
       if (cgs.humanStage != oldHumanStage)
         CG_AnnounceHumanStageTransistion(oldHumanStage, cgs.humanStage);
-  }
+ }
     else
     {
       cgs.humanStage = cgs.humanCredits = cgs.humanNextStageThreshold = 0;
-  }
+ }
 }
   else if (num == CS_LEVEL_START_TIME)
     cgs.levelStartTime = atoi(str);
@@ -326,7 +326,7 @@ static void CG_ConfigStringModified(void) {
   else if (num >= CS_SOUNDS && num < CS_SOUNDS + MAX_SOUNDS) {
     if (str[0] != '*') { // player specific sounds don't register here
       cgs.gameSounds[num - CS_SOUNDS] = trap_S_RegisterSound(str, qfalse);
-  }
+ }
 }
   else if (num >= CS_PLAYERS && num < CS_PLAYERS + MAX_CLIENTS) {
     CG_NewClientInfo(num - CS_PLAYERS);
@@ -858,7 +858,7 @@ static void CG_Say(int clientNum, saymode_t mode, const char *text) {
           locationNum = locent->currentState.generic1;
         else
           locationNum = 0;
-    }
+   }
       else
         locationNum = ci->location;
 
@@ -868,8 +868,8 @@ static void CG_Say(int clientNum, saymode_t mode, const char *text) {
 
         if (*s)
           location = va("(%s" S_COLOR_WHITE ")", s);
-    }
-  }
+   }
+ }
 }
   else
     name = "console";
@@ -920,7 +920,7 @@ static void CG_Say(int clientNum, saymode_t mode, const char *text) {
         if (clientNum < 0 || clientNum >= MAX_CLIENTS)
           clientNum = cg.clientNum;
         CG_Printf(" >> to reply, say:  / m %d [your message] << \n", clientNum);
-    }
+   }
       break;
     case SAY_RAW:
       CG_Printf("%s\n", text);
@@ -935,12 +935,12 @@ static void CG_Say(int clientNum, saymode_t mode, const char *text) {
       {
         trap_S_StartLocalSound(cgs.media.alienTalkSound, CHAN_LOCAL_SOUND);
         break;
-    }
+   }
       else if (cg.snap->ps.stats[STAT_TEAM] == TEAM_HUMANS)
       {
         trap_S_StartLocalSound(cgs.media.humanTalkSound, CHAN_LOCAL_SOUND);
         break;
-    }
+   }
     default: 
       trap_S_StartLocalSound(cgs.media.talkSound, CHAN_LOCAL_SOUND);
 }
@@ -1044,7 +1044,7 @@ static void CG_ParseVoice(void) {
         break;
       default:
         break;
-  }
+ }
 }
 
  // playing voice audio tracks disabled
@@ -1168,7 +1168,7 @@ static void CG_GameCmds_f(void) {
       CG_Printf("AddCommand: too many commands(%d >= %d)\n", 
        (int)(len + gcmdsOffset), (int)(sizeof(registeredCmds) - 1));
       return;
-  }
+ }
     trap_AddCommand(cmd);
     strcpy(registeredCmds + gcmdsOffset, cmd);
     gcmdsOffset += len;

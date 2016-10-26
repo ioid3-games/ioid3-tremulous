@@ -99,7 +99,7 @@ static voice_t *BG_VoiceList(void) {
       Com_Printf(S_COLOR_YELLOW "WARNING: MAX_VOICE_NAME_LEN is %d. "
         "skipping \"%s\", filename too long", MAX_VOICE_NAME_LEN, filePtr);
       continue;
-  }
+ }
 
    // trap_FS_GetFileList() buffer has overflowed
     if (!trap_FS_FOpenFile(va("voice / %s", filePtr), NULL, FS_READ)) {
@@ -108,14 +108,14 @@ static voice_t *BG_VoiceList(void) {
         "probably named one or more .voice files with outrageously long "
         "names. gjbs", filePtr);
       break;
-  }
+ }
 
     if (count >= MAX_VOICES) {
       Com_Printf(S_COLOR_YELLOW "WARNING: .voice file overflow. "
         "%d of %d .voice files loaded. MAX_VOICES is %d", 
         count, numFiles, MAX_VOICES);
       break;
-  }
+ }
  
     voices->next = (voice_t *)BG_Alloc(sizeof(voice_t));
     voices = voices->next;
@@ -150,8 +150,8 @@ static qboolean BG_VoiceParseTrack(int handle, voiceTrack_t *voiceTrack) {
       {
         BG_VoiceParseError(handle, "BG_VoiceParseTrack(): "
           "missing text attribute for track");
-    }
-  }
+   }
+ }
     else if (!Q_stricmp(token.string, "team")) {
       foundToken = trap_Parse_ReadToken(handle, &token);
       found = qfalse;
@@ -162,14 +162,14 @@ static qboolean BG_VoiceParseTrack(int handle, voiceTrack_t *voiceTrack) {
           voiceTrack->team = 0;
         voiceTrack->team |= (1 << token.intvalue);
         foundToken = trap_Parse_ReadToken(handle, &token);
-    }
+   }
       if (!found)
       {
         BG_VoiceParseError(handle, 
           "BG_VoiceParseTrack(): missing \"team\" value");
-    }
+   }
       continue;
-  }
+ }
     else if (!Q_stricmp(token.string, "class")) {
       foundToken = trap_Parse_ReadToken(handle, &token);
       found = qfalse;
@@ -180,14 +180,14 @@ static qboolean BG_VoiceParseTrack(int handle, voiceTrack_t *voiceTrack) {
           voiceTrack->class = 0;
         voiceTrack->class |= (1 << token.intvalue);
         foundToken = trap_Parse_ReadToken(handle, &token);
-    }
+   }
       if (!found)
       {
         BG_VoiceParseError(handle, 
           "BG_VoiceParseTrack(): missing \"class\" value");
-    }
+   }
       continue;
-  }
+ }
     else if (!Q_stricmp(token.string, "weapon")) {
       foundToken = trap_Parse_ReadToken(handle, &token);
       found = qfalse;
@@ -198,58 +198,58 @@ static qboolean BG_VoiceParseTrack(int handle, voiceTrack_t *voiceTrack) {
           voiceTrack->weapon = 0;
         voiceTrack->weapon |= (1 << token.intvalue);
         foundToken = trap_Parse_ReadToken(handle, &token);
-    }
+   }
       if (!found)
       {
         BG_VoiceParseError(handle, 
           "BG_VoiceParseTrack(): missing \"weapon\" value");
-    }
+   }
       continue;
-  }
+ }
     else if (!Q_stricmp(token.string, "text")) {
       if (foundText)
       {
         BG_VoiceParseError(handle, "BG_VoiceParseTrack(): "
           "duplicate \"text\" definition for track");
-    }
+   }
       foundToken = trap_Parse_ReadToken(handle, &token);
       if (!foundToken)
       {
         BG_VoiceParseError(handle, "BG_VoiceParseTrack(): "
           "missing \"text\" value");
-    }
+   }
       foundText = qtrue;
       if (strlen(token.string) >= MAX_SAY_TEXT)
       {
         BG_VoiceParseError(handle, va("BG_VoiceParseTrack(): "
           "\"text\" value " "\"%s\" exceeds MAX_SAY_TEXT length", 
           token.string));
-    }
+   }
 
       voiceTrack->text = (char *)BG_Alloc(strlen(token.string) + 1);
       Q_strncpyz(voiceTrack->text, token.string, strlen(token.string) + 1);
       foundToken = trap_Parse_ReadToken(handle, &token);
       continue;
-  }
+ }
     else if (!Q_stricmp(token.string, "enthusiasm")) {
       foundToken = trap_Parse_ReadToken(handle, &token);
       if (token.type == TT_NUMBER)
       {
         voiceTrack->enthusiasm = token.intvalue;
-    }
+   }
       else
       {
         BG_VoiceParseError(handle, "BG_VoiceParseTrack(): "
           "missing \"enthusiasm\" value");
-    }
+   }
       foundToken = trap_Parse_ReadToken(handle, &token);
       continue;
-  }
+ }
     else
     {
         BG_VoiceParseError(handle, va("BG_VoiceParseTrack():"
           " unknown token \"%s\"", token.string));
-  }
+ }
 }
   return qfalse;
 }
@@ -276,24 +276,24 @@ static voiceTrack_t *BG_VoiceParseCommand(int handle) {
         parsingTrack = qfalse;
         continue;
         
-    }
+   }
       else
       {
         BG_VoiceParseError(handle, va("BG_VoiceParseCommand(): "
           "parse error at \"%s\"", token.string));
-    }
-  }
+   }
+ }
 
 
     if (top == NULL) {
       voiceTracks = BG_Alloc(sizeof(voiceTrack_t));
       top = voiceTracks;
-  }
+ }
     else
     {
       voiceTracks->next = BG_Alloc(sizeof(voiceCmd_t));
       voiceTracks = voiceTracks->next;
-  }
+ }
     
     if (!trap_FS_FOpenFile(token.string, NULL, FS_READ)) {
      int line;
@@ -303,14 +303,14 @@ static voiceTrack_t *BG_VoiceParseCommand(int handle) {
         Com_Printf(S_COLOR_YELLOW "WARNING: BG_VoiceParseCommand(): "
           "track \"%s\" referenced on line %d of %s does not exist\n", 
           token.string, line, filename);
-  }
+ }
     else
     {
 #ifdef CGAME
       voiceTracks->track = trap_S_RegisterSound(token.string, qfalse);
       voiceTracks->duration = trap_S_SoundDuration(voiceTracks->track);
 #endif
-  }
+ }
 
     voiceTracks->team = -1;
     voiceTracks->class = -1;
@@ -347,7 +347,7 @@ static voiceCmd_t *BG_VoiceParse(char *name) {
         voiceCmds->tracks = BG_VoiceParseCommand(handle);
         parsingCmd = qfalse;
 	continue;
-    }
+   }
       else
       {
      int line;
@@ -356,8 +356,8 @@ static voiceCmd_t *BG_VoiceParse(char *name) {
         trap_Parse_SourceFileAndLine(handle, filename, &line);
         Com_Error(ERR_FATAL, "BG_VoiceParse(): "
           "parse error on line %d of %s\n", line, filename);
-    }
-  }
+   }
+ }
       
     if (strlen(token.string) >= MAX_VOICE_CMD_LEN) {
      int line;
@@ -367,17 +367,17 @@ static voiceCmd_t *BG_VoiceParse(char *name) {
         Com_Error(ERR_FATAL, "BG_VoiceParse(): "
           "command \"%s\" exceeds MAX_VOICE_CMD_LEN(%d) on line %d of %s\n", 
           token.string, MAX_VOICE_CMD_LEN, line, filename);
-  }
+ }
    
     if (top == NULL) {
       voiceCmds = BG_Alloc(sizeof(voiceCmd_t));
       top = voiceCmds;
-  }
+ }
     else
     {
       voiceCmds->next = BG_Alloc(sizeof(voiceCmd_t));
       voiceCmds = voiceCmds->next;
-  }
+ }
 
     Q_strncpyz(voiceCmds->cmd, token.string, sizeof(voiceCmds->cmd));
     voiceCmds->next = NULL;
@@ -451,19 +451,19 @@ void BG_PrintVoices(voice_t *voices, int debugLevel) {
 #ifdef CGAME
           Com_Printf("    duration ->%d\n", voiceTrack->duration);
 #endif
-      }
+     }
         if (debugLevel > 1)
           Com_Printf("\n");
         trackCount++; 
         voiceTrack = voiceTrack->next;
-    }
+   }
       voiceCmd = voiceCmd->next;
-  }
+ }
 
     if (!debugLevel) {
       Com_Printf("voice \"%s\": %d commands, %d tracks\n", 
         voice->name, cmdCount, trackCount);
-  }
+ }
     voice = voice->next;
 }
 }
@@ -498,7 +498,7 @@ voiceCmd_t *BG_VoiceCmdFind(voiceCmd_t *head, char *name, int *cmdNum) {
     if (!Q_stricmp(vc->cmd, name)) {
       *cmdNum = i;
       return vc;
-  }
+ }
     vc = vc->next;
 }
   return NULL;
@@ -563,12 +563,12 @@ voiceTrack_t *BG_VoiceTrackFind(voiceTrack_t *head, team_t team,
         vt->enthusiasm > enthusiasm) {
       vt = vt->next;
       continue;
-  }
+ }
 
     if (vt->enthusiasm > highestMatch) {
       matchCount = 0;
       highestMatch = vt->enthusiasm; 
-  }
+ }
     if (vt->enthusiasm == highestMatch)
       matchCount++;
     vt = vt->next;
@@ -590,11 +590,11 @@ voiceTrack_t *BG_VoiceTrackFind(voiceTrack_t *head, team_t team,
         vt->enthusiasm != highestMatch) {
       vt = vt->next;
       continue;
-  }
+ }
     if (i == selectedMatch) {
       *trackNum = j;
       return vt; 
-  }
+ }
     i++;
     vt = vt->next;
 }

@@ -3193,12 +3193,12 @@ void CL_Video_f(void) {
 
       if (!FS_FileExists(filename))
         break; // file doesn't exist
-  }
+ }
 
     if (i > 9999) {
       Com_Printf(S_COLOR_RED "ERROR: no free file names to create video\n");
       return;
-  }
+ }
 }
 
   CL_OpenAVIForWriting(filename);

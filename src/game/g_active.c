@@ -123,8 +123,8 @@ void P_WorldEffects(gentity_t *ent) {
 
         G_Damage(ent, NULL, NULL, NULL, NULL, 
           ent->damage, DAMAGE_NO_ARMOR, MOD_WATER);
-    }
-  }
+   }
+ }
 } else {
     ent->client->airOutTime = level.time + 12000;
     ent->damage = 2;
@@ -141,14 +141,14 @@ void P_WorldEffects(gentity_t *ent) {
       {
         G_Damage(ent, NULL, NULL, NULL, NULL, 
           30 * waterlevel, 0, MOD_LAVA);
-    }
+   }
 
       if (ent->watertype & CONTENTS_SLIME)
       {
         G_Damage(ent, NULL, NULL, NULL, NULL, 
           10 * waterlevel, 0, MOD_SLIME);
-    }
-  }
+   }
+ }
 }
 }
 
@@ -260,7 +260,7 @@ void ClientImpacts(gentity_t *ent, pmove_t *pm) {
     if (ent->client->ps.weapon == WP_ALEVEL4) {
       G_ChargeAttack(ent, other);
       G_CrushAttack(ent, other);
-  }
+ }
 
    // shove players
     if (ent->client && other->client)
@@ -329,8 +329,8 @@ void G_TouchTriggers(gentity_t *ent) {
        // check for manually triggered doors
         manualTriggerSpectator(hit, ent);
         continue;
-    }
-  }
+   }
+ }
 
     if (!trap_EntityContact(mins, maxs, hit))
       continue;
@@ -449,14 +449,14 @@ void SpectatorThink(gentity_t *ent, usercmd_t *ucmd) {
         client->ps.persistant[PERS_QUEUEPOS] = 
           G_GetPosInSpawnQueue(&level.alienSpawnQueue, client->ps.clientNum);
         client->ps.persistant[PERS_SPAWNS] = level.numAlienSpawns;
-    }
+   }
       else if (client->ps.stats[STAT_TEAM] == TEAM_HUMANS)
       {
         client->ps.persistant[PERS_QUEUEPOS] = 
           G_GetPosInSpawnQueue(&level.humanSpawnQueue, client->ps.clientNum);
         client->ps.persistant[PERS_SPAWNS] = level.numHumanSpawns;
-    }
-  }
+   }
+ }
 }
 }
 
@@ -488,14 +488,14 @@ qboolean ClientInactivityTimer(gentity_t *ent) {
         !G_admin_permission(ent, ADMF_ACTIVITY)) {
       trap_DropClient(client - level.clients, "Dropped due to inactivity");
       return qfalse;
-  }
+ }
 
     if (level.time > client->inactivityTime - 10000 &&
         !client->inactivityWarning &&
         !G_admin_permission(ent, ADMF_ACTIVITY)) {
       client->inactivityWarning = qtrue;
       trap_SendServerCommand(client - level.clients, "cp \"Ten seconds until inactivity drop!\n\"");
-  }
+ }
 }
 
   return qtrue;
@@ -562,7 +562,7 @@ void ClientTimerActions(gentity_t *ent, int msec) {
 
         if (client->ps.stats[STAT_MISC] < 0)
           client->ps.stats[STAT_MISC] = 0;
-  }
+ }
 
     switch (weapon) {
       case WP_ABUILD:
@@ -588,18 +588,18 @@ void ClientTimerActions(gentity_t *ent, int msec) {
               client->ps.misc[i] = level.markedBuildables[i]->s.number;
             else
               client->ps.misc[i] = 0;
-        }
-      }
+       }
+     }
         else
         {
           for (i = 0; i < MAX_MISC; i++)
             client->ps.misc[i] = 0;
-      }
+     }
         break;
 
       default:
         break;
-  }
+ }
 
     if (ent->client->pers.teamSelection == TEAM_HUMANS && 
        (client->ps.stats[STAT_STATE] & SS_HEALING_2X)) {
@@ -613,10 +613,10 @@ void ClientTimerActions(gentity_t *ent, int msec) {
         {
           ent->client->medKitHealthToRestore--;
           ent->health++;
-      }
+     }
         else
           ent->client->ps.stats[STAT_STATE] &= ~SS_HEALING_2X;
-    }
+   }
       else
       {
         if (ent->health < ent->client->ps.stats[STAT_MAX_HEALTH] &&
@@ -631,12 +631,12 @@ void ClientTimerActions(gentity_t *ent, int msec) {
 
             client->medKitIncrementTime = level.time + 
              (remainingStartupTime / MEDKIT_STARTUP_SPEED);
-        }
-      }
+       }
+     }
         else
           ent->client->ps.stats[STAT_STATE] &= ~SS_HEALING_2X;
-    }
-  }
+   }
+ }
 }
 
   while (client->time1000 >= 1000) {
@@ -657,7 +657,7 @@ void ClientTimerActions(gentity_t *ent, int msec) {
 
       G_Damage(ent, client->lastPoisonClient, client->lastPoisonClient, NULL, 
         0, damage, 0, MOD_POISON);
-  }
+ }
 
    // turn off life support when a team admits defeat
     if (client->ps.stats[STAT_TEAM] == TEAM_ALIENS &&
@@ -665,11 +665,11 @@ void ClientTimerActions(gentity_t *ent, int msec) {
       G_Damage(ent, NULL, NULL, NULL, NULL, 
         BG_Class(client->ps.stats[STAT_CLASS])->regenRate, 
         DAMAGE_NO_ARMOR, MOD_SUICIDE);
-  }
+ }
     else if (client->ps.stats[STAT_TEAM] == TEAM_HUMANS &&
       level.surrenderTeam == TEAM_HUMANS) {
       G_Damage(ent, NULL, NULL, NULL, NULL, 5, DAMAGE_NO_ARMOR, MOD_SUICIDE);
-  }
+ }
 
    // lose some voice enthusiasm
     if (client->voiceEnthusiasm > 0.0f)
@@ -687,8 +687,8 @@ void ClientTimerActions(gentity_t *ent, int msec) {
           G_AddCreditToClient(client, FREEKILL_ALIEN, qtrue);
         else if (client->ps.stats[STAT_TEAM] == TEAM_HUMANS)
           G_AddCreditToClient(client, FREEKILL_HUMAN, qtrue);
-    }
-  }
+   }
+ }
 }
 
   while (client->time10000 >= 10000) {
@@ -697,10 +697,10 @@ void ClientTimerActions(gentity_t *ent, int msec) {
     if (ent->client->ps.weapon == WP_ABUILD ||
         ent->client->ps.weapon == WP_ABUILD2) {
       AddScore(ent, ALIEN_BUILDER_SCOREINC);
-  }
+ }
     else if (ent->client->ps.weapon == WP_HBUILD) {
       AddScore(ent, HUMAN_BUILDER_SCOREINC);
-  }
+ }
 
    // Give score to basis that healed other aliens
     if (ent->client->pers.hasHealed) {
@@ -710,7 +710,7 @@ void ClientTimerActions(gentity_t *ent, int msec) {
         AddScore(ent, LEVEL1_UPG_REGEN_SCOREINC);
 
       ent->client->pers.hasHealed = qfalse;
-  }
+ }
 }
 
  // Regenerate Adv. Dragoon barbs
@@ -720,11 +720,11 @@ void ClientTimerActions(gentity_t *ent, int msec) {
       {
         client->ps.ammo++;
         ent->timestamp = level.time;
-    }
-  }
+   }
+ }
     else
       ent->timestamp = level.time;
- }
+}
 }
 
 /*
@@ -815,7 +815,7 @@ void ClientEvents(gentity_t *ent, int oldEventSequence) {
 
       default:
         break;
-  }
+ }
 }
 }
 
@@ -1053,7 +1053,7 @@ void G_UnlaggedOn(gentity_t *attacker, vec3_t muzzle, float range) {
 
       if (Distance(muzzle, calc->origin) > range + maxRadius)
         continue;
-  }
+ }
 
    // create a backup of the real positions
     VectorCopy(ent->r.mins, ent->client->unlaggedBackup.mins);
@@ -1259,7 +1259,7 @@ void ClientThink_real(gentity_t *ent) {
     if (client->ps.stats[STAT_STATE] & SS_HEALING_2X ||
        (client->ps.stats[STAT_HEALTH] == client->ps.stats[STAT_MAX_HEALTH] && !(client->ps.stats[STAT_STATE] & SS_POISONED))) {
       BG_DeactivateUpgrade(UP_MEDKIT, client->ps.stats);
-  }
+ }
     else if (client->ps.stats[STAT_HEALTH] > 0) {
      // remove anti toxin
       BG_DeactivateUpgrade(UP_MEDKIT, client->ps.stats);
@@ -1276,7 +1276,7 @@ void ClientThink_real(gentity_t *ent) {
        (MEDKIT_STARTUP_TIME / MEDKIT_STARTUP_SPEED);
 
       G_AddEvent(ent, EV_MEDKIT_USED, 0);
-  }
+ }
 }
 
  // Replenish alien health
@@ -1314,7 +1314,7 @@ void ClientThink_real(gentity_t *ent) {
         {
           modifier = BOOSTER_REGEN_MOD;
           continue;
-      }
+     }
 
         if (boost->s.eType == ET_PLAYER && boost->client &&
             boost->client->pers.teamSelection == 
@@ -1327,18 +1327,18 @@ void ClientThink_real(gentity_t *ent) {
           {
             modifier = LEVEL1_REGEN_MOD;
             didBoost = qtrue;
-        }
+       }
           else if (class == PCL_ALIEN_LEVEL1_UPG &&
                    modifier < LEVEL1_UPG_REGEN_MOD)
           {
             modifier = LEVEL1_UPG_REGEN_MOD;
             didBoost = qtrue;
-        }
+       }
 
           if (didBoost && ent->health < client->ps.stats[STAT_MAX_HEALTH])
             boost->client->pers.hasHealed = qtrue;
-      }
-    }
+     }
+   }
 
      // Transmit heal rate to the client so it can be displayed on the HUD
       client->ps.stats[STAT_STATE] |= SS_HEALING_ACTIVE;
@@ -1347,7 +1347,7 @@ void ClientThink_real(gentity_t *ent) {
       {
         client->ps.stats[STAT_STATE] &= ~SS_HEALING_ACTIVE;
         modifier *= ALIEN_REGEN_NOCREEP_MOD;
-    }
+   }
       else if (modifier >= 3.0f)
         client->ps.stats[STAT_STATE] |= SS_HEALING_3X;
       else if (modifier >= 2.0f)
@@ -1366,8 +1366,8 @@ void ClientThink_real(gentity_t *ent) {
         ent->health = client->ps.stats[STAT_MAX_HEALTH];
         for (i = 0; i < MAX_CLIENTS; i++)
           ent->credits[i] = 0;
-    }
-  }
+   }
+ }
 }
 
   if (BG_InventoryContainsUpgrade(UP_GRENADE, client->ps.stats) &&
@@ -1400,7 +1400,7 @@ void ClientThink_real(gentity_t *ent) {
     if (ent->lastDamageTime + JETPACK_DISABLE_TIME > level.time) {
       if (random() > JETPACK_DISABLE_CHANCE)
         client->ps.pm_type = PM_NORMAL;
-  }
+ }
 
    // switch jetpack off if no reactor
     if (!G_Reactor())
@@ -1462,12 +1462,12 @@ void ClientThink_real(gentity_t *ent) {
       if (!CheckVenomAttack(ent))
       {
         client->ps.weaponstate = WEAPON_READY;
-    }
+   }
       else
       {
         client->ps.generic1 = WPM_PRIMARY;
         G_AddEvent(ent, EV_FIRE_WEAPON, 0);
-    }
+   }
       break;
 
     case WP_ALEVEL1:
@@ -1480,12 +1480,12 @@ void ClientThink_real(gentity_t *ent) {
       if (!CheckPounceAttack(ent))
       {
         client->ps.weaponstate = WEAPON_READY;
-    }
+   }
       else
       {
         client->ps.generic1 = WPM_SECONDARY;
         G_AddEvent(ent, EV_FIRE_WEAPON2, 0);
-    }
+   }
       break;
 
     case WP_ALEVEL4:
@@ -1494,7 +1494,7 @@ void ClientThink_real(gentity_t *ent) {
       {
         ent->client->trampleBuildablesHitPos = 0;
         memset(ent->client->trampleBuildablesHit, 0, sizeof(ent->client->trampleBuildablesHit));
-    }
+   }
       break;
 
     case WP_HBUILD:
@@ -1585,8 +1585,8 @@ void ClientThink_real(gentity_t *ent) {
         {
           traceEnt->use(traceEnt, ent, ent); // other and activator are the same in this context
           break;
-      }
-    }
+     }
+   }
 
       if (i == num && client->ps.stats[STAT_TEAM] == TEAM_ALIENS)
       {
@@ -1596,14 +1596,14 @@ void ClientThink_real(gentity_t *ent) {
         {
          // no nearby objects and alien - show class menu
           G_TriggerMenu(ent->client->ps.clientNum, MN_A_INFEST);
-      }
+     }
         else
         {
          // flash frags
           G_AddEvent(ent, EV_ALIEN_EVOLVE_FAILED, 0);
-      }
-    }
-  }
+     }
+   }
+ }
 }
 
   client->ps.persistant[PERS_BP] = G_GetBuildPoints(client->ps.origin, client->ps.stats[STAT_TEAM]);
@@ -1683,8 +1683,8 @@ void SpectatorClientEndFrame(gentity_t *ent) {
 
         ent->client->ps.pm_flags |= PMF_FOLLOW;
         ent->client->ps.pm_flags &= ~PMF_QUEUED;
-    }
-  }
+   }
+ }
 }
 }
 

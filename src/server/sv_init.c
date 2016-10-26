@@ -121,8 +121,10 @@ void SV_SetConfigstring(int index, const char *val) {
 		// send the data to all relevant clients
 		for (i = 0, client = svs.clients; i < sv_maxclients->integer; i++, client++) {
 			if (client->state < CS_ACTIVE) {
-				if (client->state == CS_PRIMED)
+				if (client->state == CS_PRIMED) {
 					client->csUpdated[index] = qtrue;
+				}
+
 				continue;
 			}
 			// do not always send server info to all clients
@@ -165,6 +167,7 @@ SV_SetConfigstringRestrictions
 */
 void SV_SetConfigstringRestrictions(int index, const clientList_t *clientList) {
 	int i;
+
 	clientList_t oldClientList = sv.configstrings[index].clientList;
 
 	sv.configstrings[index].clientList = *clientList;
@@ -238,7 +241,6 @@ static void SV_CreateBaseline(void) {
 
 		svent->s.number = entnum;
 		// take current state as baseline
-		// 
 		sv.svEntities[entnum].baseline = svent->s;
 	}
 }
@@ -249,6 +251,7 @@ SV_BoundMaxClients
 =======================================================================================================================================
 */
 static void SV_BoundMaxClients(int minimum) {
+
 	// get the current maxclients value
 	Cvar_Get("sv_maxclients", "8", 0);
 
@@ -293,7 +296,6 @@ static void SV_Startup(void) {
 	}
 
 	Cvar_Set("sv_running", "1");
-
 	// Join the ipv6 multicast group now that a map is running so clients can scan for us on the local network.
 	NET_JoinMulticast6();
 }
@@ -308,13 +310,15 @@ void SV_ChangeMaxClients(void) {
 	int i;
 	client_t *oldClients;
 	int count;
+
 	// get the highest client number in use
 	count = 0;
 
 	for (i = 0; i < sv_maxclients->integer; i++) {
 		if (svs.clients[i].state >= CS_CONNECTED) {
-			if (i > count)
+			if (i > count) {
 				count = i;
+			}
 		}
 	}
 
@@ -341,6 +345,7 @@ void SV_ChangeMaxClients(void) {
 	Z_Free(svs.clients);
 	// allocate new clients
 	svs.clients = Z_Malloc(sv_maxclients->integer * sizeof(client_t));
+
 	Com_Memset(svs.clients, 0, sv_maxclients->integer * sizeof(client_t));
 	// copy the clients over
 	for (i = 0; i < count; i++) {
@@ -350,7 +355,6 @@ void SV_ChangeMaxClients(void) {
 	}
 	// free the old clients on the hunk
 	Hunk_FreeTempMemory(oldClients);
-
 	// allocate new snapshot entities
 	if (com_dedicated->integer) {
 		svs.numSnapshotEntities = sv_maxclients->integer * PACKET_BACKUP * MAX_SNAPSHOT_ENTITIES;
@@ -462,7 +466,6 @@ void SV_SpawnServer(char *server, qboolean killBots) {
 	CM_LoadMap(va("maps/%s.bsp", server), qfalse, &checksum);
 	// set serverinfo visible name
 	Cvar_Set("mapname", server);
-
 	Cvar_Set("sv_mapChecksum", va("%i", checksum));
 	// serverid should be different each time
 	sv.serverId = com_frameTime;
@@ -570,7 +573,6 @@ void SV_Init(void) {
 	sv_privateClients = Cvar_Get("sv_privateClients", "0", CVAR_SERVERINFO);
 	sv_hostname = Cvar_Get("sv_hostname", "noname", CVAR_SERVERINFO|CVAR_ARCHIVE);
 	sv_maxclients = Cvar_Get("sv_maxclients", "8", CVAR_SERVERINFO|CVAR_LATCH);
-
 	sv_minRate = Cvar_Get("sv_minRate", "0", CVAR_ARCHIVE|CVAR_SERVERINFO);
 	sv_maxRate = Cvar_Get("sv_maxRate", "0", CVAR_ARCHIVE|CVAR_SERVERINFO);
 	sv_dlRate = Cvar_Get("sv_dlRate", "100", CVAR_ARCHIVE|CVAR_SERVERINFO);
@@ -595,15 +597,14 @@ void SV_Init(void) {
 	sv_fps = Cvar_Get("sv_fps", "20", CVAR_TEMP);
 	sv_timeout = Cvar_Get("sv_timeout", "200", CVAR_TEMP);
 	sv_zombietime = Cvar_Get("sv_zombietime", "2", CVAR_TEMP);
-
 	sv_allowDownload = Cvar_Get("sv_allowDownload", "0", CVAR_SERVERINFO);
 	Cvar_Get("sv_dlURL", "http:// downloads.tremulous.net", CVAR_SERVERINFO|CVAR_ARCHIVE);
-
 	sv_master[0] = Cvar_Get("sv_master1", MASTER_SERVER_NAME, 0);
 	sv_master[1] = Cvar_Get("sv_master2", "master.ioquake3.org", 0);
 
-	for (index = 2; index < MAX_MASTER_SERVERS; index++)
+	for (index = 2; index < MAX_MASTER_SERVERS; index++) {
 		sv_master[index] = Cvar_Get(va("sv_master%d", index + 1), "", CVAR_ARCHIVE);
+	}
 
 	sv_reconnectlimit = Cvar_Get("sv_reconnectlimit", "3", 0);
 	sv_showloss = Cvar_Get("sv_showloss", "0", 0);
@@ -672,8 +673,9 @@ void SV_Shutdown(char *finalmsg) {
 	if (svs.clients) {
 		int index;
 
-		for (index = 0; index < sv_maxclients->integer; index++)
+		for (index = 0; index < sv_maxclients->integer; index++) {
 			SV_FreeClient(&svs.clients[index]);
+		}
 
 		Z_Free(svs.clients);
 	}
@@ -685,7 +687,7 @@ void SV_Shutdown(char *finalmsg) {
 
 	Com_Printf("---------------------------\n");
 	// disconnect any local clients
-	if (sv_killserver->integer != 2)
+	if (sv_killserver->integer != 2) {
 		CL_Disconnect(qfalse);
+	}
 }
-

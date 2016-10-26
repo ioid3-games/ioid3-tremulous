@@ -1215,8 +1215,7 @@ void CG_Buildable(centity_t *cent) {
 		VectorScale(ent.axis[2], scale, ent.axis[2]);
 
 		ent.nonNormalizedAxes = qtrue;
-}
-	else
+} else
 		ent.nonNormalizedAxes = qfalse;
 
 	if (CG_PlayerIsBuilder(es->modelindex) && CG_BuildableRemovalPending(es->number))

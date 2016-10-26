@@ -40,7 +40,7 @@ void AddRemap(const char *oldShader, const char *newShader, float timeOffset) {
       strcpy(remappedShaders[i].newShader, newShader);
       remappedShaders[i].timeOffset = timeOffset;
       return;
-  }
+ }
 }
 
   if (remapCount < MAX_SHADER_REMAPS) {
@@ -229,12 +229,12 @@ void G_UseTargets(gentity_t *ent, gentity_t *activator) {
     {
       if (t->use)
         t->use(t, ent, activator);
-  }
+ }
 
     if (!ent->inuse) {
       G_Printf("entity was removed while using targets\n");
       return;
-  }
+ }
 }
 }
 
@@ -379,7 +379,7 @@ gentity_t *G_Spawn(void) {
      // reuse this slot
       G_InitGentity(e);
       return e;
-  }
+ }
 
     if (i != MAX_GENTITIES)
       break;
@@ -702,7 +702,7 @@ gentity_t *G_ClosestEnt(vec3_t origin, gentity_t **entities, int numEntities) {
     if (nd < d) {
       d = nd;
       closestEnt = ent;
-  }
+ }
 }
 
   return closestEnt;
@@ -775,7 +775,7 @@ static const char *addr4parse(const char *str, addr_t *addr) {
       if (str[i] != '.' || str[i + 1] == '.')
         break;
       num = 0;
-  }
+ }
 }
   if (octet < 1)
     return NULL;
@@ -806,19 +806,19 @@ static const char *addr6parse(const char *str, addr_t *addr) {
       if (i == 0)
       {
        // 
-    }
+   }
       else if (seen) // :: has been seen already
       {
         b[after * 2] = num >> 8;
         b[after * 2 + 1] = num & 0xff;
         after++;
-    }
+   }
       else
       {
         a[before * 2] = num >> 8;
         a[before * 2 + 1] = num & 0xff;
         before++;
-    }
+   }
       if (!str[i])
         break;
       if (str[i] != ':' || before + after == 8)
@@ -830,11 +830,11 @@ static const char *addr6parse(const char *str, addr_t *addr) {
           break;
         seen = qtrue;
         i++;
-    }
+   }
       else if (i == 0) // starts with : but not ::
         return NULL;
       num = 0;
-  }
+ }
 }
   if (seen) {
    // there have to be fewer than 8 hexadectets when :: is present

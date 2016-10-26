@@ -122,7 +122,7 @@ void CG_ImpactMark(qhandle_t markShader, const vec3_t origin, const vec3_t dir,
   vec3_t axis[3];
   float texCoordScale;
   vec3_t originalPoints[4];
-  byte  colors[4];
+  byte colors[4];
 	int i, j;
 	int numFragments;
   markFragment_t markFragments[MAX_MARK_FRAGMENTS], *mf;
@@ -185,13 +185,13 @@ void CG_ImpactMark(qhandle_t markShader, const vec3_t origin, const vec3_t dir,
       v->st[0] = 0.5 + DotProduct(delta, axis[1]) * texCoordScale;
       v->st[1] = 0.5 + DotProduct(delta, axis[2]) * texCoordScale;
   * (int *)v->modulate = *(int *)colors;
-  }
+ }
 
    // if it is a temporary (shadow) mark, add it immediately and forget about it
     if (temporary) {
       trap_R_AddPolyToScene(markShader, mf->numPoints, verts);
       continue;
-  }
+ }
 
    // otherwise save it persistantly
     mark = CG_AllocMark();
@@ -235,7 +235,7 @@ void CG_AddMarks(void) {
     if (cg.time > mp->time + MARK_TOTAL_TIME) {
       CG_FreeMarkPoly(mp);
       continue;
-  }
+ }
 
    // fade all marks out with time
     t = mp->time + MARK_TOTAL_TIME - cg.time;
@@ -245,7 +245,7 @@ void CG_AddMarks(void) {
       {
         for (j = 0; j < mp->poly.numVerts; j++)
           mp->verts[j].modulate[3] = fade;
-    }
+   }
       else
       {
         for (j = 0; j < mp->poly.numVerts; j++)
@@ -253,9 +253,9 @@ void CG_AddMarks(void) {
           mp->verts[j].modulate[0] = mp->color[0] * fade;
           mp->verts[j].modulate[1] = mp->color[1] * fade;
           mp->verts[j].modulate[2] = mp->color[2] * fade;
-      }
-    }
-  }
+     }
+   }
+ }
 
     trap_R_AddPolyToScene(mp->markShader, mp->poly.numVerts, mp->verts);
 }

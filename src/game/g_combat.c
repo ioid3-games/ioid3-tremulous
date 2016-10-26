@@ -157,7 +157,7 @@ float G_RewardAttackers(gentity_t *self) {
     if (!self->spawned) {
       value *= (float) (level.time - self->buildTime)  / 
         BG_Buildable(self->s.modelindex)->buildTime;
-  }
+ }
 
     team = self->buildableTeam;
     maxHealth = BG_Buildable(self->s.modelindex)->health;
@@ -189,8 +189,8 @@ float G_RewardAttackers(gentity_t *self) {
           alienCredits += stageValue;
         else if (player->client->ps.stats[STAT_TEAM] == TEAM_HUMANS)
           humanCredits += stageValue;
-    }
-  }
+   }
+ }
     self->credits[i] = 0;
 }
 
@@ -277,13 +277,13 @@ void player_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int 
       {
         G_AddCreditToClient(attacker->client, -ALIEN_TK_SUICIDE_PENALTY, qtrue);
         AddScore(attacker, -ALIEN_TK_SUICIDE_PENALTY);
-    }
+   }
       else if (attacker->client->ps.stats[STAT_TEAM] == TEAM_HUMANS)
       {
         G_AddCreditToClient(attacker->client, -HUMAN_TK_SUICIDE_PENALTY, qtrue);
         AddScore(attacker, -HUMAN_TK_SUICIDE_PENALTY);
-    }
-  }
+   }
+ }
 }
   else if (attacker->s.eType != ET_BUILDABLE) {
     if (self->client->ps.stats[STAT_TEAM] == TEAM_ALIENS)
@@ -355,8 +355,8 @@ void player_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int 
         default:
           anim = BOTH_DEATH3;
           break;
-    }
-  }
+   }
+ }
     else
     {
       switch (i)
@@ -371,8 +371,8 @@ void player_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int 
         default:
           anim = NSPA_DEATH3;
           break;
-    }
-  }
+   }
+ }
 
     self->client->ps.legsAnim = 
      ((self->client->ps.legsAnim & ANIM_TOGGLEBIT) ^ ANIM_TOGGLEBIT)|anim;
@@ -380,7 +380,7 @@ void player_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int 
     if (!(self->client->ps.persistant[PERS_STATE] & PS_NONSEGMODEL)) {
       self->client->ps.torsoAnim = 
        ((self->client->ps.torsoAnim & ANIM_TOGGLEBIT) ^ ANIM_TOGGLEBIT)|anim;
-  }
+ }
 
    // use own entityid if killed by non - client to prevent uint8_t overflow
     G_AddEvent(self, EV_DEATH1 + i, 
@@ -413,12 +413,12 @@ static int G_ParseDmgScript(damageRegion_t *regions, char *buf) {
     if (strcmp(token, "{")) {
       COM_ParseError("Missing {");
       break;
-  }
+ }
 
     if (count >= MAX_DAMAGE_REGIONS) {
       COM_ParseError("Max damage regions exceeded");
       break;
-  }
+ }
 
    // defaults
     regions[count].name[0] = '\0';
@@ -436,63 +436,63 @@ static int G_ParseDmgScript(damageRegion_t *regions, char *buf) {
       {
         COM_ParseError("Unexpected end of file");
         break;
-    }
+   }
 
       if (!Q_stricmp(token, "}"))
       {
         break;
-    }
+   }
       else if (!strcmp(token, "name"))
       {
         token = COM_ParseExt(&buf, qfalse);
         if (token[0])
           Q_strncpyz(regions[count].name, token, 
                       sizeof(regions[count].name));
-    }
+   }
       else if (!strcmp(token, "minHeight"))
       {
         token = COM_ParseExt(&buf, qfalse);
         if (!token[0])
           strcpy(token, "0");
         regions[count].minHeight = atof(token);
-    }
+   }
       else if (!strcmp(token, "maxHeight"))
       {
         token = COM_ParseExt(&buf, qfalse);
         if (!token[0])
           strcpy(token, "100");
         regions[count].maxHeight = atof(token);
-    }
+   }
       else if (!strcmp(token, "minAngle"))
       {
         token = COM_ParseExt(&buf, qfalse);
         if (!token[0])
           strcpy(token, "0");
         regions[count].minAngle = atoi(token);
-    }
+   }
       else if (!strcmp(token, "maxAngle"))
       {
         token = COM_ParseExt(&buf, qfalse);
         if (!token[0])
           strcpy(token, "360");
         regions[count].maxAngle = atoi(token);
-    }
+   }
       else if (!strcmp(token, "modifier"))
       {
         token = COM_ParseExt(&buf, qfalse);
         if (!token[0])
           strcpy(token, "1.0");
         regions[count].modifier = atof(token);
-    }
+   }
       else if (!strcmp(token, "crouch"))
       {
         regions[count].crouch = qtrue;
-    }
+   }
       else
       {
         COM_ParseWarning("Unknown token \"%s\"", token);
-    }
-  }
+   }
+ }
     
    // Angle portion covered
     angleSpan = regions[count].maxAngle - regions[count].minAngle;
@@ -573,8 +573,8 @@ static float GetRegionDamageModifier(gentity_t *targ, int class, int piece) {
           if (regionMaxA > overlapMaxA)
             regionMaxA = overlapMaxA;
           angleSpan = regionMaxA - regionMinA;
-      }
-    }
+     }
+   }
       else
       {
         if (regionMaxA > overlapMaxA)
@@ -582,7 +582,7 @@ static float GetRegionDamageModifier(gentity_t *targ, int class, int piece) {
         angleSpan = regionMaxA;
         if (regionMinA < overlapMaxA)
           angleSpan += overlapMaxA - regionMinA;
-    }
+   }
       angleSpan /= 360.0f;
       
      // Overlapping height portion
@@ -605,7 +605,7 @@ static float GetRegionDamageModifier(gentity_t *targ, int class, int piece) {
             
       areaSum += area = angleSpan * heightSpan;
       modifier += regions[i].modifier * area;
-  }
+ }
 }
 
   if (g_debugDamage.integer > 2)
@@ -750,7 +750,7 @@ static float G_CalcDamageModifier(vec3_t point, gentity_t *targ, gentity_t *atta
       modifier *= GetPointDamageModifier(targ, g_armourRegions[i], 
                                           g_numArmourRegions[i], 
                                           hitRotation, hitRatio);
-  }
+ }
 }
 
   return modifier;
@@ -778,14 +778,14 @@ void G_InitDamageLocations(void) {
     if (!fileHandle) {
       G_Printf(S_COLOR_RED "file not found: %s\n", filename);
       continue;
-  }
+ }
 
     if (len >= MAX_DAMAGE_REGION_TEXT) {
       G_Printf(S_COLOR_RED "file too large: %s is %i, max allowed is %i", 
                 filename, len, MAX_DAMAGE_REGION_TEXT);
       trap_FS_FCloseFile(fileHandle);
       continue;
-  }
+ }
 
     COM_BeginParseSession(filename);
 
@@ -811,7 +811,7 @@ void G_InitDamageLocations(void) {
                 filename, len, MAX_DAMAGE_REGION_TEXT);
       trap_FS_FCloseFile(fileHandle);
       continue;
-  }
+ }
 
     COM_BeginParseSession(filename);
 
@@ -939,7 +939,7 @@ void G_Damage(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 
       targ->client->ps.pm_time = t;
       targ->client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
-  }
+ }
 }
 
  // don't do friendly fire on movement attacks
@@ -972,14 +972,14 @@ void G_Damage(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
         push[2] = 64.0f;
         VectorAdd(targ->client->ps.velocity, push, targ->client->ps.velocity);
         return;
-    }
+   }
 
      // check if friendly fire has been disabled
       if (!g_friendlyFire.integer)
       {
         return;
-    }
-  }
+   }
+ }
 
     if (targ->s.eType == ET_BUILDABLE && attacker->client &&
         mod != MOD_DECONSTRUCT && mod != MOD_SUICIDE &&
@@ -988,7 +988,7 @@ void G_Damage(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
         !g_friendlyBuildableFire.integer)
       {
         return;
-    }
+   }
 
      // base is under attack warning if DCC'd
       if (targ->buildableTeam == TEAM_HUMANS && G_FindDCC(targ) &&
@@ -996,8 +996,8 @@ void G_Damage(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
       {
         level.humanBaseAttackTimer = level.time + DC_ATTACK_PERIOD;
         G_BroadcastEvent(EV_DCC_ATTACK, 0);
-    }
-  }
+   }
+ }
 
    // check for godmode
     if (targ->flags & FL_GODMODE)
@@ -1032,12 +1032,12 @@ void G_Damage(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
     if (dir) {
       VectorCopy(dir, client->damage_from);
       client->damage_fromWorld = qfalse;
-  }
+ }
     else
     {
       VectorCopy(targ->r.currentOrigin, client->damage_from);
       client->damage_fromWorld = qtrue;
-  }
+ }
 
    // set the last client who damaged the target
     targ->client->lasthurt_client = attacker->s.number;
@@ -1056,8 +1056,8 @@ void G_Damage(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
         targ->client->ps.stats[STAT_STATE] |= SS_POISONED;
         targ->client->lastPoisonTime = level.time;
         targ->client->lastPoisonClient = attacker;
-    }
-  }
+   }
+ }
 }
 
   if (take < 1)
@@ -1075,7 +1075,7 @@ void G_Damage(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
     if (targ->client) {
       targ->client->ps.stats[STAT_HEALTH] = targ->health;
       targ->client->pers.infoChangeTime = level.time;
-  }
+ }
 
     targ->lastDamageTime = level.time;
     targ->nextRegenTime = level.time + ALIEN_REGEN_DAMAGE_TIME;
@@ -1094,7 +1094,7 @@ void G_Damage(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
       targ->enemy = attacker;
       targ->die(targ, inflictor, attacker, take, mod);
       return;
-  }
+ }
     else if (targ->pain)
       targ->pain(targ, attacker, take);
 }
@@ -1203,7 +1203,7 @@ qboolean G_SelectiveRadiusDamage(vec3_t origin, gentity_t *attacker, float damag
         v[i] = origin[i] - ent->r.absmax[i];
       else
         v[i] = 0;
-  }
+ }
 
     dist = VectorLength(v);
     if (dist >= radius)
@@ -1220,7 +1220,7 @@ qboolean G_SelectiveRadiusDamage(vec3_t origin, gentity_t *attacker, float damag
       hitClient = qtrue;
       G_Damage(ent, NULL, attacker, dir, origin, 
          (int)points, DAMAGE_RADIUS|DAMAGE_NO_LOCDAMAGE, mod);
-  }
+ }
 }
 
   return hitClient;
@@ -1269,7 +1269,7 @@ qboolean G_RadiusDamage(vec3_t origin, gentity_t *attacker, float damage, float 
         v[i] = origin[i] - ent->r.absmax[i];
       else
         v[i] = 0;
-  }
+ }
 
     dist = VectorLength(v);
     if (dist >= radius)
@@ -1285,7 +1285,7 @@ qboolean G_RadiusDamage(vec3_t origin, gentity_t *attacker, float damage, float 
       hitClient = qtrue;
       G_Damage(ent, NULL, attacker, dir, origin, 
          (int)points, DAMAGE_RADIUS|DAMAGE_NO_LOCDAMAGE, mod);
-  }
+ }
 }
 
   return hitClient;
@@ -1318,10 +1318,10 @@ void G_LogDestruction(gentity_t *self, gentity_t *actor, int mod) {
             BG_Buildable(self->s.modelindex)->team)
         {
           fate = BF_TEAMKILL;
-      }
+     }
         else
           fate = BF_DESTROY;
-    }
+   }
       else
         fate = BF_AUTO;
       break;

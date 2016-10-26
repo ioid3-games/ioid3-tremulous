@@ -356,9 +356,9 @@ static void findEmptySpot(vec3_t origin, float radius, vec3_t spot) {
           trap_Trace(&tr, test, NULL, NULL, origin, -1, MASK_SOLID);
           VectorScale(delta, tr.fraction, delta);
           VectorAdd(total, delta, total);
-      }
-    }
-  }
+     }
+   }
+ }
 }
 
   VectorNormalize(total);

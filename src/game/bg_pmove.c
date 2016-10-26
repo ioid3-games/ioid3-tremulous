@@ -88,7 +88,7 @@ void PM_StartTorsoAnim(int anim) {
     return;
 
   pm->ps->torsoAnim = ((pm->ps->torsoAnim & ANIM_TOGGLEBIT) ^ ANIM_TOGGLEBIT)
-   |anim;
+ |anim;
 }
 
 /*
@@ -101,7 +101,7 @@ static void PM_StartWeaponAnim(int anim) {
     return;
 
   pm->ps->weaponAnim = ((pm->ps->weaponAnim & ANIM_TOGGLEBIT) ^ ANIM_TOGGLEBIT)
-   |anim;
+ |anim;
 }
 
 /*
@@ -123,7 +123,7 @@ static void PM_StartLegsAnim(int anim) {
 }
 
   pm->ps->legsAnim = ((pm->ps->legsAnim & ANIM_TOGGLEBIT) ^ ANIM_TOGGLEBIT)
-   |anim;
+ |anim;
 }
 
 /*
@@ -261,8 +261,8 @@ static void PM_Friction(void) {
 
         control = speed < stopSpeed ? stopSpeed : speed;
         drop += control * friction * pml.frametime;
-    }
-  }
+   }
+ }
 }
 
  // apply water friction even if just wading
@@ -355,10 +355,10 @@ static float PM_CmdScale(usercmd_t *cmd) {
       {
         sprint = !sprint;
         pm->ps->pm_flags |= PMF_SPRINTHELD;
-    }
+   }
       else if (pm->ps->pm_flags & PMF_SPRINTHELD && !(cmd->buttons & BUTTON_SPRINT))
         pm->ps->pm_flags &= ~PMF_SPRINTHELD;
-  }
+ }
     else
       sprint = cmd->buttons & BUTTON_SPRINT;
 
@@ -378,11 +378,11 @@ static float PM_CmdScale(usercmd_t *cmd) {
     if (cmd->forwardmove < 0) {
      // can't run backwards
       modifier *= HUMAN_BACK_MODIFIER;
-  }
+ }
     else if (cmd->rightmove) {
      // can't move that fast sideways
       modifier *= HUMAN_SIDE_MODIFIER;
-  }
+ }
 
    // must have have stamina to jump
     if (pm->ps->stats[STAT_STAMINA] < STAMINA_SLOW_LEVEL + STAMINA_JUMP_TAKE)
@@ -397,13 +397,13 @@ static float PM_CmdScale(usercmd_t *cmd) {
         modifier *= CREEP_ARMOUR_MODIFIER;
       else
         modifier *= CREEP_MODIFIER;
-  }
+ }
     if (pm->ps->eFlags & EF_POISONCLOUDED) {
       if (BG_InventoryContainsUpgrade(UP_LIGHTARMOUR, pm->ps->stats) || BG_InventoryContainsUpgrade(UP_BATTLESUIT, pm->ps->stats))
         modifier *= PCLOUD_ARMOUR_MODIFIER;
       else
         modifier *= PCLOUD_MODIFIER;
-  }
+ }
 }
 
   if (pm->ps->weapon == WP_ALEVEL4 && pm->ps->pm_flags & PMF_CHARGE)
@@ -612,7 +612,7 @@ static qboolean PM_CheckWallJump(void) {
       trace.plane.normal[2] < MIN_WALK_NORMAL) {
     if (!VectorCompare(trace.plane.normal, pm->ps->grapplePoint)) {
       VectorCopy(trace.plane.normal, pm->ps->grapplePoint);
-  }
+ }
 }
   else
     return qfalse;
@@ -972,12 +972,12 @@ static void PM_WaterMove(void) {
     if (pm->ps->velocity[2] > -300) {
       if (pm->watertype == CONTENTS_WATER) {
         pm->ps->velocity[2] = 100;
-    } else if (pm->watertype == CONTENTS_SLIME) {
+   } else if (pm->watertype == CONTENTS_SLIME) {
         pm->ps->velocity[2] = 80;
-    } else {
+   } else {
         pm->ps->velocity[2] = 50;
-    }
-  }
+   }
+ }
 }
 #endif
   PM_Friction();
@@ -1633,18 +1633,18 @@ static void PM_CrashLand(void) {
     if (delta > AVG_FALL_DISTANCE) {
       if (PM_Live(pm->ps->pm_type))
         PM_AddEvent(EV_FALL_FAR);
-  }
+ }
     else if (delta > MIN_FALL_DISTANCE) {
       if (PM_Live(pm->ps->pm_type))
         PM_AddEvent(EV_FALL_MEDIUM);
-  }
+ }
     else
     {
       if (delta > 7)
         PM_AddEvent(EV_FALL_SHORT);
       else
         PM_AddEvent(PM_FootstepForSurface());
-  }
+ }
 }
 
  // start footstep cycle over
@@ -1683,9 +1683,9 @@ static int PM_CorrectAllSolid(trace_t *trace) {
           pm->trace(trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask);
           pml.groundTrace = *trace;
           return qtrue;
-      }
-    }
-  }
+     }
+   }
+ }
 }
 
   pm->ps->groundEntityNum = ENTITYNUM_NONE;
@@ -1726,7 +1726,7 @@ static void PM_GroundTraceMissed(void) {
           PM_ForceLegsAnim(NSPA_JUMP);
 
         pm->ps->pm_flags &= ~PMF_BACKWARDS_JUMP;
-    }
+   }
       else
       {
         if (!(pm->ps->persistant[PERS_STATE] & PS_NONSEGMODEL))
@@ -1735,8 +1735,8 @@ static void PM_GroundTraceMissed(void) {
           PM_ForceLegsAnim(NSPA_JUMPBACK);
 
         pm->ps->pm_flags |= PMF_BACKWARDS_JUMP;
-    }
-  }
+   }
+ }
 }
 
   if (BG_ClassHasAbility(pm->ps->stats[STAT_CLASS], SCA_TAKESFALLDAMAGE)) {
@@ -1818,7 +1818,7 @@ static void PM_GroundClimbTrace(void) {
          // step down
           VectorMA(pm->ps->origin, -STEPSIZE, surfNormal, point);
           pm->trace(&trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask);
-      }
+     }
         else
           continue;
         break;
@@ -1830,7 +1830,7 @@ static void PM_GroundClimbTrace(void) {
           VectorMA(pm->ps->origin, -16.0f, surfNormal, point);
           VectorMA(point, -16.0f, movedir, point);
           pm->trace(&trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask);
-      }
+     }
         else
           continue;
         break;
@@ -1841,7 +1841,7 @@ static void PM_GroundClimbTrace(void) {
         point[2] = pm->ps->origin[2] - 0.25f;
         pm->trace(&trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask);
         break;
-  }
+ }
 
    // if we hit something
     if (trace.fraction < 1.0f && !(trace.surfaceFlags & (SURF_SKY|SURF_SLICK)) && 
@@ -1852,7 +1852,7 @@ static void PM_GroundClimbTrace(void) {
           PM_StepEvent(pm->ps->origin, trace.endpos, surfNormal);
 
         VectorCopy(trace.endpos, pm->ps->origin);
-    }
+   }
       
      // calculate a bunch of stuff...
       CrossProduct(trace.plane.normal, surfNormal, traceCROSSsurf);
@@ -1917,7 +1917,7 @@ static void PM_GroundClimbTrace(void) {
 
          // phew! - correct the angle
           pm->ps->delta_angles[YAW] -= rTtANGrTsTt;
-      }
+     }
 
        // construct a plane dividing the surf and trace normals
         CrossProduct(traceCROSSsurf, surfNormal, abc);
@@ -1936,7 +1936,7 @@ static void PM_GroundClimbTrace(void) {
         {
           VectorInverse(traceCROSSsurf);
           ldDOTtCs = DotProduct(lookdir, traceCROSSsurf);
-      }
+     }
 
        // set the correction angle
         traceANGsurf *= 1.0f - ldDOTtCs;
@@ -1945,7 +1945,7 @@ static void PM_GroundClimbTrace(void) {
         {
          // correct the angle
           pm->ps->delta_angles[PITCH] -= ANGLE2SHORT(traceANGsurf);
-      }
+     }
 
        // transition from wall to ceiling
        // normal for subsequent viewangle rotations
@@ -1954,7 +1954,7 @@ static void PM_GroundClimbTrace(void) {
           CrossProduct(surfNormal, trace.plane.normal, pm->ps->grapplePoint);
           VectorNormalize(pm->ps->grapplePoint);
           pm->ps->eFlags |= EF_WALLCLIMBCEILING;
-      }
+     }
 
        // transition from ceiling to wall
        // we need to do some different angle correction here cos GPISROTVEC
@@ -1964,8 +1964,8 @@ static void PM_GroundClimbTrace(void) {
           vectoangles(pm->ps->grapplePoint, surfAngles);
 
           pm->ps->delta_angles[1] -= ANGLE2SHORT(((surfAngles[1] - toAngles[1]) * 2) - 180.0f);
-      }
-    }
+     }
+   }
 
       pml.groundTrace = trace;
 
@@ -1978,16 +1978,16 @@ static void PM_GroundClimbTrace(void) {
        // so we know what surface we're stuck to
         VectorCopy(trace.plane.normal, pm->ps->grapplePoint);
         pm->ps->eFlags &= ~EF_WALLCLIMBCEILING;
-    }
+   }
 
      // IMPORTANT: break out of the for loop if we've hit something
       break;
-  }
+ }
     else if (trace.allsolid) {
      // do something corrective if the trace starts in a solid...
       if (!PM_CorrectAllSolid(&trace))
         return;
-  }
+ }
 }
 
   if (trace.fraction >= 1.0f) {
@@ -2007,7 +2007,7 @@ static void PM_GroundClimbTrace(void) {
       vectoangles(rotated, angles);
 
       pm->ps->delta_angles[YAW] -= ANGLE2SHORT(angles[YAW] - pm->ps->viewangles[YAW]);
-  }
+ }
 
     pm->ps->eFlags &= ~EF_WALLCLIMBCEILING;
 
@@ -2054,17 +2054,17 @@ static void PM_GroundTrace(void) {
           pm->ps->stats[STAT_STATE] &= ~SS_WALLCLIMBING;
 
         pm->ps->pm_flags |= PMF_CROUCH_HELD;
-    }
+   }
       else if (pm->cmd.upmove >= 0)
         pm->ps->pm_flags &= ~PMF_CROUCH_HELD;
-  }
+ }
     else
     {
       if (pm->cmd.upmove < 0)
         pm->ps->stats[STAT_STATE] |= SS_WALLCLIMBING;
       else if (pm->cmd.upmove >= 0)
         pm->ps->stats[STAT_STATE] &= ~SS_WALLCLIMBING;
-  }
+ }
 
     if (pm->ps->pm_type == PM_DEAD)
       pm->ps->stats[STAT_STATE] &= ~SS_WALLCLIMBING;
@@ -2072,7 +2072,7 @@ static void PM_GroundTrace(void) {
     if (pm->ps->stats[STAT_STATE] & SS_WALLCLIMBING) {
       PM_GroundClimbTrace();
       return;
-  }
+ }
 
    // just transided from ceiling to floor... apply delta correction
     if (pm->ps->eFlags & EF_WALLCLIMBCEILING) {
@@ -2084,7 +2084,7 @@ static void PM_GroundTrace(void) {
       vectoangles(rotated, angles);
 
       pm->ps->delta_angles[YAW] -= ANGLE2SHORT(angles[YAW] - pm->ps->viewangles[YAW]);
-  }
+ }
 }
 
   pm->ps->stats[STAT_STATE] &= ~SS_WALLCLIMBING;
@@ -2124,8 +2124,8 @@ static void PM_GroundTrace(void) {
         PM_StepEvent(pm->ps->origin, trace.endpos, refNormal);
         VectorCopy(trace.endpos, pm->ps->origin);
         steppedDown = qtrue;
-    }
-  }
+   }
+ }
 
     if (!steppedDown) {
       PM_GroundTraceMissed();
@@ -2133,7 +2133,7 @@ static void PM_GroundTrace(void) {
       pml.walking = qfalse;
 
       return;
-  }
+ }
 }
 
  // check if getting thrown off the ground
@@ -2149,7 +2149,7 @@ static void PM_GroundTrace(void) {
         PM_ForceLegsAnim(NSPA_JUMP);
 
       pm->ps->pm_flags &= ~PMF_BACKWARDS_JUMP;
-  }
+ }
     else
     {
       if (!(pm->ps->persistant[PERS_STATE] & PS_NONSEGMODEL))
@@ -2158,7 +2158,7 @@ static void PM_GroundTrace(void) {
         PM_ForceLegsAnim(NSPA_JUMPBACK);
 
       pm->ps->pm_flags |= PMF_BACKWARDS_JUMP;
-  }
+ }
 
     pm->ps->groundEntityNum = ENTITYNUM_NONE;
     pml.groundPlane = qfalse;
@@ -2246,7 +2246,7 @@ static void PM_SetWaterLevel(void) {
 
       if (cont & MASK_WATER)
         pm->waterlevel = 3;
-  }
+ }
 }
 }
 
@@ -2300,7 +2300,7 @@ static void PM_CheckDuck(void) {
       pm->trace(&trace, pm->ps->origin, pm->mins, pm->maxs, pm->ps->origin, pm->ps->clientNum, pm->tracemask);
       if (!trace.allsolid)
         pm->ps->pm_flags &= ~PMF_DUCKED;
-  }
+ }
 }
 
   if (pm->ps->pm_flags & PMF_DUCKED)
@@ -2342,7 +2342,7 @@ static void PM_Footsteps(void) {
         PM_ContinueLegsAnim(LEGS_SWIM);
       else
         PM_ContinueLegsAnim(NSPA_SWIM);
-  }
+ }
 
     return;
 }
@@ -2357,15 +2357,15 @@ static void PM_Footsteps(void) {
           PM_ContinueLegsAnim(LEGS_IDLECR);
         else
           PM_ContinueLegsAnim(NSPA_STAND);
-    }
+   }
       else
       {
         if (!(pm->ps->persistant[PERS_STATE] & PS_NONSEGMODEL))
           PM_ContinueLegsAnim(LEGS_IDLE);
         else
           PM_ContinueLegsAnim(NSPA_STAND);
-    }
-  }
+   }
+ }
     return;
 }
 
@@ -2386,8 +2386,8 @@ static void PM_Footsteps(void) {
           PM_ContinueLegsAnim(NSPA_WALKLEFT);
         else
           PM_ContinueLegsAnim(NSPA_WALKBACK);
-    }
-  }
+   }
+ }
     else
     {
       if (!(pm->ps->persistant[PERS_STATE] & PS_NONSEGMODEL))
@@ -2400,8 +2400,8 @@ static void PM_Footsteps(void) {
           PM_ContinueLegsAnim(NSPA_WALKLEFT);
         else
           PM_ContinueLegsAnim(NSPA_WALK);
-    }
-  }
+   }
+ }
 
    // ducked characters never play footsteps
 } else {
@@ -2422,8 +2422,8 @@ static void PM_Footsteps(void) {
             PM_ContinueLegsAnim(NSPA_RUNLEFT);
           else
             PM_ContinueLegsAnim(NSPA_RUNBACK);
-      }
-    }
+     }
+   }
       else
       {
         if (!(pm->ps->persistant[PERS_STATE] & PS_NONSEGMODEL))
@@ -2436,11 +2436,11 @@ static void PM_Footsteps(void) {
             PM_ContinueLegsAnim(NSPA_RUNLEFT);
           else
             PM_ContinueLegsAnim(NSPA_RUN);
-      }
-    }
+     }
+   }
 
       footstep = qtrue;
-  }
+ }
     else
     {
       bobmove = 0.3f; // walking bobs slow
@@ -2456,8 +2456,8 @@ static void PM_Footsteps(void) {
             PM_ContinueLegsAnim(NSPA_WALKLEFT);
           else
             PM_ContinueLegsAnim(NSPA_WALKBACK);
-      }
-    }
+     }
+   }
       else
       {
         if (!(pm->ps->persistant[PERS_STATE] & PS_NONSEGMODEL))
@@ -2470,9 +2470,9 @@ static void PM_Footsteps(void) {
             PM_ContinueLegsAnim(NSPA_WALKLEFT);
           else
             PM_ContinueLegsAnim(NSPA_WALK);
-      }
-    }
-  }
+     }
+   }
+ }
 }
 
   bobmove *= BG_Class(pm->ps->stats[STAT_CLASS])->bobCycle;
@@ -2490,18 +2490,18 @@ static void PM_Footsteps(void) {
      // on ground will only play sounds if running
       if (footstep && !pm->noFootsteps)
         PM_AddEvent(PM_FootstepForSurface());
-  }
+ }
     else if (pm->waterlevel == 1) {
      // splashing
       PM_AddEvent(EV_FOOTSPLASH);
-  }
+ }
     else if (pm->waterlevel == 2) {
      // wading / swimming at surface
       PM_AddEvent(EV_SWIM);
-  }
+ }
     else if (pm->waterlevel == 3) {
      // no sound when completely underwater
-  }
+ }
 }
 }
 
@@ -2614,7 +2614,7 @@ static void PM_TorsoAnimation(void) {
         PM_ContinueTorsoAnim(TORSO_STAND2);
       else
         PM_ContinueTorsoAnim(TORSO_STAND);
-  }
+ }
 
     PM_ContinueWeaponAnim(WANIM_IDLE);
 }
@@ -2684,10 +2684,10 @@ static void PM_Weapon(void) {
           charge *= DotProduct(dir, vel);
 
           pm->ps->stats[STAT_MISC] += charge;
-      }
+     }
         else
           pm->ps->stats[STAT_MISC] = 0;
-    }
+   }
       
      // Charge button released
       else if (!(pm->ps->stats[STAT_STATE] & SS_CHARGING))
@@ -2701,11 +2701,11 @@ static void PM_Weapon(void) {
                                        LEVEL4_TRAMPLE_CHARGE_MAX;
           pm->ps->stats[STAT_STATE] |= SS_CHARGING;
           PM_AddEvent(EV_LEV4_TRAMPLE_START);
-      }
+     }
         else
           pm->ps->stats[STAT_MISC] -= pml.msec;
-    }
-  }
+   }
+ }
     
    // Discharging
     else
@@ -2718,13 +2718,13 @@ static void PM_Weapon(void) {
      // If the charger has stopped moving take a chunk of charge away
       if (VectorLength(pm->ps->velocity) < 64.0f || pm->cmd.rightmove)
         pm->ps->stats[STAT_MISC] -= LEVEL4_TRAMPLE_STOP_PENALTY * pml.msec;
-  }
+ }
     
    // Charge is over
     if (pm->ps->stats[STAT_MISC] <= 0 || pm->cmd.forwardmove <= 0) {
       pm->ps->stats[STAT_MISC] = 0;
       pm->ps->stats[STAT_STATE] &= ~SS_CHARGING;
-  }
+ }
 }
 
  // Charging up a Lucifer Cannon
@@ -2740,7 +2740,7 @@ static void PM_Weapon(void) {
                                               LCANNON_CHARGE_AMMO)
         pm->ps->stats[STAT_MISC] = pm->ps->ammo * LCANNON_CHARGE_TIME_MAX  / 
                                             LCANNON_CHARGE_AMMO;
-  }
+ }
 
    // Set overcharging flag so other players can hear the warning beep
     if (pm->ps->stats[STAT_MISC] > LCANNON_CHARGE_TIME_WARN)
@@ -2780,7 +2780,7 @@ static void PM_Weapon(void) {
          // if trying to select a weapon, select it
           if (pm->ps->weapon != pm->cmd.weapon)
             PM_BeginWeaponChange(pm->cmd.weapon);
-      }
+     }
         else
         {
          // if trying to toggle an upgrade, toggle it
@@ -2790,11 +2790,11 @@ static void PM_Weapon(void) {
               BG_DeactivateUpgrade(pm->cmd.weapon - 32, pm->ps->stats);
             else
               BG_ActivateUpgrade(pm->cmd.weapon - 32, pm->ps->stats);
-        }
-      }
+       }
+     }
         pm->ps->pm_flags |= PMF_USE_ITEM_HELD;
-    }
-  }
+   }
+ }
     else
       pm->ps->pm_flags &= ~PMF_USE_ITEM_HELD;
 
@@ -2805,13 +2805,13 @@ static void PM_Weapon(void) {
       {
        // drop the current weapon
         PM_BeginWeaponChange(pm->ps->persistant[PERS_NEWWEAPON]);
-    }
+   }
       else
       {
        // no current weapon, so just raise the new one
         PM_FinishWeaponChange();
-    }
-  }
+   }
+ }
 }
 
   if (pm->ps->weaponTime > 0)
@@ -2831,7 +2831,7 @@ static void PM_Weapon(void) {
         PM_ContinueTorsoAnim(TORSO_STAND2);
       else
         PM_ContinueTorsoAnim(TORSO_STAND);
-  }
+ }
 
     PM_ContinueWeaponAnim(WANIM_IDLE);
 
@@ -2845,7 +2845,7 @@ static void PM_Weapon(void) {
        (BG_Weapon(pm->ps->weapon)->hasThirdMode && attack3)) {
       PM_AddEvent(EV_NOAMMO);
       pm->ps->weaponTime += 500;
-  }
+ }
 
     if (pm->ps->weaponstate == WEAPON_FIRING)
       pm->ps->weaponstate = WEAPON_READY;
@@ -2906,7 +2906,7 @@ static void PM_Weapon(void) {
         if (attack1)
           return;
         pm->ps->weaponstate = WEAPON_READY;
-    }
+   }
 
      // Can't fire secondary while primary is charging
       if (attack1 || pm->ps->stats[STAT_MISC] > 0)
@@ -2921,18 +2921,18 @@ static void PM_Weapon(void) {
         {
           pm->ps->weaponstate = WEAPON_READY;
           return;
-      }
+     }
 
        // Overcharge
         pm->ps->weaponstate = WEAPON_NEEDS_RESET;
-    }
+   }
 
       if (pm->ps->stats[STAT_MISC] > LCANNON_CHARGE_TIME_MIN)
       {
        // Fire primary attack
         attack1 = qtrue;
         attack2 = qfalse;
-    }
+   }
       else if (pm->ps->stats[STAT_MISC] > 0)
       {
        // Not enough charge
@@ -2940,14 +2940,14 @@ static void PM_Weapon(void) {
         pm->ps->weaponTime = 0;
         pm->ps->weaponstate = WEAPON_READY;
         return;
-    }
+   }
       else if (!attack2)
       {
        // Idle
         pm->ps->weaponTime = 0;
         pm->ps->weaponstate = WEAPON_READY;
         return;
-    }
+   }
       break;
 
     case WP_MASS_DRIVER:
@@ -2959,7 +2959,7 @@ static void PM_Weapon(void) {
         pm->ps->weaponTime = 0;
         pm->ps->weaponstate = WEAPON_READY;
         return;
-    }
+   }
       break;
 
     default:
@@ -2968,7 +2968,7 @@ static void PM_Weapon(void) {
         pm->ps->weaponTime = 0;
         pm->ps->weaponstate = WEAPON_READY;
         return;
-    }
+   }
       break;
 }
 
@@ -2980,33 +2980,33 @@ static void PM_Weapon(void) {
       {
         pm->ps->weaponTime += 200;
         return;
-    }
+   }
 
       pm->ps->generic1 = WPM_TERTIARY;
       PM_AddEvent(EV_FIRE_WEAPON3);
       addTime = BG_Weapon(pm->ps->weapon)->repeatRate3;
-  }
+ }
     else
     {
       pm->ps->weaponTime = 0;
       pm->ps->weaponstate = WEAPON_READY;
       pm->ps->generic1 = WPM_NOTFIRING;
       return;
-  }
+ }
 }
   else if (attack2) {
     if (BG_Weapon(pm->ps->weapon)->hasAltMode) {
       pm->ps->generic1 = WPM_SECONDARY;
       PM_AddEvent(EV_FIRE_WEAPON2);
       addTime = BG_Weapon(pm->ps->weapon)->repeatRate2;
-  }
+ }
     else
     {
       pm->ps->weaponTime = 0;
       pm->ps->weaponstate = WEAPON_READY;
       pm->ps->generic1 = WPM_NOTFIRING;
       return;
-  }
+ }
 }
   else if (attack1) {
     pm->ps->generic1 = WPM_PRIMARY;
@@ -3032,7 +3032,7 @@ static void PM_Weapon(void) {
 
       default:
         break;
-  }
+ }
 }
 
   if (!(pm->ps->persistant[PERS_STATE] & PS_NONSEGMODEL)) {
@@ -3043,7 +3043,7 @@ static void PM_Weapon(void) {
         {
           PM_StartTorsoAnim(TORSO_ATTACK);
           PM_StartWeaponAnim(WANIM_ATTACK1);
-      }
+     }
         break;
 
       case WP_BLASTER:
@@ -3055,7 +3055,7 @@ static void PM_Weapon(void) {
         PM_StartTorsoAnim(TORSO_ATTACK);
         PM_StartWeaponAnim(WANIM_ATTACK1);
         break;
-  }
+ }
 } else {
  int num = rand();
 
@@ -3069,7 +3069,7 @@ static void PM_Weapon(void) {
           num /= RAND_MAX / 6 + 1;
           PM_ForceLegsAnim(NSPA_ATTACK1);
           PM_StartWeaponAnim(WANIM_ATTACK1 + num);
-      }
+     }
         break;
 
       case WP_ALEVEL2_UPG:
@@ -3077,14 +3077,14 @@ static void PM_Weapon(void) {
         {
           PM_ForceLegsAnim(NSPA_ATTACK2);
           PM_StartWeaponAnim(WANIM_ATTACK7);
-      }
+     }
       case WP_ALEVEL2:
         if (attack1)
         {
           num /= RAND_MAX / 6 + 1;
           PM_ForceLegsAnim(NSPA_ATTACK1);
           PM_StartWeaponAnim(WANIM_ATTACK1 + num);
-      }
+     }
         break;
 
       case WP_ALEVEL4:
@@ -3098,19 +3098,19 @@ static void PM_Weapon(void) {
         {
           PM_ForceLegsAnim(NSPA_ATTACK1);
           PM_StartWeaponAnim(WANIM_ATTACK1);
-      }
+     }
         else if (attack2)
         {
           PM_ForceLegsAnim(NSPA_ATTACK2);
           PM_StartWeaponAnim(WANIM_ATTACK2);
-      }
+     }
         else if (attack3)
         {
           PM_ForceLegsAnim(NSPA_ATTACK3);
           PM_StartWeaponAnim(WANIM_ATTACK3);
-      }
+     }
         break;
-  }
+ }
 
     pm->ps->torsoTimer = TIMER_ATTACK;
 }
@@ -3139,12 +3139,12 @@ static void PM_Weapon(void) {
         BG_InventoryContainsUpgrade(UP_BATTLESUIT, pm->ps->stats)) {
       pm->ps->delta_angles[PITCH] -= ANGLE2SHORT(((random() * 0.5) - 0.125) * (30 / (float)addTime));
       pm->ps->delta_angles[YAW] -= ANGLE2SHORT(((random() * 0.5) - 0.25) * (30.0 / (float)addTime));
-  }
+ }
     else
     {
       pm->ps->delta_angles[PITCH] -= ANGLE2SHORT(((random() * 8) - 2) * (30.0 / (float)addTime));
       pm->ps->delta_angles[YAW] -= ANGLE2SHORT(((random() * 8) - 4) * (30.0 / (float)addTime));
-  }
+ }
 }
 
   pm->ps->weaponTime += addTime;
@@ -3171,8 +3171,8 @@ static void PM_Animate(void) {
         pm->ps->tauntTimer = TIMER_GESTURE;
 
         PM_AddEvent(EV_TAUNT);
-    }
-  }
+   }
+ }
     else
     {
       if (pm->ps->torsoTimer == 0)
@@ -3182,8 +3182,8 @@ static void PM_Animate(void) {
         pm->ps->tauntTimer = TIMER_GESTURE;
 
         PM_AddEvent(EV_TAUNT);
-    }
-  }
+   }
+ }
 }
 }
 
@@ -3198,7 +3198,7 @@ static void PM_DropTimers(void) {
     if (pml.msec >= pm->ps->pm_time) {
       pm->ps->pm_flags &= ~PMF_ALL_TIMES;
       pm->ps->pm_time = 0;
-  }
+ }
     else
       pm->ps->pm_time -= pml.msec;
 }
@@ -3223,7 +3223,7 @@ static void PM_DropTimers(void) {
 
     if (pm->ps->tauntTimer < 0) {
       pm->ps->tauntTimer = 0;
-  }
+ }
 }
 }
 
@@ -3259,7 +3259,7 @@ void PM_UpdateViewAngles(playerState_t *ps, const usercmd_t *cmd) {
       assert(cmd->angles[i] == 0);
 #endif
 
-  }
+ }
     else
       temp[i] = cmd->angles[i] + ps->delta_angles[i];
 
@@ -3269,13 +3269,13 @@ void PM_UpdateViewAngles(playerState_t *ps, const usercmd_t *cmd) {
       {
         ps->delta_angles[i] = 16000 - cmd->angles[i];
         temp[i] = 16000;
-    }
+   }
       else if (temp[i] < -16000)
       {
         ps->delta_angles[i] = -16000 - cmd->angles[i];
         temp[i] = -16000;
-    }
-  }
+   }
+ }
     tempang[i] = SHORT2ANGLE(temp[i]);
 }
 
@@ -3327,7 +3327,7 @@ void PM_UpdateViewAngles(playerState_t *ps, const usercmd_t *cmd) {
         ps->delta_angles[i] += ANGLE2SHORT(fabs(diff) * 0.05f);
       else if (diff > 0.0f)
         ps->delta_angles[i] -= ANGLE2SHORT(fabs(diff) * 0.05f);
-  }
+ }
 }
 }
 
@@ -3556,12 +3556,12 @@ void Pmove(pmove_t *pmove) {
     if (pmove->pmove_fixed) {
       if (msec > pmove->pmove_msec)
         msec = pmove->pmove_msec;
-  }
+ }
     else
     {
       if (msec > 66)
         msec = 66;
-  }
+ }
 
     pmove->cmd.serverTime = pmove->ps->commandTime + msec;
     PmoveSingle(pmove);

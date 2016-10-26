@@ -393,9 +393,9 @@ void G_FindTeams(void) {
         {
           e->targetname = e2->targetname;
           e2->targetname = NULL;
-      }
-    }
-  }
+     }
+   }
+ }
 }
 
   G_Printf("%i teams with %i entities\n", c, c2);
@@ -445,8 +445,8 @@ void G_UpdateCvars(void) {
 
         if (!level.spawning && cv->explicit)
           strcpy(cv->explicit, cv->vmCvar->string);
-    }
-  }
+   }
+ }
 }
 }
 
@@ -537,7 +537,7 @@ void G_InitGame(int levelTime, int randomSeed, int restart) {
             qt.tm_year + 1900, qt.tm_mon + 1, qt.tm_mday, 
             qt.tm_hour, qt.tm_min, qt.tm_sec);
 
-  }
+ }
 }
   else
     G_Printf("Not logging to disk\n");
@@ -872,16 +872,16 @@ qboolean G_RemoveFromSpawnQueue(spawnQueue_t *sq, int clientNum) {
           sq->clients[i] = sq->clients[QUEUE_PLUS1(i)];
 
           i = QUEUE_PLUS1(i);
-      } while (i != QUEUE_PLUS1(sq->back));
+     } while (i != QUEUE_PLUS1(sq->back));
 
         sq->back = QUEUE_MINUS1(sq->back);
         g_entities[clientNum].client->ps.pm_flags &= ~PMF_QUEUED;
 
         return qtrue;
-    }
+   }
 
       i = QUEUE_PLUS1(i);
-  } while (i != QUEUE_PLUS1(sq->back));
+ } while (i != QUEUE_PLUS1(sq->back));
 }
 
   return qfalse;
@@ -906,10 +906,10 @@ int G_GetPosInSpawnQueue(spawnQueue_t *sq, int clientNum) {
           return i + MAX_CLIENTS - sq->front;
         else
           return i - sq->front;
-    }
+   }
 
       i = QUEUE_PLUS1(i);
-  } while (i != QUEUE_PLUS1(sq->back));
+ } while (i != QUEUE_PLUS1(sq->back));
 }
 
   return -1;
@@ -937,7 +937,7 @@ void G_PrintSpawnQueue(spawnQueue_t *sq) {
         G_Printf("%d:", sq->clients[i]);
 
       i = QUEUE_PLUS1(i);
-  } while (i != QUEUE_PLUS1(sq->back));
+ } while (i != QUEUE_PLUS1(sq->back));
 }
 
   G_Printf("\n");
@@ -983,7 +983,7 @@ void G_SpawnClients(team_t team) {
       ent->client->sess.spectatorState = SPECTATOR_NOT;
       ClientUserinfoChanged(clientNum, qfalse);
       ClientSpawn(ent, spawn, spawn_origin, spawn_angles);
-  }
+ }
 }
 }
 
@@ -1070,7 +1070,7 @@ void G_CalculateBuildPoints(void) {
     for (i = 0; i < level.maxclients; i++) {
       if (g_entities[i].client->ps.stats[STAT_BUILDABLE] != BA_NONE)
         g_entities[i].client->ps.stats[STAT_BUILDABLE] = BA_NONE;
-  }
+ }
 }
   else if (G_TimeTilSuddenDeath() <= SUDDENDEATHWARNING &&
     level.suddenDeathWarning < TW_IMMINENT) {
@@ -1108,7 +1108,7 @@ void G_CalculateBuildPoints(void) {
 
       zone = &level.buildPointZones[ent->buildPointZone];
       zone->active = qtrue;
-  }
+ }
 
    // Subtract the BP from the appropriate pool
     buildable = ent->s.modelindex;
@@ -1127,8 +1127,8 @@ void G_CalculateBuildPoints(void) {
           level.humanBuildPoints -= cost;
         else if (power->s.modelindex == BA_H_REPEATER && power->usesBuildPointZone)
           level.buildPointZones[power->buildPointZone].totalBuildPoints -= cost;
-    }
-  }
+   }
+ }
 }
 
  // Finally, update repeater zones and their queues
@@ -1158,13 +1158,13 @@ void G_CalculateBuildPoints(void) {
           zone->nextQueueTime += G_NextQueueTime(zone->queuedBuildPoints, 
                                      zone->totalBuildPoints, 
                                      g_humanRepeaterBuildQueueTime.integer);
-      }
-    }
+     }
+   }
       else
       {
         zone->totalBuildPoints = zone->queuedBuildPoints = 0;
-    }
-  }
+   }
+ }
 }
 
   if (level.humanBuildPoints < 0)
@@ -1356,15 +1356,15 @@ void CalculateRanks(void) {
           level.numAlienClients++;
           if (level.clients[i].sess.spectatorState == SPECTATOR_NOT)
             level.numLiveAlienClients++;
-      }
+     }
         else if (level.clients[i].pers.teamSelection == TEAM_HUMANS)
         {
           level.numHumanClients++;
           if (level.clients[i].sess.spectatorState == SPECTATOR_NOT)
             level.numLiveHumanClients++;
-      }
-    }
-  }
+     }
+   }
+ }
 }
   level.numNonSpectatorClients = level.numLiveAlienClients + 
     level.numLiveHumanClients;
@@ -1466,8 +1466,8 @@ void FindIntermissionPoint(void) {
       {
         VectorSubtract(target->s.origin, level.intermission_origin, dir);
         vectoangles(dir, level.intermission_angle);
-    }
-  }
+   }
+ }
 }
 }
 
@@ -1680,7 +1680,7 @@ void G_SendGameStat(team_t team) {
       case TEAM_HUMANS: teamChar = 'H'; break;
       case TEAM_NONE:   teamChar = 'S'; break;
       default: return;
-  }
+ }
 
     Com_sprintf(entry, MAX_STRING_CHARS, 
       " \"%s\" %c %d %d %d", 
@@ -1753,7 +1753,7 @@ void LogExit(const char *string) {
     if (!Q_stricmp(ent->classname, "trigger_win")) {
       if (level.lastWin == ent->stageTeam)
         ent->use(ent, ent, ent);
-  }
+ }
 }
 
   G_SendGameStat(level.lastWin);
@@ -1798,7 +1798,7 @@ void CheckIntermissionExit(void) {
       ready++;
 
       Com_ClientListAdd(&readyMasks, i);
-  }
+ }
     else
       notReady++;
 }
@@ -1879,7 +1879,7 @@ void CheckExitRules(void) {
     if (level.time - level.intermissionQueued >= INTERMISSION_DELAY_TIME) {
       level.intermissionQueued = 0;
       BeginIntermission();
-  }
+ }
 
     return;
 }
@@ -1891,17 +1891,17 @@ void CheckExitRules(void) {
       trap_SetConfigstring(CS_WINNER, "Stalemate");
       LogExit("Timelimit hit.");
       return;
-  }
+ }
     else if (level.time - level.startTime >= (g_timelimit.integer - 5) * 60000 &&
           level.timelimitWarning < TW_IMMINENT) {
       trap_SendServerCommand(-1, "cp \"5 minutes remaining!\"");
       level.timelimitWarning = TW_IMMINENT;
-  }
+ }
     else if (level.time - level.startTime >= (g_timelimit.integer - 1) * 60000 &&
           level.timelimitWarning < TW_PASSED) {
       trap_SendServerCommand(-1, "cp \"1 minute remaining!\"");
       level.timelimitWarning = TW_PASSED;
-  }
+ }
 }
 
   if (level.uncondHumanWin ||
@@ -2006,11 +2006,11 @@ void G_CheckVote(team_t team) {
     if ((float)level.voteYes[team]>
        (float)level.numVotingClients[team] * votePassThreshold) {
       pass = qtrue;
-  }
+ }
     else if ((float)level.voteNo[team] <= 
             (float)level.numVotingClients[team] * (1.0f - votePassThreshold)) {
       return;
-  }
+ }
 }
 
   if (pass)
@@ -2087,7 +2087,7 @@ void CheckCvars(void) {
     if (level.buildPointZones) {
       Com_Memcpy(newZones, level.buildPointZones, MIN(oldsize, newsize));
       BG_Free(level.buildPointZones);
-  }
+ }
 
     level.buildPointZones = newZones;
     lastNumZones = g_humanRepeaterMaxZones.integer;
@@ -2170,19 +2170,19 @@ void G_RunFrame(int levelTime) {
       if (level.pausedTime >= 110000 && level.pausedTime <= 119000)
         trap_SendServerCommand(-1, va("print \"Server: Game will auto - unpause in %d seconds\n\"", 
          (int)((float) (120000 - level.pausedTime) / 1000.0f)));
-  }
+ }
 
    // Prevents clients from getting lagged - out messages
     for (i = 0; i < level.maxclients; i++) {
       if (level.clients[i].pers.connected == CON_CONNECTED)
         level.clients[i].ps.commandTime = levelTime;
-  }
+ }
 
     if (level.pausedTime > 120000) {
       trap_SendServerCommand(-1, "print \"Server: The game has been unpaused automatically(2 minute max)\n\"");
       trap_SendServerCommand(-1, "cp \"The game has been unpaused!\"");
       level.pausedTime = 0;
-  }
+ }
 
     return;
 }
@@ -2217,22 +2217,22 @@ void G_RunFrame(int levelTime) {
           ent->client->ps.externalEvent = 0;
          // ent->client->ps.events[0] = 0;
          // ent->client->ps.events[1] = 0;
-      }
-    }
+     }
+   }
 
       if (ent->freeAfterEvent)
       {
        // tempEntities or dropped items completely go away after their event
         G_FreeEntity(ent);
         continue;
-    }
+   }
       else if (ent->unlinkAfterEvent)
       {
        // items that will respawn will hide themselves after their pickup event
         ent->unlinkAfterEvent = qfalse;
         trap_UnlinkEntity(ent);
-    }
-  }
+   }
+ }
 
    // temporary entities don't think
     if (ent->freeAfterEvent)
@@ -2248,27 +2248,27 @@ void G_RunFrame(int levelTime) {
     if (ent->s.eType == ET_MISSILE) {
       G_RunMissile(ent);
       continue;
-  }
+ }
 
     if (ent->s.eType == ET_BUILDABLE) {
       G_BuildableThink(ent, msec);
       continue;
-  }
+ }
 
     if (ent->s.eType == ET_CORPSE || ent->physicsObject) {
       G_Physics(ent, msec);
       continue;
-  }
+ }
 
     if (ent->s.eType == ET_MOVER) {
       G_RunMover(ent);
       continue;
-  }
+ }
 
     if (i < MAX_CLIENTS) {
       G_RunClient(ent);
       continue;
-  }
+ }
 
     G_RunThink(ent);
 }

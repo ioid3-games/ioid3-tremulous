@@ -50,7 +50,7 @@ void G_TeamCommand(team_t team, char *cmd) {
        (level.clients[i].pers.teamSelection == TEAM_NONE &&
           G_admin_permission(&g_entities[i], ADMF_SPEC_ALLCHAT)))
         trap_SendServerCommand(i, cmd);
-  }
+ }
 }
 }
 
@@ -158,7 +158,7 @@ void G_LeaveTeam(gentity_t *self) {
       if (ent->client->ps.stats[STAT_STATE] & SS_POISONED &&
           ent->client->lastPoisonClient == self)
         ent->client->ps.stats[STAT_STATE] &= ~SS_POISONED;
-  }
+ }
     else if (ent->s.eType == ET_MISSILE && ent->r.ownerNum == self->s.number)
       G_FreeEntity(ent);
 }
@@ -303,7 +303,7 @@ void TeamplayInfoMessage(gentity_t *ent) {
     if (cl->sess.spectatorState != SPECTATOR_NOT) {
       curWeaponClass = WP_NONE;
       upgrade = UP_NONE;
-  }
+ }
     else if (cl->pers.teamSelection == TEAM_HUMANS) {
       curWeaponClass = cl->ps.weapon;
 
@@ -319,11 +319,11 @@ void TeamplayInfoMessage(gentity_t *ent) {
         upgrade = UP_LIGHTARMOUR;
       else
         upgrade = UP_NONE;
-  }
+ }
     else if (cl->pers.teamSelection == TEAM_ALIENS) {
       curWeaponClass = cl->ps.stats[STAT_CLASS];
       upgrade = UP_NONE;
-  }
+ }
 
     Com_sprintf(entry, sizeof(entry), format, i, 
       cl->pers.location, 
@@ -371,15 +371,15 @@ void CheckTeamStatus(void) {
           {
             ent->client->pers.infoChangeTime = level.time;
             ent->client->pers.location = loc->s.generic1;
-        }
-      }
+       }
+     }
         else if (ent->client->pers.location != 0)
         {
           ent->client->pers.infoChangeTime = level.time;
           ent->client->pers.location = 0;
-      }
-    }
-  }
+     }
+   }
+ }
 
     for (i = 0; i < g_maxclients.integer; i++) {
       ent = g_entities + i;
@@ -388,7 +388,7 @@ void CheckTeamStatus(void) {
 
       if (ent->inuse)
         TeamplayInfoMessage(ent);
-  }
+ }
 }
 
  // Warn on imbalanced teams
@@ -402,16 +402,16 @@ void CheckTeamStatus(void) {
       trap_SendServerCommand(-1, "print \"Teams are imbalanced. "
                                   "Humans have more players.\n\"");
       level.numTeamImbalanceWarnings++;
-  }
+ }
     else if (level.numHumanSpawns > 0 && 
              level.numAlienClients - level.numHumanClients > 2) {
       trap_SendServerCommand(-1, "print \"Teams are imbalanced. "
                                    "Aliens have more players.\n\"");
       level.numTeamImbalanceWarnings++;
-  }
+ }
     else
     {
       level.numTeamImbalanceWarnings = 0;
-  }
+ }
 }
 }

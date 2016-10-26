@@ -143,7 +143,7 @@ void CG_ClientList_f(void) {
       case NUM_TEAMS:
         Com_Printf("%2d S   %s\n", i, ci->name);
         break;
-  }
+ }
 
     count++;
 }

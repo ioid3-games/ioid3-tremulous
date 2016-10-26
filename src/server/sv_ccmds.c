@@ -79,8 +79,9 @@ static void SV_Map_f(void) {
 	}
 	// This forces the local master server IP address cache
 	// to be updated on sending the next heartbeat
-	for (i = 0; i < MAX_MASTER_SERVERS; i++)
+	for (i = 0; i < MAX_MASTER_SERVERS; i++) {
 		sv_master[i]->modified = qtrue;
+	}
 }
 
 /*
@@ -95,6 +96,7 @@ static void SV_MapRestart_f(void) {
 	client_t *client;
 	char *denied;
 	int delay;
+
 	// make sure we aren't restarting twice in the same frame
 	if (com_frameTime == sv.serverId) {
 		return;
@@ -180,9 +182,9 @@ static void SV_MapRestart_f(void) {
 			continue;
 		}
 
-		if (client->state == CS_ACTIVE)
+		if (client->state == CS_ACTIVE) {
 			SV_ClientEnterWorld(client, &client->lastUsercmd);
-		else {
+		} else {
 			// If we don't reset client->lastUsercmd and are restarting during map load, the client will hang because we'll use the
 			// last Usercmd from the previous map, which is wrong obviously.
 			SV_ClientEnterWorld(client, NULL);
@@ -213,6 +215,7 @@ Examine the serverinfo string.
 =======================================================================================================================================
 */
 static void SV_Serverinfo_f(void) {
+
 	// make sure server is running
 	if (!com_sv_running->integer) {
 		Com_Printf("Server is not running.\n");
@@ -231,6 +234,7 @@ Examine the systeminfo string.
 =======================================================================================================================================
 */
 static void SV_Systeminfo_f(void) {
+
 	// make sure server is running
 	if (!com_sv_running->integer) {
 		Com_Printf("Server is not running.\n");
@@ -303,4 +307,3 @@ void SV_RemoveOperatorCommands(void) {
 	Cmd_RemoveCommand("sectorlist");
 #endif
 }
-

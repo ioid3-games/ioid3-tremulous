@@ -722,7 +722,7 @@ static qboolean BG_ParseBuildableFile(const char *filename, buildableConfig_t *b
 
       defined |= MODEL;
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "modelScale")) {
       token = COM_Parse(&text_p);
       if (!token)
@@ -737,7 +737,7 @@ static qboolean BG_ParseBuildableFile(const char *filename, buildableConfig_t *b
 
       defined |= MODELSCALE;
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "mins")) {
       for (i = 0; i <= 2; i++)
       {
@@ -746,11 +746,11 @@ static qboolean BG_ParseBuildableFile(const char *filename, buildableConfig_t *b
           break;
 
         bc->mins[i] = atof(token);
-    }
+   }
 
       defined |= MINS;
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "maxs")) {
       for (i = 0; i <= 2; i++)
       {
@@ -759,11 +759,11 @@ static qboolean BG_ParseBuildableFile(const char *filename, buildableConfig_t *b
           break;
 
         bc->maxs[i] = atof(token);
-    }
+   }
 
       defined |= MAXS;
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "zOffset")) {
       float offset;
 
@@ -777,7 +777,7 @@ static qboolean BG_ParseBuildableFile(const char *filename, buildableConfig_t *b
 
       defined |= ZOFFSET;
       continue;
-  }
+ }
 
 
     Com_Printf(S_COLOR_RED "ERROR: unknown token '%s'\n", token);
@@ -1307,7 +1307,7 @@ int BG_ClassCanEvolveFromTo(class_t fclass,
 
       if (value >= 0 && value < best)
         best = value;
-  }
+ }
 
     return best <= credits ? best : - 1;
 }
@@ -1334,7 +1334,7 @@ qboolean BG_AlienCanEvolve(class_t class, int credits, int stage) {
           BG_ClassIsAllowed(tclass) &&
           credits >= BG_Class(tclass)->cost * ALIEN_CREDITS_PER_KILL)
         return qtrue;
-  }
+ }
 
     return qfalse;
 }
@@ -1416,7 +1416,7 @@ static qboolean BG_ParseClassFile(const char *filename, classConfig_t *cc) {
 
       defined |= MODEL;
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "skin")) {
       token = COM_Parse(&text_p);
       if (!token)
@@ -1426,7 +1426,7 @@ static qboolean BG_ParseClassFile(const char *filename, classConfig_t *cc) {
 
       defined |= SKIN;
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "hud")) {
       token = COM_Parse(&text_p);
       if (!token)
@@ -1436,7 +1436,7 @@ static qboolean BG_ParseClassFile(const char *filename, classConfig_t *cc) {
 
       defined |= HUD;
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "modelScale")) {
       token = COM_Parse(&text_p);
       if (!token)
@@ -1451,7 +1451,7 @@ static qboolean BG_ParseClassFile(const char *filename, classConfig_t *cc) {
 
       defined |= MODELSCALE;
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "shadowScale")) {
       token = COM_Parse(&text_p);
       if (!token)
@@ -1466,7 +1466,7 @@ static qboolean BG_ParseClassFile(const char *filename, classConfig_t *cc) {
 
       defined |= SHADOWSCALE;
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "mins")) {
       for (i = 0; i <= 2; i++)
       {
@@ -1475,11 +1475,11 @@ static qboolean BG_ParseClassFile(const char *filename, classConfig_t *cc) {
           break;
 
         cc->mins[i] = atof(token);
-    }
+   }
 
       defined |= MINS;
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "maxs")) {
       for (i = 0; i <= 2; i++)
       {
@@ -1488,11 +1488,11 @@ static qboolean BG_ParseClassFile(const char *filename, classConfig_t *cc) {
           break;
 
         cc->maxs[i] = atof(token);
-    }
+   }
 
       defined |= MAXS;
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "deadMins")) {
       for (i = 0; i <= 2; i++)
       {
@@ -1501,11 +1501,11 @@ static qboolean BG_ParseClassFile(const char *filename, classConfig_t *cc) {
           break;
 
         cc->deadMins[i] = atof(token);
-    }
+   }
 
       defined |= DEADMINS;
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "deadMaxs")) {
       for (i = 0; i <= 2; i++)
       {
@@ -1514,11 +1514,11 @@ static qboolean BG_ParseClassFile(const char *filename, classConfig_t *cc) {
           break;
 
         cc->deadMaxs[i] = atof(token);
-    }
+   }
 
       defined |= DEADMAXS;
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "crouchMaxs")) {
       for (i = 0; i <= 2; i++)
       {
@@ -1527,23 +1527,23 @@ static qboolean BG_ParseClassFile(const char *filename, classConfig_t *cc) {
           break;
 
         cc->crouchMaxs[i] = atof(token);
-    }
+   }
 
       defined |= CROUCHMAXS;
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "viewheight")) {
       token = COM_Parse(&text_p);
       cc->viewheight = atoi(token);
       defined |= VIEWHEIGHT;
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "crouchViewheight")) {
       token = COM_Parse(&text_p);
       cc->crouchViewheight = atoi(token);
       defined |= CVIEWHEIGHT;
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "zOffset")) {
       float offset;
 
@@ -1557,7 +1557,7 @@ static qboolean BG_ParseClassFile(const char *filename, classConfig_t *cc) {
 
       defined |= ZOFFSET;
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "name")) {
       token = COM_Parse(&text_p);
       if (!token)
@@ -1567,7 +1567,7 @@ static qboolean BG_ParseClassFile(const char *filename, classConfig_t *cc) {
 
       defined |= NAME;
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "shoulderOffsets")) {
       for (i = 0; i <= 2; i++)
       {
@@ -1576,11 +1576,11 @@ static qboolean BG_ParseClassFile(const char *filename, classConfig_t *cc) {
           break;
 
         cc->shoulderOffsets[i] = atof(token);
-    }
+   }
 
       defined |= SHOULDEROFFSETS;
       continue;
-  }
+ }
 
     Com_Printf(S_COLOR_RED "ERROR: unknown token '%s'\n", token);
     return qfalse;
@@ -2314,7 +2314,7 @@ const weaponAttributes_t *BG_WeaponByName(const char *name) {
   for (i = 0; i < bg_numWeapons; i++) {
     if (!Q_stricmp(bg_weapons[i].name, name)) {
       return &bg_weapons[i];
-  }
+ }
 }
 
   return &nullWeapon;
@@ -2473,7 +2473,7 @@ const upgradeAttributes_t *BG_UpgradeByName(const char *name) {
   for (i = 0; i < bg_numUpgrades; i++) {
     if (!Q_stricmp(bg_upgrades[i].name, name)) {
       return &bg_upgrades[i];
-  }
+ }
 }
 
   return &nullUpgrade;
@@ -2590,7 +2590,7 @@ void BG_EvaluateTrajectoryDelta(const trajectory_t *tr, int atTime, vec3_t resul
       {
         VectorClear(result);
         return;
-    }
+   }
       VectorCopy(tr->trDelta, result);
       break;
 
@@ -2749,7 +2749,7 @@ void BG_AddPredictableEventToPlayerstate(int newEvent, int eventParm, playerStat
                   ps->pmove_framecount/*ps->commandTime*/, ps->eventSequence, 
                   BG_EventName(newEvent), eventParm);
 #endif
-  }
+ }
 }
 #endif
   ps->events[ps->eventSequence & (MAX_PS_EVENTS - 1)] = newEvent;
@@ -2837,7 +2837,7 @@ void BG_PlayerStateToEntityState(playerState_t *ps, entityState_t *s, qboolean s
 
       if (BG_UpgradeIsActive(i, ps->stats))
         s->modelindex2 |= 1 << i;
-  }
+ }
 }
 
  // use misc field to store team / class info:
@@ -2940,7 +2940,7 @@ void BG_PlayerStateToEntityStateExtraPolate(playerState_t *ps, entityState_t *s,
 
       if (BG_UpgradeIsActive(i, ps->stats))
         s->modelindex2 |= 1 << i;
-  }
+ }
 }
 
  // use misc field to store team / class info:
@@ -3015,10 +3015,10 @@ int BG_SlotsForInventory(int stats[]) {
       {
         Com_Printf(S_COLOR_YELLOW "WARNING: held item %d conflicts with "
                     "inventory slot %d\n", i, slot);
-    }
+   }
 
       slots |= slot;
-  }
+ }
 }
 
   return slots;
@@ -3227,7 +3227,7 @@ int BG_GetValueOfPlayer(playerState_t *ps) {
     for (i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++) {
       if (BG_InventoryContainsUpgrade(i, ps->stats))
         worth += BG_Upgrade(i)->price;
-  }
+ }
 
     if (ps->stats[STAT_WEAPON] != WP_NONE)
       worth += BG_Weapon(ps->stats[STAT_WEAPON])->price;
@@ -3350,7 +3350,7 @@ void BG_PackEntityNumbers(entityState_t *es, const int *entityNums, int count) {
     if (entityNum & ~GENTITYNUM_MASK) {
       Com_Error(ERR_FATAL, "BG_PackEntityNumbers passed an entity number(%d) which "
         "exceeds %d bits", entityNum, GENTITYNUM_BITS);
-  }
+ }
 
     switch (i) {
       case 0: es->misc |= entityNum;                                       break;
@@ -3364,7 +3364,7 @@ void BG_PackEntityNumbers(entityState_t *es, const int *entityNums, int count) {
       case 8: es->constantLight |= entityNum << GENTITYNUM_BITS;           break;
       case 9: es->constantLight |= entityNum << (GENTITYNUM_BITS * 2);     break;
       default: Com_Error(ERR_FATAL, "Entity index %d not handled", i);   break;
-  }
+ }
 }
 }
 
@@ -3396,7 +3396,7 @@ int BG_UnpackEntityNumbers(entityState_t *es, int *entityNums, int count) {
       case 8: *entityNum = (es->constantLight >> GENTITYNUM_BITS);        break;
       case 9: *entityNum = (es->constantLight >> (GENTITYNUM_BITS * 2));  break;
       default: Com_Error(ERR_FATAL, "Entity index %d not handled", i);  break;
-  }
+ }
 
     *entityNum &= GENTITYNUM_MASK;
 
@@ -3454,7 +3454,7 @@ void BG_ParseCSVEquipmentList(const char *string, weapon_t *weapons, int weapons
     if (!EOS) {
       p++;
       q = p;
-  }
+ }
     else
       break;
 
@@ -3508,7 +3508,7 @@ void BG_ParseCSVClassList(const char *string, class_t *classes, int classesSize)
     if (!EOS) {
       p++;
       q = p;
-  }
+ }
     else
       break;
 }
@@ -3555,7 +3555,7 @@ void BG_ParseCSVBuildableList(const char *string, buildable_t *buildables, int b
     if (!EOS) {
       p++;
       q = p;
-  }
+ }
     else
       break;
 }
@@ -3696,16 +3696,16 @@ int BG_LoadEmoticons(emoticon_t *emoticons, int num) {
       Com_Printf(S_COLOR_YELLOW "skipping invalidly named emoticon \"%s\"\n", 
         filePtr);
       continue;
-  }
+ }
     if (fileLen - 8 > MAX_EMOTICON_NAME_LEN) {
       Com_Printf(S_COLOR_YELLOW "emoticon file name \"%s\" too long(> %d)\n", 
         filePtr, MAX_EMOTICON_NAME_LEN + 8);
       continue;
-  }
+ }
     if (!trap_FS_FOpenFile(va("emoticons/%s", filePtr), NULL, FS_READ)) {
       Com_Printf(S_COLOR_YELLOW "could not open \"emoticons/%s\"\n", filePtr);
       continue;
-  }
+ }
 
     Q_strncpyz(emoticons[count].name, filePtr, fileLen - 8 + 1);
 #ifndef GAME

@@ -32,12 +32,12 @@ void G_SanitiseString(char *in, char *out, int len) {
     if (Q_IsColorString(in)) {
       in += 2;   // skip color code
       continue;
-  }
+ }
 
     if (isalnum(*in)) {
         *out++ = tolower(*in);
         len--;
-  }
+ }
     in++;
 }
   *out = 0;
@@ -82,7 +82,7 @@ int G_ClientNumberFromString(char *s, char *err, int len) {
         Q_strncpyz(p, "no player connected in that slot #\n", len);
 
       return -1;
-  }
+ }
 
     return i;
 }
@@ -119,11 +119,11 @@ int G_ClientNumberFromString(char *s, char *err, int len) {
         l = Q_snprintf(p, l2, "% - 2d - %s ^ 7\n", i, cl->pers.netname);
         p += l;
         l2 -= l;
-    }
+   }
 
       found++;
       m = i;
-  }
+ }
 }
 
   if (found == 1)
@@ -167,8 +167,8 @@ int G_ClientNumbersFromString(char *s, int *plist, int max) {
       {
         *plist = i;
         return 1;
-    }
-  }
+   }
+ }
    // we must assume that if only a number is provided, it is a clientNum
     return 0;
 }
@@ -181,12 +181,12 @@ int G_ClientNumbersFromString(char *s, int *plist, int max) {
     p = &level.clients[i];
     if (p->pers.connected == CON_DISCONNECTED) {
       continue;
-  }
+ }
     G_SanitiseString(p->pers.netname, n2, sizeof(n2));
     if (strstr(n2, s2)) {
       *plist++ = i;
       found++;
-  }
+ }
 }
   return found;
 }
@@ -239,12 +239,12 @@ void ScoreboardMessage(gentity_t *ent) {
         upgrade = UP_LIGHTARMOUR;
       else
         upgrade = UP_NONE;
-  }
+ }
     else
     {
       weapon = WP_NONE;
       upgrade = UP_NONE;
-  }
+ }
 
     Com_sprintf(entry, sizeof(entry), 
       " %d %d %d %d %d %d", level.sortedClients[i], cl->ps.persistant[PERS_SCORE], 
@@ -293,7 +293,7 @@ char *ConcatArgs(int start) {
     if (i != c - 1) {
       line[len] = ' ';
       len++;
-  }
+ }
 }
 
   line[len] = 0;
@@ -337,7 +337,7 @@ char *ConcatArgsPrintable(int start) {
     if (i != c - 1) {
       line[len] = ' ';
       len++;
-  }
+ }
 }
 
   line[len] = 0;
@@ -388,7 +388,7 @@ void Cmd_Give_f(gentity_t *ent) {
         credits = 30000.0f;
       else if (credits < SHRT_MIN)
         credits = -30000.0f;
-  }
+ }
 
     G_AddCreditToClient(ent->client, (short)credits, qtrue);
 }
@@ -401,12 +401,12 @@ void Cmd_Give_f(gentity_t *ent) {
       ent->client->ps.stats[STAT_STATE] |= SS_POISONED;
       ent->client->lastPoisonTime = level.time;
       ent->client->lastPoisonClient = ent;
-  }
+ }
     else
     {
       ent->client->ps.stats[STAT_STATE] |= SS_BOOSTED;
       ent->client->boostedTime = level.time;
-  }
+ }
 }
 
   if (Q_stricmp(name, "gas") == 0) {
@@ -525,11 +525,11 @@ void Cmd_Kill_f(gentity_t *ent) {
     if (ent->suicideTime == 0) {
       trap_SendServerCommand(ent - g_entities, "print \"You will suicide in 20 seconds\n\"");
       ent->suicideTime = level.time + 20000;
-  }
+ }
     else if (ent->suicideTime > level.time) {
       trap_SendServerCommand(ent - g_entities, "print \"Suicide cancelled\n\"");
       ent->suicideTime = 0;
-  }
+ }
 }
 }
 
@@ -595,7 +595,7 @@ void Cmd_Team_f(gentity_t *ent) {
       {
         G_TriggerMenu(ent - g_entities, MN_A_TEAMLOCKED);
         return;
-    }
+   }
       else if (level.humanTeamLocked)
         force = qtrue;
 
@@ -603,7 +603,7 @@ void Cmd_Team_f(gentity_t *ent) {
       {
         G_TriggerMenu(ent - g_entities, MN_A_TEAMFULL);
         return;
-    }
+   }
 
       team = TEAM_ALIENS;
       break;
@@ -613,7 +613,7 @@ void Cmd_Team_f(gentity_t *ent) {
       {
         G_TriggerMenu(ent - g_entities, MN_H_TEAMLOCKED);
         return;
-    }
+   }
       else if (level.alienTeamLocked)
         force = qtrue;
 
@@ -621,7 +621,7 @@ void Cmd_Team_f(gentity_t *ent) {
       {
         G_TriggerMenu(ent - g_entities, MN_H_TEAMFULL);
         return;
-    }
+   }
 
       team = TEAM_HUMANS;
       break;
@@ -720,14 +720,14 @@ void G_CensorString(char *out, const char *in, int len, gentity_t *ent) {
       *out++ = *in++;
       len -= 2;
       continue;
-  }
+ }
     if (!isalnum(*in)) {
       if (len < 1)
         break;
       *out++ = *in++;
       len--;
       continue;
-  }
+ }
     m = censors;
     for (i = 0; i < numcensors; i++, m++) {
       s = in;
@@ -737,17 +737,17 @@ void G_CensorString(char *out, const char *in, int len, gentity_t *ent) {
         {
           s += 2;
           continue;
-      }
+     }
         if (!isalnum(*s))
         {
           s++;
           continue;
-      }
+     }
         if (tolower(*s) != *m)
           break;
         s++;
         m++;
-    }
+   }
      // match
       if (!*m)
       {
@@ -759,9 +759,9 @@ void G_CensorString(char *out, const char *in, int len, gentity_t *ent) {
             break;
           *out++ = *m++;
           len--;
-      }
+     }
         break;
-    }
+   }
       else
       {
         while (*m)
@@ -769,15 +769,15 @@ void G_CensorString(char *out, const char *in, int len, gentity_t *ent) {
         m++;
         while (*m)
           m++;
-    }
-  }
+   }
+ }
     if (len < 1)
       break;
    // no match
     if (i == numcensors) {
       *out++ = *in++;
       len--;
-  }
+ }
 }
   *out = 0;
 }
@@ -900,7 +900,7 @@ static void Cmd_SayArea_f(gentity_t *ent) {
     if (g_entities[i].client->pers.teamSelection == TEAM_NONE &&
         G_admin_permission(&g_entities[i], ADMF_SPEC_ALLCHAT)) {
       G_SayTo(ent, &g_entities[i], SAY_AREA, msg);
-  }
+ }
 }
 }
 
@@ -1118,7 +1118,7 @@ void Cmd_CallVote_f(gentity_t *ent) {
       trap_SendServerCommand(ent - g_entities, 
         va("print \"%s: no target\n\"", cmd));
       return;
-  }
+ }
 
    // with a little extra work only players from the right team are considered
     clientNum = G_ClientNumberFromString(arg, err, sizeof(err));
@@ -1126,7 +1126,7 @@ void Cmd_CallVote_f(gentity_t *ent) {
     if (clientNum == -1) {
       ADMP(va("%s: %s", cmd, err));
       return;
-  }
+ }
 
     G_DecolorString(level.clients[clientNum].pers.netname, name, sizeof(name));
     id = level.clients[clientNum].pers.namelog->id;
@@ -1145,7 +1145,7 @@ void Cmd_CallVote_f(gentity_t *ent) {
                                 g_entities[clientNum].client->pers.netname, 
                                 reason[0] ? reason : "no reason"));
         return;
-    }
+   }
 
       if (team != TEAM_NONE &&
          (ent->client->pers.teamSelection != 
@@ -1154,15 +1154,15 @@ void Cmd_CallVote_f(gentity_t *ent) {
         trap_SendServerCommand(ent - g_entities, 
           va("print \"%s: player is not on your team\n\"", cmd));
         return;
-    }
+   }
 
       if (!reason[0] && !G_admin_permission(ent, ADMF_UNACCOUNTABLE))
       {
         trap_SendServerCommand(ent - g_entities, 
           va("print \"%s: You must provide a reason\n\"", cmd));
         return;
-    }
-  }
+   }
+ }
 }
 
   if (!Q_stricmp(vote, "kick")) {
@@ -1170,7 +1170,7 @@ void Cmd_CallVote_f(gentity_t *ent) {
       trap_SendServerCommand(ent - g_entities, 
         va("print \"%s: admin is immune\n\"", cmd));
       return;
-  }
+ }
 
     Com_sprintf(level.voteString[team], sizeof(level.voteString[team]), 
       "ban %s \"1s%s\" vote kick(%s)", level.clients[clientNum].pers.ip.str, 
@@ -1180,7 +1180,7 @@ void Cmd_CallVote_f(gentity_t *ent) {
     if (reason[0]) {
       Q_strcat(level.voteDisplayString[team], 
         sizeof(level.voteDisplayString[team]), va(" for '%s'", reason));
-  }
+ }
 }
   else if (team == TEAM_NONE) {
     if (!Q_stricmp(vote, "mute")) {
@@ -1189,7 +1189,7 @@ void Cmd_CallVote_f(gentity_t *ent) {
         trap_SendServerCommand(ent - g_entities, 
           va("print \"%s: player is already muted\n\"", cmd));
         return;
-    }
+   }
 
       Com_sprintf(level.voteString[team], sizeof(level.voteString[team]), 
         "mute %d", id);
@@ -1200,27 +1200,27 @@ void Cmd_CallVote_f(gentity_t *ent) {
       {
         Q_strcat(level.voteDisplayString[team], 
           sizeof(level.voteDisplayString[team]), va(" for '%s'", reason));
-    }
-  }
+   }
+ }
     else if (!Q_stricmp(vote, "unmute")) {
       if (!level.clients[clientNum].pers.namelog->muted)
       {
         trap_SendServerCommand(ent - g_entities, 
           va("print \"%s: player is not currently muted\n\"", cmd));
         return;
-    }
+   }
 
       Com_sprintf(level.voteString[team], sizeof(level.voteString[team]), 
         "unmute %d", id);
       Com_sprintf(level.voteDisplayString[team], 
         sizeof(level.voteDisplayString[team]), 
         "Unmute player '%s'", name);
-  }
+ }
     else if (!Q_stricmp(vote, "map_restart")) {
       strcpy(level.voteString[team], vote);
       strcpy(level.voteDisplayString[team], "Restart current map");
      // map_restart comes with a default delay
-  }
+ }
     else if (!Q_stricmp(vote, "map")) {
       if (!G_MapExists(arg))
       {
@@ -1228,7 +1228,7 @@ void Cmd_CallVote_f(gentity_t *ent) {
           va("print \"%s: 'maps/%s.bsp' could not be found on the server\n\"", 
             cmd, arg));
         return;
-    }
+   }
 
       Com_sprintf(level.voteString[team], sizeof(level.voteString), 
         "%s \"%s\"", vote, arg);
@@ -1236,7 +1236,7 @@ void Cmd_CallVote_f(gentity_t *ent) {
         sizeof(level.voteDisplayString[team]), 
         "Change to map '%s'", arg);
       level.voteDelay[team] = 3000;
-  }
+ }
     else if (!Q_stricmp(vote, "nextmap")) {
       if (G_MapExists(g_nextMap.string))
       {
@@ -1244,7 +1244,7 @@ void Cmd_CallVote_f(gentity_t *ent) {
           va("print \"%s: the next map is already set to '%s'\n\"", 
             cmd, g_nextMap.string));
         return;
-    }
+   }
 
       if (!G_MapExists(arg))
       {
@@ -1252,39 +1252,39 @@ void Cmd_CallVote_f(gentity_t *ent) {
           va("print \"%s: 'maps/%s.bsp' could not be found on the server\n\"", 
             cmd, arg));
         return;
-    }
+   }
 
       Com_sprintf(level.voteString[team], sizeof(level.voteString[team]), 
         "set g_nextMap \"%s\"", arg);
       Com_sprintf(level.voteDisplayString[team], 
         sizeof(level.voteDisplayString[team]), 
         "Set the next map to '%s'", arg);
-  }
+ }
     else if (!Q_stricmp(vote, "draw")) {
       strcpy(level.voteString[team], "evacuation");
       strcpy(level.voteDisplayString[team], "End match in a draw");
       level.voteDelay[team] = 3000;
-  }
+ }
     else if (!Q_stricmp(vote, "sudden_death")) {
       if (!g_suddenDeathVotePercent.integer)
       {
         trap_SendServerCommand(ent - g_entities, 
               "print \"Sudden Death votes have been disabled\n\"");
         return;
-    }
+   }
       if (G_TimeTilSuddenDeath() <= 0)
       {
         trap_SendServerCommand(ent - g_entities, 
               va("print \"callvote: Sudden Death has already begun\n\""));
         return;
-    }
+   }
       if (level.suddenDeathBeginTime > 0 &&
           G_TimeTilSuddenDeath() <= g_suddenDeathVoteDelay.integer * 1000)
       {
         trap_SendServerCommand(ent - g_entities, 
               va("print \"callvote: Sudden Death is imminent\n\""));
         return;
-    }
+   }
       level.voteThreshold[team] = g_suddenDeathVotePercent.integer;
       Com_sprintf(level.voteString[team], sizeof(level.voteString[team]), 
         "suddendeath %d", g_suddenDeathVoteDelay.integer);
@@ -1292,21 +1292,21 @@ void Cmd_CallVote_f(gentity_t *ent) {
                    sizeof(level.voteDisplayString[team]), 
                    "Begin sudden death in %d seconds", 
                    g_suddenDeathVoteDelay.integer);
-  }
+ }
     else
     {
       trap_SendServerCommand(ent - g_entities, "print \"Invalid vote string\n\"");
       trap_SendServerCommand(ent - g_entities, "print \"Valid vote commands are: "
         "map, nextmap, map_restart, draw, sudden_death, kick, mute and unmute\n");
       return;
-  }
+ }
 }
   else if (!Q_stricmp(vote, "denybuild")) {
     if (level.clients[clientNum].pers.namelog->denyBuild) {
       trap_SendServerCommand(ent - g_entities, 
         va("print \"%s: player already lost building rights\n\"", cmd));
       return;
-  }
+ }
 
     Com_sprintf(level.voteString[team], sizeof(level.voteString[team]), 
       "denybuild %d", id);
@@ -1316,14 +1316,14 @@ void Cmd_CallVote_f(gentity_t *ent) {
     if (reason[0]) {
       Q_strcat(level.voteDisplayString[team], 
         sizeof(level.voteDisplayString[team]), va(" for '%s'", reason));
-  }
+ }
 }
   else if (!Q_stricmp(vote, "allowbuild")) {
     if (!level.clients[clientNum].pers.namelog->denyBuild) {
       trap_SendServerCommand(ent - g_entities, 
         va("print \"%s: player already has building rights\n\"", cmd));
       return;
-  }
+ }
 
     Com_sprintf(level.voteString[team], sizeof(level.voteString[team]), 
       "allowbuild %d", id);
@@ -1365,16 +1365,16 @@ void Cmd_CallVote_f(gentity_t *ent) {
           trap_SendServerCommand(i, va("print \"%s" S_COLOR_WHITE
             " called a team vote: %s\n\"", ent->client->pers.netname, 
             level.voteDisplayString[team]));
-      }
+     }
         else if (G_admin_permission(&g_entities[i], ADMF_ADMINCHAT))
         {
           trap_SendServerCommand(i, va("chat - 1 %d \"" S_COLOR_YELLOW "%s" 
             S_COLOR_YELLOW " called a team vote(%ss): %s\"", SAY_ADMINS, 
             ent->client->pers.netname, BG_TeamName(team), 
             level.voteDisplayString[team]));
-      }
-    }
-  }
+     }
+   }
+ }
 }
 
   G_DecolorString(ent->client->pers.netname, caller, sizeof(caller));
@@ -1545,51 +1545,51 @@ void Cmd_Class_f(gentity_t *ent) {
       {
         G_TriggerMenuArgs(ent->client->ps.clientNum, MN_A_CLASSNOTSPAWN, newClass);
         return;
-    }
+   }
 
       if (!BG_ClassIsAllowed(newClass))
       {
         G_TriggerMenuArgs(ent->client->ps.clientNum, MN_A_CLASSNOTALLOWED, newClass);
         return;
-    }
+   }
 
       if (!BG_ClassAllowedInStage(newClass, g_alienStage.integer))
       {
         G_TriggerMenuArgs(ent->client->ps.clientNum, MN_A_CLASSNOTATSTAGE, newClass);
         return;
-    }
+   }
 
      // spawn from an egg
       if (G_PushSpawnQueue(&level.alienSpawnQueue, clientNum))
       {
         ent->client->pers.classSelection = newClass;
         ent->client->ps.stats[STAT_CLASS] = newClass;
-    }
-  }
+   }
+ }
     else if (ent->client->pers.teamSelection == TEAM_HUMANS) {
      // set the item to spawn with
       if (!Q_stricmp(s, BG_Weapon(WP_MACHINEGUN)->name) &&
           BG_WeaponIsAllowed(WP_MACHINEGUN))
       {
         ent->client->pers.humanItemSelection = WP_MACHINEGUN;
-    }
+   }
       else if (!Q_stricmp(s, BG_Weapon(WP_HBUILD)->name) &&
                BG_WeaponIsAllowed(WP_HBUILD))
       {
         ent->client->pers.humanItemSelection = WP_HBUILD;
-    }
+   }
       else
       {
         G_TriggerMenu(ent->client->ps.clientNum, MN_H_UNKNOWNSPAWNITEM);
         return;
-    }
+   }
      // spawn from a telenode
       if (G_PushSpawnQueue(&level.humanSpawnQueue, clientNum))
       {
         ent->client->pers.classSelection = PCL_HUMAN;
         ent->client->ps.stats[STAT_CLASS] = PCL_HUMAN;
-    }
-  }
+   }
+ }
     return;
 }
 
@@ -1600,7 +1600,7 @@ void Cmd_Class_f(gentity_t *ent) {
     if (newClass == PCL_NONE) {
       G_TriggerMenu(ent->client->ps.clientNum, MN_A_UNKNOWNCLASS);
       return;
-  }
+ }
 
    // if we are not currently spectating, we are attempting evolution
     if (ent->client->pers.classSelection != PCL_NONE) {
@@ -1611,7 +1611,7 @@ void Cmd_Class_f(gentity_t *ent) {
       {
         G_TriggerMenu(clientNum, MN_A_NOOVMND_EVOLVE);
         return;
-    }
+   }
 
      // check there are no humans nearby
       VectorAdd(ent->client->ps.origin, range, maxs);
@@ -1628,15 +1628,15 @@ void Cmd_Class_f(gentity_t *ent) {
         {
           G_TriggerMenu(clientNum, MN_A_TOOCLOSE);
           return;
-      }
-    }
+     }
+   }
 
      // check that we are not wallwalking
       if (ent->client->ps.eFlags & EF_WALLCLIMB)
       {
         G_TriggerMenu(clientNum, MN_A_EVOLVEWALLWALK);
         return;
-    }
+   }
 
      // guard against selling the HBUILD weapons exploit
       if (ent->client->sess.spectatorState == SPECTATOR_NOT &&
@@ -1646,7 +1646,7 @@ void Cmd_Class_f(gentity_t *ent) {
       {
         G_TriggerMenu(ent->client->ps.clientNum, MN_A_EVOLVEBUILDTIMER);
         return;
-    }
+   }
 
       cost = BG_ClassCanEvolveFromTo(currentClass, newClass, 
                                       ent->client->pers.credit, 
@@ -1682,14 +1682,14 @@ void Cmd_Class_f(gentity_t *ent) {
           {
             ent->client->boostedTime = oldBoostTime;
             ent->client->ps.stats[STAT_STATE] |= SS_BOOSTED;
-        }
-      }
+       }
+     }
         else
           G_TriggerMenuArgs(clientNum, MN_A_CANTEVOLVE, newClass);
-    }
+   }
       else
         G_TriggerMenu(clientNum, MN_A_NOEROOM);
-  }
+ }
 }
   else if (ent->client->pers.teamSelection == TEAM_HUMANS)
     G_TriggerMenu(clientNum, MN_H_DEADTOCLASS);
@@ -1734,37 +1734,37 @@ void Cmd_Destroy_f(gentity_t *ent) {
       G_RewardAttackers(traceEnt);
       G_FreeEntity(traceEnt);
       return;
-  }
+ }
 
    // Cancel deconstruction(unmark)
     if (deconstruct && g_markDeconstruct.integer && traceEnt->deconstruct) {
       traceEnt->deconstruct = qfalse;
       return;
-  }
+ }
 
    // Prevent destruction of the last spawn
     if (ent->client->pers.teamSelection == TEAM_ALIENS &&
         traceEnt->s.modelindex == BA_A_SPAWN) {
       if (level.numAlienSpawns <= 1)
         lastSpawn = qtrue;
-  }
+ }
     else if (ent->client->pers.teamSelection == TEAM_HUMANS &&
              traceEnt->s.modelindex == BA_H_SPAWN) {
       if (level.numHumanSpawns <= 1)
         lastSpawn = qtrue;
-  }
+ }
 
     if (lastSpawn && !g_cheats.integer &&
         !g_markDeconstruct.integer) {
       G_TriggerMenu(ent->client->ps.clientNum, MN_B_LASTSPAWN);
       return;
-  }
+ }
 
    // Don't allow destruction of buildables that cannot be rebuilt
     if (G_TimeTilSuddenDeath() <= 0) {
       G_TriggerMenu(ent->client->ps.clientNum, MN_B_SUDDENDEATH);
       return;
-  }
+ }
 
     if (!g_markDeconstruct.integer ||
        (ent->client->pers.teamSelection == TEAM_HUMANS && !G_FindPower(traceEnt, qtrue))) {
@@ -1772,34 +1772,34 @@ void Cmd_Destroy_f(gentity_t *ent) {
       {
         G_AddEvent(ent, EV_BUILD_DELAY, ent->client->ps.clientNum);
         return;
-    }
-  }
+   }
+ }
 
     if (traceEnt->health > 0) {
       if (!deconstruct)
       {
         G_Damage(traceEnt, ent, ent, forward, tr.endpos, 
                   traceEnt->health, 0, MOD_SUICIDE);
-    }
+   }
       else if (g_markDeconstruct.integer &&
               (ent->client->pers.teamSelection != TEAM_HUMANS ||
                  G_FindPower(traceEnt, qtrue) || lastSpawn))
       {
         traceEnt->deconstruct = qtrue; // Mark buildable for deconstruction
         traceEnt->deconstructTime = level.time;
-    }
+   }
       else
       {
         if (!g_cheats.integer) // add a bit to the build timer
         {
             ent->client->ps.stats[STAT_MISC] += 
               BG_Buildable(traceEnt->s.modelindex)->buildTime / 4;
-      }
+     }
         G_Damage(traceEnt, ent, ent, forward, tr.endpos, 
                   traceEnt->health, 0, MOD_DECONSTRUCT);
         G_FreeEntity(traceEnt);
-    }
-  }
+   }
+ }
 }
 }
 
@@ -1935,37 +1935,37 @@ void Cmd_Buy_f(gentity_t *ent) {
     if (BG_InventoryContainsWeapon(weapon, ent->client->ps.stats)) {
       G_TriggerMenu(ent->client->ps.clientNum, MN_H_ITEMHELD);
       return;
-  }
+ }
 
    // Only humans can buy stuff
     if (BG_Weapon(weapon)->team != TEAM_HUMANS) {
       trap_SendServerCommand(ent - g_entities, "print \"You can't buy alien items\n\"");
       return;
-  }
+ }
 
    // are we  / allowed /  to buy this?
     if (!BG_Weapon(weapon)->purchasable) {
       trap_SendServerCommand(ent - g_entities, "print \"You can't buy this item\n\"");
       return;
-  }
+ }
 
    // are we  / allowed /  to buy this?
     if (!BG_WeaponAllowedInStage(weapon, g_humanStage.integer) || !BG_WeaponIsAllowed(weapon)) {
       trap_SendServerCommand(ent - g_entities, "print \"You can't buy this item\n\"");
       return;
-  }
+ }
 
    // can afford this?
     if (BG_Weapon(weapon)->price > (short)ent->client->pers.credit) {
       G_TriggerMenu(ent->client->ps.clientNum, MN_H_NOFUNDS);
       return;
-  }
+ }
 
    // have space to carry this?
     if (BG_Weapon(weapon)->slots & BG_SlotsForInventory(ent->client->ps.stats)) {
       G_TriggerMenu(ent->client->ps.clientNum, MN_H_NOSLOTS);
       return;
-  }
+ }
 
    // In some instances, weapons can't be changed
     if (!BG_PlayerCanChangeWeapon(&ent->client->ps))
@@ -1992,37 +1992,37 @@ void Cmd_Buy_f(gentity_t *ent) {
     if (BG_InventoryContainsUpgrade(upgrade, ent->client->ps.stats)) {
       G_TriggerMenu(ent->client->ps.clientNum, MN_H_ITEMHELD);
       return;
-  }
+ }
 
    // can afford this?
     if (BG_Upgrade(upgrade)->price > (short)ent->client->pers.credit) {
       G_TriggerMenu(ent->client->ps.clientNum, MN_H_NOFUNDS);
       return;
-  }
+ }
 
    // have space to carry this?
     if (BG_Upgrade(upgrade)->slots & BG_SlotsForInventory(ent->client->ps.stats)) {
       G_TriggerMenu(ent->client->ps.clientNum, MN_H_NOSLOTS);
       return;
-  }
+ }
 
    // Only humans can buy stuff
     if (BG_Upgrade(upgrade)->team != TEAM_HUMANS) {
       trap_SendServerCommand(ent - g_entities, "print \"You can't buy alien items\n\"");
       return;
-  }
+ }
 
    // are we  / allowed /  to buy this?
     if (!BG_Upgrade(upgrade)->purchasable) {
       trap_SendServerCommand(ent - g_entities, "print \"You can't buy this item\n\"");
       return;
-  }
+ }
 
    // are we  / allowed /  to buy this?
     if (!BG_UpgradeAllowedInStage(upgrade, g_humanStage.integer) || !BG_UpgradeIsAllowed(upgrade)) {
       trap_SendServerCommand(ent - g_entities, "print \"You can't buy this item\n\"");
       return;
-  }
+ }
 
     if (upgrade == UP_AMMO)
       G_GiveClientMaxAmmo(ent, energyOnly);
@@ -2036,16 +2036,16 @@ void Cmd_Buy_f(gentity_t *ent) {
         {
           G_TriggerMenu(ent->client->ps.clientNum, MN_H_NOROOMBSUITON);
           return;
-      }
+     }
         VectorCopy(newOrigin, ent->client->ps.origin);
         ent->client->ps.stats[STAT_CLASS] = PCL_HUMAN_BSUIT;
         ent->client->pers.classSelection = PCL_HUMAN_BSUIT;
         ent->client->ps.eFlags ^= EF_TELEPORT_BIT;
-    }
+   }
 
      // add to inventory
       BG_AddUpgradeToInventory(upgrade, ent->client->ps.stats);
-  }
+ }
 
     if (upgrade == UP_BATTPACK)
       G_GiveClientMaxAmmo(ent, qtrue);
@@ -2098,7 +2098,7 @@ void Cmd_Sell_f(gentity_t *ent) {
     if (!BG_Weapon(weapon)->purchasable) {
       trap_SendServerCommand(ent - g_entities, "print \"You can't sell this weapon\n\"");
       return;
-  }
+ }
 
    // remove weapon if carried
     if (BG_InventoryContainsWeapon(weapon, ent->client->ps.stats)) {
@@ -2107,7 +2107,7 @@ void Cmd_Sell_f(gentity_t *ent) {
       {
         G_TriggerMenu(ent->client->ps.clientNum, MN_H_ARMOURYBUILDTIMER);
         return;
-    }
+   }
 
       ent->client->ps.stats[STAT_WEAPON] = WP_NONE;
      // Cancel ghost buildables
@@ -2115,7 +2115,7 @@ void Cmd_Sell_f(gentity_t *ent) {
 
      // add to funds
       G_AddCreditToClient(ent->client, (short)BG_Weapon(weapon)->price, qfalse);
-  }
+ }
 
    // if we have this weapon selected, force a new selection
     if (weapon == selected)
@@ -2126,7 +2126,7 @@ void Cmd_Sell_f(gentity_t *ent) {
     if (!BG_Upgrade(upgrade)->purchasable) {
       trap_SendServerCommand(ent - g_entities, "print \"You can't sell this item\n\"");
       return;
-  }
+ }
    // remove upgrade if carried
     if (BG_InventoryContainsUpgrade(upgrade, ent->client->ps.stats)) {
      // shouldn't really need to test for this, but just to be safe
@@ -2138,12 +2138,12 @@ void Cmd_Sell_f(gentity_t *ent) {
         {
           G_TriggerMenu(ent->client->ps.clientNum, MN_H_NOROOMBSUITOFF);
           return;
-      }
+     }
         VectorCopy(newOrigin, ent->client->ps.origin);
         ent->client->ps.stats[STAT_CLASS] = PCL_HUMAN;
         ent->client->pers.classSelection = PCL_HUMAN;
         ent->client->ps.eFlags ^= EF_TELEPORT_BIT;
-    }
+   }
 
      // add to inventory
       BG_RemoveUpgradeFromInventory(upgrade, ent->client->ps.stats);
@@ -2153,7 +2153,7 @@ void Cmd_Sell_f(gentity_t *ent) {
 
      // add to funds
       G_AddCreditToClient(ent->client, (short)BG_Upgrade(upgrade)->price, qfalse);
-  }
+ }
 }
   else if (!Q_stricmp(s, "upgrades")) {
     for (i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++) {
@@ -2171,12 +2171,12 @@ void Cmd_Sell_f(gentity_t *ent) {
           {
             G_TriggerMenu(ent->client->ps.clientNum, MN_H_NOROOMBSUITOFF);
             continue;
-        }
+       }
           VectorCopy(newOrigin, ent->client->ps.origin);
           ent->client->ps.stats[STAT_CLASS] = PCL_HUMAN;
           ent->client->pers.classSelection = PCL_HUMAN;
           ent->client->ps.eFlags ^= EF_TELEPORT_BIT;
-      }
+     }
 
         BG_RemoveUpgradeFromInventory(i, ent->client->ps.stats);
 
@@ -2185,8 +2185,8 @@ void Cmd_Sell_f(gentity_t *ent) {
 
        // add to funds
         G_AddCreditToClient(ent->client, (short)BG_Upgrade(i)->price, qfalse);
-    }
-  }
+   }
+ }
 } else {
     G_TriggerMenu(ent->client->ps.clientNum, MN_H_UNKNOWNITEM);
     return;
@@ -2294,7 +2294,7 @@ void Cmd_Build_f(gentity_t *ent) {
       default:
         err = -1; // stop uninitialised warning
         break;
-  }
+ }
 
     if (err == MN_NONE || ent->client->pers.disableBlueprintErrors)
       ent->client->ps.stats[STAT_BUILDABLE] |= buildable;
@@ -2352,7 +2352,7 @@ void G_StopFromFollowing(gentity_t *ent) {
         level.clients[i].sess.spectatorClient == ent->client->ps.clientNum) {
       if (!G_FollowNewClient(&g_entities[i], 1))
         G_StopFollowing(&g_entities[i]);
-  }
+ }
 }
 }
 
@@ -2550,7 +2550,7 @@ void Cmd_Follow_f(gentity_t *ent) {
       trap_SendServerCommand(ent - g_entities, 
         va("print \"follow: %s\"", err));
       return;
-  }
+ }
 
    // can't follow self
     if (&level.clients[i] == ent->client)
@@ -2627,14 +2627,14 @@ static void Cmd_Ignore_f(gentity_t *ent) {
         trap_SendServerCommand(ent - g_entities, va("print \"[skipnotify]"
           "ignore: added %s ^ 7 to your ignore list\n\"", 
           level.clients[pids[i]].pers.netname));
-    }
+   }
       else
       {
         trap_SendServerCommand(ent - g_entities, va("print \"[skipnotify]"
           "ignore: %s ^ 7 is already on your ignore list\n\"", 
           level.clients[pids[i]].pers.netname));
-    }
-  }
+   }
+ }
     else
     {
       if (Com_ClientListContains(&ent->client->sess.ignoreList, pids[i]))
@@ -2644,14 +2644,14 @@ static void Cmd_Ignore_f(gentity_t *ent) {
         trap_SendServerCommand(ent - g_entities, va("print \"[skipnotify]"
           "unignore: removed %s ^ 7 from your ignore list\n\"", 
           level.clients[pids[i]].pers.netname));
-    }
+   }
       else
       {
         trap_SendServerCommand(ent - g_entities, va("print \"[skipnotify]"
           "unignore: %s ^ 7 is not on your ignore list\n\"", 
           level.clients[pids[i]].pers.netname));
-    }
-  }
+   }
+ }
 }
 }
 
@@ -2689,12 +2689,12 @@ void Cmd_ListMaps_f(gentity_t *ent) {
     if (!(*p)) {
       page = atoi(search);
       search[0] = '\0';
-  }
+ }
     else if (trap_Argc() > 2) {
       char lp[8];
       trap_Argv(2, lp, sizeof(lp));
       page = atoi(lp);
-  }
+ }
 
     if (page > 0)
       page--;
@@ -2736,7 +2736,7 @@ void Cmd_ListMaps_f(gentity_t *ent) {
     for (i = start + row, j = 0; i < count && j < 3; i += rows, j++) {
       ADMBP(va("^7 %-20s", fileSort[i]));
       shown++;
-  }
+ }
     ADMBP("\n");
 }
   if (search[0])
@@ -2973,7 +2973,7 @@ void G_ListCommands(gentity_t *ent) {
     if (len + outlen >= sizeof(out) - 1) {
       trap_SendServerCommand(ent - g_entities, va("cmds%s\n", out));
       outlen = 0;
-  }
+ }
 
     strcpy(out + outlen, va(" %s", cmds[i].cmdName));
     outlen += len;
@@ -2993,11 +2993,11 @@ void G_DecolorString(char *in, char *out, int len) {
       decolor = (*in == DECOLOR_ON);
       in++;
       continue;
-  }
+ }
     if (Q_IsColorString(in) && decolor) {
       in += 2;
       continue;
-  }
+ }
     *out++ = *in++;
     len--;
 }
@@ -3011,7 +3011,7 @@ void G_UnEscapeString(char *in, char *out, int len) {
     if (*in >= ' ' || *in == '\n') {
       *out++ = *in;
       len--;
-  }
+ }
     in++;
 }
   *out = '\0';
@@ -3056,7 +3056,7 @@ void Cmd_PrivateMessage_f(gentity_t *ent) {
       count++;
       Q_strcat(recipients, sizeof(recipients), va("%s" S_COLOR_WHITE ", ", 
         level.clients[pids[i]].pers.netname));
-  }
+ }
 }
 
  // report the results
@@ -3094,12 +3094,12 @@ void Cmd_AdminMessage_f(gentity_t *ent) {
     if (!g_publicAdminMessages.integer) {
       ADMP("Sorry, but use of  / a by non - admins has been disabled.\n");
       return;
-  }
+ }
     else
     {
       ADMP("Your message has been sent to any available admins "
             "and to the server logs.\n");
-  }
+ }
 }
 
   if (trap_Argc() < 2) {

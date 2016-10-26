@@ -206,12 +206,12 @@ static void CG_EntityEffects(centity_t *cent) {
     if (cent->currentState.eType != ET_SPEAKER) {
       trap_S_AddLoopingSound(cent->currentState.number, cent->lerpOrigin, vec3_origin, 
                               cgs.gameSounds[cent->currentState.loopSound]);
-  }
+ }
     else
     {
       trap_S_AddRealLoopingSound(cent->currentState.number, cent->lerpOrigin, vec3_origin, 
                                   cgs.gameSounds[cent->currentState.loopSound]);
-  }
+ }
 }
 
 
@@ -238,7 +238,7 @@ static void CG_EntityEffects(centity_t *cent) {
 
       if (Distance(front, back) > (TESLAGEN_RANGE * M_ROOT3))
         CG_DestroyTrailSystem(&cent->muzzleTS);
-  }
+ }
 
     if (cg.time > cent->muzzleTSDeathTime && CG_IsTrailSystemValid(&cent->muzzleTS))
       CG_DestroyTrailSystem(&cent->muzzleTS);
@@ -338,7 +338,7 @@ static void CG_LaunchMissile(centity_t *cent) {
       CG_SetAttachmentCent(&ps->attachment, cent);
       CG_AttachToCent(&ps->attachment);
       ps->charge = es->torsoAnim;
-  }
+ }
 }
 
   if (wi->wim[weaponMode].missileTrailSystem) {
@@ -347,7 +347,7 @@ static void CG_LaunchMissile(centity_t *cent) {
     if (CG_IsTrailSystemValid(&ts)) {
       CG_SetAttachmentCent(&ts->frontAttachment, cent);
       CG_AttachToCent(&ts->frontAttachment);
-  }
+ }
 }
 }
 
@@ -432,7 +432,7 @@ static void CG_Missile(centity_t *cent) {
         ent.frame = wim->missileAnimStartFrame + 
          (int)((timeSinceStart/1000.0f) * wim->missileAnimFrameRate) %
           wim->missileAnimNumFrames;
-    }
+   }
       else
       {
         ent.frame = wim->missileAnimStartFrame + 
@@ -440,8 +440,8 @@ static void CG_Missile(centity_t *cent) {
 
         if (ent.frame > (wim->missileAnimStartFrame + wim->missileAnimNumFrames))
           ent.frame = wim->missileAnimStartFrame + wim->missileAnimNumFrames;
-    }
-  }
+   }
+ }
 }
 
  // only refresh if there is something to display
@@ -643,7 +643,7 @@ static void CG_LightFlare(centity_t *cent) {
         radiusMod = 0.0f;
 
       flare.radius *= radiusMod;
-  }
+ }
 
     if (flare.radius < 0.0f)
       flare.radius = 0.0f;
@@ -660,7 +660,7 @@ static void CG_LightFlare(centity_t *cent) {
         ratio = tr.lateralFraction;
       else
         ratio = 1.0f;
-  }
+ }
     else if (cg_lightFlare.integer == FLARE_TIMEFADE) {
      // draw timed flares
       SETBOUNDS(mins, maxs, srcRadius);
@@ -671,19 +671,19 @@ static void CG_LightFlare(centity_t *cent) {
       {
         cent->lfs.status = qfalse;
         cent->lfs.lastTime = cg.time;
-    }
+   }
       else if ((tr.fraction == 1.0f && !tr.startsolid) && !cent->lfs.status)
       {
         cent->lfs.status = qtrue;
         cent->lfs.lastTime = cg.time;
-    }
+   }
 
      // fade flare up
       if (cent->lfs.status)
       {
         if (cent->lfs.lastTime + es->time > cg.time)
           ratio = (float) (cg.time - cent->lfs.lastTime) / es->time;
-    }
+   }
 
      // fade flare down
       if (!cent->lfs.status)
@@ -692,11 +692,11 @@ static void CG_LightFlare(centity_t *cent) {
         {
           ratio = (float) (cg.time - cent->lfs.lastTime) / es->time;
           ratio = 1.0f - ratio;
-      }
+     }
         else
           ratio = 0.0f;
-    }
-  }
+   }
+ }
     else if (cg_lightFlare.integer == FLARE_NOFADE) {
      // draw nofade flares
       SETBOUNDS(mins, maxs, srcRadius);
@@ -706,7 +706,7 @@ static void CG_LightFlare(centity_t *cent) {
      // flare source occluded
       if ((tr.fraction < 1.0f || tr.startsolid))
         ratio = 0.0f;
-  }
+ }
 } else {
     ratio = cent->lfs.lastRatio;
     flare.radius = cent->lfs.lastRadius;
@@ -746,12 +746,12 @@ static void CG_Lev2ZapChain(centity_t *cent) {
     if (i == 1) {
      // First entity is the attacker
       source = &cg_entities[entityNums[0]];
-  }
+ }
     else
     {
      // Subsequent zaps come from the first target
       source = &cg_entities[entityNums[1]];
-  }
+ }
 
     target = &cg_entities[entityNums[i]];
 
@@ -763,7 +763,7 @@ static void CG_Lev2ZapChain(centity_t *cent) {
       CG_SetAttachmentCent(&cent->level2ZapTS[i]->backAttachment, target);
       CG_AttachToCent(&cent->level2ZapTS[i]->frontAttachment);
       CG_AttachToCent(&cent->level2ZapTS[i]->backAttachment);
-  }
+ }
 }
 }
 
@@ -852,7 +852,7 @@ static void CG_CalcEntityLerpPositions(centity_t *cent) {
     if (cent->currentState.number < MAX_CLIENTS) {
       cent->currentState.pos.trType = TR_INTERPOLATE;
       cent->nextState.pos.trType = TR_INTERPOLATE;
-  }
+ }
 }
 
   if (cent->interpolate && cent->currentState.pos.trType == TR_INTERPOLATE) {
@@ -952,7 +952,7 @@ static void CG_CEntityPVSLeave(centity_t *cent) {
       {
         if (CG_IsTrailSystemValid(&cent->level2ZapTS[i]))
           CG_DestroyTrailSystem(&cent->level2ZapTS[i]);
-    }
+   }
       break;
 }
 }
@@ -1146,8 +1146,8 @@ void CG_AddPacketEntities(void) {
 
         default:
           break;
-    }
-  }
+   }
+ }
 }
 }
 

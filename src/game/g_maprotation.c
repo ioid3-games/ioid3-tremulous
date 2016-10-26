@@ -189,10 +189,10 @@ static qboolean G_ParseMapCommandSection(node_t *node, char **text_p) {
       {
        // Replace last; with \n
         map->postCommand[commandLength - 1] = '\n';
-    }
+   }
 
       return qtrue; // reached the end of this command section
-  }
+ }
 
     if (!Q_stricmp(token, "layouts")) {
       token = COM_ParseExt(text_p, qfalse);
@@ -203,10 +203,10 @@ static qboolean G_ParseMapCommandSection(node_t *node, char **text_p) {
         Q_strcat(map->layouts, sizeof(map->layouts), token);
         Q_strcat(map->layouts, sizeof(map->layouts), " ");
         token = COM_ParseExt(text_p, qfalse);
-    }
+   }
 
       continue;
-  }
+ }
 
    // Parse the rest of the line into map->postCommand
     Q_strcat(map->postCommand, sizeof(map->postCommand), token);
@@ -218,7 +218,7 @@ static qboolean G_ParseMapCommandSection(node_t *node, char **text_p) {
       Q_strcat(map->postCommand, sizeof(map->postCommand), token);
       Q_strcat(map->postCommand, sizeof(map->postCommand), " ");
       token = COM_ParseExt(text_p, qfalse);
-  }
+ }
 
     commandLength = strlen(map->postCommand);
     map->postCommand[commandLength - 1] = ';';
@@ -264,7 +264,7 @@ static qboolean G_ParseNode(node_t **node, char *token, char **text_p, qboolean 
       {
         G_Printf(S_COLOR_RED "ERROR: invalid operator in expression: %s\n", token);
         return qfalse;
-    }
+   }
 
       token = COM_Parse(text_p);
 
@@ -272,7 +272,7 @@ static qboolean G_ParseNode(node_t **node, char *token, char **text_p, qboolean 
         return qfalse;
 
       condition->numClients = atoi(token);
-  }
+ }
     else if (!Q_stricmp(token, "lastWin")) {
       condition->lhs = CV_LASTWIN;
 
@@ -289,15 +289,15 @@ static qboolean G_ParseNode(node_t **node, char *token, char **text_p, qboolean 
       {
         G_Printf(S_COLOR_RED "ERROR: invalid right hand side in expression: %s\n", token);
         return qfalse;
-    }
-  }
+   }
+ }
     else if (!Q_stricmp(token, "random"))
       condition->lhs = CV_RANDOM;
     else
     {
       G_Printf(S_COLOR_RED "ERROR: invalid left hand side in expression: %s\n", token);
       return qfalse;
-  }
+ }
 
     token = COM_Parse(text_p);
 
@@ -327,7 +327,7 @@ static qboolean G_ParseNode(node_t **node, char *token, char **text_p, qboolean 
     if (!*token) {
       G_Printf(S_COLOR_RED "ERROR: goto or resume without label\n");
       return qfalse;
-  }
+ }
 
     Q_strncpyz(label->name, token, sizeof(label->name));
 }
@@ -377,26 +377,26 @@ static qboolean G_ParseMapRotation(mapRotation_t *mr, char **text_p) {
       {
         G_Printf(S_COLOR_RED "ERROR: map command section with no associated map\n");
         return qfalse;
-    }
+   }
 
       if (!G_ParseMapCommandSection(node, text_p))
       {
         G_Printf(S_COLOR_RED "ERROR: failed to parse map command section\n");
         return qfalse;
-    }
+   }
 
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "}")) {
      // Reached the end of this map rotation
       return qtrue;
-  }
+ }
 
     if (mr->numNodes == MAX_MAP_ROTATION_MAPS) {
       G_Printf(S_COLOR_RED "ERROR: maximum number of maps in one rotation(%d) reached\n", 
                 MAX_MAP_ROTATION_MAPS);
       return qfalse;
-  }
+ }
 
     node = G_AllocateNode();
     mr->nodes[mr->numNodes++] = node;
@@ -462,14 +462,14 @@ static qboolean G_ParseMapRotationFile(const char *fileName) {
         {
           G_Printf(S_COLOR_RED "ERROR: a map rotation is already named %s\n", mrName);
           return qfalse;
-      }
+     }
 
         if (mapRotations.numRotations == MAX_MAP_ROTATIONS)
         {
           G_Printf(S_COLOR_RED "ERROR: maximum number of map rotations(%d) reached\n", 
                     MAX_MAP_ROTATIONS);
           return qfalse;
-      }
+     }
 
         Q_strncpyz(mapRotations.rotations[mapRotations.numRotations].name, mrName, MAX_QPATH);
 
@@ -477,7 +477,7 @@ static qboolean G_ParseMapRotationFile(const char *fileName) {
         {
           G_Printf(S_COLOR_RED "ERROR: %s: failed to parse map rotation %s\n", fileName, mrName);
           return qfalse;
-      }
+     }
 
         mapRotations.numRotations++;
 
@@ -485,23 +485,23 @@ static qboolean G_ParseMapRotationFile(const char *fileName) {
         mrNameSet = qfalse;
 
         continue;
-    }
+   }
       else
       {
         G_Printf(S_COLOR_RED "ERROR: unnamed map rotation\n");
         return qfalse;
-    }
-  }
+   }
+ }
 
     if (!mrNameSet) {
       Q_strncpyz(mrName, token, sizeof(mrName));
       mrNameSet = qtrue;
-  }
+ }
     else
     {
       G_Printf(S_COLOR_RED "ERROR: map rotation already named\n");
       return qfalse;
-  }
+ }
 }
 
   for (i = 0; i < mapRotations.numRotations; i++) {
@@ -519,9 +519,9 @@ static qboolean G_ParseMapRotationFile(const char *fileName) {
           G_Printf(S_COLOR_RED "ERROR: rotation map \"%s\" doesn't exist\n", 
                     node->u.map.name);
           return qfalse;
-      }
+     }
         continue;
-    }
+   }
       else if (node->type == NT_RETURN)
         continue;
       else if (node->type == NT_LABEL)
@@ -534,14 +534,14 @@ static qboolean G_ParseMapRotationFile(const char *fileName) {
         G_Printf(S_COLOR_RED "ERROR: goto destination named \"%s\" doesn't exist\n", 
                   node->u.label.name);
         return qfalse;
-    }
-  }
+   }
+ }
 
     if (mapCount == 0) {
       G_Printf(S_COLOR_RED "ERROR: rotation \"%s\" needs at least one map entry\n", 
         mr->name);
       return qfalse;
-  }
+ }
 }
 
   return qtrue;
@@ -592,7 +592,7 @@ void G_PrintRotations(void) {
         size += sizeof(node_t);
 
         indentation += 2;
-    }
+   }
 
       G_PrintSpaces(indentation);
 
@@ -624,8 +624,8 @@ void G_PrintRotations(void) {
 
         default:
           break;
-    }
-  }
+   }
+ }
 
     G_Printf("}\n");
 }
@@ -833,7 +833,7 @@ static qboolean G_GotoLabel(int rotation, int nodeIndex, char *name,
       G_SetCurrentNodeByIndex(G_NodeIndexAfter(i, rotation), rotation);
       G_AdvanceMapRotation(depth);
       return qtrue;
-  }
+ }
 }
 
  // finally check for a map by name
@@ -845,7 +845,7 @@ static qboolean G_GotoLabel(int rotation, int nodeIndex, char *name,
       G_SetCurrentNodeByIndex(nodeIndex, rotation);
       G_AdvanceMapRotation(depth);
       return qtrue;
-  }
+ }
 }
 
   return qfalse;
@@ -881,7 +881,7 @@ static qboolean G_EvaluateMapCondition(condition_t **condition) {
         case CO_EQ:
           result = level.numConnectedClients == localCondition->numClients;
           break;
-    }
+   }
       break;
 
     case CV_LASTWIN:
@@ -936,7 +936,7 @@ qboolean G_StepMapRotation(int rotation, int nodeIndex, int depth) {
       G_Printf(S_COLOR_RED "ERROR: infinite loop protection stopped at map rotation %s\n", 
               G_RotationNameByIndex(rotation));
       return qfalse;
-  }
+ }
 
     G_Printf(S_COLOR_YELLOW "WARNING: possible infinite loop in map rotation %s\n", 
               G_RotationNameByIndex(rotation));
@@ -954,7 +954,7 @@ qboolean G_StepMapRotation(int rotation, int nodeIndex, int depth) {
           node = condition->target;
           step = qtrue;
           continue;
-      }
+     }
         break;
 
       case NT_RETURN:
@@ -967,8 +967,8 @@ qboolean G_StepMapRotation(int rotation, int nodeIndex, int depth) {
                                   qtrue, qfalse, qfalse, depth))
           {
             return qfalse;
-        }
-      }
+       }
+     }
         break;
 
       case NT_MAP:
@@ -978,7 +978,7 @@ qboolean G_StepMapRotation(int rotation, int nodeIndex, int depth) {
             G_NodeIndexAfter(nodeIndex, rotation), rotation);
           G_IssueMapChange(nodeIndex, rotation);
           return qfalse;
-      }
+     }
 
         G_Printf(S_COLOR_YELLOW "WARNING: skipped missing map %s in rotation %s\n", 
                   node->u.map.name, G_RotationNameByIndex(rotation));
@@ -998,7 +998,7 @@ qboolean G_StepMapRotation(int rotation, int nodeIndex, int depth) {
         G_Printf(S_COLOR_YELLOW "WARNING: label, map, or rotation %s not found in %s\n", 
                   node->u.label.name, G_RotationNameByIndex(rotation));
         break;
-  }
+ }
 }
 
   return qtrue;
@@ -1066,10 +1066,10 @@ qboolean G_StartMapRotation(char *name, qboolean advance,
           G_SetCurrentNodeByIndex(0, i);
 
         G_AdvanceMapRotation(depth);
-    }
+   }
 
       break;
-  }
+ }
 }
 
   if (i == mapRotations.numRotations)
@@ -1125,7 +1125,7 @@ void G_InitMapRotations(void) {
 
       trap_Cvar_Set("g_initialMapRotation", "");
       trap_Cvar_Update(&g_initialMapRotation);
-  }
+ }
 }
 }
 
@@ -1160,6 +1160,6 @@ void G_ShutdownMapRotations(void) {
       node_t *node = mr->nodes[j];
 
       G_FreeNode(node);
-  }
+ }
 }
 }

@@ -142,7 +142,7 @@ static void CG_DrawFieldPadded(int x, int y, int width, int cw, int ch, int valu
       width--;
       x += charWidth;
       continue;
-  }
+ }
 
     if (*ptr == '-')
       frame = STAT_MINUS;
@@ -305,10 +305,10 @@ static void CG_DrawPlayerCreditsValue(rectDef_t *rect, vec4_t color, qboolean pa
          ((cg.time - cg.lastEvolveAttempt) / 300) & 1)
       {
         color[3] = 0.0f;
-    }
+   }
 
       value /= ALIEN_CREDITS_PER_KILL;
-  }
+ }
 
     trap_R_SetColor(color);
 
@@ -448,7 +448,7 @@ static void CG_DrawPlayerClipsRing(rectDef_t *rect, vec4_t backColor,
         progress = (maxDelay - (float)ps->weaponTime) / maxDelay;
 
         Vector4Lerp(progress, backColor, foreColor, color);
-    }
+   }
       else
         Com_Memcpy(color, foreColor, sizeof(color));
       break;
@@ -630,7 +630,7 @@ static void CG_DrawPlayerAmmoValue(rectDef_t *rect, vec4_t color) {
       CG_DrawField(rect->x - 5, rect->y, 4, rect->w / 4, rect->h, value);
       trap_R_SetColor(NULL);
       return;
-  }
+ }
 
     if (valueMarked > 0)
       text = va("%d + (%d)", value, valueMarked);
@@ -698,7 +698,7 @@ static void CG_DrawUsableBuildable(rectDef_t *rect, qhandle_t shader, vec4_t col
     if ((es->modelindex == BA_H_REACTOR || es->modelindex == BA_H_REPEATER) && (!BG_Weapon(cg.snap->ps.weapon)->usesEnergy || BG_Weapon(cg.snap->ps.weapon)->infiniteAmmo)) {
       cg.nearUsableBuildable = BA_NONE;
       return;
-  }
+ }
 
     trap_R_SetColor(color);
     CG_DrawPic(rect->x, rect->y, rect->w, rect->h, shader);
@@ -770,7 +770,7 @@ static void CG_DrawPlayerClipsValue(rectDef_t *rect, vec4_t color) {
         trap_R_SetColor(color);
         CG_DrawField(rect->x, rect->y, 4, rect->w / 4, rect->h, value);
         trap_R_SetColor(NULL);
-    }
+   }
       break;
 }
 }
@@ -830,7 +830,7 @@ static void CG_DrawPlayerHealthCross(rectDef_t *rect, vec4_t ref_color) {
     if (cg.healthCrossFade > 1.0f) {
       cg.healthCrossFade = 0.0f;
       cg.lastHealthCross = shader;
-  }
+ }
     else
     {
      // Fading between two icons
@@ -842,7 +842,7 @@ static void CG_DrawPlayerHealthCross(rectDef_t *rect, vec4_t ref_color) {
       CG_DrawPic(rect->x, rect->y, rect->w, rect->h, cg.lastHealthCross);
       trap_R_SetColor(NULL);
       return;
-  }
+ }
 }
 
  // Not fading, draw a single icon
@@ -868,12 +868,12 @@ static float CG_ChargeProgress(void) {
     if (cg.predictedPlayerState.stats[STAT_STATE] & SS_CHARGING) {
       min = 0;
       max = LEVEL4_TRAMPLE_DURATION;
-  }
+ }
     else
     {
       min = LEVEL4_TRAMPLE_CHARGE_MIN;
       max = LEVEL4_TRAMPLE_CHARGE_MAX;
-  }
+ }
 }
   else if (cg.snap->ps.weapon == WP_LUCIFER_CANNON) {
     min = LCANNON_CHARGE_TIME_MIN;
@@ -933,7 +933,7 @@ static void CG_DrawPlayerChargeBar(rectDef_t *rect, vec4_t ref_color,
     if (cg.chargeMeterAlpha <= 0.0f) {
       cg.chargeMeterAlpha = 0.0f;
       return;
-  }
+ }
 } else {
     cg.chargeMeterValue = progress;
     cg.chargeMeterAlpha += CHARGE_BAR_FADE_RATE * cg.frametime;
@@ -1465,16 +1465,16 @@ static void CG_DrawFPS(rectDef_t *rect, float text_x, float text_y,
         c[1] = '\0';
 
         UI_Text_Paint(text_x + tx + i * w, text_y + ty, scale, color, c, 0, 0, textStyle);
-    }
+   }
 
       UI_Text_Paint(text_x + tx + i * w, text_y + ty, scale, color, FPS_STRING, 0, 0, textStyle);
-  }
+ }
     else
     {
       trap_R_SetColor(color);
       CG_DrawField(rect->x, rect->y, 3, rect->w / 3, rect->h, fps);
       trap_R_SetColor(NULL);
-  }
+ }
 }
 }
 
@@ -1607,7 +1607,7 @@ static int QDECL SortWeaponClass(const void *a, const void *b) {
         ca->curWeaponClass == PCL_ALIEN_BUILDER0 || 
         cb->curWeaponClass == PCL_ALIEN_BUILDER0) {
       out = -out;
-  }
+ }
 }
 
   return (out);
@@ -1670,10 +1670,10 @@ static void CG_DrawTeamOverlay(rectDef_t *rect, float scale, vec4_t color) {
               ci->curWeaponClass == WP_HBUILD)
           {
             displayClients[maxDisplayCount++] = i;
-        }
-      }
-    }
-  }
+       }
+     }
+   }
+ }
 }
   else // find nearby
   {
@@ -1687,13 +1687,13 @@ static void CG_DrawTeamOverlay(rectDef_t *rect, float scale, vec4_t color) {
           cent->currentState.eFlags & EF_DEAD)
       {
         continue;
-    }
+   }
 
       VectorSubtract(cent->lerpOrigin, cg.predictedPlayerState.origin, relOrigin);
 
       if (VectorLength(relOrigin) < HELMET_RANGE)
         displayClients[maxDisplayCount++] = cg.snap->entities[i].number;
-  }
+ }
 }
 
  // Sort
@@ -1754,8 +1754,8 @@ static void CG_DrawTeamOverlay(rectDef_t *rect, float scale, vec4_t color) {
         {
           CG_DrawPic(x + iconSize + leftMargin, y, iconSize, 
                       iconSize, cg_upgrades[ci->upgrade].upgradeIcon);
-      }
-    }
+     }
+   }
       else
       {
         if (curWeapon == WP_ABUILD2 || curWeapon == WP_ALEVEL1_UPG ||
@@ -1763,14 +1763,14 @@ static void CG_DrawTeamOverlay(rectDef_t *rect, float scale, vec4_t color) {
         {
           CG_DrawPic(x + iconSize + leftMargin, y, iconSize, 
                       iconSize, cgs.media.upgradeClassIconShader);
-      }
-    }
+     }
+   }
 
       s = va(" [^ %c%3d ^ 7]^7%s", 
               CG_GetColorCharForHealth(displayClients[i]), 
               ci->health, 
               CG_ConfigString(CS_LOCATIONS + ci->location));
-  }
+ }
 
     trap_R_SetColor(NULL);
     nameMaxX = nameMaxXCp = x + 2.0f * iconSize + 
@@ -1820,7 +1820,7 @@ static void CG_DrawClock(rectDef_t *rect, float text_x, float text_y,
     else if (h > 12) {
       h -= 12;
       pm = "pm";
-  }
+ }
 
     s = va("%d%s%02d%s", h, (qt.tm_sec % 2) ? ":" : " ", qt.tm_min, pm);
 }
@@ -1931,7 +1931,7 @@ void CG_AddLagometerSnapshotInfo(snapshot_t *snap) {
 
     for (i = 0; i < PING_FRAMES; i++) {
       cg.ping += previousPings[i];
-  }
+ }
 
     cg.ping /= PING_FRAMES;
 }
@@ -2039,26 +2039,26 @@ static void CG_DrawLagometer(rectDef_t *rect, float text_x, float text_y,
       {
         color = 1;
         trap_R_SetColor(g_color_table[ColorIndex(COLOR_YELLOW)]);
-    }
+   }
 
       if (v > range)
         v = range;
 
       trap_R_DrawStretchPic(ax + aw - a, mid - v, 1, v, 0, 0, 0, 0, cgs.media.whiteShader);
-  }
+ }
     else if (v < 0) {
       if (color != 2)
       {
         color = 2;
         trap_R_SetColor(g_color_table[ColorIndex(COLOR_BLUE)]);
-    }
+   }
 
       v = -v;
       if (v > range)
         v = range;
 
       trap_R_DrawStretchPic(ax + aw - a, mid, 1, v, 0, 0, 0, 0, cgs.media.whiteShader);
-  }
+ }
 }
 
  // draw the snapshot latency / drop graph
@@ -2076,8 +2076,8 @@ static void CG_DrawLagometer(rectDef_t *rect, float text_x, float text_y,
         {
           color = 5; // YELLOW for rate delay
           trap_R_SetColor(g_color_table[ColorIndex(COLOR_YELLOW)]);
-      }
-    }
+     }
+   }
       else
       {
         if (color != 3)
@@ -2085,8 +2085,8 @@ static void CG_DrawLagometer(rectDef_t *rect, float text_x, float text_y,
           color = 3;
 
           trap_R_SetColor(g_color_table[ColorIndex(COLOR_GREEN)]);
-      }
-    }
+     }
+   }
 
       v = v * vscale;
 
@@ -2094,16 +2094,16 @@ static void CG_DrawLagometer(rectDef_t *rect, float text_x, float text_y,
         v = range;
 
       trap_R_DrawStretchPic(ax + aw - a, ay + ah - v, 1, v, 0, 0, 0, 0, cgs.media.whiteShader);
-  }
+ }
     else if (v < 0) {
       if (color != 4)
       {
         color = 4;   // RED for dropped snapshots
         trap_R_SetColor(g_color_table[ColorIndex(COLOR_RED)]);
-    }
+   }
 
       trap_R_DrawStretchPic(ax + aw - a, ay + ah - range, 1, range, 0, 0, 0, 0, cgs.media.whiteShader);
-  }
+ }
 }
 
   trap_R_SetColor(NULL);
@@ -2166,7 +2166,7 @@ void CG_AddSpeed(void) {
     for (maxSpeedSample = 0, i = 1; i < SPEEDOMETER_NUM_SAMPLES; i++) {
       if (speedSamples[i] > speedSamples[maxSpeedSample])
         maxSpeedSample = i;
-  }
+ }
 }
 
   oldestSpeedSample %= SPEEDOMETER_NUM_SAMPLES;
@@ -2323,7 +2323,7 @@ void CG_DrawWeaponIcon(rectDef_t *rect, vec4_t color) {
     if (ammoPercent < 0.33f) {
       color[0] = 1.0f;
       color[1] = color[2] = 0.0f;
-  }
+ }
 }
 
   if (cg.predictedPlayerState.stats[STAT_TEAM] == TEAM_ALIENS && !BG_AlienCanEvolve(cg.predictedPlayerState.stats[STAT_CLASS], 
@@ -2331,7 +2331,7 @@ void CG_DrawWeaponIcon(rectDef_t *rect, vec4_t color) {
     if (cg.time - cg.lastEvolveAttempt <= NO_CREDITS_TIME) {
       if (((cg.time - cg.lastEvolveAttempt) / 300) % 2)
         color[3] = 0.0f;
-  }
+ }
 }
 
   trap_R_SetColor(color);
@@ -2960,7 +2960,7 @@ static void CG_DrawCenterString(void) {
         break;
 
       linebuffer[l] = start[l];
-  }
+ }
 
     linebuffer[l] = 0;
 
@@ -3078,7 +3078,7 @@ static qboolean CG_DrawScoreboard(void) {
       cg.spectatorTime = trap_Milliseconds();
       CG_SetScoreSelection(menuScoreboard);
       firstTime = qfalse;
-  }
+ }
 
     Menu_Update(menuScoreboard);
     Menu_Paint(menuScoreboard, qtrue);
@@ -3138,7 +3138,7 @@ static qboolean CG_DrawQueue(void) {
         case 2:  ordinal = "nd"; break;
         case 3:  ordinal = "rd"; break;
         default: ordinal = "th"; break;
-    }
+   }
       break;
 }
 

@@ -84,14 +84,14 @@ static void CG_CalculateBeamNodeProperties(trailBeam_t *tb) {
     if (tb->class->textureType == TBTT_STRETCH) {
       i->textureCoord = tb->class->frontTextureCoord + 
        ((position / totalDistance) * TCRange);
-  }
+ }
     else if (tb->class->textureType == TBTT_REPEAT) {
       if (tb->class->clampToBack)
         i->textureCoord = (totalDistance - position)  / 
           tb->class->repeatLength;
       else
         i->textureCoord = position / tb->class->repeatLength;
-  }
+ }
 
     i->halfWidth = (tb->class->frontWidth + 
      ((position / totalDistance) * widthRange)) / 2.0f;
@@ -164,15 +164,15 @@ static void CG_RenderBeam(trailBeam_t *tb) {
     if (prev && next) {
      // this node has two neighbours
       GetPerpendicularViewVector(cg.refdef.vieworg, next->position, prev->position, up);
-  }
+ }
     else if (!prev && next) {
      // this is the front
       GetPerpendicularViewVector(cg.refdef.vieworg, next->position, i->position, up);
-  }
+ }
     else if (prev && !next) {
      // this is the back
       GetPerpendicularViewVector(cg.refdef.vieworg, i->position, prev->position, up);
-  }
+ }
     else
       break;
 
@@ -187,7 +187,7 @@ static void CG_RenderBeam(trailBeam_t *tb) {
       {
         VectorCopy(i->color, verts[numVerts].modulate);
         verts[numVerts].modulate[3] = i->alpha;
-    }
+   }
 
       numVerts++;
 
@@ -201,10 +201,10 @@ static void CG_RenderBeam(trailBeam_t *tb) {
       {
         VectorCopy(i->color, verts[numVerts].modulate);
         verts[numVerts].modulate[3] = i->alpha;
-    }
+   }
 
       numVerts++;
-  }
+ }
 
     if (next) {
       VectorMA(i->position, -i->halfWidth, up, verts[numVerts].xyz);
@@ -217,7 +217,7 @@ static void CG_RenderBeam(trailBeam_t *tb) {
       {
         VectorCopy(i->color, verts[numVerts].modulate);
         verts[numVerts].modulate[3] = i->alpha;
-    }
+   }
 
       numVerts++;
 
@@ -231,10 +231,10 @@ static void CG_RenderBeam(trailBeam_t *tb) {
       {
         VectorCopy(i->color, verts[numVerts].modulate);
         verts[numVerts].modulate[3] = i->alpha;
-    }
+   }
 
       numVerts++;
-  }
+ }
 
     i = i->next;
 } while (i);
@@ -262,7 +262,7 @@ static trailBeamNode_t *CG_AllocateBeamNode(trailBeam_t *tb) {
       tbn->next = NULL;
       tbn->used = qtrue;
       return tbn;
-  }
+ }
 }
 
  // no space left
@@ -285,7 +285,7 @@ static trailBeamNode_t *CG_DestroyBeamNode(trailBeamNode_t *tbn) {
      // node is in the middle
       tbn->prev->next = tbn->next;
       tbn->next->prev = tbn->prev;
-  }
+ }
     else // node is at the back
       tbn->prev->next = NULL;
 
@@ -362,7 +362,7 @@ static trailBeamNode_t *CG_PrependBeamNode(trailBeam_t *tb) {
       i->next = tb->nodes;
       tb->nodes->prev = i;
       tb->nodes = i;
-  }
+ }
 }
   else // add first node
   {
@@ -395,7 +395,7 @@ static trailBeamNode_t *CG_AppendBeamNode(trailBeam_t *tb) {
       last->next = i;
       i->prev = last;
       i->next = NULL;
-  }
+ }
 }
   else // add first node
   {
@@ -433,10 +433,10 @@ static void CG_ApplyJitters(trailBeam_t *tb) {
       {
         i->jitters[j][0] = (crandom() * btb->jitters[j].magnitude);
         i->jitters[j][1] = (crandom() * btb->jitters[j].magnitude);
-    }
+   }
 
       tb->nextJitterTimes[j] = cg.time + btb->jitters[j].period;
-  }
+ }
 }
 
   start = tb->nodes;
@@ -463,17 +463,17 @@ static void CG_ApplyJitters(trailBeam_t *tb) {
      // this node has two neighbours
       GetPerpendicularViewVector(cg.refdef.vieworg, next->position, prev->position, up);
       VectorSubtract(next->position, prev->position, forward);
-  }
+ }
     else if (!prev && next) {
      // this is the front
       GetPerpendicularViewVector(cg.refdef.vieworg, next->position, i->position, up);
       VectorSubtract(next->position, i->position, forward);
-  }
+ }
     else if (prev && !next) {
      // this is the back
       GetPerpendicularViewVector(cg.refdef.vieworg, i->position, prev->position, up);
       VectorSubtract(i->position, prev->position, forward);
-  }
+ }
 
     VectorNormalize(forward);
     CrossProduct(forward, up, right);
@@ -482,7 +482,7 @@ static void CG_ApplyJitters(trailBeam_t *tb) {
     for (j = 0; j < btb->numJitters; j++) {
       upJitter += i->jitters[j][0];
       rightJitter += i->jitters[j][1];
-  }
+ }
 
     VectorMA(i->position, upJitter, up, i->position);
     VectorMA(i->position, rightJitter, right, i->position);
@@ -529,10 +529,10 @@ static void CG_UpdateBeam(trailBeam_t *tb) {
        // this is the first node to be added
         if (!CG_AttachmentPoint(&ts->frontAttachment, i->refPosition))
           CG_DestroyTrailSystem(&ts);
-    }
+   }
       else
         VectorCopy(i->prev->refPosition, i->refPosition);
-  }
+ }
 }
 
   numNodes = CG_CountBeamNodes(tb);
@@ -547,7 +547,7 @@ static void CG_UpdateBeam(trailBeam_t *tb) {
     if (ts->destroyTime > 0 && (cg.time - ts->destroyTime) >= btb->fadeOutTime) {
       tb->valid = qfalse;
       return;
-  }
+ }
 
     if (!CG_AttachmentPoint(&ts->frontAttachment, front))
       CG_DestroyTrailSystem(&ts);
@@ -561,7 +561,7 @@ static void CG_UpdateBeam(trailBeam_t *tb) {
       float scale = (float)j / (float) (numNodes - 1);
 
       VectorMA(front, scale, dir, i->position);
-  }
+ }
 }
   else if (CG_Attached(&ts->frontAttachment)) {
    // beam from one attachment
@@ -580,12 +580,12 @@ static void CG_UpdateBeam(trailBeam_t *tb) {
         {
           tb->valid = qfalse;
           return;
-      }
+     }
 
        // if the ts has been destroyed, stop creating new nodes
         if (ts->destroyTime <= 0)
           CG_PrependBeamNode(tb);
-    }
+   }
       else if (i->timeLeft >= 0 && i->prev)
       {
         vec3_t dir;
@@ -596,15 +596,15 @@ static void CG_UpdateBeam(trailBeam_t *tb) {
          ((float)i->timeLeft / (float)tb->class->segmentTime);
 
         VectorMA(i->prev->refPosition, length, dir, i->position);
-    }
-  }
+   }
+ }
 
     if (tb->nodes) {
       if (!CG_AttachmentPoint(&ts->frontAttachment, tb->nodes->refPosition))
         CG_DestroyTrailSystem(&ts);
 
       VectorCopy(tb->nodes->refPosition, tb->nodes->position);
-  }
+ }
 }
 
   CG_ApplyJitters(tb);
@@ -659,9 +659,9 @@ static qboolean CG_ParseTrailBeam(baseTrailBeam_t *btb, char **text_p) {
       {
         btb->numSegments = MAX_TRAIL_BEAM_NODES - 1;
         CG_Printf(S_COLOR_YELLOW "WARNING: too many segments in trail beam\n");
-    }
+   }
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "width")) {
       token = COM_Parse(text_p);
       if (!Q_stricmp(token, ""))
@@ -678,7 +678,7 @@ static qboolean CG_ParseTrailBeam(baseTrailBeam_t *btb, char **text_p) {
       else
         btb->backWidth = atof_neg(token, qfalse);
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "alpha")) {
       token = COM_Parse(text_p);
       if (!Q_stricmp(token, ""))
@@ -695,7 +695,7 @@ static qboolean CG_ParseTrailBeam(baseTrailBeam_t *btb, char **text_p) {
       else
         btb->backAlpha = atof_neg(token, qfalse);
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "color")) {
       token = COM_Parse(text_p);
       if (!Q_stricmp(token, ""))
@@ -711,7 +711,7 @@ static qboolean CG_ParseTrailBeam(baseTrailBeam_t *btb, char **text_p) {
         {
           CG_Printf(S_COLOR_RED "ERROR: missing '}'\n");
           break;
-      }
+     }
 
         token = COM_Parse(text_p);
         if (!Q_stricmp(token, ""))
@@ -722,7 +722,7 @@ static qboolean CG_ParseTrailBeam(baseTrailBeam_t *btb, char **text_p) {
           btb->backColor[0] = btb->frontColor[0];
           btb->backColor[1] = btb->frontColor[1];
           btb->backColor[2] = btb->frontColor[2];
-      }
+     }
         else if (!Q_stricmp(token, "{"))
         {
           if (!CG_ParseTrailBeamColor(btb->backColor, text_p))
@@ -733,22 +733,22 @@ static qboolean CG_ParseTrailBeam(baseTrailBeam_t *btb, char **text_p) {
           {
             CG_Printf(S_COLOR_RED "ERROR: missing '}'\n");
             break;
-        }
-      }
+       }
+     }
         else
         {
           CG_Printf(S_COLOR_RED "ERROR: missing '{'\n");
           break;
-      }
-    }
+     }
+   }
       else
       {
         CG_Printf(S_COLOR_RED "ERROR: missing '{'\n");
         break;
-    }
+   }
 
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "segmentTime")) {
       token = COM_Parse(text_p);
       if (!Q_stricmp(token, ""))
@@ -756,7 +756,7 @@ static qboolean CG_ParseTrailBeam(baseTrailBeam_t *btb, char **text_p) {
 
       btb->segmentTime = atoi_neg(token, qfalse);
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "fadeOutTime")) {
       token = COM_Parse(text_p);
       if (!Q_stricmp(token, ""))
@@ -764,7 +764,7 @@ static qboolean CG_ParseTrailBeam(baseTrailBeam_t *btb, char **text_p) {
 
       btb->fadeOutTime = atoi_neg(token, qfalse);
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "shader")) {
       token = COM_Parse(text_p);
       if (!Q_stricmp(token, ""))
@@ -773,7 +773,7 @@ static qboolean CG_ParseTrailBeam(baseTrailBeam_t *btb, char **text_p) {
       Q_strncpyz(btb->shaderName, token, MAX_QPATH);
 
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "textureType")) {
       token = COM_Parse(text_p);
       if (!Q_stricmp(token, ""))
@@ -794,7 +794,7 @@ static qboolean CG_ParseTrailBeam(baseTrailBeam_t *btb, char **text_p) {
           break;
 
         btb->backTextureCoord = atof_neg(token, qfalse);
-    }
+   }
       else if (!Q_stricmp(token, "repeat"))
       {
         btb->textureType = TBTT_REPEAT;
@@ -811,33 +811,33 @@ static qboolean CG_ParseTrailBeam(baseTrailBeam_t *btb, char **text_p) {
         {
           CG_Printf(S_COLOR_RED "ERROR: unknown textureType clamp \"%s\"\n", token);
           break;
-      }
+     }
 
         token = COM_Parse(text_p);
         if (!Q_stricmp(token, ""))
           break;
 
         btb->repeatLength = atof_neg(token, qfalse);
-    }
+   }
       else
       {
         CG_Printf(S_COLOR_RED "ERROR: unknown textureType \"%s\"\n", token);
         break;
-    }
+   }
 
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "realLight")) {
       btb->realLight = qtrue;
 
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "jitter")) {
       if (btb->numJitters == MAX_TRAIL_BEAM_JITTERS)
       {
         CG_Printf(S_COLOR_RED "ERROR: too many jitters\n");
         break;
-    }
+   }
 
       token = COM_Parse(text_p);
       if (!Q_stricmp(token, ""))
@@ -854,19 +854,19 @@ static qboolean CG_ParseTrailBeam(baseTrailBeam_t *btb, char **text_p) {
       btb->numJitters++;
 
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "jitterAttachments")) {
       btb->jitterAttachments = qtrue;
 
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "}"))
       return qtrue; // reached the end of this trail beam
     else
     {
       CG_Printf(S_COLOR_RED "ERROR: unknown token '%s' in trail beam\n", token);
       return qfalse;
-  }
+ }
 }
 
   return qfalse;
@@ -917,28 +917,28 @@ static qboolean CG_ParseTrailSystem(baseTrailSystem_t *bts, char **text_p, const
       {
         CG_Printf(S_COLOR_RED "ERROR: failed to parse trail beam\n");
         return qfalse;
-    }
+   }
 
       if (bts->numBeams == MAX_BEAMS_PER_SYSTEM)
       {
         CG_Printf(S_COLOR_RED "ERROR: trail system has > %d beams\n", MAX_BEAMS_PER_SYSTEM);
         return qfalse;
-    }
+   }
       else if (numBaseTrailBeams == MAX_BASETRAIL_BEAMS)
       {
         CG_Printf(S_COLOR_RED "ERROR: maximum number of trail beams(%d) reached\n", 
             MAX_BASETRAIL_BEAMS);
         return qfalse;
-    }
+   }
       else
       {
        // start parsing beams again
         bts->beams[bts->numBeams] = &baseTrailBeams[numBaseTrailBeams];
         bts->numBeams++;
         numBaseTrailBeams++;
-    }
+   }
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "thirdPersonOnly"))
       bts->thirdPersonOnly = qtrue;
     else if (!Q_stricmp(token, "lifeTime")) {
@@ -948,7 +948,7 @@ static qboolean CG_ParseTrailSystem(baseTrailSystem_t *bts, char **text_p, const
 
       bts->lifeTime = atoi_neg(token, qfalse);
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "beam")) // acceptable text
       continue;
     else if (!Q_stricmp(token, "}")) {
@@ -956,12 +956,12 @@ static qboolean CG_ParseTrailSystem(baseTrailSystem_t *bts, char **text_p, const
         CG_Printf("Parsed trail system %s\n", name);
 
       return qtrue; // reached the end of this trail system
-  }
+ }
     else
     {
       CG_Printf(S_COLOR_RED "ERROR: unknown token '%s' in trail system %s\n", token, bts->name);
       return qfalse;
-  }
+ }
 }
 
   return qfalse;
@@ -1020,8 +1020,8 @@ static qboolean CG_ParseTrailFile(const char *fileName) {
           {
             CG_Printf(S_COLOR_RED "ERROR: a trail system is already named %s\n", tsName);
             return qfalse;
-        }
-      }
+       }
+     }
 
         Q_strncpyz(baseTrailSystems[numBaseTrailSystems].name, tsName, MAX_QPATH);
 
@@ -1029,7 +1029,7 @@ static qboolean CG_ParseTrailFile(const char *fileName) {
         {
           CG_Printf(S_COLOR_RED "ERROR: %s: failed to parse trail system %s\n", fileName, tsName);
           return qfalse;
-      }
+     }
 
        // start parsing trail systems again
         tsNameSet = qfalse;
@@ -1039,28 +1039,28 @@ static qboolean CG_ParseTrailFile(const char *fileName) {
           CG_Printf(S_COLOR_RED "ERROR: maximum number of trail systems(%d) reached\n", 
               MAX_BASETRAIL_SYSTEMS);
           return qfalse;
-      }
+     }
         else
           numBaseTrailSystems++;
 
         continue;
-    }
+   }
       else
       {
         CG_Printf(S_COLOR_RED "ERROR: unamed trail system\n");
         return qfalse;
-    }
-  }
+   }
+ }
 
     if (!tsNameSet) {
       Q_strncpyz(tsName, token, sizeof(tsName));
       tsNameSet = qtrue;
-  }
+ }
     else
     {
       CG_Printf(S_COLOR_RED "ERROR: trail system already named\n");
       return qfalse;
-  }
+ }
 }
 
   return qtrue;
@@ -1132,7 +1132,7 @@ qhandle_t CG_RegisterTrailSystem(char *name) {
         btb = bts->beams[j];
 
         btb->shader = trap_R_RegisterShader(btb->shaderName);
-    }
+   }
 
       if (cg_debugTrails.integer >= 1)
         CG_Printf("Registered trail system %s\n", name);
@@ -1141,7 +1141,7 @@ qhandle_t CG_RegisterTrailSystem(char *name) {
 
      // avoid returning 0
       return i + 1;
-  }
+ }
 }
 
   CG_Printf(S_COLOR_RED "ERROR: failed to register trail system %s\n", name);
@@ -1177,7 +1177,7 @@ static trailBeam_t *CG_SpawnNewTrailBeam(baseTrailBeam_t *btb,
         CG_Printf("TB %s created\n", ts->class->name);
 
       return tb;
-  }
+ }
 }
 
   if (cg_debugTrails.integer >= 1)
@@ -1223,7 +1223,7 @@ trailSystem_t *CG_SpawnNewTrailSystem(qhandle_t psHandle) {
         CG_Printf("TS %s created\n", bts->name);
 
       return ts;
-  }
+ }
 }
 
   if (cg_debugTrails.integer >= 1)
@@ -1300,7 +1300,7 @@ static void CG_GarbageCollectTrailSystems(void) {
 
       if (tb->valid && tb->parent == ts)
         count++;
-  }
+ }
 
     if (!count)
       ts->valid = qfalse;
@@ -1313,7 +1313,7 @@ static void CG_GarbageCollectTrailSystems(void) {
 
       if (!cg_entities[centNum].valid)
         CG_DestroyTrailSystem(&tempTS);
-  }
+ }
 
     if ((centNum = CG_AttachmentCentNum(&ts->backAttachment)) >= 0 &&
         centNum != cg.snap->ps.clientNum) {
@@ -1321,7 +1321,7 @@ static void CG_GarbageCollectTrailSystems(void) {
 
       if (!cg_entities[centNum].valid)
         CG_DestroyTrailSystem(&tempTS);
-  }
+ }
 
    // lifetime expired
     if (ts->destroyTime <= 0 && ts->class->lifeTime &&
@@ -1333,7 +1333,7 @@ static void CG_GarbageCollectTrailSystems(void) {
         CG_Printf("TS %s expired(born %d, lives %d, now %d)\n", 
                    ts->class->name, ts->birthTime, ts->class->lifeTime, 
                    cg.time);
-  }
+ }
 
     if (cg_debugTrails.integer >= 1 && !ts->valid)
       CG_Printf("TS %s garbage collected\n", ts->class->name);
@@ -1361,7 +1361,7 @@ void CG_AddTrails(void) {
     if (tb->valid) {
       CG_UpdateBeam(tb);
       CG_RenderBeam(tb);
-  }
+ }
 }
 
   if (cg_debugTrails.integer >= 2) {
@@ -1416,6 +1416,6 @@ void CG_TestTS_f(void) {
     if (CG_IsTrailSystemValid(&testTS)) {
       CG_SetAttachmentCent(&testTS->frontAttachment, &cg_entities[0]);
       CG_AttachToCent(&testTS->frontAttachment);
-  }
+ }
 }
 }

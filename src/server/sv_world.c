@@ -58,14 +58,14 @@ clipHandle_t SV_ClipHandleForEntity(const sharedEntity_t *ent) {
 */
 
 typedef struct worldSector_s {
-	int axis;		// - 1 = leaf node
+	int axis; // - 1 = leaf node
 	float dist;
 	struct worldSector_s *children[2];
 	svEntity_t *entities;
 } worldSector_t;
 
-#define AREA_DEPTH	4
-#define AREA_NODES	64
+#define AREA_DEPTH 4
+#define AREA_NODES 64
 
 worldSector_t sv_worldSectors[AREA_NODES];
 int sv_numworldSectors;
@@ -145,9 +145,11 @@ void SV_ClearWorld(void) {
 	vec3_t mins, maxs;
 
 	Com_Memset(sv_worldSectors, 0, sizeof(sv_worldSectors));
+
 	sv_numworldSectors = 0;
 	// get world map bounds
 	h = CM_InlineModel(0);
+
 	CM_ModelBounds(h, mins, maxs);
 	SV_CreateworldSector(0, mins, maxs);
 }
@@ -169,7 +171,7 @@ void SV_UnlinkEntity(sharedEntity_t *gEnt) {
 	ws = ent->worldSector;
 
 	if (!ws) {
-		return;		// not linked in anywhere
+		return; // not linked in anywhere
 	}
 
 	ent->worldSector = NULL;
@@ -194,7 +196,7 @@ void SV_UnlinkEntity(sharedEntity_t *gEnt) {
 SV_LinkEntity
 =======================================================================================================================================
 */
-#define MAX_TOTAL_ENT_LEAFS		128
+#define MAX_TOTAL_ENT_LEAFS 128
 void SV_LinkEntity(sharedEntity_t *gEnt) {
 	worldSector_t *node;
 	int leafs[MAX_TOTAL_ENT_LEAFS];
@@ -209,36 +211,42 @@ void SV_LinkEntity(sharedEntity_t *gEnt) {
 	ent = SV_SvEntityForGentity(gEnt);
 
 	if (ent->worldSector) {
-		SV_UnlinkEntity(gEnt);	// unlink from old position
+		SV_UnlinkEntity(gEnt); // unlink from old position
 	}
 	// encode the size into the entityState_t for client prediction
 	if (gEnt->r.bmodel) {
-		gEnt->s.solid = SOLID_BMODEL;		// a solid_box will never create this value
+		gEnt->s.solid = SOLID_BMODEL; // a solid_box will never create this value
 	} else if (gEnt->r.contents & (CONTENTS_SOLID|CONTENTS_BODY)) {
 		// assume that x/y are equal and symetric
 		i = gEnt->r.maxs[0];
 
-		if (i < 1)
+		if (i < 1) {
 			i = 1;
+		}
 
-		if (i > 255)
+		if (i > 255) {
 			i = 255;
+		}
 		// z is not symetric
 		j = (-gEnt->r.mins[2]);
 
-		if (j < 1)
+		if (j < 1) {
 			j = 1;
+		}
 
-		if (j > 255)
+		if (j > 255) {
 			j = 255;
+		}
 		// and z maxs can be negative...
 		k = (gEnt->r.maxs[2] + 32);
 
-		if (k < 1)
+		if (k < 1) {
 			k = 1;
+		}
 
-		if (k > 255)
+		if (k > 255) {
 			k = 255;
+		}
 
 		gEnt->s.solid = (k << 16)|(j << 8)|i;
 	} else {
@@ -326,12 +334,13 @@ void SV_LinkEntity(sharedEntity_t *gEnt) {
 			break;
 		}
 
-		if (gEnt->r.absmin[node->axis] > node->dist)
+		if (gEnt->r.absmin[node->axis] > node->dist) {
 			node = node->children[0];
-		else if (gEnt->r.absmax[node->axis] < node->dist)
+		} else if (gEnt->r.absmax[node->axis] < node->dist) {
 			node = node->children[1];
 		} else {
-			break;		// crosses the node
+			break; // crosses the node
+		}
 	}
 	// link it in
 	ent->worldSector = node;
@@ -386,7 +395,7 @@ static void SV_AreaEntities_r(worldSector_t *node, areaParms_t *ap) {
 	}
 
 	if (node->axis == -1) {
-		return;		// terminal node
+		return; // terminal node
 	}
 	// recurse down both sides
 	if (ap->maxs[node->axis] > node->dist) {
@@ -417,15 +426,10 @@ int SV_AreaEntities(const vec3_t mins, const vec3_t maxs, int *entityList, int m
 	return ap.count;
 }
 
-
-
-// ===========================================================================
-
-
 typedef struct {
 	vec3_t boxmins, boxmaxs; // enclose the test object along entire move
 	const float *mins;
-	const float *maxs;	// size of the moving object
+	const float *maxs; // size of the moving object
 	const float *start;
 	vec3_t end;
 	trace_t trace;
@@ -459,7 +463,7 @@ void SV_ClipToEntity(trace_t *trace, const vec3_t start, const vec3_t mins, cons
 	angles = touch->r.currentAngles;
 
 	if (!touch->r.bmodel) {
-		angles = vec3_origin;	// boxes don't rotate
+		angles = vec3_origin; // boxes don't rotate
 	}
 
 	CM_TransformedBoxTrace(trace, (float *)start, (float *)end, (float *)mins, (float *)maxs, clipHandle, contentmask, origin, angles, type);
@@ -504,15 +508,15 @@ static void SV_ClipMoveToEntities(moveclip_t *clip) {
 		// see if we should ignore this entity
 		if (clip->passEntityNum != ENTITYNUM_NONE) {
 			if (touchlist[i] == clip->passEntityNum) {
-				continue;	// don't clip against the pass entity
+				continue; // don't clip against the pass entity
 			}
 
 			if (touch->r.ownerNum == clip->passEntityNum) {
-				continue;	// don't clip against own missiles
+				continue; // don't clip against own missiles
 			}
 
 			if (touch->r.ownerNum == passOwnerNum) {
-				continue;	// don't clip against other missiles from our owner
+				continue; // don't clip against other missiles from our owner
 			}
 		}
 		// if it doesn't have any brushes of a type we
@@ -527,7 +531,7 @@ static void SV_ClipMoveToEntities(moveclip_t *clip) {
 		angles = touch->r.currentAngles;
 
 		if (!touch->r.bmodel) {
-			angles = vec3_origin;	// boxes don't rotate
+			angles = vec3_origin; // boxes don't rotate
 		}
 
 		CM_TransformedBoxTrace(&trace, (float *)clip->start, (float *)clip->end, (float *)clip->mins, (float *)clip->maxs, clipHandle, clip->contentmask, origin, angles, clip->collisionType);
@@ -542,9 +546,9 @@ static void SV_ClipMoveToEntities(moveclip_t *clip) {
 
 		if (trace.fraction < clip->trace.fraction) {
 			qboolean oldStart;
+
 			// make sure we keep a startsolid from a previous trace
 			oldStart = clip->trace.startsolid;
-
 			trace.entityNum = touch->s.number;
 			clip->trace = trace;
 			clip->trace.startsolid |= oldStart;
@@ -579,7 +583,7 @@ void SV_Trace(trace_t *results, const vec3_t start, vec3_t mins, vec3_t maxs, co
 
 	if (clip.trace.fraction == 0) {
 		*results = clip.trace;
-		return;		// blocked immediately by the world
+		return; // blocked immediately by the world
 	}
 
 	clip.contentmask = contentmask;
@@ -591,7 +595,7 @@ void SV_Trace(trace_t *results, const vec3_t start, vec3_t mins, vec3_t maxs, co
 	clip.passEntityNum = passEntityNum;
 	clip.collisionType = type;
 	// create the bounding box of the entire move
-// we can limit it to the part of the move not already clipped off by the world, which can be
+	// we can limit it to the part of the move not already clipped off by the world, which can be
 	// a significant savings for line of sight and shot traces
 	for (i = 0; i < 3; i++) {
 		if (end[i] > start[i]) {
@@ -605,7 +609,7 @@ void SV_Trace(trace_t *results, const vec3_t start, vec3_t mins, vec3_t maxs, co
 	// clip to other solid entities
 	SV_ClipMoveToEntities(&clip);
 
- *results = clip.trace;
+	*results = clip.trace;
 }
 
 /*
@@ -620,6 +624,7 @@ int SV_PointContents(const vec3_t p, int passEntityNum) {
 	int contents, c2;
 	clipHandle_t clipHandle;
 	float *angles;
+
 	// get base contents from world
 	contents = CM_PointContents(p, 0);
 	// or in contents from all the other entities
@@ -636,7 +641,7 @@ int SV_PointContents(const vec3_t p, int passEntityNum) {
 		angles = hit->r.currentAngles;
 
 		if (!hit->r.bmodel) {
-			angles = vec3_origin;	// boxes don't rotate
+			angles = vec3_origin; // boxes don't rotate
 		}
 
 		c2 = CM_TransformedPointContents(p, clipHandle, hit->r.currentOrigin, angles);
@@ -646,5 +651,3 @@ int SV_PointContents(const vec3_t p, int passEntityNum) {
 
 	return contents;
 }
-
-

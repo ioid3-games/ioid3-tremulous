@@ -172,8 +172,10 @@ qboolean SV_inPVS(const vec3_t p1, const vec3_t p2) {
 		return qfalse;
 	}
 
-	if (!CM_AreasConnected(area1, area2))
-		return qfalse;		// a door blocks sight
+	if (!CM_AreasConnected(area1, area2)) {
+		return qfalse; // a door blocks sight
+	}
+
 	return qtrue;
 }
 
@@ -229,6 +231,7 @@ qboolean SV_EntityContact(vec3_t mins, vec3_t maxs, const sharedEntity_t *gEnt, 
 	const float *origin, *angles;
 	clipHandle_t ch;
 	trace_t trace;
+
 	// check for exact collision
 	origin = gEnt->r.currentOrigin;
 	angles = gEnt->r.currentAngles;
@@ -259,10 +262,10 @@ SV_LocateGameData
 =======================================================================================================================================
 */
 void SV_LocateGameData(sharedEntity_t *gEnts, int numGEntities, int sizeofGEntity_t, playerState_t *clients, int sizeofGameClient) {
+
 	sv.gentities = gEnts;
 	sv.gentitySize = sizeofGEntity_t;
 	sv.num_entities = numGEntities;
-
 	sv.gameClients = clients;
 	sv.gameClientSize = sizeofGameClient;
 }
@@ -278,7 +281,7 @@ void SV_GetUsercmd(int clientNum, usercmd_t *cmd) {
 		Com_Error(ERR_DROP, "SV_GetUsercmd: bad clientNum:%i", clientNum);
 	}
 
- *cmd = svs.clients[clientNum].lastUsercmd;
+	*cmd = svs.clients[clientNum].lastUsercmd;
 }
 
 /*
@@ -301,184 +304,185 @@ The module is making a system call.
 =======================================================================================================================================
 */
 intptr_t SV_GameSystemCalls(intptr_t *args) {
+
 	switch (args[0]) {
-	case G_PRINT:
-		Com_Printf("%s", (const char *)VMA(1));
-		return 0;
-	case G_ERROR:
-		Com_Error(ERR_DROP, "%s", (const char *)VMA(1));
-		return 0;
-	case G_MILLISECONDS:
-		return Sys_Milliseconds();
-	case G_CVAR_REGISTER:
-		Cvar_Register(VMA(1), VMA(2), VMA(3), args[4]);
-		return 0;
-	case G_CVAR_UPDATE:
-		Cvar_Update(VMA(1));
-		return 0;
-	case G_CVAR_SET:
-		Cvar_SetSafe((const char *)VMA(1), (const char *)VMA(2));
-		return 0;
-	case G_CVAR_VARIABLE_INTEGER_VALUE:
-		return Cvar_VariableIntegerValue((const char *)VMA(1));
-	case G_CVAR_VARIABLE_STRING_BUFFER:
-		Cvar_VariableStringBuffer(VMA(1), VMA(2), args[3]);
-		return 0;
-	case G_ARGC:
-		return Cmd_Argc();
-	case G_ARGV:
-		Cmd_ArgvBuffer(args[1], VMA(2), args[3]);
-		return 0;
-	case G_SEND_CONSOLE_COMMAND:
-		Cbuf_ExecuteText(args[1], VMA(2));
-		return 0;
-	case G_FS_FOPEN_FILE:
-		return FS_FOpenFileByMode(VMA(1), VMA(2), args[3]);
-	case G_FS_READ:
-		FS_Read2(VMA(1), args[2], args[3]);
-		return 0;
-	case G_FS_WRITE:
-		FS_Write(VMA(1), args[2], args[3]);
-		return 0;
-	case G_FS_FCLOSE_FILE:
-		FS_FCloseFile(args[1]);
-		return 0;
-	case G_FS_GETFILELIST:
-		return FS_GetFileList(VMA(1), VMA(2), VMA(3), args[4]);
-	case G_FS_SEEK:
-		return FS_Seek(args[1], args[2], args[3]);
-	case G_LOCATE_GAME_DATA:
-		SV_LocateGameData(VMA(1), args[2], args[3], VMA(4), args[5]);
-		return 0;
-	case G_DROP_CLIENT:
-		SV_GameDropClient(args[1], VMA(2));
-		return 0;
-	case G_SEND_SERVER_COMMAND:
-		SV_GameSendServerCommand(args[1], VMA(2));
-		return 0;
-	case G_LINKENTITY:
-		SV_LinkEntity(VMA(1));
-		return 0;
-	case G_UNLINKENTITY:
-		SV_UnlinkEntity(VMA(1));
-		return 0;
-	case G_ENTITIES_IN_BOX:
-		return SV_AreaEntities(VMA(1), VMA(2), VMA(3), args[4]);
-	case G_ENTITY_CONTACT:
-		return SV_EntityContact(VMA(1), VMA(2), VMA(3), TT_AABB);
-	case G_ENTITY_CONTACTCAPSULE:
-		return SV_EntityContact(VMA(1), VMA(2), VMA(3), TT_CAPSULE);
-	case G_TRACE:
-		SV_Trace(VMA(1), VMA(2), VMA(3), VMA(4), VMA(5), args[6], args[7], TT_AABB);
-		return 0;
-	case G_TRACECAPSULE:
-		SV_Trace(VMA(1), VMA(2), VMA(3), VMA(4), VMA(5), args[6], args[7], TT_CAPSULE);
-		return 0;
-	case G_POINT_CONTENTS:
-		return SV_PointContents(VMA(1), args[2]);
-	case G_SET_BRUSH_MODEL:
-		SV_SetBrushModel(VMA(1), VMA(2));
-		return 0;
-	case G_IN_PVS:
-		return SV_inPVS(VMA(1), VMA(2));
-	case G_IN_PVS_IGNORE_PORTALS:
-		return SV_inPVSIgnorePortals(VMA(1), VMA(2));
-	case G_SET_CONFIGSTRING:
-		SV_SetConfigstring(args[1], VMA(2));
-		return 0;
-	case G_GET_CONFIGSTRING:
-		SV_GetConfigstring(args[1], VMA(2), args[3]);
-		return 0;
-	case G_SET_CONFIGSTRING_RESTRICTIONS:
-		SV_SetConfigstringRestrictions(args[1], VMA(2));
-		return 0;
-	case G_SET_USERINFO:
-		SV_SetUserinfo(args[1], VMA(2));
-		return 0;
-	case G_GET_USERINFO:
-		SV_GetUserinfo(args[1], VMA(2), args[3]);
-		return 0;
-	case G_GET_SERVERINFO:
-		SV_GetServerinfo(VMA(1), args[2]);
-		return 0;
-	case G_ADJUST_AREA_PORTAL_STATE:
-		SV_AdjustAreaPortalState(VMA(1), args[2]);
-		return 0;
-	case G_AREAS_CONNECTED:
-		return CM_AreasConnected(args[1], args[2]);
-	case G_GET_USERCMD:
-		SV_GetUsercmd(args[1], VMA(2));
-		return 0;
-	case G_GET_ENTITY_TOKEN:
-		{
-			const char *s;
+		case G_PRINT:
+			Com_Printf("%s", (const char *)VMA(1));
+			return 0;
+		case G_ERROR:
+			Com_Error(ERR_DROP, "%s", (const char *)VMA(1));
+			return 0;
+		case G_MILLISECONDS:
+			return Sys_Milliseconds();
+		case G_CVAR_REGISTER:
+			Cvar_Register(VMA(1), VMA(2), VMA(3), args[4]);
+			return 0;
+		case G_CVAR_UPDATE:
+			Cvar_Update(VMA(1));
+			return 0;
+		case G_CVAR_SET:
+			Cvar_SetSafe((const char *)VMA(1), (const char *)VMA(2));
+			return 0;
+		case G_CVAR_VARIABLE_INTEGER_VALUE:
+			return Cvar_VariableIntegerValue((const char *)VMA(1));
+		case G_CVAR_VARIABLE_STRING_BUFFER:
+			Cvar_VariableStringBuffer(VMA(1), VMA(2), args[3]);
+			return 0;
+		case G_ARGC:
+			return Cmd_Argc();
+		case G_ARGV:
+			Cmd_ArgvBuffer(args[1], VMA(2), args[3]);
+			return 0;
+		case G_SEND_CONSOLE_COMMAND:
+			Cbuf_ExecuteText(args[1], VMA(2));
+			return 0;
+		case G_FS_FOPEN_FILE:
+			return FS_FOpenFileByMode(VMA(1), VMA(2), args[3]);
+		case G_FS_READ:
+			FS_Read2(VMA(1), args[2], args[3]);
+			return 0;
+		case G_FS_WRITE:
+			FS_Write(VMA(1), args[2], args[3]);
+			return 0;
+		case G_FS_FCLOSE_FILE:
+			FS_FCloseFile(args[1]);
+			return 0;
+		case G_FS_GETFILELIST:
+			return FS_GetFileList(VMA(1), VMA(2), VMA(3), args[4]);
+		case G_FS_SEEK:
+			return FS_Seek(args[1], args[2], args[3]);
+		case G_LOCATE_GAME_DATA:
+			SV_LocateGameData(VMA(1), args[2], args[3], VMA(4), args[5]);
+			return 0;
+		case G_DROP_CLIENT:
+			SV_GameDropClient(args[1], VMA(2));
+			return 0;
+		case G_SEND_SERVER_COMMAND:
+			SV_GameSendServerCommand(args[1], VMA(2));
+			return 0;
+		case G_LINKENTITY:
+			SV_LinkEntity(VMA(1));
+			return 0;
+		case G_UNLINKENTITY:
+			SV_UnlinkEntity(VMA(1));
+			return 0;
+		case G_ENTITIES_IN_BOX:
+			return SV_AreaEntities(VMA(1), VMA(2), VMA(3), args[4]);
+		case G_ENTITY_CONTACT:
+			return SV_EntityContact(VMA(1), VMA(2), VMA(3), TT_AABB);
+		case G_ENTITY_CONTACTCAPSULE:
+			return SV_EntityContact(VMA(1), VMA(2), VMA(3), TT_CAPSULE);
+		case G_TRACE:
+			SV_Trace(VMA(1), VMA(2), VMA(3), VMA(4), VMA(5), args[6], args[7], TT_AABB);
+			return 0;
+		case G_TRACECAPSULE:
+			SV_Trace(VMA(1), VMA(2), VMA(3), VMA(4), VMA(5), args[6], args[7], TT_CAPSULE);
+			return 0;
+		case G_POINT_CONTENTS:
+			return SV_PointContents(VMA(1), args[2]);
+		case G_SET_BRUSH_MODEL:
+			SV_SetBrushModel(VMA(1), VMA(2));
+			return 0;
+		case G_IN_PVS:
+			return SV_inPVS(VMA(1), VMA(2));
+		case G_IN_PVS_IGNORE_PORTALS:
+			return SV_inPVSIgnorePortals(VMA(1), VMA(2));
+		case G_SET_CONFIGSTRING:
+			SV_SetConfigstring(args[1], VMA(2));
+			return 0;
+		case G_GET_CONFIGSTRING:
+			SV_GetConfigstring(args[1], VMA(2), args[3]);
+			return 0;
+		case G_SET_CONFIGSTRING_RESTRICTIONS:
+			SV_SetConfigstringRestrictions(args[1], VMA(2));
+			return 0;
+		case G_SET_USERINFO:
+			SV_SetUserinfo(args[1], VMA(2));
+			return 0;
+		case G_GET_USERINFO:
+			SV_GetUserinfo(args[1], VMA(2), args[3]);
+			return 0;
+		case G_GET_SERVERINFO:
+			SV_GetServerinfo(VMA(1), args[2]);
+			return 0;
+		case G_ADJUST_AREA_PORTAL_STATE:
+			SV_AdjustAreaPortalState(VMA(1), args[2]);
+			return 0;
+		case G_AREAS_CONNECTED:
+			return CM_AreasConnected(args[1], args[2]);
+		case G_GET_USERCMD:
+			SV_GetUsercmd(args[1], VMA(2));
+			return 0;
+		case G_GET_ENTITY_TOKEN:
+			{
+				const char *s;
 
-			s = COM_Parse(&sv.entityParsePoint);
-			Q_strncpyz(VMA(1), s, args[2]);
+				s = COM_Parse(&sv.entityParsePoint);
+				Q_strncpyz(VMA(1), s, args[2]);
 
-			if (!sv.entityParsePoint && !s[0]) {
-				return qfalse;
-			} else {
-				return qtrue;
+				if (!sv.entityParsePoint && !s[0]) {
+					return qfalse;
+				} else {
+					return qtrue;
+				}
 			}
-		}
 
-	case G_REAL_TIME:
-		return Com_RealTime(VMA(1));
-	case G_SNAPVECTOR:
-		Q_SnapVector(VMA(1));
-		return 0;
-	case G_SEND_GAMESTAT:
-		SV_MasterGameStat(VMA(1));
-		return 0;
-	case G_PARSE_ADD_GLOBAL_DEFINE:
-		return Parse_AddGlobalDefine(VMA(1));
-	case G_PARSE_LOAD_SOURCE:
-		return Parse_LoadSourceHandle(VMA(1));
-	case G_PARSE_FREE_SOURCE:
-		return Parse_FreeSourceHandle(args[1]);
-	case G_PARSE_READ_TOKEN:
-		return Parse_ReadTokenHandle(args[1], VMA(2));
-	case G_PARSE_SOURCE_FILE_AND_LINE:
-		return Parse_SourceFileAndLine(args[1], VMA(2), VMA(3));
-	case G_ADDCOMMAND:
-		Cmd_AddCommand(VMA(1), NULL);
-		return 0;
-	case G_REMOVECOMMAND:
-		Cmd_RemoveCommand(VMA(1));
-		return 0;
-	case TRAP_MEMSET:
-		Com_Memset(VMA(1), args[2], args[3]);
-		return 0;
-	case TRAP_MEMCPY:
-		Com_Memcpy(VMA(1), VMA(2), args[3]);
-		return 0;
-	case TRAP_STRNCPY:
-		strncpy(VMA(1), VMA(2), args[3]);
-		return args[1];
-	case TRAP_SIN:
-		return FloatAsInt(sin(VMF(1)));
-	case TRAP_COS:
-		return FloatAsInt(cos(VMF(1)));
-	case TRAP_ATAN2:
-		return FloatAsInt(atan2(VMF(1), VMF(2)));
-	case TRAP_SQRT:
-		return FloatAsInt(sqrt(VMF(1)));
-	case TRAP_MATRIXMULTIPLY:
-		MatrixMultiply(VMA(1), VMA(2), VMA(3));
-		return 0;
-	case TRAP_ANGLEVECTORS:
-		AngleVectors(VMA(1), VMA(2), VMA(3), VMA(4));
-		return 0;
-	case TRAP_PERPENDICULARVECTOR:
-		PerpendicularVector(VMA(1), VMA(2));
-		return 0;
-	case TRAP_FLOOR:
-		return FloatAsInt(floor(VMF(1)));
-	case TRAP_CEIL:
-		return FloatAsInt(ceil(VMF(1)));
-	default:
-		Com_Error(ERR_DROP, "Bad game system trap: %ld", (long int)args[0]);
+		case G_REAL_TIME:
+			return Com_RealTime(VMA(1));
+		case G_SNAPVECTOR:
+			Q_SnapVector(VMA(1));
+			return 0;
+		case G_SEND_GAMESTAT:
+			SV_MasterGameStat(VMA(1));
+			return 0;
+		case G_PARSE_ADD_GLOBAL_DEFINE:
+			return Parse_AddGlobalDefine(VMA(1));
+		case G_PARSE_LOAD_SOURCE:
+			return Parse_LoadSourceHandle(VMA(1));
+		case G_PARSE_FREE_SOURCE:
+			return Parse_FreeSourceHandle(args[1]);
+		case G_PARSE_READ_TOKEN:
+			return Parse_ReadTokenHandle(args[1], VMA(2));
+		case G_PARSE_SOURCE_FILE_AND_LINE:
+			return Parse_SourceFileAndLine(args[1], VMA(2), VMA(3));
+		case G_ADDCOMMAND:
+			Cmd_AddCommand(VMA(1), NULL);
+			return 0;
+		case G_REMOVECOMMAND:
+			Cmd_RemoveCommand(VMA(1));
+			return 0;
+		case TRAP_MEMSET:
+			Com_Memset(VMA(1), args[2], args[3]);
+			return 0;
+		case TRAP_MEMCPY:
+			Com_Memcpy(VMA(1), VMA(2), args[3]);
+			return 0;
+		case TRAP_STRNCPY:
+			strncpy(VMA(1), VMA(2), args[3]);
+			return args[1];
+		case TRAP_SIN:
+			return FloatAsInt(sin(VMF(1)));
+		case TRAP_COS:
+			return FloatAsInt(cos(VMF(1)));
+		case TRAP_ATAN2:
+			return FloatAsInt(atan2(VMF(1), VMF(2)));
+		case TRAP_SQRT:
+			return FloatAsInt(sqrt(VMF(1)));
+		case TRAP_MATRIXMULTIPLY:
+			MatrixMultiply(VMA(1), VMA(2), VMA(3));
+			return 0;
+		case TRAP_ANGLEVECTORS:
+			AngleVectors(VMA(1), VMA(2), VMA(3), VMA(4));
+			return 0;
+		case TRAP_PERPENDICULARVECTOR:
+			PerpendicularVector(VMA(1), VMA(2));
+			return 0;
+		case TRAP_FLOOR:
+			return FloatAsInt(floor(VMF(1)));
+		case TRAP_CEIL:
+			return FloatAsInt(ceil(VMF(1)));
+		default:
+			Com_Error(ERR_DROP, "Bad game system trap: %ld", (long int)args[0]);
 	}
 
 	return 0;
@@ -582,4 +586,3 @@ qboolean SV_GameCommand(void) {
 
 	return VM_Call(gvm, GAME_CONSOLE_COMMAND);
 }
-

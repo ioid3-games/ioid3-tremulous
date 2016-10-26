@@ -65,6 +65,7 @@ Parses deltas from the given base and adds the resulting entity to the current f
 */
 void CL_DeltaEntity(msg_t *msg, clSnapshot_t *frame, int newnum, entityState_t *old, qboolean unchanged) {
 	entityState_t *state;
+
 	// save the parsed entity state into the big circular buffer so it can be used as the source for a later delta
 	state = &cl.parseEntities[cl.parseEntitiesNum & (MAX_PARSE_ENTITIES - 1)];
 
@@ -75,7 +76,7 @@ void CL_DeltaEntity(msg_t *msg, clSnapshot_t *frame, int newnum, entityState_t *
 	}
 
 	if (state->number == (MAX_GENTITIES - 1)) {
-		return;		// entity was delta removed
+		return; // entity was delta removed
 	}
 
 	cl.parseEntitiesNum++;
@@ -129,7 +130,7 @@ void CL_ParsePacketEntities(msg_t *msg, clSnapshot_t *oldframe, clSnapshot_t *ne
 
 			CL_DeltaEntity(msg, newframe, oldnum, oldstate, qtrue);
 
-	oldindex++;
+			oldindex++;
 
 			if (oldindex >= oldframe->numEntities) {
 				oldnum = 99999;
@@ -204,6 +205,7 @@ void CL_ParseSnapshot(msg_t *msg) {
 	int deltaNum;
 	int oldMessageNum;
 	int i, packetNum;
+
 	// get the reliable sequence acknowledge number
 	// NOTE: now sent with all server to client messages
 	// clc.reliableAcknowledge = MSG_ReadLong(msg);
@@ -212,7 +214,6 @@ void CL_ParseSnapshot(msg_t *msg) {
 	Com_Memset(&newSnap, 0, sizeof(newSnap));
 	// we will have read any new server commands in this message before we got to svc_snapshot
 	newSnap.serverCommandNum = clc.serverCommandSequence;
-
 	newSnap.serverTime = MSG_ReadLong(msg);
 	// if we were just unpaused, we can only *now* really let the change come into effect or the client hangs.
 	cl_paused->modified = 0;
@@ -231,9 +232,9 @@ void CL_ParseSnapshot(msg_t *msg) {
 	// If the frame is delta compressed from data that we no longer have available, we must suck up the rest of the frame, but not use
 	// it, then ask for a non-compressed message
 	if (newSnap.deltaNum <= 0) {
-		newSnap.valid = qtrue;		// uncompressed frame
+		newSnap.valid = qtrue; // uncompressed frame
 		old = NULL;
-		clc.demowaiting = qfalse;	// we can start recording now
+		clc.demowaiting = qfalse; // we can start recording now
 	} else {
 		old = &cl.snapshots[newSnap.deltaNum & PACKET_MASK];
 
@@ -267,6 +268,7 @@ void CL_ParseSnapshot(msg_t *msg) {
 	}
 	// read packet entities
 	SHOWNET(msg, "packet entities");
+
 	CL_ParsePacketEntities(msg, old, &newSnap);
 	// if not valid, dump the entire thing now that it has been properly read
 	if (!newSnap.valid) {
@@ -304,9 +306,6 @@ void CL_ParseSnapshot(msg_t *msg) {
 
 	cl.newSnapshots = qtrue;
 }
-
-
-// =====================================================================
 
 int cl_connectedToPureServer;
 int cl_connectedToCheatServer;
@@ -378,9 +377,9 @@ void CL_SystemInfoChanged(void) {
 			gameSet = qtrue;
 		}
 
-		if ((cvar_flags = Cvar_Flags(key)) == CVAR_NONEXISTENT)
+		if ((cvar_flags = Cvar_Flags(key)) == CVAR_NONEXISTENT) {
 			Cvar_Get(key, value, CVAR_SERVER_CREATED|CVAR_ROM);
-		else {
+		} else {
 			// If this cvar may not be modified by a server discard the value.
 			if (!(cvar_flags & (CVAR_SYSTEMINFO|CVAR_SERVER_CREATED|CVAR_USER_CREATED))) {
 #ifndef STANDALONE
@@ -491,9 +490,9 @@ void CL_ParseGamestate(msg_t *msg) {
 	// parse serverId and other cvars
 	CL_SystemInfoChanged();
 	// stop recording now so the demo won't have an unnecessary level load at the end.
-	if (cl_autoRecordDemo->integer && clc.demorecording)
+	if (cl_autoRecordDemo->integer && clc.demorecording) {
 		CL_StopRecord_f();
-
+	}
 	// reinitialize the filesystem if the game directory has changed
 	if (!cl_oldGameSet && (Cvar_Flags("fs_game") & CVAR_MODIFIED)) {
 		cl_oldGameSet = qtrue;
@@ -567,12 +566,13 @@ void CL_ParseDownload(msg_t *msg) {
 		}
 	}
 
-	if (size)
+	if (size) {
 		FS_Write(data, size, clc.download);
+	}
 
 	CL_AddReliableCommand(va("nextdl %d", clc.downloadBlock), qfalse);
-	clc.downloadBlock++;
 
+	clc.downloadBlock++;
 	clc.downloadCount += size;
 	// So UI gets access to it
 	Cvar_SetValue("cl_downloadCount", clc.downloadCount);
@@ -602,7 +602,7 @@ CL_ShouldIgnoreVoipSender
 */
 static qboolean CL_ShouldIgnoreVoipSender(int sender) {
 
-	if (!cl_voip->integer)
+	if (!cl_voip->integer) {
 		return qtrue; // VoIP is disabled.
 	} else if ((sender == clc.clientNum) && (!clc.demoplaying))
 		return qtrue; // ignore own voice (unless playing back a demo).
@@ -612,6 +612,7 @@ static qboolean CL_ShouldIgnoreVoipSender(int sender) {
 		return qtrue; // just ignoring this guy.
 	} else if (clc.voipGain[sender] == 0.0f)
 		return qtrue; // too quiet to play.
+	}
 
 	return qfalse;
 }
@@ -660,23 +661,23 @@ static void CL_ParseVoip(msg_t *msg, qboolean ignoreData) {
 	if (sender < 0) {
 		return;
 	}
-  // short/invalid packet, bail.
+	// short/invalid packet, bail.
 	} else if (generation < 0) {
 		return;
 	}
-  // short/invalid packet, bail.
+	// short/invalid packet, bail.
 	} else if (sequence < 0) {
 		return;
 	}
-  // short/invalid packet, bail.
+	// short/invalid packet, bail.
 	} else if (frames < 0) {
 		return;
 	}
-  // short/invalid packet, bail.
+	// short/invalid packet, bail.
 	} else if (packetsize < 0) {
 		return;
 	}
-  // short/invalid packet, bail.
+	// short/invalid packet, bail.
 
 	if (packetsize > sizeof(encoded)) { // overlarge packet?
 		int bytesleft = packetsize;
@@ -684,8 +685,10 @@ static void CL_ParseVoip(msg_t *msg, qboolean ignoreData) {
 		while (bytesleft) {
 			int br = bytesleft;
 
-			if (br > sizeof(encoded))
+			if (br > sizeof(encoded)) {
 				br = sizeof(encoded);
+			}
+
 			MSG_ReadData(msg, encoded, br);
 			bytesleft -= br;
 		}
@@ -698,11 +701,11 @@ static void CL_ParseVoip(msg_t *msg, qboolean ignoreData) {
 	if (ignoreData) {
 		return; // just ignore legacy speex voip data
 	} else if (!clc.voipCodecInitialized) {
-		return;  // can't handle VoIP without libopus!
+		return; // can't handle VoIP without libopus!
 	} else if (sender >= MAX_CLIENTS) {
-		return;  // bogus sender.
+		return; // bogus sender.
 	} else if (CL_ShouldIgnoreVoipSender(sender)) {
-		return;  // Channel is muted, bail.
+		return; // Channel is muted, bail.
 	}
 	// !!! FIXME: make sure data is narrowband? Does decoder handle this?
 
@@ -751,31 +754,38 @@ static void CL_ParseVoip(msg_t *msg, qboolean ignoreData) {
 		numSamples = 0;
 	}
 
-	#if 0
+#if 0
 	static FILE *encio = NULL;
 
-	if (encio == NULL) encio = fopen("voip - incoming - encoded.bin", "wb");
+	if (encio == NULL) {
+		encio = fopen("voip - incoming - encoded.bin", "wb");
+	}
 
-	if (encio != NULL) {fwrite(encoded, len, 1, encio); fflush(encio);}
+	if (encio != NULL) {
+		fwrite(encoded, len, 1, encio); fflush(encio);
+	}
 
 	static FILE *decio = NULL;
 
-	if (decio == NULL) decio = fopen("voip - incoming - decoded.bin", "wb");
+	if (decio == NULL) {
+		decio = fopen("voip - incoming - decoded.bin", "wb");
+	}
 
-	if (decio != NULL) {fwrite(decoded + written, clc.speexFrameSize * 2, 1, decio); fflush(decio);}
-	#endif
+	if (decio != NULL) {
+		fwrite(decoded + written, clc.speexFrameSize * 2, 1, decio); fflush(decio);
+	}
+#endif
 	written += numSamples;
 
 	Com_DPrintf("VoIP: playback %d bytes, %d samples, %d frames\n", written * 2, written, frames);
 
-	if (written > 0)
+	if (written > 0) {
 		CL_PlayVoip(sender, written, (const byte *)decoded, flags);
+	}
 
 	clc.voipIncomingSequence[sender] = sequence + frames;
 }
 #endif
-
-
 /*
 =======================================================================================================================================
 CL_ParseCommandString
@@ -818,7 +828,7 @@ void CL_ParseServerMessage(msg_t *msg) {
 	MSG_Bitstream(msg);
 	// get the reliable sequence acknowledge number
 	clc.reliableAcknowledge = MSG_ReadLong(msg);
-	// 
+
 	if (clc.reliableAcknowledge < clc.reliableSequence - MAX_RELIABLE_COMMANDS) {
 		clc.reliableAcknowledge = clc.reliableSequence;
 	}
@@ -843,37 +853,35 @@ void CL_ParseServerMessage(msg_t *msg) {
 				SHOWNET(msg, svc_strings[cmd]);
 			}
 		}
-	// other commands
+		// other commands
 		switch (cmd) {
-		default:
-			Com_Error(ERR_DROP, "CL_ParseServerMessage: Illegible server message");
-			break;			
-		case svc_nop:
-			break;
-		case svc_serverCommand:
-			CL_ParseCommandString(msg);
-			break;
-		case svc_gamestate:
-			CL_ParseGamestate(msg);
-			break;
-		case svc_snapshot:
-			CL_ParseSnapshot(msg);
-			break;
-		case svc_download:
-			CL_ParseDownload(msg);
-			break;
-		case svc_voipSpeex:
+			default:
+				Com_Error(ERR_DROP, "CL_ParseServerMessage: Illegible server message");
+				break;
+			case svc_nop:
+				break;
+			case svc_serverCommand:
+				CL_ParseCommandString(msg);
+				break;
+			case svc_gamestate:
+				CL_ParseGamestate(msg);
+				break;
+			case svc_snapshot:
+				CL_ParseSnapshot(msg);
+				break;
+			case svc_download:
+				CL_ParseDownload(msg);
+				break;
+			case svc_voipSpeex:
 #ifdef USE_VOIP
-			CL_ParseVoip(msg, qtrue);
+				CL_ParseVoip(msg, qtrue);
 #endif
-			break;
-		case svc_voipOpus:
+				break;
+			case svc_voipOpus:
 #ifdef USE_VOIP
-			CL_ParseVoip(msg, !clc.voipEnabled);
+				CL_ParseVoip(msg, !clc.voipEnabled);
 #endif
-			break;
+				break;
 		}
 	}
 }
-
-

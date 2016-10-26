@@ -68,7 +68,7 @@ qboolean PM_SlideMove(qboolean gravity) {
      // slide along the ground plane
       PM_ClipVelocity(pm->ps->velocity, pml.groundTrace.plane.normal, 
         pm->ps->velocity, OVERCLIP);
-  }
+ }
 }
 
   time_left = pml.frametime;
@@ -96,12 +96,12 @@ qboolean PM_SlideMove(qboolean gravity) {
      // entity is completely trapped in another solid
       pm->ps->velocity[2] = 0; // don't build up falling damage, but allow sideways acceleration
       return qtrue;
-  }
+ }
 
     if (trace.fraction > 0) {
      // actually covered some distance
       VectorCopy(trace.endpos, pm->ps->origin);
-  }
+ }
 
     if (trace.fraction == 1)
        break;  // moved the entire distance
@@ -115,7 +115,7 @@ qboolean PM_SlideMove(qboolean gravity) {
      // this shouldn't really happen
       VectorClear(pm->ps->velocity);
       return qtrue;
-  }
+ }
 
    // 
    // if this is the same plane we hit before, nudge velocity
@@ -127,8 +127,8 @@ qboolean PM_SlideMove(qboolean gravity) {
       {
         VectorAdd(trace.plane.normal, pm->ps->velocity, pm->ps->velocity);
         break;
-    }
-  }
+   }
+ }
 
     if (i < numplanes)
       continue;
@@ -196,14 +196,14 @@ qboolean PM_SlideMove(qboolean gravity) {
          // stop dead at a tripple plane interaction
           VectorClear(pm->ps->velocity);
           return qtrue;
-      }
-    }
+     }
+   }
 
      // if we have fixed all interactions, try another move
       VectorCopy(clipVelocity, pm->ps->velocity);
       VectorCopy(endClipVelocity, endVelocity);
       break;
-  }
+ }
 }
 
   if (gravity)
@@ -241,7 +241,7 @@ void PM_StepEvent(vec3_t from, vec3_t to, vec3_t normal) {
         PM_AddEvent(EV_STEPDN_12);
       else
         PM_AddEvent(EV_STEPDN_16);
-  }
+ }
 } else {
     size = fabs(size);
 
@@ -254,7 +254,7 @@ void PM_StepEvent(vec3_t from, vec3_t to, vec3_t normal) {
         PM_AddEvent(EV_STEP_12);
       else
         PM_AddEvent(EV_STEP_16);
-  }
+ }
 }
 
   if (pm->debugLevel)
@@ -292,7 +292,7 @@ qboolean PM_StepSlideMove(qboolean gravity, qboolean predictive) {
         Com_Printf("%d: step down\n", c_pmove);
 
       stepped = qtrue;
-  }
+ }
 } else {
     VectorCopy(start_o, down);
     VectorMA(down, -STEPSIZE, normal, down);
@@ -301,7 +301,7 @@ qboolean PM_StepSlideMove(qboolean gravity, qboolean predictive) {
     if (DotProduct(trace.plane.normal, pm->ps->velocity) > 0.0f &&
        (trace.fraction == 1.0f || DotProduct(trace.plane.normal, normal) < 0.7f)) {
       return stepped;
-  }
+ }
 
     VectorCopy(start_o, up);
     VectorMA(up, STEPSIZE, normal, up);
@@ -313,7 +313,7 @@ qboolean PM_StepSlideMove(qboolean gravity, qboolean predictive) {
         Com_Printf("%i:bend can't step\n", c_pmove);
 
       return stepped;  // can't step up
-  }
+ }
 
     VectorSubtract(trace.endpos, start_o, step_v);
     VectorCopy(step_v, step_vNormal);
@@ -329,7 +329,7 @@ qboolean PM_StepSlideMove(qboolean gravity, qboolean predictive) {
         Com_Printf("%d: step up\n", c_pmove);
 
       stepped = qtrue;
-  }
+ }
 
    // push down the final amount
     VectorCopy(pm->ps->origin, down);

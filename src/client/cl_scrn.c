@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
 #include "client.h"
 
-qboolean scr_initialized;		// ready to draw
+qboolean scr_initialized; // ready to draw
 
 cvar_t *cl_timegraph;
 cvar_t *cl_debuggraph;
@@ -329,11 +329,6 @@ SCR_GetBigStringWidth
 int SCR_GetBigStringWidth(const char *str) {
 	return SCR_Strlen(str) * BIGCHAR_WIDTH;
 }
-
-
-// ===============================================================================
-
-
 #ifdef USE_VOIP
 /*
 =======================================================================================================================================
@@ -350,48 +345,47 @@ void SCR_DrawVoipMeter(void) {
 	if (!cl_voipShowMeter->integer) {
 		return;
 	}
- // player doesn't want to show meter at all.
+	// player doesn't want to show meter at all.
 	} else if (!cl_voipSend->integer) {
 		return;
 	}
- // not recording at the moment.
+	// not recording at the moment.
 	} else if (clc.state != CA_ACTIVE) {
 		return;
 	}
- // not connected to a server.
+	// not connected to a server.
 	} else if (!clc.voipEnabled) {
 		return;
 	}
- // server doesn't support VoIP.
+	// server doesn't support VoIP.
 	} else if (clc.demoplaying) {
 		return;
 	}
- // playing back a demo.
+	// playing back a demo.
 	} else if (!cl_voip->integer) {
 		return;
 	}
- // client has VoIP support disabled.
-
+	// client has VoIP support disabled.
 	limit = (int)(clc.voipPower * 10.0f);
 
-	if (limit > 10)
+	if (limit > 10) {
 		limit = 10;
+	}
 
-	for (i = 0; i < limit; i++)
+	for (i = 0; i < limit; i++) {
 		buffer[i] = '*';
+	}
 
-	while (i < 10)
+	while (i < 10) {
 		buffer[i++] = ' ';
+	}
+
 	buffer[i] = '\0';
 
 	sprintf(string, "VoIP: [%s]", buffer);
 	SCR_DrawStringExt(320 - strlen(string) * 4, 10, 8, string, g_color_table[7], qtrue, qfalse);
 }
 #endif
-
-
-
-
 /*
 =======================================================================================================================================
 
@@ -409,6 +403,7 @@ SCR_DebugGraph
 =======================================================================================================================================
 */
 void SCR_DebugGraph(float value) {
+
 	values[current] = value;
 	current = (current + 1) % ARRAY_LEN(values);
 }
@@ -421,10 +416,12 @@ SCR_DrawDebugGraph
 void SCR_DrawDebugGraph(void) {
 	int a, x, y, w, i, h;
 	float v;
+
 	// draw the graph
 	w = cls.glconfig.vidWidth;
 	x = 0;
 	y = cls.glconfig.vidHeight;
+
 	re.SetColor(g_color_table[0]);
 	re.DrawStretchPic(x, y - cl_graphheight->integer, w, cl_graphheight->integer, 0, 0, 0, 0, cls.whiteShader);
 	re.SetColor(NULL);
@@ -434,14 +431,14 @@ void SCR_DrawDebugGraph(void) {
 		v = values[i];
 		v = v * cl_graphscale->integer + cl_graphshift->integer;
 
-		if (v < 0)
+		if (v < 0) {
 			v += cl_graphheight->integer * (1 + (int)(-v / cl_graphheight->integer));
+		}
+
 		h = (int)v % cl_graphheight->integer;
 		re.DrawStretchPic(x + w - 1 - a, y - h, 1, h, 0, 0, 0, 0, cls.whiteShader);
 	}
 }
-
-// ============================================================================= 
 
 /*
 =======================================================================================================================================
@@ -449,6 +446,7 @@ SCR_Init
 =======================================================================================================================================
 */
 void SCR_Init(void) {
+
 	cl_timegraph = Cvar_Get("timegraph", "0", CVAR_CHEAT);
 	cl_debuggraph = Cvar_Get("debuggraph", "0", CVAR_CHEAT);
 	cl_graphheight = Cvar_Get("graphheight", "32", CVAR_CHEAT);
@@ -482,37 +480,37 @@ void SCR_DrawScreenField(stereoFrame_t stereoFrame) {
 	// if the menu is going to cover the entire screen, we don't need to render anything under it
 	if (uivm && !uiFullscreen) {
 		switch (clc.state) {
-		default:
-			Com_Error(ERR_FATAL, "SCR_DrawScreenField: bad clc.state");
-			break;
-		case CA_CINEMATIC:
-			SCR_DrawCinematic();
-			break;
-		case CA_DISCONNECTED:
-			// force menu up
-			S_StopAllSounds();
-			VM_Call(uivm, UI_SET_ACTIVE_MENU, UIMENU_MAIN);
-			break;
-		case CA_CONNECTING:
-		case CA_CHALLENGING:
-		case CA_CONNECTED:
-			// connecting clients will only show the connection dialog
-			// refresh to update the time
-			VM_Call(uivm, UI_REFRESH, cls.realtime);
-			VM_Call(uivm, UI_DRAW_CONNECT_SCREEN, qfalse);
-			break;
-		case CA_LOADING:
-		case CA_PRIMED:
-			// draw the game information screen and loading progress
-			CL_CGameRendering(stereoFrame);
-			break;
-		case CA_ACTIVE:
-			// always supply STEREO_CENTER as vieworg offset is now done by the engine.
-			CL_CGameRendering(stereoFrame);
+			default:
+				Com_Error(ERR_FATAL, "SCR_DrawScreenField: bad clc.state");
+				break;
+			case CA_CINEMATIC:
+				SCR_DrawCinematic();
+				break;
+			case CA_DISCONNECTED:
+				// force menu up
+				S_StopAllSounds();
+				VM_Call(uivm, UI_SET_ACTIVE_MENU, UIMENU_MAIN);
+				break;
+			case CA_CONNECTING:
+			case CA_CHALLENGING:
+			case CA_CONNECTED:
+				// connecting clients will only show the connection dialog
+				// refresh to update the time
+				VM_Call(uivm, UI_REFRESH, cls.realtime);
+				VM_Call(uivm, UI_DRAW_CONNECT_SCREEN, qfalse);
+				break;
+			case CA_LOADING:
+			case CA_PRIMED:
+				// draw the game information screen and loading progress
+				CL_CGameRendering(stereoFrame);
+				break;
+			case CA_ACTIVE:
+				// always supply STEREO_CENTER as vieworg offset is now done by the engine.
+				CL_CGameRendering(stereoFrame);
 #ifdef USE_VOIP
-			SCR_DrawVoipMeter();
+				SCR_DrawVoipMeter();
 #endif
-			break;
+				break;
 		}
 	}
 	// the menu draws next
@@ -538,7 +536,7 @@ void SCR_UpdateScreen(void) {
 	static int recursive;
 
 	if (!scr_initialized) {
-		return;				// not initialized yet
+		return; // not initialized yet
 	}
 
 	if (++recursive > 2) {
@@ -567,4 +565,3 @@ void SCR_UpdateScreen(void) {
 
 	recursive = 0;
 }
-

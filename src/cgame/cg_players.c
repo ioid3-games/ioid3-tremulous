@@ -142,7 +142,7 @@ static qboolean CG_ParseAnimationFile(const char *filename, clientInfo_t *ci) {
         CG_Printf("Bad footsteps parm in %s: %s\n", filename, token);
 
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "headoffset")) {
       for (i = 0; i < 3; i++)
       {
@@ -151,10 +151,10 @@ static qboolean CG_ParseAnimationFile(const char *filename, clientInfo_t *ci) {
           break;
 
         ci->headOffset[i] = atof(token);
-    }
+   }
 
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "sex")) {
       token = COM_Parse(&text_p);
 
@@ -169,25 +169,25 @@ static qboolean CG_ParseAnimationFile(const char *filename, clientInfo_t *ci) {
         ci->gender = GENDER_MALE;
 
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "fixedlegs")) {
       ci->fixedlegs = qtrue;
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "fixedtorso")) {
       ci->fixedtorso = qtrue;
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "nonsegmented")) {
       ci->nonsegmented = qtrue;
       continue;
-  }
+ }
 
    // if it is a number, start parsing animations
     if (token[0] >= '0' && token[0] <= '9') {
       text_p = prev; // unget the token
       break;
-  }
+ }
 
     Com_Printf("unknown token '%s' is %s\n", token, filename);
 }
@@ -209,10 +209,10 @@ static qboolean CG_ParseAnimationFile(const char *filename, clientInfo_t *ci) {
           animations[i].reversed = qfalse;
           animations[i].flipflop = qfalse;
           continue;
-      }
+     }
 
         break;
-    }
+   }
 
       animations[i].firstFrame = atoi(token);
 
@@ -236,7 +236,7 @@ static qboolean CG_ParseAnimationFile(const char *filename, clientInfo_t *ci) {
       {
         animations[i].numFrames = -animations[i].numFrames;
         animations[i].reversed = qtrue;
-    }
+   }
 
       token = COM_Parse(&text_p);
 
@@ -256,12 +256,12 @@ static qboolean CG_ParseAnimationFile(const char *filename, clientInfo_t *ci) {
 
       animations[i].frameLerp = 1000 / fps;
       animations[i].initialLerp = 1000 / fps;
-  }
+ }
 
     if (i != MAX_PLAYER_ANIMATIONS) {
       CG_Printf("Error parsing animation file: %s", filename);
       return qfalse;
-  }
+ }
    // crouch backward animation
     memcpy(&animations[LEGS_BACKCR], &animations[LEGS_WALKCR], sizeof(animation_t));
     animations[LEGS_BACKCR].reversed = qtrue;
@@ -312,7 +312,7 @@ static qboolean CG_ParseAnimationFile(const char *filename, clientInfo_t *ci) {
       {
         animations[i].numFrames = -animations[i].numFrames;
         animations[i].reversed = qtrue;
-    }
+   }
 
       token = COM_Parse(&text_p);
 
@@ -332,12 +332,12 @@ static qboolean CG_ParseAnimationFile(const char *filename, clientInfo_t *ci) {
 
       animations[i].frameLerp = 1000 / fps;
       animations[i].initialLerp = 1000 / fps;
-  }
+ }
 
     if (i != MAX_NONSEG_PLAYER_ANIMATIONS) {
       CG_Printf("Error parsing animation file: %s", filename);
       return qfalse;
-  }
+ }
 
    // walk backward animation
     memcpy(&animations[NSPA_WALKBACK], &animations[NSPA_WALK], sizeof(animation_t));
@@ -410,28 +410,28 @@ static qboolean CG_RegisterClientModelname(clientInfo_t *ci, const char *modelNa
     if (!ci->legsModel) {
       Com_Printf("Failed to load model file %s\n", filename);
       return qfalse;
-  }
+ }
 
     Com_sprintf(filename, sizeof(filename), "models/players/%s/upper.md3", modelName);
     ci->torsoModel = trap_R_RegisterModel(filename);
     if (!ci->torsoModel) {
       Com_Printf("Failed to load model file %s\n", filename);
       return qfalse;
-  }
+ }
 
     Com_sprintf(filename, sizeof(filename), "models/players/%s/head.md3", modelName);
     ci->headModel = trap_R_RegisterModel(filename);
     if (!ci->headModel) {
       Com_Printf("Failed to load model file %s\n", filename);
       return qfalse;
-  }
+ }
 } else {
     Com_sprintf(filename, sizeof(filename), "models/players/%s/nonseg.md3", modelName);
     ci->nonSegModel = trap_R_RegisterModel(filename);
     if (!ci->nonSegModel) {
       Com_Printf("Failed to load model file %s\n", filename);
       return qfalse;
-  }
+ }
 }
 
  // if any skins failed to load, return failure
@@ -475,7 +475,7 @@ static void CG_LoadClientInfo(clientInfo_t *ci) {
       if (i == 11 || i == 8) // fall or falling
       {
         ci->sounds[i] = trap_S_RegisterSound("sound / null.wav", qfalse);
-    }
+   }
       else
       {
         if (i == 9) // gasp
@@ -484,12 +484,12 @@ static void CG_LoadClientInfo(clientInfo_t *ci) {
           s = cg_customSoundNames[0]; // death1
 
         ci->sounds[i] = trap_S_RegisterSound(va("sound/player/%s / %s", dir, s + 1), qfalse);
-    }
-  }
+   }
+ }
     else
     {
       ci->sounds[i] = trap_S_RegisterSound(va("sound/player/%s / %s", dir, s + 1), qfalse);
-  }
+ }
 }
 
   if (ci->footsteps == FOOTSTEP_CUSTOM) {
@@ -501,7 +501,7 @@ static void CG_LoadClientInfo(clientInfo_t *ci) {
       ci->customMetalFootsteps[i] = trap_S_RegisterSound(va("sound/player/%s / clank%d.wav", dir, i + 1), qfalse);
       if (!ci->customMetalFootsteps[i])
         ci->customMetalFootsteps[i] = trap_S_RegisterSound(va("sound/player/footsteps/clank%d.wav", i + 1), qfalse);
-  }
+ }
 }
 
  // reset any existing players and bodies, because they might be in bad
@@ -565,7 +565,7 @@ static int CG_GetCorpseNum(class_t class) {
         !Q_stricmp(skinName, match->skinName)) {
      // this clientinfo is identical, so use it's handles
       return i;
-  }
+ }
 }
 
  // something has gone horribly wrong
@@ -593,7 +593,7 @@ static qboolean CG_ScanForExistingClientInfo(clientInfo_t *ci) {
       CG_CopyClientInfoModel(match, ci);
 
       return qtrue;
-  }
+ }
 }
 
  // shouldn't happen
@@ -920,7 +920,7 @@ static void CG_SwingAngles(float destination, float swingTolerance, float clampT
     if (move >= swing) {
       move = swing;
       *swinging = qfalse;
-  }
+ }
     *angle = AngleMod(*angle +move);
 }
   else if (swing < 0) {
@@ -929,7 +929,7 @@ static void CG_SwingAngles(float destination, float swingTolerance, float clampT
     if (move <= swing) {
       move = swing;
       *swinging = qfalse;
-  }
+ }
     *angle = AngleMod(*angle +move);
 }
 
@@ -1084,7 +1084,7 @@ static void CG_PlayerAngles(centity_t *cent, vec3_t srcAngles,
       legsAngles[YAW] = torsoAngles[YAW];
       legsAngles[PITCH] = 0.0f;
       legsAngles[ROLL] = 0.0f;
-  }
+ }
 }
 
  // pain twitch
@@ -1133,7 +1133,7 @@ static void CG_PlayerWWSmoothing(centity_t *cent, vec3_t in[3], vec3_t out[3]) {
         VectorCompare(refNormal, surfNormal)) {
       VectorCopy(in[1], rotAxis);
       rotAngle = 180.0f;
-  }
+ }
     else
     {
       AxisCopy(cent->pe.lastAxis, lastAxis);
@@ -1151,7 +1151,7 @@ static void CG_PlayerWWSmoothing(centity_t *cent, vec3_t in[3], vec3_t out[3]) {
       VectorAdd(rotAxis, temp, rotAxis);
 
       VectorNormalize(rotAxis);
-  }
+ }
 
    // iterate through smooth array
     for (i = 0; i < MAXSMOOTHS; i++) {
@@ -1163,8 +1163,8 @@ static void CG_PlayerWWSmoothing(centity_t *cent, vec3_t in[3], vec3_t out[3]) {
         cent->pe.sList[i].rotAngle = rotAngle;
         cent->pe.sList[i].time = cg.time;
         break;
-    }
-  }
+   }
+ }
 }
 
  // iterate through ops
@@ -1182,7 +1182,7 @@ static void CG_PlayerWWSmoothing(centity_t *cent, vec3_t in[3], vec3_t out[3]) {
         inAxis[2], sFraction * cent->pe.sList[i].rotAngle);
 
       AxisCopy(outAxis, inAxis);
-  }
+ }
 }
 
  // outAxis has been copied to inAxis
@@ -1331,11 +1331,11 @@ static void CG_PlayerUpgrades(centity_t *cent, refEntity_t *torso) {
 
           cent->jetPackPS = CG_SpawnNewParticleSystem(cgs.media.jetPackAscendPS);
           cent->jetPackState = JPS_ASCENDING;
-      }
+     }
 
         trap_S_AddLoopingSound(cent->currentState.number, cent->lerpOrigin, 
                                 vec3_origin, cgs.media.jetpackAscendSound);
-    }
+   }
       else if (es->pos.trDelta[2] < -10.0f)
       {
         if (cent->jetPackState != JPS_DESCENDING)
@@ -1345,11 +1345,11 @@ static void CG_PlayerUpgrades(centity_t *cent, refEntity_t *torso) {
 
           cent->jetPackPS = CG_SpawnNewParticleSystem(cgs.media.jetPackDescendPS);
           cent->jetPackState = JPS_DESCENDING;
-      }
+     }
 
         trap_S_AddLoopingSound(cent->currentState.number, cent->lerpOrigin, 
                                 vec3_origin, cgs.media.jetpackDescendSound);
-    }
+   }
       else
       {
         if (cent->jetPackState != JPS_HOVERING)
@@ -1359,11 +1359,11 @@ static void CG_PlayerUpgrades(centity_t *cent, refEntity_t *torso) {
 
           cent->jetPackPS = CG_SpawnNewParticleSystem(cgs.media.jetPackHoverPS);
           cent->jetPackState = JPS_HOVERING;
-      }
+     }
 
         trap_S_AddLoopingSound(cent->currentState.number, cent->lerpOrigin, 
                                 vec3_origin, cgs.media.jetpackIdleSound);
-    }
+   }
 
       memset(&flash, 0, sizeof(flash));
       VectorCopy(torso->lightingOrigin, flash.lightingOrigin);
@@ -1385,12 +1385,12 @@ static void CG_PlayerUpgrades(centity_t *cent, refEntity_t *torso) {
             jetpack, jetpack.hModel, "tag_flash");
         CG_SetAttachmentCent(&cent->jetPackPS->attachment, cent);
         CG_AttachToTag(&cent->jetPackPS->attachment);
-    }
-  }
+   }
+ }
     else if (CG_IsParticleSystemValid(&cent->jetPackPS)) {
       CG_DestroyParticleSystem(&cent->jetPackPS);
       cent->jetPackState = JPS_OFF;
-  }
+ }
 }
   else if (CG_IsParticleSystemValid(&cent->jetPackPS)) {
     CG_DestroyParticleSystem(&cent->jetPackPS);
@@ -1616,7 +1616,7 @@ int CG_LightVerts(vec3_t normal, int numVerts, polyVert_t *verts) {
       verts[i].modulate[2] = ambientLight[2];
       verts[i].modulate[3] = 255;
       continue;
-  }
+ }
 
     j = (ambientLight[0] + incoming * directedLight[0]);
 
@@ -1954,7 +1954,7 @@ void CG_Player(centity_t *cent) {
                            head, head.hModel, "tag_head");
       CG_SetAttachmentCent(&cent->poisonCloudedPS->attachment, cent);
       CG_AttachToTag(&cent->poisonCloudedPS->attachment);
-  }
+ }
     else if (CG_IsParticleSystemValid(&cent->poisonCloudedPS))
       CG_DestroyParticleSystem(&cent->poisonCloudedPS);
 }

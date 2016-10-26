@@ -57,6 +57,7 @@ void SV_Netchan_TransmitNextInQueue(client_t *client) {
 		client->netchan_end_queue = &client->netchan_start_queue;
 	} else {
 		Com_DPrintf("#462 Netchan_TransmitNextFragment: remaining queued message\n");
+	}
 
 	Z_Free(netbuf);
 }
@@ -125,4 +126,3 @@ qboolean SV_Netchan_Process(client_t *client, msg_t *msg) {
 
 	return qtrue;
 }
-

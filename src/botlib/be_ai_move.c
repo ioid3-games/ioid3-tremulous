@@ -1274,11 +1274,11 @@ int Intersection(vec2_t p1, vec2_t p2, vec2_t p3, vec2_t p4, vec2_t out) {
       out[0] = (int)((dx1 * x2 - dx2 * x1) / d);
       out[1] = (int)((dy1 * x2 - dy2 * x1) / d);
 		return qtrue;
- }
+}
    else
    {
       return qfalse;
- } // end else
+} // end else
 } // end of the function Intersection
 // ===========================================================================
 

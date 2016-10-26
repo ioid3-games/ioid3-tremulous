@@ -361,7 +361,7 @@ void ShotgunPattern(vec3_t origin, vec3_t origin2, int seed, gentity_t *ent) {
     if (!(tr.surfaceFlags & SURF_NOIMPACT)) {
       if (traceEnt->takedamage)
         G_Damage(traceEnt, ent, ent, forward, tr.endpos, SHOTGUN_DMG, 0, MOD_SHOTGUN);
-  }
+ }
 }
 }
 
@@ -692,12 +692,12 @@ void CheckCkitRepair(gentity_t *ent) {
       {
         traceEnt->health = bHealth;
         G_AddEvent(ent, EV_BUILD_REPAIRED, 0);
-    }
+   }
       else
         G_AddEvent(ent, EV_BUILD_REPAIR, 0);
 
       ent->client->ps.weaponTime += BG_Weapon(ent->client->ps.weapon)->repeatRate1;
-  }
+ }
 }
 }
 
@@ -732,17 +732,17 @@ void buildFire(gentity_t *ent, dynMenu_t menu) {
     if (ent->client->ps.stats[STAT_MISC] > 0) {
       G_AddEvent(ent, EV_BUILD_DELAY, ent->client->ps.clientNum);
       return;
-  }
+ }
 
     if (G_BuildIfValid(ent, buildable)) {
       if (!g_cheats.integer)
       {
         ent->client->ps.stats[STAT_MISC] += 
           BG_Buildable(buildable)->buildTime;
-    }
+   }
 
       ent->client->ps.stats[STAT_BUILDABLE] = BA_NONE;
-  }
+ }
 
     return;
 }
@@ -865,7 +865,7 @@ void CheckGrabAttack(gentity_t *ent) {
 
      // event for client side grab effect
       G_AddPredictableEvent(ent, EV_LEV1_GRAB, 0);
-  }
+ }
 
     traceEnt->client->ps.stats[STAT_STATE] |= SS_GRABBED;
 
@@ -911,7 +911,7 @@ void poisonCloud(gentity_t *ent) {
 
       trap_SendServerCommand(humanPlayer->client->ps.clientNum, 
                               "poisoncloud");
-  }
+ }
 }
   G_UnlaggedOff();
 }
@@ -973,8 +973,8 @@ static void G_FindZapChainTargets(zap_t *zap) {
         zap->distances[zap->numTargets] = distance;
         if (++zap->numTargets >= LEVEL2_AREAZAP_MAX_TARGETS)
           return;
-    }
-  }
+   }
+ }
 }
 }
 
@@ -1036,8 +1036,8 @@ static void G_CreateNewZap(gentity_t *creator, gentity_t *target) {
                     LEVEL2_AREAZAP_CHAIN_RANGE), LEVEL2_AREAZAP_CHAIN_FALLOFF)) + 1, 
                   DAMAGE_NO_KNOCKBACK|DAMAGE_NO_LOCDAMAGE, 
                   MOD_LEVEL2_ZAP);
-    }
-  }
+   }
+ }
 
     zap->effectChannel = G_Spawn();
     zap->effectChannel->s.eType = ET_LEV2_ZAP_CHAIN;
@@ -1071,13 +1071,13 @@ void G_UpdateZaps(int msec) {
       G_FreeEntity(zap->effectChannel);
       zap->used = qfalse;
       continue;
-  }
+ }
 
    // the deconstruction or gibbing of chained buildables destroy the appropriate beams
     for (j = 1; j < zap->numTargets; j++) {
       if (!zap->targets[j]->inuse)
         zap->targets[j--] = zap->targets[--zap->numTargets];
-  }
+ }
 
     G_UpdateZapEffect(zap);
 }
@@ -1104,13 +1104,13 @@ void G_ClearPlayerZapEffects(gentity_t *player) {
       G_FreeEntity(zap->effectChannel);
       zap->used = qfalse;
       continue;
-  }
+ }
 
    // the disappearance of chained players destroy the appropriate beams
     for (j = 1; j < zap->numTargets; j++) {
       if (zap->targets[j] == player)
         zap->targets[j--] = zap->targets[--zap->numTargets];
-  }
+ }
 }
 }
 
@@ -1231,7 +1231,7 @@ void G_ChargeAttack(gentity_t *ent, gentity_t *victim) {
     for (i = 0; i < MAX_TRAMPLE_BUILDABLES_TRACKED; i++) {
       if (ent->client->trampleBuildablesHit[i] == victim - g_entities)
         return;
-  }
+ }
 
     ent->client->trampleBuildablesHit[
       ent->client->trampleBuildablesHitPos++ % MAX_TRAMPLE_BUILDABLES_TRACKED] = 

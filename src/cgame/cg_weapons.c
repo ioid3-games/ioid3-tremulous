@@ -123,7 +123,7 @@ static qboolean CG_ParseWeaponAnimationFile(const char *filename, weaponInfo_t *
     if (!Q_stricmp(token, "noDrift")) {
       weapon->noDrift = qtrue;
       continue;
-  }
+ }
 
     animations[i].firstFrame = atoi(token);
 
@@ -139,7 +139,7 @@ static qboolean CG_ParseWeaponAnimationFile(const char *filename, weaponInfo_t *
     if (animations[i].numFrames < 0) {
       animations[i].numFrames = -animations[i].numFrames;
       animations[i].reversed = qtrue;
-  }
+ }
 
     token = COM_Parse(&text_p);
     if (!*token)
@@ -199,7 +199,7 @@ static qboolean CG_ParseWeaponModeSection(weaponInfoMode_t *wim, char **text_p) 
         CG_Printf(S_COLOR_RED "ERROR: missile model not found %s\n", token);
 
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "missileSprite")) {
    int size = 0;
 
@@ -224,7 +224,7 @@ static qboolean CG_ParseWeaponModeSection(weaponInfoMode_t *wim, char **text_p) 
         CG_Printf(S_COLOR_RED "ERROR: missile sprite not found %s\n", token);
 
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "missileSpriteCharge")) {
       token = COM_Parse(text_p);
       if (!token)
@@ -233,12 +233,12 @@ static qboolean CG_ParseWeaponModeSection(weaponInfoMode_t *wim, char **text_p) 
       wim->missileSpriteCharge = atof(token);
 
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "missileRotates")) {
       wim->missileRotates = qtrue;
 
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "missileAnimates")) {
       wim->missileAnimates = qtrue;
 
@@ -267,7 +267,7 @@ static qboolean CG_ParseWeaponModeSection(weaponInfoMode_t *wim, char **text_p) 
       wim->missileAnimLooping = atoi(token);
 
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "missileParticleSystem")) {
       token = COM_Parse(text_p);
       if (!token)
@@ -279,7 +279,7 @@ static qboolean CG_ParseWeaponModeSection(weaponInfoMode_t *wim, char **text_p) 
         CG_Printf(S_COLOR_RED "ERROR: missile particle system not found %s\n", token);
 
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "missileTrailSystem")) {
       token = COM_Parse(text_p);
       if (!token)
@@ -291,7 +291,7 @@ static qboolean CG_ParseWeaponModeSection(weaponInfoMode_t *wim, char **text_p) 
         CG_Printf(S_COLOR_RED "ERROR: missile trail system not found %s\n", token);
 
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "muzzleParticleSystem")) {
       token = COM_Parse(text_p);
       if (!token)
@@ -303,7 +303,7 @@ static qboolean CG_ParseWeaponModeSection(weaponInfoMode_t *wim, char **text_p) 
         CG_Printf(S_COLOR_RED "ERROR: muzzle particle system not found %s\n", token);
 
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "impactParticleSystem")) {
       token = COM_Parse(text_p);
       if (!token)
@@ -315,7 +315,7 @@ static qboolean CG_ParseWeaponModeSection(weaponInfoMode_t *wim, char **text_p) 
         CG_Printf(S_COLOR_RED "ERROR: impact particle system not found %s\n", token);
 
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "impactMark")) {
    int size = 0;
 
@@ -339,7 +339,7 @@ static qboolean CG_ParseWeaponModeSection(weaponInfoMode_t *wim, char **text_p) 
         CG_Printf(S_COLOR_RED "ERROR: impact mark shader not found %s\n", token);
 
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "impactSound")) {
    int index = 0;
 
@@ -361,7 +361,7 @@ static qboolean CG_ParseWeaponModeSection(weaponInfoMode_t *wim, char **text_p) 
       wim->impactSound[index] = trap_S_RegisterSound(token, qfalse);
 
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "impactFleshSound")) {
    int index = 0;
 
@@ -383,12 +383,12 @@ static qboolean CG_ParseWeaponModeSection(weaponInfoMode_t *wim, char **text_p) 
       wim->impactFleshSound[index] = trap_S_RegisterSound(token, qfalse);
 
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "alwaysImpact")) {
       wim->alwaysImpact = qtrue;
 
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "flashDLightColor")) {
       for (i = 0; i < 3; i++)
       {
@@ -397,15 +397,15 @@ static qboolean CG_ParseWeaponModeSection(weaponInfoMode_t *wim, char **text_p) 
           break;
 
         wim->flashDlightColor[i] = atof(token);
-    }
+   }
 
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "continuousFlash")) {
       wim->continuousFlash = qtrue;
 
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "missileDlightColor")) {
       for (i = 0; i < 3; i++)
       {
@@ -414,10 +414,10 @@ static qboolean CG_ParseWeaponModeSection(weaponInfoMode_t *wim, char **text_p) 
           break;
 
         wim->missileDlightColor[i] = atof(token);
-    }
+   }
 
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "missileDlight")) {
    int size = 0;
 
@@ -433,7 +433,7 @@ static qboolean CG_ParseWeaponModeSection(weaponInfoMode_t *wim, char **text_p) 
       wim->missileDlight = size;
 
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "firingSound")) {
       token = COM_Parse(text_p);
       if (!token)
@@ -442,7 +442,7 @@ static qboolean CG_ParseWeaponModeSection(weaponInfoMode_t *wim, char **text_p) 
       wim->firingSound = trap_S_RegisterSound(token, qfalse);
 
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "missileSound")) {
       token = COM_Parse(text_p);
       if (!token)
@@ -451,7 +451,7 @@ static qboolean CG_ParseWeaponModeSection(weaponInfoMode_t *wim, char **text_p) 
       wim->missileSound = trap_S_RegisterSound(token, qfalse);
 
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "flashSound")) {
    int index = 0;
 
@@ -473,14 +473,14 @@ static qboolean CG_ParseWeaponModeSection(weaponInfoMode_t *wim, char **text_p) 
       wim->flashSound[index] = trap_S_RegisterSound(token, qfalse);
 
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "}"))
       return qtrue; // reached the end of this weapon section
     else
     {
       CG_Printf(S_COLOR_RED "ERROR: unknown token '%s' in weapon section\n", token);
       return qfalse;
-  }
+ }
 }
 
   return qfalse;
@@ -534,30 +534,30 @@ static qboolean CG_ParseWeaponFile(const char *filename, weaponInfo_t *wi) {
       {
         CG_Printf(S_COLOR_RED "ERROR: weapon mode section started without a declaration\n");
         return qfalse;
-    }
+   }
       else if (!CG_ParseWeaponModeSection(&wi->wim[weaponMode], &text_p))
       {
         CG_Printf(S_COLOR_RED "ERROR: failed to parse weapon mode section\n");
         return qfalse;
-    }
+   }
 
      // start parsing ejectors again
       weaponMode = WPM_NONE;
 
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "primary")) {
       weaponMode = WPM_PRIMARY;
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "secondary")) {
       weaponMode = WPM_SECONDARY;
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "tertiary")) {
       weaponMode = WPM_TERTIARY;
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "weaponModel")) {
       char path[MAX_QPATH];
 
@@ -586,7 +586,7 @@ static qboolean CG_ParseWeaponFile(const char *filename, weaponInfo_t *wi) {
       wi->handsModel = trap_R_RegisterModel(path);
 
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "weaponModel3rdPerson")) {
       char path[MAX_QPATH];
 
@@ -600,7 +600,7 @@ static qboolean CG_ParseWeaponFile(const char *filename, weaponInfo_t *wi) {
       {
         CG_Printf(S_COLOR_RED "ERROR: 3rd person weapon "
             "model not found %s\n", token);
-    }
+   }
 
       strcpy(path, token);
       COM_StripExtension(path, path, MAX_QPATH);
@@ -613,7 +613,7 @@ static qboolean CG_ParseWeaponFile(const char *filename, weaponInfo_t *wi) {
       wi->barrelModel3rdPerson = trap_R_RegisterModel(path);
 
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "idleSound")) {
       token = COM_Parse(&text_p);
       if (!token)
@@ -622,7 +622,7 @@ static qboolean CG_ParseWeaponFile(const char *filename, weaponInfo_t *wi) {
       wi->readySound = trap_S_RegisterSound(token, qfalse);
 
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "icon")) {
       token = COM_Parse(&text_p);
       if (!token)
@@ -634,7 +634,7 @@ static qboolean CG_ParseWeaponFile(const char *filename, weaponInfo_t *wi) {
         CG_Printf(S_COLOR_RED "ERROR: weapon icon not found %s\n", token);
 
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "crosshair")) {
    int size = 0;
 
@@ -658,12 +658,12 @@ static qboolean CG_ParseWeaponFile(const char *filename, weaponInfo_t *wi) {
         CG_Printf(S_COLOR_RED "ERROR: weapon crosshair not found %s\n", token);
 
       continue;
-  }
+ }
     else if (!Q_stricmp(token, "disableIn3rdPerson")) {
       wi->disableIn3rdPerson = qtrue;
 
       continue;
-  }
+ }
 
     Com_Printf(S_COLOR_RED "ERROR: unknown token '%s'\n", token);
     return qfalse;
@@ -957,17 +957,17 @@ void CG_AddPlayerWeapon(refEntity_t *parent, playerState_t *ps, centity_t *cent)
     if (cg.weapon1Firing != (cg.predictedPlayerState.eFlags & EF_FIRING)) {
       cg.weapon1Time = cg.time;
       cg.weapon1Firing = (cg.predictedPlayerState.eFlags & EF_FIRING);
-  }
+ }
 
     if (cg.weapon2Firing != (cg.predictedPlayerState.eFlags & EF_FIRING2)) {
       cg.weapon2Time = cg.time;
       cg.weapon2Firing = (cg.predictedPlayerState.eFlags & EF_FIRING2);
-  }
+ }
 
     if (cg.weapon3Firing != (cg.predictedPlayerState.eFlags & EF_FIRING3)) {
       cg.weapon3Time = cg.time;
       cg.weapon3Firing = (cg.predictedPlayerState.eFlags & EF_FIRING3);
-  }
+ }
 }
 
   if (!ps) {
@@ -986,7 +986,7 @@ void CG_AddPlayerWeapon(refEntity_t *parent, playerState_t *ps, centity_t *cent)
     if (firing && weapon->wim[weaponMode].firingSound) {
       trap_S_AddLoopingSound(cent->currentState.number, cent->lerpOrigin, vec3_origin, 
                               weapon->wim[weaponMode].firingSound);
-  }
+ }
     else if (weapon->readySound)
       trap_S_AddLoopingSound(cent->currentState.number, cent->lerpOrigin, vec3_origin, weapon->readySound);
 }
@@ -1010,7 +1010,7 @@ void CG_AddPlayerWeapon(refEntity_t *parent, playerState_t *ps, centity_t *cent)
 
       if (!barrel.hModel)
         barrel.hModel = weapon->barrelModel;
-  }
+ }
     else
       barrel.hModel = weapon->barrelModel;
 
@@ -1028,7 +1028,7 @@ void CG_AddPlayerWeapon(refEntity_t *parent, playerState_t *ps, centity_t *cent)
       CG_PositionRotatedEntityOnTag(&barrel, &gun, gun.hModel, "tag_barrel");
 
       trap_R_AddRefEntityToScene(&barrel);
-  }
+ }
 }
 
   if (CG_IsParticleSystemValid(&cent->muzzlePS)) {
@@ -1038,7 +1038,7 @@ void CG_AddPlayerWeapon(refEntity_t *parent, playerState_t *ps, centity_t *cent)
         CG_SetAttachmentTag(&cent->muzzlePS->attachment, *parent, parent->hModel, "tag_weapon");
       else
         CG_SetAttachmentTag(&cent->muzzlePS->attachment, gun, gun.hModel, "tag_flash");
-  }
+ }
 
    // if the PS is infinite disable it when not firing
     if (!firing && CG_IsParticleSystemInfinite(cent->muzzlePS))
@@ -1093,10 +1093,10 @@ void CG_AddPlayerWeapon(refEntity_t *parent, playerState_t *ps, centity_t *cent)
 
         CG_SetAttachmentCent(&cent->muzzlePS->attachment, cent);
         CG_AttachToTag(&cent->muzzlePS->attachment);
-    }
+   }
 
       cent->muzzlePsTrigger = qfalse;
-  }
+ }
 
    // make a dlight for the flash
     if (weapon->wim[weaponMode].flashDlightColor[0] ||
@@ -1106,7 +1106,7 @@ void CG_AddPlayerWeapon(refEntity_t *parent, playerState_t *ps, centity_t *cent)
           weapon->wim[weaponMode].flashDlightColor[0], 
           weapon->wim[weaponMode].flashDlightColor[1], 
           weapon->wim[weaponMode].flashDlightColor[2]);
-  }
+ }
 }
 }
 
@@ -1178,9 +1178,9 @@ void CG_AddViewWeapon(playerState_t *ps) {
         CG_SetAttachmentPoint(&cent->muzzlePS->attachment, origin);
         CG_SetAttachmentCent(&cent->muzzlePS->attachment, cent);
         CG_AttachToPoint(&cent->muzzlePS->attachment);
-    }
+   }
       cent->muzzlePsTrigger = qfalse;
-  }
+ }
 
     return;
 }
@@ -1300,12 +1300,12 @@ void CG_DrawItemSelect(rectDef_t *rect, vec4_t color) {
     if (cg.weaponSelect < 32) {
       if (!CG_WeaponSelectable(cg.weaponSelect))
         CG_NextWeapon_f();
-  }
+ }
     else
     {
       if (!CG_UpgradeSelectable(cg.weaponSelect - 32))
         CG_NextWeapon_f();
-  }
+ }
 }
 
  // showing weapon select clears pickup item display, but not the blend blob
@@ -1328,7 +1328,7 @@ void CG_DrawItemSelect(rectDef_t *rect, vec4_t color) {
       Com_Printf(S_COLOR_YELLOW "WARNING: CG_DrawItemSelect: weapon %d(%s) "
   	"is not registered\n", i, BG_Weapon(i)->name);
       continue;
-  }
+ }
     items[numItems] = i;
     numItems++;
 }
@@ -1348,7 +1348,7 @@ void CG_DrawItemSelect(rectDef_t *rect, vec4_t color) {
       Com_Printf(S_COLOR_YELLOW "WARNING: CG_DrawItemSelect: upgrade %d(%s) "
   	"is not registered\n", i, BG_Upgrade(i)->name);
       continue;
-  }
+ }
     items[numItems] = i + 32;
     numItems++;
 }
@@ -1385,7 +1385,7 @@ void CG_DrawItemSelect(rectDef_t *rect, vec4_t color) {
        case 2:
          color = colorMdGrey;
          break;
-    }
+   }
       color[3] = 0.5;
       trap_R_SetColor(color);
 
@@ -1395,7 +1395,7 @@ void CG_DrawItemSelect(rectDef_t *rect, vec4_t color) {
       else
         CG_DrawPic(x, y, iconWidth, iconHeight, 
                     cg_upgrades[items[item] - 32].upgradeIcon);
-  }
+ }
     if (vertical)
       y += iconHeight;
     else
@@ -1429,8 +1429,8 @@ void CG_DrawItemSelectText(rectDef_t *rect, float scale, int textStyle) {
         w = UI_Text_Width(name, scale);
         x = rect->x + rect->w / 2;
         UI_Text_Paint(x - w / 2, rect->y + rect->h, scale, color, name, 0, 0, textStyle);
-    }
-  }
+   }
+ }
 } else {
     if (cg_upgrades[cg.weaponSelect - 32].registered &&
         BG_InventoryContainsUpgrade(cg.weaponSelect - 32, cg.snap->ps.stats)) {
@@ -1439,8 +1439,8 @@ void CG_DrawItemSelectText(rectDef_t *rect, float scale, int textStyle) {
         w = UI_Text_Width(name, scale);
         x = rect->x + rect->w / 2;
         UI_Text_Paint(x - w / 2, rect->y + rect->h, scale, color, name, 0, 0, textStyle);
-    }
-  }
+   }
+ }
 }
 
   trap_R_SetColor(NULL);
@@ -1474,12 +1474,12 @@ void CG_NextWeapon_f(void) {
     if (cg.weaponSelect < 32) {
       if (CG_WeaponSelectable(cg.weaponSelect))
         break;
-  }
+ }
     else
     {
       if (CG_UpgradeSelectable(cg.weaponSelect - 32))
         break;
-  }
+ }
 }
 
   if (i == 64)
@@ -1514,12 +1514,12 @@ void CG_PrevWeapon_f(void) {
     if (cg.weaponSelect < 32) {
       if (CG_WeaponSelectable(cg.weaponSelect))
         break;
-  }
+ }
     else
     {
       if (CG_UpgradeSelectable(cg.weaponSelect - 32))
         break;
-  }
+ }
 }
 
   if (i == 64)
@@ -1641,25 +1641,25 @@ void CG_MissileHitWall(weapon_t weaponNum, weaponMode_t weaponMode, int clientNu
     for (c = 0; c < 4; c++) {
       if (!weapon->wim[weaponMode].impactFleshSound[c])
         break;
-  }
+ }
 
     if (c > 0) {
       c = rand() % c;
       if (weapon->wim[weaponMode].impactFleshSound[c])
         trap_S_StartSound(origin, ENTITYNUM_WORLD, CHAN_AUTO, weapon->wim[weaponMode].impactFleshSound[c]);
-  }
+ }
 } else {
    // normal sound
     for (c = 0; c < 4; c++) {
       if (!weapon->wim[weaponMode].impactSound[c])
         break;
-  }
+ }
 
     if (c > 0) {
       c = rand() % c;
       if (weapon->wim[weaponMode].impactSound[c])
         trap_S_StartSound(origin, ENTITYNUM_WORLD, CHAN_AUTO, weapon->wim[weaponMode].impactSound[c]);
-  }
+ }
 }
 
  // create impact particle system
@@ -1671,7 +1671,7 @@ void CG_MissileHitWall(weapon_t weaponNum, weaponMode_t weaponMode, int clientNu
       CG_SetParticleSystemNormal(partSystem, dir);
       CG_AttachToPoint(&partSystem->attachment);
       partSystem->charge = charge;
-  }
+ }
 }
 
  // 
@@ -1705,12 +1705,12 @@ void CG_MissileHitEntity(weapon_t weaponNum, weaponMode_t weaponMode,
     if (cg_entities[entityNum].currentState.eType == ET_PLAYER) {
      // Players
       sound = IMPACTSOUND_FLESH;
-  }
+ }
     else if (cg_entities[entityNum].currentState.eType == ET_BUILDABLE &&
              BG_Buildable(cg_entities[entityNum].currentState.modelindex)->team == TEAM_ALIENS) {
      // Alien buildables
       sound = IMPACTSOUND_FLESH;
-  }
+ }
     else
       sound = IMPACTSOUND_DEFAULT;
           
@@ -1859,7 +1859,7 @@ void CG_Bullet(vec3_t end, int sourceEntityNum, vec3_t normal, qboolean flesh, i
      // draw a tracer
       if (random() < cg_tracerChance.value)
         CG_Tracer(start, end);
-  }
+ }
 }
 
  // impact splash and mark
@@ -1915,7 +1915,7 @@ static void CG_ShotgunPattern(vec3_t origin, vec3_t origin2, int seed, int other
         CG_MissileHitWall(WP_SHOTGUN, WPM_PRIMARY, 0, tr.endpos, tr.plane.normal, IMPACTSOUND_METAL, 0);
       else
         CG_MissileHitWall(WP_SHOTGUN, WPM_PRIMARY, 0, tr.endpos, tr.plane.normal, IMPACTSOUND_DEFAULT, 0);
-  }
+ }
 }
 }
 

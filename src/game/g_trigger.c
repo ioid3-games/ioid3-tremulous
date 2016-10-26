@@ -443,7 +443,7 @@ void G_Checktrigger_stages(team_t team, stage_t stage) {
     if (!Q_stricmp(ent->classname, "trigger_stage")) {
       if (team == ent->stageTeam && stage == ent->stageStage)
         ent->use(ent, ent, ent);
-  }
+ }
 }
 }
 
@@ -502,7 +502,7 @@ qboolean trigger_buildable_match(gentity_t *self, gentity_t *activator) {
     for (i = 0; self->bTriggers[i] != BA_NONE; i++) {
       if (activator->s.modelindex == self->bTriggers[i])
         return qtrue;
-  }
+ }
 }
 
   return qfalse;
@@ -619,7 +619,7 @@ qboolean trigger_class_match(gentity_t *self, gentity_t *activator) {
     for (i = 0; self->cTriggers[i] != PCL_NONE; i++) {
       if (activator->client->ps.stats[STAT_CLASS] == self->cTriggers[i])
         return qtrue;
-  }
+ }
 }
 
   return qfalse;
@@ -742,12 +742,12 @@ qboolean trigger_equipment_match(gentity_t *self, gentity_t *activator) {
     for (i = 0; self->wTriggers[i] != WP_NONE; i++) {
       if (BG_InventoryContainsWeapon(self->wTriggers[i], activator->client->ps.stats))
         return qtrue;
-  }
+ }
 
     for (i = 0; self->uTriggers[i] != UP_NONE; i++) {
       if (BG_InventoryContainsUpgrade(self->uTriggers[i], activator->client->ps.stats))
         return qtrue;
-  }
+ }
 }
 
   return qfalse;
@@ -995,7 +995,7 @@ void trigger_ammo_touch(gentity_t *self, gentity_t *other, trace_t *trace) {
     if (other->client->ps.clips < maxClips) {
       other->client->ps.clips++;
       other->client->ps.ammo = 1;
-  }
+ }
     else
       other->client->ps.ammo = maxAmmo;
 }

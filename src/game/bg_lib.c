@@ -84,7 +84,7 @@ static void swapfunc(char *, char *, int, int);
     register TYPE t = *pi;    \
     *pi++ = *pj;        \
     *pj++ = t;        \
-      } while (--i > 0);        \
+     } while (--i > 0);        \
 }
 
 #define SWAPINIT(a, es) swaptype = ((char *)a - (char *)0) % sizeof(long) || \
@@ -145,7 +145,7 @@ loop: SWAPINIT(a, es);
       pl = med3(pl, pl + d, pl + 2 * d, cmp);
       pm = med3(pm - d, pm, pm + d, cmp);
       pn = med3(pn - 2 * d, pn - d, pn, cmp);
-  }
+ }
     pm = med3(pl, pm, pn, cmp);
 }
   swap(a, pm);
@@ -158,17 +158,17 @@ loop: SWAPINIT(a, es);
         swap_cnt = 1;
         swap(pa, pb);
         pa += es;
-    }
+   }
       pb += es;
-  }
+ }
     while (pb <= pc && (r = cmp(pc, a)) >= 0) {
       if (r == 0) {
         swap_cnt = 1;
         swap(pc, pd);
         pd -= es;
-    }
+   }
       pc -= es;
-  }
+ }
     if (pb > pc)
       break;
     swap(pb, pc);
@@ -281,7 +281,7 @@ char *strstr(const char *string, const char *strCharSet) {
     for (i = 0; strCharSet[i]; i++) {
       if (string[i] != strCharSet[i])
         break;
-  }
+ }
 
     if (!strCharSet[i])
       return (char *)string;
@@ -314,7 +314,7 @@ void *memmove(void *dest, const void *src, size_t count) {
     while (i > 0) {
       i--;
      ((char *)dest)[i] = ((char *)src)[i];
-  }
+ }
 } else {
     for (i = 0; i < count; i++)
      ((char *)dest)[i] = ((char *)src)[i];
@@ -731,12 +731,12 @@ double atan2(double y, double x) {
       temp = x;
       x = y;
       y = -temp;
-  } else {
+ } else {
      // quad 2
       base = M_PI;
       x = -x;
       y = -y;
-  }
+ }
 } else {
     if (y < 0) {
      // quad 3
@@ -744,7 +744,7 @@ double atan2(double y, double x) {
       temp = x;
       x = -y;
       y = temp;
-  }
+ }
 }
 
   if (y > x) {
@@ -767,7 +767,7 @@ double atan2(double y, double x) {
     test = sintable[i] / sintable[1023 - i];
     if (test > y) {
       break;
-  }
+ }
 }
 
   return base + dir * i * (M_PI / 2048);
@@ -809,7 +809,7 @@ static double powN(double base, int exp) {
 
       base *= base;
       exp /= 2;
-  }
+ }
 
     return result;
 }
@@ -1077,7 +1077,7 @@ float pow(float x, float y) {
       j = iy >> (23 - k);
       if ((j << (23 - k)) == iy)
         yisint = 2 - (j & 1);
-  }
+ }
 }
 
   /* special value of y */
@@ -1117,7 +1117,7 @@ float pow(float x, float y) {
         z = (z - z) / (z - z); /* (-1) * *non - int is NaN */
       else if (yisint == 1)
         z = -z;   /* (x < 0) * *odd = -(|x| * *odd) */
-  }
+ }
 
     return z;
 }
@@ -1152,7 +1152,7 @@ float pow(float x, float y) {
       ax *= two24;
       n -= 24;
       GET_FLOAT_WORD(ix, ax);
-  }
+ }
 
     n += ((ix) >> 23) - 0x7f;
     j = ix & 0x007fffff;
@@ -1168,7 +1168,7 @@ float pow(float x, float y) {
       k = 0;
       n += 1;
       ix -= 0x00800000;
-  }
+ }
     SET_FLOAT_WORD(ax, ix);
 
     /* compute s = s_h + s_l = (x - 1) /  (x + 1) or(x - 1.5) /  (x + 1.5) */
@@ -1335,7 +1335,7 @@ double atof(const char *string) {
 
       c -= '0';
       value = value * 10 + c;
-  } while (1);
+ } while (1);
 }
   else
     string++;
@@ -1354,7 +1354,7 @@ double atof(const char *string) {
       c -= '0';
       value += c * fraction;
       fraction *= 0.1;
-  } while (1);
+ } while (1);
 
 }
 
@@ -1408,8 +1408,8 @@ double strtod(const char *nptr, char **endptr) {
         if (endptr)
           *endptr = &end[1];
         return nan.f;
-    }
-  }
+   }
+ }
 
     nan.ui = 0x7fffffff;
     return nan.f;
@@ -1454,7 +1454,7 @@ double strtod(const char *nptr, char **endptr) {
         res = 16 * res + 10 + *nptr++ - 'a';
       else
         break;
-  }
+ }
 
    // if nptr moved, save it
     if (end + 1 < nptr)
@@ -1478,11 +1478,11 @@ double strtod(const char *nptr, char **endptr) {
           res += place * (10 + *nptr++ - 'a');
         else
           break;
-    }
+   }
 
       if (end < nptr)
         end = nptr;
-  }
+ }
 
    // parse an optional exponent, representing multiplication
    // by a power of two
@@ -1499,10 +1499,10 @@ double strtod(const char *nptr, char **endptr) {
         if (endptr)
           *endptr = (char *)nptr;
         return res;
-    }
+   }
 
       res *= powN(2, exp);
-  }
+ }
     if (endptr)
       *endptr = (char *)end;
     return res;
@@ -1527,7 +1527,7 @@ double strtod(const char *nptr, char **endptr) {
      // if nptr moved, we read something
       if (end + 1 < nptr)
         end = nptr;
-  }
+ }
    // exponent
    // meaningless without having already read digits, so check
    // we've set end to something
@@ -1540,10 +1540,10 @@ double strtod(const char *nptr, char **endptr) {
         if (endptr)
           *endptr = (char *)nptr;
         return res;
-    }
+   }
 
       res *= powN(10, exp);
-  }
+ }
     if (endptr)
       *endptr = (char *)end;
     return res;
@@ -1563,7 +1563,7 @@ double _atof(const char **stringPtr) {
     if (!*string) {
       *stringPtr = string;
       return 0;
-  }
+ }
 
     string++;
 }
@@ -1596,7 +1596,7 @@ double _atof(const char **stringPtr) {
 
       c -= '0';
       value = value * 10 + c;
-  } while (1);
+ } while (1);
 }
 
  // check for decimal point
@@ -1613,7 +1613,7 @@ double _atof(const char **stringPtr) {
       c -= '0';
       value += c * fraction;
       fraction *= 0.1;
-  } while (1);
+ } while (1);
 
 }
 
@@ -1672,11 +1672,11 @@ long strtol(const char *nptr, char **endptr, int base) {
         if (endptr)
           *endptr = (char *)nptr;
         return 0;
-    }
+   }
 
       nptr++;
       base = 16;
-  }
+ }
     else if (base == 0)
       base = 8;
 }
@@ -1850,15 +1850,15 @@ unsigned int _hextoi(const char **stringPtr) {
     if (c >= '0' && c <= '9') {
       value = value * 16 + c - '0';
       continue;
-  }
+ }
     else if (c >= 'a' && c <= 'f') {
       value = value * 16 + 10 + c - 'a';
       continue;
-  }
+ }
     else if (c >= 'A' && c <= 'F') {
       value = value * 16 + 10 + c - 'A';
       continue;
-  }
+ }
     else
       break;
 }
@@ -2053,20 +2053,20 @@ static int dopr(char *buffer, size_t maxlen, const char *format, va_list args) {
           default:
             state = DP_S_MIN;
             break;
-      }
+     }
         break;
       case DP_S_MIN:
         if ('0' <= ch && ch <= '9')
         {
           min = 10 * min + char_to_int (ch);
           ch = *format++;
-      }
+     }
         else if (ch == '*')
         {
           min = va_arg(args, int);
           ch = *format++;
           state = DP_S_DOT;
-      }
+     }
         else
           state = DP_S_DOT;
         break;
@@ -2075,7 +2075,7 @@ static int dopr(char *buffer, size_t maxlen, const char *format, va_list args) {
         {
           state = DP_S_MAX;
           ch = *format++;
-      }
+     }
         else
           state = DP_S_MOD;
         break;
@@ -2086,13 +2086,13 @@ static int dopr(char *buffer, size_t maxlen, const char *format, va_list args) {
             max = 0;
           max = 10 * max + char_to_int (ch);
           ch = *format++;
-      }
+     }
         else if (ch == '*')
         {
           max = va_arg(args, int);
           ch = *format++;
           state = DP_S_MOD;
-      }
+     }
         else
           state = DP_S_MOD;
         break;
@@ -2113,7 +2113,7 @@ static int dopr(char *buffer, size_t maxlen, const char *format, va_list args) {
             break;
           default:
             break;
-      }
+     }
         if (cflags != DP_C_LONG)
           state = DP_S_CONV;
         else
@@ -2128,7 +2128,7 @@ static int dopr(char *buffer, size_t maxlen, const char *format, va_list args) {
             break;
           default:
             break;
-      }
+     }
         state = DP_S_CONV;
         break;
       case DP_S_CONV:
@@ -2231,25 +2231,25 @@ static int dopr(char *buffer, size_t maxlen, const char *format, va_list args) {
               short int *num;
               num = va_arg(args, short int *);
               *num = currlen;
-          }
+         }
             else if (cflags == DP_C_LONG)
             {
               long int *num;
               num = va_arg(args, long int *);
               *num = currlen;
-          }
+         }
             else if (cflags == DP_C_LLONG)
             {
               LLONG *num;
               num = va_arg(args, LLONG *);
               *num = currlen;
-          }
+         }
             else
             {
               int *num;
               num = va_arg(args, int *);
               *num = currlen;
-          }
+         }
             break;
           case '%':
             total += dopr_outch(buffer, &currlen, maxlen, ch);
@@ -2261,7 +2261,7 @@ static int dopr(char *buffer, size_t maxlen, const char *format, va_list args) {
           default:
             /* Unknown, skip */
             break;
-      }
+     }
         ch = *format++;
         state = DP_S_DEFAULT;
         flags = cflags = min = 0;
@@ -2272,7 +2272,7 @@ static int dopr(char *buffer, size_t maxlen, const char *format, va_list args) {
       default:
         /* hmm? */
         break; /* some picky compilers need this */
-  }
+ }
 }
   if (maxlen > 0)
     buffer[currlen] = '\0';
@@ -2334,7 +2334,7 @@ static int fmtint (char *buffer, size_t *currlen, size_t maxlen,
     if (value < 0) {
       signvalue = '-';
       uvalue = -value;
-  }
+ }
     else
       if (flags & DP_F_PLUS) /* Do a sign(+/ i) */
         signvalue = '+';
@@ -2387,7 +2387,7 @@ static int fmtint (char *buffer, size_t *currlen, size_t maxlen,
     while (zpadlen > 0) {
       total += dopr_outch(buffer, currlen, maxlen, '0');
       --zpadlen;
-  }
+ }
 }
 
   /* Digits */
@@ -2514,11 +2514,11 @@ static int fmtfp(char *buffer, size_t *currlen, size_t maxlen,
       total += dopr_outch(buffer, currlen, maxlen, signvalue);
       --padlen;
       signvalue = 0;
-  }
+ }
     while (padlen > 0) {
       total += dopr_outch(buffer, currlen, maxlen, '0');
       --padlen;
-  }
+ }
 }
   while (padlen > 0) {
     total += dopr_outch(buffer, currlen, maxlen, ' ');
@@ -2587,7 +2587,7 @@ int sscanf(const char *buffer, const char *fmt, ...) {
     if (fmt[0] != '%') {
       fmt++;
       continue;
-  }
+ }
 
     fmt++;
     cmd = *fmt;
@@ -2595,12 +2595,12 @@ int sscanf(const char *buffer, const char *fmt, ...) {
     if (isdigit(cmd)) {
       len = (size_t)_atoi(&fmt);
       cmd = *(fmt - 1);
-  }
+ }
     else
     {
       len = MAX_STRING_CHARS - 1;
       fmt++;
-  }
+ }
 
     switch (cmd) {
       case 'i':
@@ -2623,8 +2623,8 @@ int sscanf(const char *buffer, const char *fmt, ...) {
           *s++ = *buffer++;
         *s++ = '\0';
         break;
-    }
-  }
+   }
+ }
 }
 
   va_end(ap);

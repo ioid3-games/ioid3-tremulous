@@ -232,19 +232,19 @@ void CL_WriteAVIHeader(void) {
             WRITE_STRING("MJPG");
             WRITE_4BYTES(afd.width *
                 afd.height);                  // biSizeImage
-        }
+       }
           else
           {
             WRITE_4BYTES(0);                 // BI_RGB
             WRITE_4BYTES(afd.width *
                 afd.height * 3);              // biSizeImage
-        }
+       }
 
           WRITE_4BYTES(0);                   // biXPelsPetMeter
           WRITE_4BYTES(0);                   // biYPelsPetMeter
           WRITE_4BYTES(0);                   // biClrUsed
           WRITE_4BYTES(0);                   // biClrImportant
-      }
+     }
         END_CHUNK();
 
         if (afd.audio)
@@ -285,10 +285,10 @@ void CL_WriteAVIHeader(void) {
             WRITE_2BYTES(afd.a.sampleSize);  // nBlockAlign
             WRITE_2BYTES(afd.a.bits);        // wBitsPerSample
             WRITE_2BYTES(0);                 // cbSize
-        }
+       }
           END_CHUNK();
-      }
-    }
+     }
+   }
       END_CHUNK();
 
       afd.moviOffset = bufIndex;
@@ -296,8 +296,8 @@ void CL_WriteAVIHeader(void) {
       START_CHUNK("LIST");
       {
         WRITE_STRING("movi");
-    }
-  }
+   }
+ }
 }
 }
 
@@ -374,7 +374,7 @@ qboolean CL_OpenAVIForWriting(const char *fileName) {
       Com_Printf(S_COLOR_YELLOW "WARNING: Audio format of %d bit / %d channels not supported", 
           afd.a.bits, afd.a.channels);
       afd.audio = qfalse;
-  }
+ }
     else
       afd.audio = qtrue;
 } else {

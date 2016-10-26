@@ -269,12 +269,12 @@ typedef struct baseParticle_s {
 
   qboolean dynamicLight;
   pLerpValues_t dLightRadius;
-  byte  dLightColor[3];
+  byte dLightColor[3];
 
   int colorDelay;
   float colorDelayRandFrac;
-  byte  initialColor[3];
-  byte  finalColor[3];
+  byte initialColor[3];
+  byte finalColor[3];
 
   char childSystemName[MAX_QPATH];
   qhandle_t childSystemHandle;
@@ -433,8 +433,8 @@ typedef struct baseTrailBeam_s {
   float backWidth;
   float frontAlpha;
   float backAlpha;
-  byte          frontColor[3];
-  byte          backColor[3];
+  byte         frontColor[3];
+  byte         backColor[3];
 
  // the time it takes for a segment to vanish(single attached only)
   int segmentTime;
@@ -493,8 +493,8 @@ typedef struct trailBeamNode_s {
 
   float textureCoord;
   float halfWidth;
-  byte          alpha;
-  byte          color[3];
+  byte         alpha;
+  byte         color[3];
 
   vec2_t jitters[MAX_TRAIL_BEAM_JITTERS];
 

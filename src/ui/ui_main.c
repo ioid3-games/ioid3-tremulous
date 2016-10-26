@@ -33,10 +33,18 @@ USER INTERFACE MAIN
 
 uiInfo_t uiInfo;
 static const char *MonthAbbrev[] = {
-	"Jan", "Feb", "Mar",
-	"Apr", "May", "Jun",
-	"Jul", "Aug", "Sep",
-	"Oct", "Nov", "Dec"
+	"Jan",
+	"Feb",
+	"Mar",
+	"Apr",
+	"May",
+	"Jun",
+	"Jul",
+	"Aug",
+	"Sep",
+	"Oct",
+	"Nov",
+	"Dec"
 };
 
 static const char *netSources[] = {
@@ -92,9 +100,8 @@ vmCvar_t ui_winner;
 vmCvar_t ui_chatCommands;
 static cvarTable_t cvarTable[] = {
 	{&ui_browserShowFull, "ui_browserShowFull", "1", CVAR_ARCHIVE},
-	{&ui_browserShowEmpty, "ui_browserShowEmpty", "1", CVAR_ARCHIVE}, 
-
-  {&ui_dedicated, "ui_dedicated", "0", CVAR_ARCHIVE},
+	{&ui_browserShowEmpty, "ui_browserShowEmpty", "1", CVAR_ARCHIVE},
+	{&ui_dedicated, "ui_dedicated", "0", CVAR_ARCHIVE},
 	{&ui_netSource, "ui_netSource", "0", CVAR_ARCHIVE},
 	{&ui_selectedMap, "ui_selectedMap", "0", CVAR_ARCHIVE},
 	{&ui_lastServerRefresh_0, "ui_lastServerRefresh_0", "", CVAR_ARCHIVE},
@@ -135,56 +142,44 @@ void UI_SetMousePosition(int x, int y);
 void UI_Refresh(int realtime);
 qboolean UI_IsFullscreen(void);
 void UI_SetActiveMenu(uiMenuCommand_t menu);
-Q_EXPORT intptr_t vmMain(int command, int arg0, int arg1, int arg2, int arg3, 
-                       int arg4, int arg5, int arg6, int arg7, 
-                       int arg8, int arg9, int arg10, int arg11) {
-  switch (command) {
-    case UI_GETAPIVERSION:
-      return UI_API_VERSION;
+Q_EXPORT intptr_t vmMain(int command, int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7, int arg8, int arg9, int arg10, int arg11) {
 
-    case UI_INIT:
-      UI_Init(arg0);
-      return 0;
+	switch (command) {
+		case UI_GETAPIVERSION:
+			return UI_API_VERSION;
+		case UI_INIT:
+			UI_Init(arg0);
+			return 0;
+		case UI_SHUTDOWN:
+			UI_Shutdown();
+			return 0;
+		case UI_KEY_EVENT:
+			UI_KeyEvent(arg0, arg1);
+			return 0;
+		case UI_MOUSE_EVENT:
+			UI_MouseEvent(arg0, arg1);
+			return 0;
+		case UI_MOUSE_POSITION:
+			return UI_MousePosition();
+		case UI_SET_MOUSE_POSITION:
+			UI_SetMousePosition(arg0, arg1);
+			return 0;
+		case UI_REFRESH:
+			UI_Refresh(arg0);
+			return 0;
+		case UI_IS_FULLSCREEN:
+			return UI_IsFullscreen();
+		case UI_SET_ACTIVE_MENU:
+			UI_SetActiveMenu(arg0);
+			return 0;
+		case UI_CONSOLE_COMMAND:
+			return UI_ConsoleCommand(arg0);
+		case UI_DRAW_CONNECT_SCREEN:
+			UI_DrawConnectScreen(arg0);
+			return 0;
+	}
 
-    case UI_SHUTDOWN:
-      UI_Shutdown();
-      return 0;
-
-    case UI_KEY_EVENT:
-      UI_KeyEvent(arg0, arg1);
-      return 0;
-
-    case UI_MOUSE_EVENT:
-      UI_MouseEvent(arg0, arg1);
-      return 0;
-
-    case UI_MOUSE_POSITION:
-      return UI_MousePosition();
-
-    case UI_SET_MOUSE_POSITION:
-      UI_SetMousePosition(arg0, arg1);
-      return 0;
-
-    case UI_REFRESH:
-      UI_Refresh(arg0);
-      return 0;
-
-    case UI_IS_FULLSCREEN:
-      return UI_IsFullscreen();
-
-    case UI_SET_ACTIVE_MENU:
-      UI_SetActiveMenu(arg0);
-      return 0;
-
-    case UI_CONSOLE_COMMAND:
-      return UI_ConsoleCommand(arg0);
-
-    case UI_DRAW_CONNECT_SCREEN:
-      UI_DrawConnectScreen(arg0);
-      return 0;
-}
-
-  return -1;
+	return -1;
 }
 
 
@@ -192,29 +187,25 @@ Q_EXPORT intptr_t vmMain(int command, int arg0, int arg1, int arg2, int arg3,
 void AssetCache(void) {
 	int i;
 
-  uiInfo.uiDC.Assets.gradientBar = trap_R_RegisterShaderNoMip(ASSET_GRADIENTBAR);
-  uiInfo.uiDC.Assets.scrollBar = trap_R_RegisterShaderNoMip(ASSET_SCROLLBAR);
-  uiInfo.uiDC.Assets.scrollBarArrowDown = trap_R_RegisterShaderNoMip(ASSET_SCROLLBAR_ARROWDOWN);
-  uiInfo.uiDC.Assets.scrollBarArrowUp = trap_R_RegisterShaderNoMip(ASSET_SCROLLBAR_ARROWUP);
-  uiInfo.uiDC.Assets.scrollBarArrowLeft = trap_R_RegisterShaderNoMip(ASSET_SCROLLBAR_ARROWLEFT);
-  uiInfo.uiDC.Assets.scrollBarArrowRight = trap_R_RegisterShaderNoMip(ASSET_SCROLLBAR_ARROWRIGHT);
-  uiInfo.uiDC.Assets.scrollBarThumb = trap_R_RegisterShaderNoMip(ASSET_SCROLL_THUMB);
-  uiInfo.uiDC.Assets.sliderBar = trap_R_RegisterShaderNoMip(ASSET_SLIDER_BAR);
-  uiInfo.uiDC.Assets.sliderThumb = trap_R_RegisterShaderNoMip(ASSET_SLIDER_THUMB);
+	uiInfo.uiDC.Assets.gradientBar = trap_R_RegisterShaderNoMip(ASSET_GRADIENTBAR);
+	uiInfo.uiDC.Assets.scrollBar = trap_R_RegisterShaderNoMip(ASSET_SCROLLBAR);
+	uiInfo.uiDC.Assets.scrollBarArrowDown = trap_R_RegisterShaderNoMip(ASSET_SCROLLBAR_ARROWDOWN);
+	uiInfo.uiDC.Assets.scrollBarArrowUp = trap_R_RegisterShaderNoMip(ASSET_SCROLLBAR_ARROWUP);
+	uiInfo.uiDC.Assets.scrollBarArrowLeft = trap_R_RegisterShaderNoMip(ASSET_SCROLLBAR_ARROWLEFT);
+	uiInfo.uiDC.Assets.scrollBarArrowRight = trap_R_RegisterShaderNoMip(ASSET_SCROLLBAR_ARROWRIGHT);
+	uiInfo.uiDC.Assets.scrollBarThumb = trap_R_RegisterShaderNoMip(ASSET_SCROLL_THUMB);
+	uiInfo.uiDC.Assets.sliderBar = trap_R_RegisterShaderNoMip(ASSET_SLIDER_BAR);
+	uiInfo.uiDC.Assets.sliderThumb = trap_R_RegisterShaderNoMip(ASSET_SLIDER_THUMB);
 
-  if (ui_emoticons.integer) 
-  {
-    uiInfo.uiDC.Assets.emoticonCount = BG_LoadEmoticons(
-      uiInfo.uiDC.Assets.emoticons, MAX_EMOTICONS);
-}
-  else
-    uiInfo.uiDC.Assets.emoticonCount = 0;
+	if (ui_emoticons.integer) {
+		uiInfo.uiDC.Assets.emoticonCount = BG_LoadEmoticons(uiInfo.uiDC.Assets.emoticons, MAX_EMOTICONS);
 
-  for (i = 0; i < uiInfo.uiDC.Assets.emoticonCount; i++) {
-    uiInfo.uiDC.Assets.emoticons[i].shader = trap_R_RegisterShaderNoMip(
-      va("emoticons/%s_%dx1.tga", uiInfo.uiDC.Assets.emoticons[i].name, 
-          uiInfo.uiDC.Assets.emoticons[i].width));
-}
+	} else
+		uiInfo.uiDC.Assets.emoticonCount = 0;
+
+	for (i = 0; i < uiInfo.uiDC.Assets.emoticonCount; i++) {
+		uiInfo.uiDC.Assets.emoticons[i].shader = trap_R_RegisterShaderNoMip(va("emoticons/%s_%dx1.tga", uiInfo.uiDC.Assets.emoticons[i].name, uiInfo.uiDC.Assets.emoticons[i].width));
+	}
 }
 
 void UI_DrawSides(float x, float y, float w, float h, float size) {
@@ -323,7 +314,7 @@ static void UI_RemoveServerFromDisplayList(int num) {
         uiInfo.serverStatus.displayServers[j] = uiInfo.serverStatus.displayServers[j + 1];
 
       return;
-  }
+ }
 }
 }
 
@@ -351,13 +342,13 @@ static void UI_BinaryServerInsertion(int num) {
     if (res == 0) {
       UI_InsertServerIntoDisplayList(num, offset + mid);
       return;
-  }
+ }
 
    // if larger
     else if (res == 1) {
       offset += mid;
       len -= mid;
-  }
+ }
 
    // if smaller
     else
@@ -385,7 +376,7 @@ serverStatusCvar_t serverStatusCvars[] = {
       {"protocol", ""}, 
       {"timelimit", ""}, 
       {NULL, NULL}
-  };
+ };
 
 /*
 =======================================================================================================================================
@@ -426,8 +417,8 @@ static void UI_SortServerStatusInfo(serverStatusInfo_t *info) {
           info->lines[index][0] = serverStatusCvars[i].altName;
 
         index++;
-    }
-  }
+   }
+ }
 }
 
  // sort remaining cvars
@@ -488,7 +479,7 @@ static int UI_GetServerStatusInfo(const char *serverAddress, serverStatusInfo_t 
 
       if (info->numLines >= MAX_SERVERSTATUS_LINES)
         break;
-  }
+ }
 
     UI_SortServerStatusInfo(info);
 
@@ -561,8 +552,8 @@ static int UI_GetServerStatusInfo(const char *serverAddress, serverStatusInfo_t 
 
        // 
         i++;
-    }
-  }
+   }
+ }
 
     return qtrue;
 }
@@ -618,7 +609,7 @@ static void UI_BuildFindPlayerList(qboolean force) {
     if (!strlen(uiInfo.findPlayerName)) {
       uiInfo.nextFindPlayerRefresh = 0;
       return;
-  }
+ }
 
    // set resend time
     resend = ui_serverStatusTimeOut.integer / 2 - 10;
@@ -670,7 +661,7 @@ static void UI_BuildFindPlayerList(qboolean force) {
                            uiInfo.pendingServerStatus.server[i].adrstr, 
                            MAX_ADDRESSLENGTH) == 0)
               duplicate = qtrue;
-        }
+       }
 
          // if the player name is a substring
           if (stristr(name, uiInfo.findPlayerName) && !duplicate)
@@ -687,22 +678,22 @@ static void UI_BuildFindPlayerList(qboolean force) {
                           uiInfo.pendingServerStatus.server[i].name, 
                           sizeof(uiInfo.foundPlayerServerNames[0]));
               uiInfo.numFoundPlayerServers++;
-          }
+         }
             else
             {
              // can't add any more so we're done
               uiInfo.pendingServerStatus.num = uiInfo.serverStatus.numDisplayServers;
-          }
-        }
-      }
+         }
+       }
+     }
 
         Com_sprintf(uiInfo.foundPlayerServerNames[uiInfo.numFoundPlayerServers - 1], 
                      sizeof(uiInfo.foundPlayerServerNames[uiInfo.numFoundPlayerServers - 1]), 
                      "searching %d / %d...", numFound, uiInfo.pendingServerStatus.num);
        // retrieved the server status so reuse this spot
         uiInfo.pendingServerStatus.server[i].valid = qfalse;
-    }
-  }
+   }
+ }
 
    // if empty pending slot or timed out
     if (!uiInfo.pendingServerStatus.server[i].valid ||
@@ -738,8 +729,8 @@ static void UI_BuildFindPlayerList(qboolean force) {
         Com_sprintf(uiInfo.foundPlayerServerNames[uiInfo.numFoundPlayerServers - 1], 
                      sizeof(uiInfo.foundPlayerServerNames[uiInfo.numFoundPlayerServers - 1]), 
                      "searching %d / %d...", numFound, uiInfo.pendingServerStatus.num);
-    }
-  }
+   }
+ }
 }
 
   for (i = 0; i < MAX_SERVERSTATUSREQUESTS; i++) {
@@ -757,14 +748,14 @@ static void UI_BuildFindPlayerList(qboolean force) {
     if (!uiInfo.numFoundPlayerServers) {
       Com_sprintf(uiInfo.foundPlayerServerNames[uiInfo.numFoundPlayerServers - 1], 
                    sizeof(uiInfo.foundPlayerServerAddresses[0]), "no servers found");
-  }
+ }
     else
     {
       Com_sprintf(uiInfo.foundPlayerServerNames[uiInfo.numFoundPlayerServers - 1], 
                    sizeof(uiInfo.foundPlayerServerAddresses[0]), 
                    "%d server%s found with player %s", uiInfo.numFoundPlayerServers - 1, 
                    uiInfo.numFoundPlayerServers == 2 ? "" : "s", uiInfo.findPlayerName);
-  }
+ }
 
     uiInfo.nextFindPlayerRefresh = 0;
    // show the server status info for the selected server
@@ -877,8 +868,8 @@ static void UI_BuildServerDisplayList(qboolean force) {
         {
           trap_LAN_MarkServerVisible(ui_netSource.integer, i, qfalse);
           continue;
-      }
-    }
+     }
+   }
 
       if (ui_browserShowFull.integer == 0)
       {
@@ -888,8 +879,8 @@ static void UI_BuildServerDisplayList(qboolean force) {
         {
           trap_LAN_MarkServerVisible(ui_netSource.integer, i, qfalse);
           continue;
-      }
-    }
+     }
+   }
 
      // make sure we never add a favorite server twice
       if (ui_netSource.integer == AS_FAVORITES)
@@ -903,8 +894,8 @@ static void UI_BuildServerDisplayList(qboolean force) {
       {
         trap_LAN_MarkServerVisible(ui_netSource.integer, i, qfalse);
         numinvisible++;
-    }
-  }
+   }
+ }
 }
 
   uiInfo.serverStatus.refreshtime = uiInfo.uiDC.realTime;
@@ -959,12 +950,12 @@ static void UI_DoServerRefresh(void) {
     if (ui_netSource.integer == AS_LOCAL) {
       if (!trap_LAN_GetServerCount(ui_netSource.integer))
         wait = qtrue;
-  }
+ }
     else
     {
       if (trap_LAN_GetServerCount(ui_netSource.integer) < 0)
         wait = qtrue;
-  }
+ }
 }
 
   if (uiInfo.uiDC.realTime < uiInfo.serverStatus.refreshtime) {
@@ -1135,7 +1126,7 @@ qboolean Asset_Parse(int handle) {
       trap_R_RegisterFont(tempStr, pointSize, &uiInfo.uiDC.Assets.textFont);
       uiInfo.uiDC.Assets.fontRegistered = qtrue;
       continue;
-  }
+ }
 
     if (Q_stricmp(token.string, "smallFont") == 0) {
    int pointSize;
@@ -1145,7 +1136,7 @@ qboolean Asset_Parse(int handle) {
 
       trap_R_RegisterFont(tempStr, pointSize, &uiInfo.uiDC.Assets.smallFont);
       continue;
-  }
+ }
 
     if (Q_stricmp(token.string, "bigFont") == 0) {
    int pointSize;
@@ -1155,7 +1146,7 @@ qboolean Asset_Parse(int handle) {
 
       trap_R_RegisterFont(tempStr, pointSize, &uiInfo.uiDC.Assets.bigFont);
       continue;
-  }
+ }
 
 
    // gradientbar
@@ -1165,7 +1156,7 @@ qboolean Asset_Parse(int handle) {
 
       uiInfo.uiDC.Assets.gradientBar = trap_R_RegisterShaderNoMip(tempStr);
       continue;
-  }
+ }
 
    // enterMenuSound
     if (Q_stricmp(token.string, "menuEnterSound") == 0) {
@@ -1174,7 +1165,7 @@ qboolean Asset_Parse(int handle) {
 
       uiInfo.uiDC.Assets.menuEnterSound = trap_S_RegisterSound(tempStr, qfalse);
       continue;
-  }
+ }
 
    // exitMenuSound
     if (Q_stricmp(token.string, "menuExitSound") == 0) {
@@ -1183,7 +1174,7 @@ qboolean Asset_Parse(int handle) {
 
       uiInfo.uiDC.Assets.menuExitSound = trap_S_RegisterSound(tempStr, qfalse);
       continue;
-  }
+ }
 
    // itemFocusSound
     if (Q_stricmp(token.string, "itemFocusSound") == 0) {
@@ -1192,7 +1183,7 @@ qboolean Asset_Parse(int handle) {
 
       uiInfo.uiDC.Assets.itemFocusSound = trap_S_RegisterSound(tempStr, qfalse);
       continue;
-  }
+ }
 
    // menuBuzzSound
     if (Q_stricmp(token.string, "menuBuzzSound") == 0) {
@@ -1201,7 +1192,7 @@ qboolean Asset_Parse(int handle) {
 
       uiInfo.uiDC.Assets.menuBuzzSound = trap_S_RegisterSound(tempStr, qfalse);
       continue;
-  }
+ }
 
     if (Q_stricmp(token.string, "cursor") == 0) {
       if (!PC_String_Parse(handle, &uiInfo.uiDC.Assets.cursorStr))
@@ -1209,42 +1200,42 @@ qboolean Asset_Parse(int handle) {
 
       uiInfo.uiDC.Assets.cursor = trap_R_RegisterShaderNoMip(uiInfo.uiDC.Assets.cursorStr);
       continue;
-  }
+ }
 
     if (Q_stricmp(token.string, "fadeClamp") == 0) {
       if (!PC_Float_Parse(handle, &uiInfo.uiDC.Assets.fadeClamp))
         return qfalse;
 
       continue;
-  }
+ }
 
     if (Q_stricmp(token.string, "fadeCycle") == 0) {
       if (!PC_Int_Parse(handle, &uiInfo.uiDC.Assets.fadeCycle))
         return qfalse;
 
       continue;
-  }
+ }
 
     if (Q_stricmp(token.string, "fadeAmount") == 0) {
       if (!PC_Float_Parse(handle, &uiInfo.uiDC.Assets.fadeAmount))
         return qfalse;
 
       continue;
-  }
+ }
 
     if (Q_stricmp(token.string, "shadowX") == 0) {
       if (!PC_Float_Parse(handle, &uiInfo.uiDC.Assets.shadowX))
         return qfalse;
 
       continue;
-  }
+ }
 
     if (Q_stricmp(token.string, "shadowY") == 0) {
       if (!PC_Float_Parse(handle, &uiInfo.uiDC.Assets.shadowY))
         return qfalse;
 
       continue;
-  }
+ }
 
     if (Q_stricmp(token.string, "shadowColor") == 0) {
       if (!PC_Color_Parse(handle, &uiInfo.uiDC.Assets.shadowColor))
@@ -1252,7 +1243,7 @@ qboolean Asset_Parse(int handle) {
 
       uiInfo.uiDC.Assets.shadowFadeClamp = uiInfo.uiDC.Assets.shadowColor[3];
       continue;
-  }
+ }
 }
 
   return qfalse;
@@ -1298,12 +1289,12 @@ void UI_ParseMenu(const char *menuFile) {
         continue;
       else
         break;
-  }
+ }
 
     if (Q_stricmp(token.string, "menudef") == 0) {
      // start a new menu
       Menu_New(handle);
-  }
+ }
 }
 
   trap_Parse_FreeSource(handle);
@@ -1364,7 +1355,7 @@ void UI_LoadMenus(const char *menuFile, qboolean reset) {
         continue;
       else
         break;
-  }
+ }
 }
 
   Com_Printf("UI menu file '%s' loaded in %d msec\n", menuFile, trap_Milliseconds() - start);
@@ -1408,14 +1399,14 @@ void UI_LoadHelp(const char *helpFile) {
              token.string[0] != 0 && token.string[0] != '}')
       {
         Q_strcat(buffer, sizeof(buffer), token.string);
-    }
+   }
 
       uiInfo.helpList[uiInfo.helpCount].text = String_Alloc(title);
       uiInfo.helpList[uiInfo.helpCount].v.text = String_Alloc(buffer);
       uiInfo.helpList[uiInfo.helpCount].type = INFOTYPE_TEXT;
       uiInfo.helpCount++;
       title[0] = 0;
-  }
+ }
     else
       Q_strcat(title, sizeof(title), token.string);
 }
@@ -1505,14 +1496,14 @@ static void UI_DrawInfoPane(menuItem_t *item, rectDef_t *rect, float text_x, flo
         s = va("%s\n\n%s", 
                 BG_ClassConfig(item->v.pclass)->humanName, 
                 BG_Class(item->v.pclass)->info);
-    }
+   }
       else
       {
         s = va("%s\n\n%s\n\nFrags: %d", 
                 BG_ClassConfig(item->v.pclass)->humanName, 
                 BG_Class(item->v.pclass)->info, 
                 value);
-    }
+   }
 
       break;
 
@@ -1524,14 +1515,14 @@ static void UI_DrawInfoPane(menuItem_t *item, rectDef_t *rect, float text_x, flo
         s = va("%s\n\n%s\n\nCredits: Free", 
                 BG_Weapon(item->v.weapon)->humanName, 
                 BG_Weapon(item->v.weapon)->info);
-    }
+   }
       else
       {
         s = va("%s\n\n%s\n\nCredits: %d", 
                 BG_Weapon(item->v.weapon)->humanName, 
                 BG_Weapon(item->v.weapon)->info, 
                 value);
-    }
+   }
 
       break;
 
@@ -1543,14 +1534,14 @@ static void UI_DrawInfoPane(menuItem_t *item, rectDef_t *rect, float text_x, flo
         s = va("%s\n\n%s\n\nCredits: Free", 
                 BG_Upgrade(item->v.upgrade)->humanName, 
                 BG_Upgrade(item->v.upgrade)->info);
-    }
+   }
       else
       {
         s = va("%s\n\n%s\n\nCredits: %d", 
                 BG_Upgrade(item->v.upgrade)->humanName, 
                 BG_Upgrade(item->v.upgrade)->info, 
                 value);
-    }
+   }
 
       break;
 
@@ -1569,21 +1560,21 @@ static void UI_DrawInfoPane(menuItem_t *item, rectDef_t *rect, float text_x, flo
 
         default:
           break;
-    }
+   }
 
       if (value == 0)
       {
         s = va("%s\n\n%s", 
                 BG_Buildable(item->v.buildable)->humanName, 
                 BG_Buildable(item->v.buildable)->info);
-    }
+   }
       else
       {
         s = va("%s\n\n%s\n\n%s: %d", 
                 BG_Buildable(item->v.buildable)->humanName, 
                 BG_Buildable(item->v.buildable)->info, 
                 string, value);
-    }
+   }
 
       break;
 }
@@ -1623,7 +1614,7 @@ static void UI_DrawSelectedMapPreview(rectDef_t *rect, float scale, vec4_t color
       trap_CIN_RunCinematic(uiInfo.mapList[map].cinematic);
       trap_CIN_SetExtents(uiInfo.mapList[map].cinematic, rect->x, rect->y, rect->w, rect->h);
       trap_CIN_DrawCinematic(uiInfo.mapList[map].cinematic);
-  }
+ }
     else
       uiInfo.mapList[map].cinematic = -2;
 } else {
@@ -1679,7 +1670,7 @@ static const char *UI_OwnerDrawText(int ownerDraw) {
 
         s = numServers < 0 ? va("Waiting for response%s", dots) :
             va("Getting info for %d servers(ESC to cancel)%s", numServers, dots);
-    }
+   }
       else
         s = va("Refresh Time: %s", UI_Cvar_VariableString(va("ui_lastServerRefresh_%i", ui_netSource.integer)));
 
@@ -1767,8 +1758,8 @@ static void UI_BuildPlayerList(void) {
         uiInfo.teamClientNums[uiInfo.myTeamCount] = n;
 
         uiInfo.myTeamCount++;
-    }
-  }
+   }
+ }
 }
 }
 
@@ -1886,51 +1877,51 @@ static qboolean UI_OwnerDrawVisible(int flags) {
         vis = qfalse;
 
       flags &= ~UI_SHOW_NOTSPECTATING;
-  }
+ }
 
     if (flags & UI_SHOW_VOTEACTIVE) {
       if (!trap_Cvar_VariableValue("ui_voteActive"))
         vis = qfalse;
 
       flags &= ~UI_SHOW_VOTEACTIVE;
-  }
+ }
 
     if (flags & UI_SHOW_CANVOTE) {
       if (trap_Cvar_VariableValue("ui_voteActive"))
         vis = qfalse;
 
       flags &= ~UI_SHOW_CANVOTE;
-  }
+ }
 
     if (flags & UI_SHOW_TEAMVOTEACTIVE) {
       if (team == TEAM_ALIENS)
       {
         if (!trap_Cvar_VariableValue("ui_alienTeamVoteActive"))
           vis = qfalse;
-    }
+   }
       else if (team == TEAM_HUMANS)
       {
         if (!trap_Cvar_VariableValue("ui_humanTeamVoteActive"))
           vis = qfalse;
-    }
+   }
 
       flags &= ~UI_SHOW_TEAMVOTEACTIVE;
-  }
+ }
 
     if (flags & UI_SHOW_CANTEAMVOTE) {
       if (team == TEAM_ALIENS)
       {
         if (trap_Cvar_VariableValue("ui_alienTeamVoteActive"))
           vis = qfalse;
-    }
+   }
       else if (team == TEAM_HUMANS)
       {
         if (trap_Cvar_VariableValue("ui_humanTeamVoteActive"))
           vis = qfalse;
-    }
+   }
 
       flags &= ~UI_SHOW_CANTEAMVOTE;
-  }
+ }
 
     if (flags & UI_SHOW_FAVORITESERVERS) {
      // this assumes you only put this type of display flag on something showing in the proper context
@@ -1939,7 +1930,7 @@ static qboolean UI_OwnerDrawVisible(int flags) {
         vis = qfalse;
 
       flags &= ~UI_SHOW_FAVORITESERVERS;
-  }
+ }
 
     if (flags & UI_SHOW_NOTFAVORITESERVERS) {
      // this assumes you only put this type of display flag on something showing in the proper context
@@ -1948,7 +1939,7 @@ static qboolean UI_OwnerDrawVisible(int flags) {
         vis = qfalse;
 
       flags &= ~UI_SHOW_NOTFAVORITESERVERS;
-  }
+ }
     else
       flags = 0;
 }
@@ -1963,14 +1954,14 @@ static qboolean UI_NetSource_HandleKey(int key) {
 
       if (ui_netSource.integer == AS_MPLAYER)
         ui_netSource.integer--;
-  }
+ }
     else
     {
       ui_netSource.integer++;
 
       if (ui_netSource.integer == AS_MPLAYER)
         ui_netSource.integer++;
-  }
+ }
 
     if (ui_netSource.integer >= numNetSources)
       ui_netSource.integer = 0;
@@ -2168,7 +2159,7 @@ static void UI_ParseCarriageList(void) {
       i = atoi(buffer);
 
       uiInfo.weapons |= (1 << i);
-  }
+ }
     else if (iterator[0] == 'U') {
       iterator++;
 
@@ -2180,7 +2171,7 @@ static void UI_ParseCarriageList(void) {
       i = atoi(buffer);
 
       uiInfo.upgrades |= (1 << i);
-  }
+ }
 
     iterator++;
 }
@@ -2226,7 +2217,7 @@ static void UI_LoadHumanArmouryBuys(void) {
       j++;
 
       uiInfo.humanArmouryBuyCount++;
-  }
+ }
 }
 
   for (i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++) {
@@ -2245,7 +2236,7 @@ static void UI_LoadHumanArmouryBuys(void) {
       j++;
 
       uiInfo.humanArmouryBuyCount++;
-  }
+ }
 }
 }
 
@@ -2271,7 +2262,7 @@ static void UI_LoadHumanArmourySells(void) {
       j++;
 
       uiInfo.humanArmourySellCount++;
-  }
+ }
 }
 
   for (i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++) {
@@ -2285,7 +2276,7 @@ static void UI_LoadHumanArmourySells(void) {
       j++;
 
       uiInfo.humanArmourySellCount++;
-  }
+ }
 }
 }
 
@@ -2336,7 +2327,7 @@ static void UI_LoadAlienUpgrades(void) {
       j++;
 
       uiInfo.alienUpgradeCount++;
-  }
+ }
 }
 }
 
@@ -2368,7 +2359,7 @@ static void UI_LoadAlienBuilds(void) {
       j++;
 
       uiInfo.alienBuildCount++;
-  }
+ }
 }
 }
 
@@ -2400,7 +2391,7 @@ static void UI_LoadHumanBuilds(void) {
       j++;
 
       uiInfo.humanBuildCount++;
-  }
+ }
 }
 }
 
@@ -2461,7 +2452,7 @@ static void UI_LoadMovies(void) {
       Q_strupr(moviename);
       uiInfo.movieList[i] = String_Alloc(moviename);
       moviename += len + 1;
-  }
+ }
 }
 }
 
@@ -2496,7 +2487,7 @@ static void UI_LoadDemos(void) {
 
       uiInfo.demoList[i] = String_Alloc(demoname);
       demoname += len + 1;
-  }
+ }
 }
 }
 
@@ -2511,16 +2502,16 @@ static void UI_Update(const char *name) {
     if (rate >= 5000) {
       trap_Cvar_Set("cl_maxpackets", "30");
       trap_Cvar_Set("cl_packetdup", "1");
-  }
+ }
     else if (rate >= 4000) {
       trap_Cvar_Set("cl_maxpackets", "15");
       trap_Cvar_Set("cl_packetdup", "2");  // favor less prediction errors when there's packet loss
-  }
+ }
     else
     {
       trap_Cvar_Set("cl_maxpackets", "15");
       trap_Cvar_Set("cl_packetdup", "1");  // favor lower bandwidth
-  }
+ }
 }
   else if (Q_stricmp(name, "ui_GetName") == 0)
     trap_Cvar_Set("ui_Name", UI_Cvar_VariableString("name"));
@@ -2539,7 +2530,7 @@ static void UI_Update(const char *name) {
       case 32:
         trap_Cvar_SetValue("r_depthbits", 24);
         break;
-  }
+ }
 }
   else if (Q_stricmp(name, "r_lodbias") == 0) {
     switch (val) {
@@ -2554,7 +2545,7 @@ static void UI_Update(const char *name) {
       case 2:
         trap_Cvar_SetValue("r_subdivisions", 20);
         break;
-  }
+ }
 }
   else if (Q_stricmp(name, "ui_glCustom") == 0) {
     switch (val) {
@@ -2617,7 +2608,7 @@ static void UI_Update(const char *name) {
         trap_Cvar_SetValue("cg_bounceParticles", 0);
         trap_Cvar_Set("r_texturemode", "GL_LINEAR_MIPMAP_NEAREST");
         break;
-  }
+ }
 }
   else if (Q_stricmp(name, "ui_mousePitch") == 0) {
     if (val == 0)
@@ -2638,18 +2629,18 @@ static void UI_RunMenuScript(char **args) {
       trap_Cvar_SetValue("dedicated", Com_Clamp(0, 2, ui_dedicated.integer));
       trap_Cmd_ExecuteText(EXEC_APPEND, va("wait; wait; map %s\n", 
                             uiInfo.mapList[ui_selectedMap.integer].mapLoadName));
-  }
+ }
     else if (Q_stricmp(name, "resetDefaults") == 0) {
       trap_Cmd_ExecuteText(EXEC_APPEND, "exec default.cfg\n");
       trap_Cmd_ExecuteText(EXEC_APPEND, "cvar_restart\n");
       Controls_SetDefaults();
       trap_Cvar_Set("com_introPlayed", "1");
       trap_Cmd_ExecuteText(EXEC_APPEND, "vid_restart\n");
-  }
+ }
     else if (Q_stricmp(name, "loadArenas") == 0) {
       UI_LoadArenas();
       Menu_SetFeederSelection(NULL, FEEDER_MAPS, 0, "createserver");
-  }
+ }
     else if (Q_stricmp(name, "loadServerInfo") == 0)
       UI_ServerInfo();
     else if (Q_stricmp(name, "getNews") == 0)
@@ -2660,16 +2651,16 @@ static void UI_RunMenuScript(char **args) {
       Controls_GetConfig();
     else if (Q_stricmp(name, "clearError") == 0) {
       trap_Cvar_Set("com_errorMessage", "");
-  } else if (Q_stricmp(name, "downloadIgnore") == 0) {
+ } else if (Q_stricmp(name, "downloadIgnore") == 0) {
       trap_Cvar_Set("com_downloadPrompt", va("%d", DLP_IGNORE));
-  } else if (Q_stricmp(name, "downloadCURL") == 0) {
+ } else if (Q_stricmp(name, "downloadCURL") == 0) {
       trap_Cvar_Set("com_downloadPrompt", va("%d", DLP_CURL));
-  } else if (Q_stricmp(name, "downloadUDP") == 0) {
+ } else if (Q_stricmp(name, "downloadUDP") == 0) {
       trap_Cvar_Set("com_downloadPrompt", va("%d", DLP_UDP));
-  } else if (Q_stricmp(name, "RefreshServers") == 0) {
+ } else if (Q_stricmp(name, "RefreshServers") == 0) {
       UI_StartServerRefresh(qtrue);
       UI_BuildServerDisplayList(qtrue);
-  } else if (Q_stricmp(name, "InitServerList") == 0) {
+ } else if (Q_stricmp(name, "InitServerList") == 0) {
    int time = trap_RealTime(NULL);
    int last;
    int sortColumn;
@@ -2680,7 +2671,7 @@ static void UI_RunMenuScript(char **args) {
       {
         uiInfo.serverStatus.sortKey = sortColumn;
         uiInfo.serverStatus.sortDir = 0;
-    }
+   }
 
      // refresh if older than 3 days or if list is empty
       last = atoi(UI_Cvar_VariableString(va("ui_lastServerRefresh_%i_time", 
@@ -2691,12 +2682,12 @@ static void UI_RunMenuScript(char **args) {
       {
         UI_StartServerRefresh(qtrue);
         UI_BuildServerDisplayList(qtrue);
-    }
-  }
+   }
+ }
     else if (Q_stricmp(name, "RefreshFilter") == 0) {
       UI_StartServerRefresh(qfalse);
       UI_BuildServerDisplayList(qtrue);
-  }
+ }
     else if (Q_stricmp(name, "LoadDemos") == 0)
       UI_LoadDemos();
     else if (Q_stricmp(name, "LoadMovies") == 0)
@@ -2708,19 +2699,19 @@ static void UI_RunMenuScript(char **args) {
     else if (Q_stricmp(name, "JoinTeam") == 0) {
       if ((cmd = uiInfo.teamList[uiInfo.teamIndex].cmd))
         trap_Cmd_ExecuteText(EXEC_APPEND, cmd);
-  }
+ }
     else if (Q_stricmp(name, "LoadHumanItems") == 0)
       UI_LoadHumanItems();
     else if (Q_stricmp(name, "SpawnWithHumanItem") == 0) {
       if ((cmd = uiInfo.humanItemList[uiInfo.humanItemIndex].cmd))
         trap_Cmd_ExecuteText(EXEC_APPEND, cmd);
-  }
+ }
     else if (Q_stricmp(name, "LoadAlienClasses") == 0)
       UI_LoadAlienClasses();
     else if (Q_stricmp(name, "SpawnAsAlienClass") == 0) {
       if ((cmd = uiInfo.alienClassList[uiInfo.alienClassIndex].cmd))
         trap_Cmd_ExecuteText(EXEC_APPEND, cmd);
-  }
+ }
     else if (Q_stricmp(name, "LoadHumanArmouryBuys") == 0)
       UI_LoadHumanArmouryBuys();
     else if (Q_stricmp(name, "BuyFromArmoury") == 0) {
@@ -2728,7 +2719,7 @@ static void UI_RunMenuScript(char **args) {
         trap_Cmd_ExecuteText(EXEC_APPEND, cmd);
 
       UI_InstallCaptureFunc(UI_ArmouryRefreshCb, NULL, 1000);
-  }
+ }
     else if (Q_stricmp(name, "LoadHumanArmourySells") == 0)
       UI_LoadHumanArmourySells();
     else if (Q_stricmp(name, "SellToArmoury") == 0) {
@@ -2736,7 +2727,7 @@ static void UI_RunMenuScript(char **args) {
         trap_Cmd_ExecuteText(EXEC_APPEND, cmd);
 
       UI_InstallCaptureFunc(UI_ArmouryRefreshCb, NULL, 1000);
-  }
+ }
     else if (Q_stricmp(name, "LoadAlienUpgrades") == 0) {
       UI_LoadAlienUpgrades();
 
@@ -2744,23 +2735,23 @@ static void UI_RunMenuScript(char **args) {
 
       if (uiInfo.alienUpgradeCount <= 0)
         Menus_CloseAll();
-  }
+ }
     else if (Q_stricmp(name, "UpgradeToNewClass") == 0) {
       if ((cmd = uiInfo.alienUpgradeList[uiInfo.alienUpgradeIndex].cmd))
         trap_Cmd_ExecuteText(EXEC_APPEND, cmd);
-  }
+ }
     else if (Q_stricmp(name, "LoadAlienBuilds") == 0)
       UI_LoadAlienBuilds();
     else if (Q_stricmp(name, "BuildAlienBuildable") == 0) {
       if ((cmd = uiInfo.alienBuildList[uiInfo.alienBuildIndex].cmd))
         trap_Cmd_ExecuteText(EXEC_APPEND, cmd);
-  }
+ }
     else if (Q_stricmp(name, "LoadHumanBuilds") == 0)
       UI_LoadHumanBuilds();
     else if (Q_stricmp(name, "BuildHumanBuildable") == 0) {
       if ((cmd = uiInfo.humanBuildList[uiInfo.humanBuildIndex].cmd))
         trap_Cmd_ExecuteText(EXEC_APPEND, cmd);
-  }
+ }
     else if (Q_stricmp(name, "Say") == 0) {
       char buffer[MAX_CVAR_VALUE_STRING];
       trap_Cvar_VariableStringBuffer("ui_sayBuffer", buffer, sizeof(buffer));
@@ -2771,12 +2762,12 @@ static void UI_RunMenuScript(char **args) {
         buffer[0] == '\\'))
       {
         trap_Cmd_ExecuteText(EXEC_APPEND, va("%s\n", buffer + 1));
-    }
+   }
       else if (uiInfo.chatTeam)
         trap_Cmd_ExecuteText(EXEC_APPEND, va("say_team \"%s\"\n", buffer));
       else
         trap_Cmd_ExecuteText(EXEC_APPEND, va("say \"%s\"\n", buffer));
-  }
+ }
     else if (Q_stricmp(name, "SayKeydown") == 0) {
       if (ui_chatCommands.integer)
       {
@@ -2789,24 +2780,24 @@ static void UI_RunMenuScript(char **args) {
           Menus_ReplaceActiveByName("say_team");
         else
           Menus_ReplaceActiveByName("say");
-    }
-  }
+   }
+ }
     else if (Q_stricmp(name, "playMovie") == 0) {
       if (uiInfo.previewMovie >= 0)
         trap_CIN_StopCinematic(uiInfo.previewMovie);
 
       trap_Cmd_ExecuteText(EXEC_APPEND, va("cinematic %s.roq 2\n", uiInfo.movieList[uiInfo.movieIndex]));
-  }
+ }
     else if (Q_stricmp(name, "RunMod") == 0) {
       trap_Cvar_Set("fs_game", uiInfo.modList[uiInfo.modIndex].modName);
       trap_Cmd_ExecuteText(EXEC_APPEND, "vid_restart;");
-  }
+ }
     else if (Q_stricmp(name, "RunDemo") == 0)
       trap_Cmd_ExecuteText(EXEC_APPEND, va("demo %s\n", uiInfo.demoList[uiInfo.demoIndex]));
     else if (Q_stricmp(name, "Tremulous") == 0) {
       trap_Cvar_Set("fs_game", "");
       trap_Cmd_ExecuteText(EXEC_APPEND, "vid_restart;");
-  }
+ }
     else if (Q_stricmp(name, "closeJoin") == 0) {
       if (uiInfo.serverStatus.refreshActive)
       {
@@ -2815,45 +2806,45 @@ static void UI_RunMenuScript(char **args) {
         uiInfo.nextServerStatusRefresh = 0;
         uiInfo.nextFindPlayerRefresh = 0;
         UI_BuildServerDisplayList(qtrue);
-    }
+   }
       else
       {
         Menus_CloseByName("joinserver");
         Menus_ActivateByName("main");
-    }
-  }
+   }
+ }
     else if (Q_stricmp(name, "StopRefresh") == 0) {
       UI_StopServerRefresh();
       uiInfo.serverStatus.nextDisplayRefresh = 0;
       uiInfo.nextServerStatusRefresh = 0;
       uiInfo.nextFindPlayerRefresh = 0;
-  }
+ }
     else if (Q_stricmp(name, "UpdateFilter") == 0) {
       if (ui_netSource.integer == AS_LOCAL)
         UI_StartServerRefresh(qtrue);
 
       UI_BuildServerDisplayList(qtrue);
       UI_FeederSelection(FEEDER_SERVERS, 0);
-  }
+ }
     else if (Q_stricmp(name, "ServerStatus") == 0) {
       trap_LAN_GetServerAddressString(ui_netSource.integer, 
                                        uiInfo.serverStatus.displayServers[uiInfo.serverStatus.currentServer], 
                                        uiInfo.serverStatusAddress, sizeof(uiInfo.serverStatusAddress));
       UI_BuildServerStatus(qtrue);
-  }
+ }
     else if (Q_stricmp(name, "FoundPlayerServerStatus") == 0) {
       Q_strncpyz(uiInfo.serverStatusAddress, 
                   uiInfo.foundPlayerServerAddresses[uiInfo.currentFoundPlayerServer], 
                   sizeof(uiInfo.serverStatusAddress));
       UI_BuildServerStatus(qtrue);
       Menu_SetFeederSelection(NULL, FEEDER_FINDPLAYER, 0, NULL);
-  }
+ }
     else if (Q_stricmp(name, "FindPlayer") == 0) {
       UI_BuildFindPlayerList(qtrue);
      // clear the displayed server status info
       uiInfo.serverStatusInfo.numLines = 0;
       Menu_SetFeederSelection(NULL, FEEDER_FINDPLAYER, 0, NULL);
-  }
+ }
     else if (Q_stricmp(name, "JoinServer") == 0) {
       if (uiInfo.serverStatus.currentServer >= 0 &&
           uiInfo.serverStatus.currentServer < uiInfo.serverStatus.numDisplayServers)
@@ -2862,16 +2853,16 @@ static void UI_RunMenuScript(char **args) {
                                           uiInfo.serverStatus.displayServers[uiInfo.serverStatus.currentServer], 
                                           buff, 1024);
         trap_Cmd_ExecuteText(EXEC_APPEND, va("connect %s\n", buff));
-    }
-  }
+   }
+ }
     else if (Q_stricmp(name, "FoundPlayerJoinServer") == 0) {
       if (uiInfo.currentFoundPlayerServer >= 0 &&
           uiInfo.currentFoundPlayerServer < uiInfo.numFoundPlayerServers)
       {
         trap_Cmd_ExecuteText(EXEC_APPEND, va("connect %s\n", 
                               uiInfo.foundPlayerServerAddresses[uiInfo.currentFoundPlayerServer]));
-    }
-  }
+   }
+ }
     else if (Q_stricmp(name, "Quit") == 0)
       trap_Cmd_ExecuteText(EXEC_APPEND, "quit");
     else if (Q_stricmp(name, "Leave") == 0) {
@@ -2879,7 +2870,7 @@ static void UI_RunMenuScript(char **args) {
       trap_Key_SetCatcher(KEYCATCH_UI);
       Menus_CloseAll();
       Menus_ActivateByName("main");
-  }
+ }
     else if (Q_stricmp(name, "ServerSort") == 0) {
    int sortColumn;
 
@@ -2894,28 +2885,28 @@ static void UI_RunMenuScript(char **args) {
         UI_ServersSort(sortColumn, qtrue);
 
         uiInfo.serverStatus.sorted = qtrue;
-    }
-  }
+   }
+ }
     else if (Q_stricmp(name, "closeingame") == 0) {
       trap_Key_SetCatcher(trap_Key_GetCatcher() & ~KEYCATCH_UI);
       trap_Key_ClearStates();
       trap_Cvar_Set("cl_paused", "0");
       Menus_CloseAll();
-  }
+ }
     else if (Q_stricmp(name, "voteMap") == 0) {
       if (ui_selectedMap.integer >= 0 && ui_selectedMap.integer < uiInfo.mapCount)
       {
         trap_Cmd_ExecuteText(EXEC_APPEND, va("callvote map %s\n", 
                               uiInfo.mapList[ui_selectedMap.integer].mapLoadName));
-    }
-  }
+   }
+ }
     else if (Q_stricmp(name, "voteNextMap") == 0) {
       if (ui_selectedMap.integer >= 0 && ui_selectedMap.integer < uiInfo.mapCount)
       {
         trap_Cmd_ExecuteText(EXEC_APPEND, va("callvote nextmap %s\n", 
                               uiInfo.mapList[ui_selectedMap.integer].mapLoadName));
-    }
-  }
+   }
+ }
     else if (Q_stricmp(name, "voteKick") == 0) {
       if (uiInfo.playerIndex >= 0 && uiInfo.playerIndex < uiInfo.playerCount)
       {
@@ -2926,8 +2917,8 @@ static void UI_RunMenuScript(char **args) {
                                                uiInfo.clientNums[uiInfo.playerIndex], 
                                                buffer));
         trap_Cvar_Set("ui_reason", "");
-    }
-  }
+   }
+ }
     else if (Q_stricmp(name, "voteMute") == 0) {
       if (uiInfo.playerIndex >= 0 && uiInfo.playerIndex < uiInfo.playerCount)
       {
@@ -2938,15 +2929,15 @@ static void UI_RunMenuScript(char **args) {
                                                uiInfo.clientNums[uiInfo.playerIndex], 
                                                buffer));
         trap_Cvar_Set("ui_reason", "");
-    }
-  }
+   }
+ }
     else if (Q_stricmp(name, "voteUnMute") == 0) {
       if (uiInfo.playerIndex >= 0 && uiInfo.playerIndex < uiInfo.playerCount)
       {
         trap_Cmd_ExecuteText(EXEC_APPEND, va("callvote unmute %d\n", 
                                                uiInfo.clientNums[uiInfo.playerIndex]));
-    }
-  }
+   }
+ }
     else if (Q_stricmp(name, "voteTeamKick") == 0) {
       if (uiInfo.teamPlayerIndex >= 0 && uiInfo.teamPlayerIndex < uiInfo.myTeamCount)
       {
@@ -2957,8 +2948,8 @@ static void UI_RunMenuScript(char **args) {
                                                uiInfo.teamClientNums[uiInfo.teamPlayerIndex], 
                                                buffer));
         trap_Cvar_Set("ui_reason", "");
-    }
-  }
+   }
+ }
     else if (Q_stricmp(name, "voteTeamDenyBuild") == 0) {
       if (uiInfo.teamPlayerIndex >= 0 && uiInfo.teamPlayerIndex < uiInfo.myTeamCount)
       {
@@ -2969,15 +2960,15 @@ static void UI_RunMenuScript(char **args) {
                                                uiInfo.teamClientNums[uiInfo.teamPlayerIndex], 
                                                buffer));
         trap_Cvar_Set("ui_reason", "");
-    }
-  }
+   }
+ }
     else if (Q_stricmp(name, "voteTeamAllowBuild") == 0) {
       if (uiInfo.teamPlayerIndex >= 0 && uiInfo.teamPlayerIndex < uiInfo.myTeamCount)
       {
         trap_Cmd_ExecuteText(EXEC_APPEND, va("callteamvote allowbuild %d\n", 
                                                uiInfo.teamClientNums[uiInfo.teamPlayerIndex]));
-    }
-  }
+   }
+ }
     else if (Q_stricmp(name, "addFavorite") == 0) {
       if (ui_netSource.integer != AS_FAVORITES)
       {
@@ -3000,20 +2991,20 @@ static void UI_RunMenuScript(char **args) {
           {
            // server already in the list
             Com_Printf("Favorite already in list\n");
-        }
+       }
           else if (res == -1)
           {
            // list full
             Com_Printf("Favorite list full\n");
-        }
+       }
           else
           {
            // successfully added
             Com_Printf("Added favorite server %s\n", addr);
-        }
-      }
-    }
-  }
+       }
+     }
+   }
+ }
     else if (Q_stricmp(name, "deleteFavorite") == 0) {
       if (ui_netSource.integer == AS_FAVORITES)
       {
@@ -3026,8 +3017,8 @@ static void UI_RunMenuScript(char **args) {
 
         if (strlen(addr) > 0)
           trap_LAN_RemoveServer(AS_FAVORITES, addr);
-    }
-  }
+   }
+ }
     else if (Q_stricmp(name, "createFavorite") == 0) {
       if (ui_netSource.integer == AS_FAVORITES)
       {
@@ -3047,26 +3038,26 @@ static void UI_RunMenuScript(char **args) {
           {
            // server already in the list
             Com_Printf("Favorite already in list\n");
-        }
+       }
           else if (res == -1)
           {
            // list full
             Com_Printf("Favorite list full\n");
-        }
+       }
           else
           {
            // successfully added
             Com_Printf("Added favorite server %s\n", addr);
-        }
-      }
-    }
-  }
+       }
+     }
+   }
+ }
     else if (Q_stricmp(name, "glCustom") == 0)
       trap_Cvar_Set("ui_glCustom", "4");
     else if (Q_stricmp(name, "update") == 0) {
       if (String_Parse(args, &name2))
         UI_Update(name2);
-  }
+ }
     else if (Q_stricmp(name, "InitIgnoreList") == 0)
       UI_BuildPlayerList();
     else if (Q_stricmp(name, "ToggleIgnore") == 0) {
@@ -3079,16 +3070,16 @@ static void UI_RunMenuScript(char **args) {
                                uiInfo.clientNums[uiInfo.ignoreIndex]);
           trap_Cmd_ExecuteText(EXEC_APPEND, va("unignore %i\n", 
                                               uiInfo.clientNums[uiInfo.ignoreIndex]));
-      }
+     }
         else
         {
           Com_ClientListAdd(&uiInfo.ignoreList[uiInfo.myPlayerIndex], 
                             uiInfo.clientNums[uiInfo.ignoreIndex]);
           trap_Cmd_ExecuteText(EXEC_APPEND, va("ignore %i\n", 
                                               uiInfo.clientNums[uiInfo.ignoreIndex]));
-      }
-    }
-  }
+     }
+   }
+ }
     else if (Q_stricmp(name, "IgnorePlayer") == 0) {
       if (uiInfo.ignoreIndex >= 0 && uiInfo.ignoreIndex < uiInfo.playerCount)
       {
@@ -3099,9 +3090,9 @@ static void UI_RunMenuScript(char **args) {
                             uiInfo.clientNums[uiInfo.ignoreIndex]);
           trap_Cmd_ExecuteText(EXEC_APPEND, va("ignore %i\n", 
                                               uiInfo.clientNums[uiInfo.ignoreIndex]));
-      }
-    }
-  }
+     }
+   }
+ }
     else if (Q_stricmp(name, "UnIgnorePlayer") == 0) {
       if (uiInfo.ignoreIndex >= 0 && uiInfo.ignoreIndex < uiInfo.playerCount)
       {
@@ -3112,9 +3103,9 @@ static void UI_RunMenuScript(char **args) {
                                uiInfo.clientNums[uiInfo.ignoreIndex]);
           trap_Cmd_ExecuteText(EXEC_APPEND, va("unignore %i\n", 
                                               uiInfo.clientNums[uiInfo.ignoreIndex]));
-      }
-    }
-  }
+     }
+   }
+ }
     else
       Com_Printf("unknown UI script %s\n", name);
 }
@@ -3144,7 +3135,7 @@ static int UI_FeederCount(int feederID) {
     if (uiInfo.uiDC.realTime > uiInfo.playerRefresh) {
       uiInfo.playerRefresh = uiInfo.uiDC.realTime + 3000;
       UI_BuildPlayerList();
-  }
+ }
 
     return uiInfo.playerCount;
 }
@@ -3152,7 +3143,7 @@ static int UI_FeederCount(int feederID) {
     if (uiInfo.uiDC.realTime > uiInfo.playerRefresh) {
       uiInfo.playerRefresh = uiInfo.uiDC.realTime + 3000;
       UI_BuildPlayerList();
-  }
+ }
 
     return uiInfo.myTeamCount;
 }
@@ -3199,7 +3190,7 @@ static const char *UI_SelectedMap(int index, int *actual) {
     if (c == index) {
       *actual = i;
       return uiInfo.mapList[i].mapName;
-  }
+ }
     else
       c++;
 }
@@ -3257,7 +3248,7 @@ static const char *UI_FeederItemText(int feederID, int index, int column, qhandl
                                 info, MAX_STRING_CHARS);
         lastColumn = column;
         lastTime = uiInfo.uiDC.realTime;
-    }
+   }
 
       ping = atoi(Info_ValueForKey(info, "ping"));
 
@@ -3277,7 +3268,7 @@ static const char *UI_FeederItemText(int feederID, int index, int column, qhandl
               Com_sprintf(hostname, sizeof(hostname), "%s [%s]", cleaned, 
                            netnames[atoi(Info_ValueForKey(info, "nettype"))]);
               return hostname;
-          }
+         }
             else
             {
               char *text;
@@ -3291,12 +3282,12 @@ static const char *UI_FeederItemText(int feederID, int index, int column, qhandl
 
                 Com_sprintf(hostname, sizeof(hostname), "%s %s", 
                              label, cleaned);
-            }
+           }
               else
               {
                 Com_sprintf(hostname, sizeof(hostname), "%s", 
                              cleaned);
-            }
+           }
 
              // Strip leading whitespace
               text = hostname;
@@ -3305,8 +3296,8 @@ static const char *UI_FeederItemText(int feederID, int index, int column, qhandl
                 text++;
 
               return text;
-          }
-        }
+         }
+       }
 
         case SORT_GAME:
           return Info_ValueForKey(info, "game");
@@ -3324,14 +3315,14 @@ static const char *UI_FeederItemText(int feederID, int index, int column, qhandl
             return "...";
           else
             return Info_ValueForKey(info, "ping");
-    }
-  }
+   }
+ }
 }
   else if (feederID == FEEDER_SERVERSTATUS) {
     if (index >= 0 && index < uiInfo.serverStatusInfo.numLines) {
       if (column >= 0 && column < 4)
         return uiInfo.serverStatusInfo.lines[index][column];
-  }
+ }
 }
   else if (feederID == FEEDER_NEWS) {
     if (index >= 0 && index < uiInfo.newsInfo.numLines)
@@ -3365,8 +3356,8 @@ static const char *UI_FeederItemText(int feederID, int index, int column, qhandl
 
         default:
           return uiInfo.playerNames[index];
-    }
-  }
+   }
+ }
 }
   else if (feederID == FEEDER_HELP_LIST) {
     if (index >= 0 && index < uiInfo.helpCount)
@@ -3378,7 +3369,7 @@ static const char *UI_FeederItemText(int feederID, int index, int column, qhandl
         return uiInfo.modList[index].modDescr;
       else
         return uiInfo.modList[index].modName;
-  }
+ }
 }
   else if (feederID == FEEDER_CINEMATICS) {
     if (index >= 0 && index < uiInfo.movieCount)
@@ -3432,7 +3423,7 @@ static const char *UI_FeederItemText(int feederID, int index, int column, qhandl
           UI_DisplayAspectString(w, h));
 
       return resolution;
-  }
+ }
 
     w = (int)trap_Cvar_VariableValue("r_width");
     h = (int)trap_Cvar_VariableValue("r_height");
@@ -3456,7 +3447,7 @@ static qhandle_t UI_FeederItemImage(int feederID, int index) {
         uiInfo.mapList[index].levelShot = trap_R_RegisterShaderNoMip(uiInfo.mapList[index].imageName);
 
       return uiInfo.mapList[index].levelShot;
-  }
+ }
 }
 
   return 0;
@@ -3472,7 +3463,7 @@ static void UI_FeederSelection(int feederID, int index) {
     if (uiInfo.mapList[map].cinematic >= 0) {
       trap_CIN_StopCinematic(uiInfo.mapList[map].cinematic);
       uiInfo.mapList[map].cinematic = -1;
-  }
+ }
 
     UI_SelectedMap(index, &actual);
 
@@ -3494,14 +3485,14 @@ static void UI_FeederSelection(int feederID, int index) {
     if (uiInfo.serverStatus.currentServerCinematic >= 0) {
       trap_CIN_StopCinematic(uiInfo.serverStatus.currentServerCinematic);
       uiInfo.serverStatus.currentServerCinematic = -1;
-  }
+ }
 
     mapName = Info_ValueForKey(info, "mapname");
 
     if (mapName && *mapName) {
       uiInfo.serverStatus.currentServerCinematic = 
         trap_CIN_PlayCinematic(va("%s.roq", mapName), 0, 0, 0, 0, (CIN_loop|CIN_silent));
-  }
+ }
 }
   else if (feederID == FEEDER_SERVERSTATUS) {
 }
@@ -3516,7 +3507,7 @@ static void UI_FeederSelection(int feederID, int index) {
                   sizeof(uiInfo.serverStatusAddress));
       Menu_SetFeederSelection(NULL, FEEDER_SERVERSTATUS, 0, NULL);
       UI_BuildServerStatus(qtrue);
-  }
+ }
 }
   else if (feederID == FEEDER_PLAYER_LIST)
     uiInfo.playerIndex = index;
@@ -3558,7 +3549,7 @@ static void UI_FeederSelection(int feederID, int index) {
     if (index >= 0 && index < uiInfo.numResolutions) {
       trap_Cvar_Set("r_width", va("%d", uiInfo.resolutions[index].w));
       trap_Cvar_Set("r_height", va("%d", uiInfo.resolutions[index].h));
-  }
+ }
 
     uiInfo.resolutionIndex = index;
 }
@@ -3573,7 +3564,7 @@ static int UI_FeederInitialise(int feederID) {
     for (i = 0; i < uiInfo.numResolutions; i++) {
       if (w == uiInfo.resolutions[i].w && h == uiInfo.resolutions[i].h)
         return i;
-  }
+ }
 
     return uiInfo.numResolutions;
 }
@@ -3610,8 +3601,8 @@ static void UI_StopCinematic(int handle) {
       {
         trap_CIN_StopCinematic(uiInfo.serverStatus.currentServerCinematic);
         uiInfo.serverStatus.currentServerCinematic = -1;
-    }
-  }
+   }
+ }
 }
 }
 
@@ -3775,13 +3766,13 @@ void UI_KeyEvent(int key, qboolean down) {
         Menus_CloseAll();
       else
         Menu_HandleKey(menu, key, down);
-  }
+ }
     else
     {
       trap_Key_SetCatcher(trap_Key_GetCatcher() & ~KEYCATCH_UI);
       trap_Key_ClearStates();
       trap_Cvar_Set("cl_paused", "0");
-  }
+ }
 }
 }
 
@@ -3870,7 +3861,7 @@ void UI_SetActiveMenu(uiMenuCommand_t menu) {
             Menus_ActivateByName("drop_popmenu");
           else
             Menus_ActivateByName("error_popmenu");
-      }
+     }
 
         return;
 
@@ -3881,7 +3872,7 @@ void UI_SetActiveMenu(uiMenuCommand_t menu) {
         Menus_CloseAll();
         Menus_ActivateByName("ingame");
         return;
-  }
+ }
 }
 }
 
@@ -3967,7 +3958,7 @@ void Text_PaintCenter_AutoWrapped(float x, float y, float xmax, float ystep, flo
       {
        // fuck, don't have a clean cut, we'll overflow
         s2 = s3;
-    }
+   }
 
       *s2 = '\0';
       Text_PaintCenter(x, y, scale, color, s1, adjust);
@@ -3985,12 +3976,12 @@ void Text_PaintCenter_AutoWrapped(float x, float y, float xmax, float ystep, flo
           Text_PaintCenter(x, y, scale, color, s2, adjust);
 
         break;
-    }
+   }
 
       s2++;
       s1 = s2;
       s3 = s2;
-  }
+ }
     else
     {
       s2 = s3;
@@ -3999,8 +3990,8 @@ void Text_PaintCenter_AutoWrapped(float x, float y, float xmax, float ystep, flo
       {
         Text_PaintCenter(x, y, scale, color, s1, adjust);
         break;
-    }
-  }
+   }
+ }
 }
 }
 
@@ -4059,7 +4050,7 @@ static void UI_DisplayDownloadInfo(const char *downloadName, float centerPoint, 
 
       Text_PaintCenter(leftWidth, yStart + 216, scale, colorWhite, dlTimeBuf, 0);
       Text_PaintCenter(leftWidth, yStart + 160, scale, colorWhite, va("(%s of %s copied)", dlSizeBuf, totalSizeBuf), 0);
-  }
+ }
     else
     {
       Text_PaintCenter(leftWidth, yStart + 216, scale, colorWhite, "estimating", 0);
@@ -4068,7 +4059,7 @@ static void UI_DisplayDownloadInfo(const char *downloadName, float centerPoint, 
         Text_PaintCenter(leftWidth, yStart + 160, scale, colorWhite, va("(%s of %s copied)", dlSizeBuf, totalSizeBuf), 0);
       else
         Text_PaintCenter(leftWidth, yStart + 160, scale, colorWhite, va("(%s copied)", dlSizeBuf), 0);
-  }
+ }
 
     if (xferRate)
       Text_PaintCenter(leftWidth, yStart + 272, scale, colorWhite, va("%s / Sec", xferRateBuf), 0);
@@ -4153,7 +4144,7 @@ void UI_DrawConnectScreen(qboolean overlay) {
           trap_Key_SetCatcher(KEYCATCH_UI);
           Menus_ActivateByName("download_popmenu");
           trap_Cvar_Set("com_downloadPrompt", "0");
-      }
+     }
         
         trap_Cvar_VariableStringBuffer("cl_downloadName", downloadName, sizeof(downloadName));
 
@@ -4161,8 +4152,8 @@ void UI_DrawConnectScreen(qboolean overlay) {
         {
           UI_DisplayDownloadInfo(downloadName, centerPoint, yStart, scale);
           return;
-      }
-    }
+     }
+   }
 
       s = "Awaiting gamestate...";
       break;
@@ -4259,11 +4250,11 @@ void UI_UpdateNews(qboolean begin) {
       if (*c != '\n') {
         uiInfo.newsInfo.text[line][linePos] = *c;
         linePos++;
-    }
-  } else if (isprint(*c)) {
+   }
+ } else if (isprint(*c)) {
       uiInfo.newsInfo.text[line][linePos] = *c;
       linePos++;
-  }
+ }
 }
 
   uiInfo.newsInfo.text[line] [linePos] = '\0';

@@ -60,13 +60,13 @@ void CG_BuildSolidList(void) {
       cg_triggerEntities[cg_numTriggerEntities] = cent;
       cg_numTriggerEntities++;
       continue;
-  }
+ }
 
     if (cent->nextState.solid && ent->eType != ET_MISSILE) {
       cg_solidEntities[cg_numSolidEntities] = cent;
       cg_numSolidEntities++;
       continue;
-  }
+ }
 }
 }
 
@@ -108,7 +108,7 @@ static void CG_ClipMoveToEntities(const vec3_t start, const vec3_t mins, const v
       cmodel = trap_CM_InlineModel(ent->modelindex);
       VectorCopy(cent->lerpAngles, angles);
       BG_EvaluateTrajectory(&cent->currentState.pos, cg.physicsTime, origin);
-  }
+ }
     else
     {
      // encoded bbox
@@ -127,21 +127,21 @@ static void CG_ClipMoveToEntities(const vec3_t start, const vec3_t mins, const v
       cmodel = trap_CM_TempBoxModel(bmins, bmaxs);
       VectorCopy(vec3_origin, angles);
       VectorCopy(cent->lerpOrigin, origin);
-  }
+ }
 
 
     if (collisionType == TT_CAPSULE) {
       trap_CM_TransformedCapsuleTrace(&trace, start, end, 
         mins, maxs, cmodel, mask, origin, angles);
-  }
+ }
     else if (collisionType == TT_AABB) {
       trap_CM_TransformedBoxTrace(&trace, start, end, 
         mins, maxs, cmodel, mask, origin, angles);
-  }
+ }
     else if (collisionType == TT_BISPHERE) {
       trap_CM_TransformedBiSphereTrace(&trace, start, end, 
         mins[0], maxs[0], cmodel, mask, origin);
-  }
+ }
 
     if (trace.allsolid || trace.fraction < tr->fraction) {
       trace.entityNum = ent->number;
@@ -151,10 +151,10 @@ static void CG_ClipMoveToEntities(const vec3_t start, const vec3_t mins, const v
         float oldLateralFraction = tr->lateralFraction;
         *tr = trace;
         tr->lateralFraction = oldLateralFraction;
-    }
+   }
       else
         *tr = trace;
-  }
+ }
     else if (trace.startsolid)
       tr->startsolid = qtrue;
 
@@ -369,7 +369,7 @@ static int CG_IsUnacceptableError(playerState_t *ps, playerState_t *pps) {
   if (VectorLengthSquared(delta) > 0.1f * 0.1f) {
     if (cg_showmiss.integer) {
       CG_Printf("origin delta: %.2f  ", VectorLength(delta));
-  }
+ }
     return 2;
 }
 
@@ -377,7 +377,7 @@ static int CG_IsUnacceptableError(playerState_t *ps, playerState_t *pps) {
   if (VectorLengthSquared(delta) > 0.1f * 0.1f) {
     if (cg_showmiss.integer) {
       CG_Printf("velocity delta: %.2f  ", VectorLength(delta));
-  }
+ }
     return 3;
 }
 
@@ -413,7 +413,7 @@ static int CG_IsUnacceptableError(playerState_t *ps, playerState_t *pps) {
     if (pps->events[i] != ps->events[i] ||
       pps->eventParms[i] != ps->eventParms[i]) {
       return 9;
-  }
+ }
 }
 
   if (pps->externalEvent != ps->externalEvent ||
@@ -594,13 +594,13 @@ void CG_PredictPlayerState(void) {
       cg.lastPredictedCommand = 0;
       cg.stateTail = cg.stateHead;
       predictCmd = current - CMD_BACKUP + 1;
-  }
+ }
    // cg.physicsTime is the current snapshot's serverTime if it's the same
    // as the last one
     else if (cg.physicsTime == cg.lastServerTime) {
      // we have no new information, so do an incremental predict
       predictCmd = cg.lastPredictedCommand + 1;
-  }
+ }
     else
     {
      // we have a new snapshot
@@ -618,7 +618,7 @@ void CG_PredictPlayerState(void) {
           cg.predictedPlayerState.commandTime)
         {
           continue;
-      }
+     }
        // make sure the state differences are acceptable
         errorcode = CG_IsUnacceptableError(&cg.predictedPlayerState, 
           &cg.savedPmoveStates[i]);
@@ -628,7 +628,7 @@ void CG_PredictPlayerState(void) {
           if (cg_showmiss.integer)
             CG_Printf("errorcode %d at %d\n", errorcode, cg.time);
           break;
-      }
+     }
 
        // this one is almost exact, so we'll copy it in as the starting point
         *cg_pmove.ps = cg.savedPmoveStates[i];
@@ -641,7 +641,7 @@ void CG_PredictPlayerState(void) {
        // a saved state matched, so flag it
         error = qfalse;
         break;
-    }
+   }
 
      // if no saved states matched
       if (error)
@@ -650,8 +650,8 @@ void CG_PredictPlayerState(void) {
         cg.lastPredictedCommand = 0;
         cg.stateTail = cg.stateHead;
         predictCmd = current - CMD_BACKUP + 1;
-    }
-  }
+   }
+ }
 
    // keep track of the server time of the last snapshot so we
    // know when we're starting from a new one in future calls
@@ -692,7 +692,7 @@ void CG_PredictPlayerState(void) {
           CG_Printf("PredictionTeleport\n");
 
         cg.thisFrameTeleport = qfalse;
-    }
+   }
       else
       {
         vec3_t adjusted;
@@ -703,7 +703,7 @@ void CG_PredictPlayerState(void) {
         {
           if (!VectorCompare(oldPlayerState.origin, adjusted))
             CG_Printf("prediction error\n");
-      }
+     }
 
         VectorSubtract(oldPlayerState.origin, adjusted, delta);
         len = VectorLength(delta);
@@ -728,15 +728,15 @@ void CG_PredictPlayerState(void) {
               CG_Printf("Double prediction decay: %f\n", f);
 
             VectorScale(cg.predictedError, f, cg.predictedError);
-        }
+       }
           else
             VectorClear(cg.predictedError);
 
           VectorAdd(delta, cg.predictedError, cg.predictedError);
           cg.predictedErrorTime = cg.oldTime;
-      }
-    }
-  }
+     }
+   }
+ }
 
    // don't predict gauntlet firing, which is only supposed to happen
    // when it actually inflicts damage
@@ -749,7 +749,7 @@ void CG_PredictPlayerState(void) {
 
     if (!cg_optimizePrediction.integer) {
       Pmove(&cg_pmove);
-  }
+ }
     else if (cg_optimizePrediction.integer && (cmdNum >= predictCmd ||
      (stateIndex + 1) % NUM_SAVED_STATES == cg.stateHead)) {
       Pmove(&cg_pmove);
@@ -764,13 +764,13 @@ void CG_PredictPlayerState(void) {
         cg.savedPmoveStates[stateIndex] = *cg_pmove.ps;
         stateIndex = (stateIndex + 1) % NUM_SAVED_STATES;
         cg.stateTail = stateIndex;
-    }
-  }
+   }
+ }
     else
     {
       *cg_pmove.ps = cg.savedPmoveStates[stateIndex];
       stateIndex = (stateIndex + 1) % NUM_SAVED_STATES;
-  }
+ }
 
    // add push trigger movement effects
     CG_TouchTriggerPrediction();

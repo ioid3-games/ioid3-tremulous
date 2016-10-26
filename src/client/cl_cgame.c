@@ -203,7 +203,7 @@ void CL_ConfigstringModified(void) {
 	old = cl.gameState.stringData + cl.gameState.stringOffsets[index];
 
 	if (!strcmp(old, s)) {
-		return;		// unchanged
+		return; // unchanged
 	}
 	// build the new gameState_t
 	oldGs = cl.gameState;
@@ -220,7 +220,7 @@ void CL_ConfigstringModified(void) {
 		}
 
 		if (!dup[0]) {
-			continue;		// leave with the default empty string
+			continue; // leave with the default empty string
 		}
 
 		len = strlen(dup);
@@ -404,6 +404,7 @@ The cgame module is making a system call.
 =======================================================================================================================================
 */
 intptr_t CL_CgameSystemCalls(intptr_t *args) {
+
 	switch (args[0]) {
 		case CG_PRINT:
 			Com_Printf("%s", (const char *)VMA(1));
@@ -1075,7 +1076,7 @@ void CL_SetCGameTime(void) {
 		CL_ReadDemoMessage();
 
 		if (clc.state != CA_ACTIVE) {
-			return;		// end of demo
+			return; // end of demo
 		}
 	}
 }

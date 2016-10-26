@@ -254,13 +254,13 @@ static snapshot_t *CG_ReadNextSnapshot(void) {
    // FIXME: why would trap_GetSnapshot return a snapshot with the same server time
     if (cg.snap && r && dest->serverTime == cg.snap->serverTime) {
      // continue;
-  }
+ }
 
    // if it succeeded, return
     if (r) {
       CG_AddLagometerSnapshotInfo(dest);
       return dest;
-  }
+ }
 
    // a GetSnapshot will return failure if the snapshot
    // never arrived, or  is so old that its entities
@@ -303,7 +303,7 @@ void CG_ProcessSnapshots(void) {
     if (n < cg.latestSnapshotNum) {
      // this should never happen
       CG_Error("CG_ProcessSnapshots: n < cg.latestSnapshotNum");
-  }
+ }
 
     cg.latestSnapshotNum = n;
 }
@@ -317,7 +317,7 @@ void CG_ProcessSnapshots(void) {
     if (!snap) {
      // we can't continue until we get a snapshot
       return;
-  }
+ }
 
    // set our weapon selection to what
    // the playerstate is currently using
@@ -344,7 +344,7 @@ void CG_ProcessSnapshots(void) {
      // if time went backwards, we have a level restart
       if (cg.nextSnap->serverTime < cg.snap->serverTime)
         CG_Error("CG_ProcessSnapshots: Server time went backwards");
-  }
+ }
 
    // if our time is < nextFrame's, we have a nice interpolating state
     if (cg.time >= cg.snap->serverTime && cg.time < cg.nextSnap->serverTime)

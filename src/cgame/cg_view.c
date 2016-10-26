@@ -200,7 +200,7 @@ static void CG_AddTestModel(void) {
       cg.testModelEntity.origin[i] += cg.refdef.viewaxis[0][i] * cg_gun_x.value;
       cg.testModelEntity.origin[i] += cg.refdef.viewaxis[1][i] * cg_gun_y.value;
       cg.testModelEntity.origin[i] += cg.refdef.viewaxis[2][i] * cg_gun_z.value;
-  }
+ }
 }
 
   trap_R_AddRefEntityToScene(&cg.testModelEntity);
@@ -291,10 +291,10 @@ void CG_OffsetThirdPersonView(void) {
       {
         VectorCopy(cg_entities[killerEntNum].lerpOrigin, killerPos);
         cg.wasDeadLastFrame = qtrue;
-    }
+   }
       VectorSubtract(killerPos, cg.refdef.vieworg, lookDirection);
       vectoangles(lookDirection, cg.refdefViewAngles);
-  }
+ }
 }
 
  // get and rangecheck cg_thirdPersonRange
@@ -319,7 +319,7 @@ void CG_OffsetThirdPersonView(void) {
     deltaPitch = SHORT2ANGLE(cmd.angles[PITCH] - oldCmd.angles[PITCH]);
     if (fabs(deltaPitch) < 200.0f) {
       pitch += deltaPitch;
-  }
+ }
 
     mouseInputAngles[PITCH] = pitch;
     mouseInputAngles[YAW] = -1.0f * SHORT2ANGLE(cmd.angles[YAW]); // yaw is inverted
@@ -336,7 +336,7 @@ void CG_OffsetThirdPersonView(void) {
     for (i = 0; i < 3; i++) {
       rotationAngles[i] = AngleNormalize180(cg.refdefViewAngles[i]) + mouseInputAngles[i];
       AngleNormalize180(rotationAngles[i]);
-  }
+ }
 
    // Don't let pitch go too high / too low or the camera flips around and
    // that's really annoying.
@@ -348,7 +348,7 @@ void CG_OffsetThirdPersonView(void) {
         rotationAngles[PITCH] = 85.0f;
       else if (rotationAngles[PITCH] < -85.0f)
         rotationAngles[PITCH] = -85.0f;
-  }
+ }
 
    // Perform the rotations specified by rotationAngles.
     AnglesToAxis(rotationAngles, axis);
@@ -367,12 +367,12 @@ void CG_OffsetThirdPersonView(void) {
      // take care of our mouselook, so just use them.
       for (i = 0; i < 3; i++)
         rotationAngles[i] = cg.refdefViewAngles[i];
-  }
+ }
     else // dead
     {
       rotationAngles[PITCH] = 20.0f;
       rotationAngles[YAW] = cg.refdefViewAngles[YAW];
-  }
+ }
 }
 
   rotationAngles[YAW] -= cg_thirdPersonAngle.value;
@@ -397,7 +397,7 @@ void CG_OffsetThirdPersonView(void) {
 
       CG_Trace(&trace, cg.refdef.vieworg, mins, maxs, view, cg.predictedPlayerState.clientNum, MASK_SOLID);
       VectorCopy(trace.endpos, view);
-  }
+ }
 }
 
  // Set the camera position to what we calculated.
@@ -557,7 +557,7 @@ void CG_OffsetFirstPersonView(void) {
       ratio /= DAMAGE_DEFLECT_TIME;
       angles[PITCH] += ratio * cg.v_dmg_pitch;
       angles[ROLL] += ratio * cg.v_dmg_roll;
-  }
+ }
     else
     {
       ratio = 1.0 - (ratio - DAMAGE_DEFLECT_TIME) / DAMAGE_RETURN_TIME;
@@ -565,8 +565,8 @@ void CG_OffsetFirstPersonView(void) {
       {
         angles[PITCH] += ratio * cg.v_dmg_pitch;
         angles[ROLL] += ratio * cg.v_dmg_roll;
-    }
-  }
+   }
+ }
 }
 
  // add pitch based on fall kick
@@ -607,7 +607,7 @@ void CG_OffsetFirstPersonView(void) {
         fraction = 1.0f;
 
       bob2 *= (1.0f + fraction * LEVEL4_FEEDBACK);
-  }
+ }
 }
 
   if (bob2 != 0.0f) {
@@ -732,7 +732,7 @@ void CG_OffsetFirstPersonView(void) {
       deltaAngle += (deltaAngle < 0 ? - deltaAngle : deltaAngle) * 0.5;
 
       angles[PITCH] -= deltaAngle;
-  }
+ }
 }
 
 // =================================== 
@@ -815,8 +815,8 @@ static int CG_CalcFov(void) {
       {
         cg.chaseFollow = qfalse;
         trap_SendClientCommand("follow\n");
-    }
-  }
+   }
+ }
     else if (cg.snap->ps.persistant[PERS_SPECSTATE] != SPECTATOR_NOT)
       trap_SendClientCommand("follow\n");
 }
@@ -841,7 +841,7 @@ static int CG_CalcFov(void) {
       float fraction = (float) (cg.time - cg.spawnTime) / FOVWARPTIME;
 
       fov_y = MAX_FOV_WARP_Y - ((MAX_FOV_WARP_Y - fov_y) * fraction);
-  }
+ }
 
    // account for zooms
     zoomFov = BG_Weapon(cg.predictedPlayerState.weapon)->zoomFov * 0.75f;
@@ -868,8 +868,8 @@ static int CG_CalcFov(void) {
           cg.zoomed = qfalse;
           cg.zoomTime = MIN(cg.time, 
               cg.time + cg.time - cg.zoomTime - ZOOM_TIME);
-      }
-    }
+     }
+   }
       else
       {
         f = (cg.time - cg.zoomTime) / (float)ZOOM_TIME;
@@ -885,9 +885,9 @@ static int CG_CalcFov(void) {
           cg.zoomed = qtrue;
           cg.zoomTime = MIN(cg.time, 
               cg.time + cg.time - cg.zoomTime - ZOOM_TIME);
-      }
-    }
-  }
+     }
+   }
+ }
 }
 
   y = cg.refdef.height / tan(0.5f * DEG2RAD(fov_y));
@@ -999,7 +999,7 @@ void CG_addSmoothOp(vec3_t rotAxis, float rotAngle, float timeMod) {
       cg.sList[i].time = cg.time;
       cg.sList[i].timeMod = timeMod;
       return;
-  }
+ }
 }
 
  // no free indices in the smooth array
@@ -1041,7 +1041,7 @@ static void CG_smoothWWTransitions(playerState_t *ps, const vec3_t in, vec3_t ou
       VectorNormalize(rotAxis);
       rotAngle = 180.0f;
       timeMod = 1.5f;
-  }
+ }
     else
     {
       AnglesToAxis(cg.lastVangles, lastAxis);
@@ -1061,7 +1061,7 @@ static void CG_smoothWWTransitions(playerState_t *ps, const vec3_t in, vec3_t ou
       VectorNormalize(rotAxis);
 
       timeMod = 1.0f;
-  }
+ }
 
    // add the op
     CG_addSmoothOp(rotAxis, rotAngle, timeMod);
@@ -1085,7 +1085,7 @@ static void CG_smoothWWTransitions(playerState_t *ps, const vec3_t in, vec3_t ou
 
       AxisCopy(outAxis, inAxis);
       performed = qtrue;
-  }
+ }
 }
 
  // if we performed any ops then return the smoothed angles
@@ -1134,7 +1134,7 @@ static void CG_smoothWJTransitions(playerState_t *ps, const vec3_t in, vec3_t ou
 
       AxisCopy(outAxis, inAxis);
       performed = qtrue;
-  }
+ }
 }
 
  // if we performed any ops then return the smoothed angles
@@ -1269,7 +1269,7 @@ static void CG_PlayBufferedSounds(void) {
       cg.soundBuffer[cg.soundBufferOut] = 0;
       cg.soundBufferOut = (cg.soundBufferOut + 1) % MAX_SOUNDBUFFER;
       cg.soundTime = cg.time + 750;
-  }
+ }
 }
 }
 
@@ -1381,13 +1381,13 @@ void CG_DrawActiveFrame(int serverTime, stereoFrame_t stereoView, qboolean demoP
       cg_timescale.value += cg_timescaleFadeSpeed.value * ((float)cg.frametime) / 1000;
       if (cg_timescale.value > cg_timescaleFadeEnd.value)
         cg_timescale.value = cg_timescaleFadeEnd.value;
-  }
+ }
     else
     {
       cg_timescale.value -= cg_timescaleFadeSpeed.value * ((float)cg.frametime) / 1000;
       if (cg_timescale.value < cg_timescaleFadeEnd.value)
         cg_timescale.value = cg_timescaleFadeEnd.value;
-  }
+ }
 
     if (cg_timescaleFadeSpeed.value)
       trap_Cvar_Set("timescale", va("%f", cg_timescale.value));
