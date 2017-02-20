@@ -1,33 +1,39 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2005 Id Software, Inc.
-Copyright (C) 2000 - 2013 Darklegion Development
+Copyright(C) 1999 - 2005 Id Software, Inc.
+Copyright(C) 2000 - 2013 Darklegion Development
 
-This file is part of Tremulous source code.
+This file is part of Tremulous.
 
-Tremulous source code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+Tremulous is free software; you can redistribute it
+and / or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 2 of the License, 
+or(at your option) any later version.
 
-Tremulous source code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Tremulous is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Tremulous source code; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+You should have received a copy of the GNU General Public License
+along with Tremulous; if not, write to the Free Software
+Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
 =======================================================================================================================================
 */
+
 #include "cm_local.h"
 
 // always use bbox vs. bbox collision and never capsule vs. bbox or vice versa
 //#define ALWAYS_BBOX_VS_BBOX
 // always use capsule vs. capsule collision and never capsule vs. bbox or vice versa
 //#define ALWAYS_CAPSULE_VS_CAPSULE
-
 //#define CAPSULE_DEBUG
 
 /*
 =======================================================================================================================================
 
-BASIC MATH
+	BASIC MATH
+
 =======================================================================================================================================
 */
 
@@ -36,7 +42,7 @@ BASIC MATH
 RotatePoint
 =======================================================================================================================================
 */
-void RotatePoint(vec3_t point, /*const*/ vec3_t matrix[3]) { // FIXME 
+void RotatePoint(vec3_t point, /*const*/ vec3_t matrix[3]) { // FIXME
 	vec3_t tvec;
 
 	VectorCopy(point, tvec);
@@ -94,16 +100,19 @@ float CM_DistanceFromLineSquared(vec3_t p, vec3_t lp1, vec3_t lp2, vec3_t dir) {
 
 	CM_ProjectPointOntoVector(p, lp1, dir, proj);
 
-	for (j = 0; j < 3; j++) 
+	for (j = 0; j < 3; j++) {
 		if ((proj[j] > lp1[j] && proj[j] > lp2[j]) || (proj[j] < lp1[j] && proj[j] < lp2[j])) {
 			break;
 		}
+	}
 
 	if (j < 3) {
-		if (fabs(proj[j] - lp1[j]) < fabs(proj[j] - lp2[j]))
+		if (fabs(proj[j] - lp1[j]) < fabs(proj[j] - lp2[j])) {
 			VectorSubtract(p, lp1, t);
 		} else {
 			VectorSubtract(p, lp2, t);
+		}
+
 		return VectorLengthSquared(t);
 	}
 
@@ -168,8 +177,7 @@ void CM_TestBoxInBrush(traceWork_t *tw, cbrush_t *brush) {
 		return;
 	}
 	// special test for axial
-	if (tw->bounds[0][0] > brush->bounds[1][0] || tw->bounds[0][1] > brush->bounds[1][1] || tw->bounds[0][2] > brush->bounds[1][2] || tw->bounds[1][0] < brush->bounds[0][0] || tw->bounds[1][1] < brush->bounds[0][1] || tw->bounds[1][2] < brush->bounds[0][2]
-	) {
+	if (tw->bounds[0][0] > brush->bounds[1][0] || tw->bounds[0][1] > brush->bounds[1][1] || tw->bounds[0][2] > brush->bounds[1][2] || tw->bounds[1][0] < brush->bounds[0][0] || tw->bounds[1][1] < brush->bounds[0][1] || tw->bounds[1][2] < brush->bounds[0][2]) {
 		return;
 	}
 
@@ -202,7 +210,6 @@ void CM_TestBoxInBrush(traceWork_t *tw, cbrush_t *brush) {
 			plane = side->plane;
 			// adjust the plane distance appropriately for mins/maxs
 			dist = plane->dist - DotProduct(tw->offsets[plane->signbits], plane->normal);
-
 			d1 = DotProduct(tw->start, plane->normal) - dist;
 			// if completely in front of face, no intersection
 			if (d1 > 0) {
@@ -226,13 +233,14 @@ void CM_TestInLeaf(traceWork_t *tw, cLeaf_t *leaf) {
 	int brushnum;
 	cbrush_t *b;
 	cPatch_t *patch;
+
 	// test box position against all brushes in the leaf
 	for (k = 0; k < leaf->numLeafBrushes; k++) {
 		brushnum = cm.leafbrushes[leaf->firstLeafBrush + k];
 		b = &cm.brushes[brushnum];
 
 		if (b->checkcount == cm.checkcount) {
-			continue;	// already checked this brush in another leaf
+			continue; // already checked this brush in another leaf
 		}
 
 		b->checkcount = cm.checkcount;
@@ -261,7 +269,7 @@ void CM_TestInLeaf(traceWork_t *tw, cLeaf_t *leaf) {
 			}
 
 			if (patch->checkcount == cm.checkcount) {
-				continue;	// already checked this brush in another leaf
+				continue; // already checked this brush in another leaf
 			}
 
 			patch->checkcount = cm.checkcount;
@@ -310,7 +318,6 @@ void CM_TestCapsuleInCapsule(traceWork_t *tw, clipHandle_t model) {
 	halfheight = symetricSize[1][2];
 	radius = (halfwidth > halfheight) ? halfheight : halfwidth;
 	offs = halfheight - radius;
-
 	r = Square(tw->sphere.radius + radius);
 	// check if any of the spheres overlap
 	VectorCopy(offset, p1);
@@ -383,26 +390,29 @@ void CM_TestBoundingBoxInCapsule(traceWork_t *tw, clipHandle_t model) {
 	}
 	// replace the bounding box with the capsule
 	tw->type = TT_CAPSULE;
-	tw->sphere.radius = (size[1][0] > size[1][2]) ? size[1][2]: size[1][0];
+	tw->sphere.radius = (size[1][0] > size[1][2]) ? size[1][2] : size[1][0];
 	tw->sphere.halfheight = size[1][2];
+
 	VectorSet(tw->sphere.offset, 0, 0, size[1][2] - tw->sphere.radius);
 	// replace the capsule with the bounding box
 	h = CM_TempBoxModel(tw->size[0], tw->size[1], qfalse);
 	// calculate collision
 	cmod = CM_ClipHandleToModel(h);
+
 	CM_TestInLeaf(tw, &cmod->leaf);
 }
 
+#define MAX_POSITION_LEAFS 1024
 /*
 =======================================================================================================================================
 CM_PositionTest
 =======================================================================================================================================
 */
-#define MAX_POSITION_LEAFS	1024
 void CM_PositionTest(traceWork_t *tw) {
 	int leafs[MAX_POSITION_LEAFS];
 	int i;
 	leafList_t ll;
+
 	// identify the leafs we are touching
 	VectorAdd(tw->start, tw->size[0], ll.bounds[0]);
 	VectorAdd(tw->start, tw->size[1], ll.bounds[1]);
@@ -492,36 +502,33 @@ void CM_TraceThroughBrush(traceWork_t *tw, cbrush_t *brush) {
 
 	getout = qfalse;
 	startout = qfalse;
-
 	leadside = NULL;
 
 	if (tw->type == TT_BISPHERE) {
-		// 
 		// compare the trace against all planes of the brush
-		// find the latest time the trace crosses a plane towards the interior
-		// and the earliest time the trace crosses a plane towards the exterior
-		// 
+		// find the latest time the trace crosses a plane towards the interior and the earliest time the trace crosses a plane towards the exterior
 		for (i = 0; i < brush->numsides; i++) {
 			side = brush->sides + i;
 			plane = side->plane;
 			// adjust the plane distance appropriately for radius
-			d1 = DotProduct(tw->start, plane->normal) - 
-				(plane->dist + tw->biSphere.startRadius);
-			d2 = DotProduct(tw->end, plane->normal) - 
-				(plane->dist + tw->biSphere.endRadius);
+			d1 = DotProduct(tw->start, plane->normal) - (plane->dist + tw->biSphere.startRadius);
+			d2 = DotProduct(tw->end, plane->normal) - (plane->dist + tw->biSphere.endRadius);
 
-			if (d2 > 0)
-				getout = qtrue;	// endpoint is not in solid
-			
-			if (d1 > 0)
+			if (d2 > 0) {
+				getout = qtrue; // endpoint is not in solid
+			}
+
+			if (d1 > 0) {
 				startout = qtrue;
+			}
 			// if completely in front of face, no intersection with the entire brush
 			if (d1 > 0 && (d2 >= SURFACE_CLIP_EPSILON || d2 >= d1)) {
 				return;
 			}
-			// if it doesn't cross the plane, the plane isn't relevant
-			if (d1 <= 0 && d2 <= 0)
+			// if it doesn't cross the plane, the plane isn't relevent
+			if (d1 <= 0 && d2 <= 0) {
 				continue;
+			}
 
 			brush->collided = qtrue;
 			// crosses face
@@ -529,8 +536,9 @@ void CM_TraceThroughBrush(traceWork_t *tw, cbrush_t *brush) {
 				// enter
 				f = (d1 - SURFACE_CLIP_EPSILON) / (d1 - d2);
 
-				if (f < 0)
+				if (f < 0) {
 					f = 0;
+				}
 
 				if (f > enterFrac) {
 					enterFrac = f;
@@ -541,23 +549,23 @@ void CM_TraceThroughBrush(traceWork_t *tw, cbrush_t *brush) {
 				// leave
 				f = (d1 + SURFACE_CLIP_EPSILON) / (d1 - d2);
 
-				if (f > 1)
+				if (f > 1) {
 					f = 1;
+				}
 
-				if (f < leaveFrac)
+				if (f < leaveFrac) {
 					leaveFrac = f;
+				}
 			}
 		}
 	} else if (tw->type == TT_CAPSULE) {
-		// 
 		// compare the trace against all planes of the brush
 		// find the latest time the trace crosses a plane towards the interior
 		// and the earliest time the trace crosses a plane towards the exterior
-		// 
 		for (i = 0; i < brush->numsides; i++) {
 			side = brush->sides + i;
 			plane = side->plane;
-			// adjust the plane distance appropriately for radius
+			// adjust the plane distance apropriately for radius
 			dist = plane->dist + tw->sphere.radius;
 			// find the closest point on the capsule to the plane
 			t = DotProduct(plane->normal, tw->sphere.offset);
@@ -574,7 +582,7 @@ void CM_TraceThroughBrush(traceWork_t *tw, cbrush_t *brush) {
 			d2 = DotProduct(endp, plane->normal) - dist;
 
 			if (d2 > 0) {
-				getout = qtrue;	// endpoint is not in solid
+				getout = qtrue; // endpoint is not in solid
 			}
 
 			if (d1 > 0) {
@@ -591,7 +599,7 @@ void CM_TraceThroughBrush(traceWork_t *tw, cbrush_t *brush) {
 
 			brush->collided = qtrue;
 			// crosses face
-			if (d1 > d2) {	// enter
+			if (d1 > d2) { // enter
 				f = (d1 - SURFACE_CLIP_EPSILON) / (d1 - d2);
 
 				if (f < 0) {
@@ -603,7 +611,7 @@ void CM_TraceThroughBrush(traceWork_t *tw, cbrush_t *brush) {
 					clipplane = plane;
 					leadside = side;
 				}
-			} else {	// leave
+			} else { // leave
 				f = (d1 + SURFACE_CLIP_EPSILON) / (d1 - d2);
 
 				if (f > 1) {
@@ -616,22 +624,18 @@ void CM_TraceThroughBrush(traceWork_t *tw, cbrush_t *brush) {
 			}
 		}
 	} else {
-		// 
 		// compare the trace against all planes of the brush
-		// find the latest time the trace crosses a plane towards the interior
-		// and the earliest time the trace crosses a plane towards the exterior
-		// 
+		// find the latest time the trace crosses a plane towards the interior and the earliest time the trace crosses a plane towards the exterior
 		for (i = 0; i < brush->numsides; i++) {
 			side = brush->sides + i;
 			plane = side->plane;
 			// adjust the plane distance appropriately for mins/maxs
 			dist = plane->dist - DotProduct(tw->offsets[plane->signbits], plane->normal);
-
 			d1 = DotProduct(tw->start, plane->normal) - dist;
 			d2 = DotProduct(tw->end, plane->normal) - dist;
 
 			if (d2 > 0) {
-				getout = qtrue;	// endpoint is not in solid
+				getout = qtrue; // endpoint is not in solid
 			}
 
 			if (d1 > 0) {
@@ -648,7 +652,7 @@ void CM_TraceThroughBrush(traceWork_t *tw, cbrush_t *brush) {
 
 			brush->collided = qtrue;
 			// crosses face
-			if (d1 > d2) {	// enter
+			if (d1 > d2) { // enter
 				f = (d1 - SURFACE_CLIP_EPSILON) / (d1 - d2);
 
 				if (f < 0) {
@@ -660,7 +664,7 @@ void CM_TraceThroughBrush(traceWork_t *tw, cbrush_t *brush) {
 					clipplane = plane;
 					leadside = side;
 				}
-			} else {	// leave
+			} else { // leave
 				f = (d1 + SURFACE_CLIP_EPSILON) / (d1 - d2);
 
 				if (f > 1) {
@@ -674,7 +678,7 @@ void CM_TraceThroughBrush(traceWork_t *tw, cbrush_t *brush) {
 		}
 	}
 	// all planes have been checked, and the trace was not completely outside the brush
-	if (!startout) {	// original point was inside brush
+	if (!startout) { // original point was inside brush
 		tw->trace.startsolid = qtrue;
 
 		if (!getout) {
@@ -720,11 +724,14 @@ static void CM_ProximityToBrush(traceWork_t *tw, cbrush_t *brush) {
 	float sAtMin = 0.0f;
 	float radius = 0.0f, fraction;
 	traceWork_t tw2;
+
 	// cheapish purely linear trace to test for intersection
 	Com_Memset(&tw2, 0, sizeof(tw2));
+
 	tw2.trace.fraction = 1.0f;
 	tw2.type = TT_CAPSULE;
 	tw2.sphere.radius = 0.0f;
+
 	VectorClear(tw2.sphere.offset);
 	VectorCopy(tw->start, tw2.start);
 	VectorCopy(tw->end, tw2.end);
@@ -734,7 +741,6 @@ static void CM_ProximityToBrush(traceWork_t *tw, cbrush_t *brush) {
 	if (tw2.trace.fraction == 1.0f && !tw2.trace.allsolid && !tw2.trace.startsolid) {
 		for (i = 0; i < brush->numEdges; i++) {
 			edge = &brush->edges[i];
-
 			dist = DistanceBetweenLineSegmentsSquared(tw->start, tw->end, edge->p0, edge->p1, &s, &t);
 
 			if (dist < minDist) {
@@ -744,7 +750,7 @@ static void CM_ProximityToBrush(traceWork_t *tw, cbrush_t *brush) {
 		}
 
 		if (tw->type == TT_BISPHERE) {
-			radius = tw->biSphere.startRadius + sAtMin * (tw->biSphere.endRadius - tw->biSphere.startRadius));
+			radius = tw->biSphere.startRadius + (sAtMin * (tw->biSphere.endRadius - tw->biSphere.startRadius));
 		} else if (tw->type == TT_CAPSULE) {
 			radius = tw->sphere.radius;
 		} else if (tw->type == TT_AABB) {
@@ -753,10 +759,12 @@ static void CM_ProximityToBrush(traceWork_t *tw, cbrush_t *brush) {
 
 		fraction = minDist / (radius * radius);
 
-		if (fraction < tw->trace.lateralFraction)
+		if (fraction < tw->trace.lateralFraction) {
 			tw->trace.lateralFraction = fraction;
+		}
 	} else {
 		tw->trace.lateralFraction = 0.0f;
+	}
 }
 
 /*
@@ -766,11 +774,14 @@ CM_ProximityToPatch
 */
 static void CM_ProximityToPatch(traceWork_t *tw, cPatch_t *patch) {
 	traceWork_t tw2;
+
 	// cheapish purely linear trace to test for intersection
 	Com_Memset(&tw2, 0, sizeof(tw2));
+
 	tw2.trace.fraction = 1.0f;
 	tw2.type = TT_CAPSULE;
 	tw2.sphere.radius = 0.0f;
+
 	VectorClear(tw2.sphere.offset);
 	VectorCopy(tw->start, tw2.start);
 	VectorCopy(tw->end, tw2.end);
@@ -781,6 +792,7 @@ static void CM_ProximityToPatch(traceWork_t *tw, cPatch_t *patch) {
 		// FIXME: implement me
 	} else {
 		tw->trace.lateralFraction = 0.0f;
+	}
 }
 
 /*
@@ -793,14 +805,14 @@ void CM_TraceThroughLeaf(traceWork_t *tw, cLeaf_t *leaf) {
 	int brushnum;
 	cbrush_t *b;
 	cPatch_t *patch;
+
 	// trace line against all brushes in the leaf
 	for (k = 0; k < leaf->numLeafBrushes; k++) {
 		brushnum = cm.leafbrushes[leaf->firstLeafBrush + k];
-
 		b = &cm.brushes[brushnum];
 
 		if (b->checkcount == cm.checkcount) {
-			continue;	// already checked this brush in another leaf
+			continue; // already checked this brush in another leaf
 		}
 
 		b->checkcount = cm.checkcount;
@@ -836,7 +848,7 @@ void CM_TraceThroughLeaf(traceWork_t *tw, cLeaf_t *leaf) {
 			}
 
 			if (patch->checkcount == cm.checkcount) {
-				continue;	// already checked this patch in another leaf
+				continue; // already checked this patch in another leaf
 			}
 
 			patch->checkcount = cm.checkcount;
@@ -844,7 +856,7 @@ void CM_TraceThroughLeaf(traceWork_t *tw, cLeaf_t *leaf) {
 			if (!(patch->contents & tw->contents)) {
 				continue;
 			}
-			
+
 			CM_TraceThroughPatch(tw, patch);
 
 			if (!tw->trace.fraction) {
@@ -859,7 +871,7 @@ void CM_TraceThroughLeaf(traceWork_t *tw, cLeaf_t *leaf) {
 			brushnum = cm.leafbrushes[leaf->firstLeafBrush + k];
 
 			b = &cm.brushes[brushnum];
-			// This brush never collided, so don't bother
+			// this brush never collided, so don't bother
 			if (!b->collided) {
 				continue;
 			}
@@ -882,10 +894,11 @@ void CM_TraceThroughLeaf(traceWork_t *tw, cLeaf_t *leaf) {
 				continue;
 			}
 
-			if (!(patch->contents & tw->contents))
+			if (!(patch->contents & tw->contents)) {
 				continue;
+			}
 
-	CM_ProximityToPatch(tw, patch);
+			CM_ProximityToPatch(tw, patch);
 
 			if (!tw->trace.lateralFraction) {
 				return;
@@ -894,7 +907,7 @@ void CM_TraceThroughLeaf(traceWork_t *tw, cLeaf_t *leaf) {
 	}
 }
 
-#define RADIUS_EPSILON		1.0f
+#define RADIUS_EPSILON 1.0f
 
 /*
 =======================================================================================================================================
@@ -905,11 +918,13 @@ Get the first intersection of the ray with the sphere.
 */
 void CM_TraceThroughSphere(traceWork_t *tw, vec3_t origin, float radius, vec3_t start, vec3_t end) {
 	float l1, l2, length, scale, fraction;
-	// float a;
+	//float a;
 	float b, c, d, sqrtd;
 	vec3_t v1, dir, intersection;
+
 	// if inside the sphere
 	VectorSubtract(start, origin, dir);
+
 	l1 = VectorLengthSquared(dir);
 
 	if (l1 < Square(radius)) {
@@ -917,6 +932,7 @@ void CM_TraceThroughSphere(traceWork_t *tw, vec3_t origin, float radius, vec3_t 
 		tw->trace.startsolid = qtrue;
 		// test for allsolid
 		VectorSubtract(end, origin, dir);
+
 		l1 = VectorLengthSquared(dir);
 
 		if (l1 < Square(radius)) {
@@ -927,25 +943,29 @@ void CM_TraceThroughSphere(traceWork_t *tw, vec3_t origin, float radius, vec3_t 
 	}
 
 	VectorSubtract(end, start, dir);
+
 	length = VectorNormalize(dir);
 	l1 = CM_DistanceFromLineSquared(origin, start, end, dir);
+
 	VectorSubtract(end, origin, v1);
+
 	l2 = VectorLengthSquared(v1);
 	// if no intersection with the sphere and the end point is at least an epsilon away
 	if (l1 >= Square(radius) && l2 > Square(radius + SURFACE_CLIP_EPSILON)) {
 		return;
 	}
-	//|origin - (start + t * dir)|= radius
-	// a = dir[0] ^ 2 + dir[1] ^ 2 + dir[2] ^ 2;
-	// b = 2 * (dir[0] * (start[0] - origin[0]) + dir[1] * (start[1] - origin[1]) + dir[2] * (start[2] - origin[2]));
-	// c = (start[0] - origin[0]) ^ 2 + (start[1] - origin[1]) ^ 2 + (start[2] - origin[2]) ^ 2 - radius ^ 2;
+
+	//	| origin - (start + t * dir) |= radius
+	//	a = dir[0] ^ 2 + dir[1] ^ 2 + dir[2] ^ 2;
+	//	b = 2 * (dir[0] * (start[0] - origin[0]) + dir[1] * (start[1] - origin[1]) + dir[2] * (start[2] - origin[2]));
+	//	c = (start[0] - origin[0]) ^ 2 + (start[1] - origin[1]) ^ 2 + (start[2] - origin[2]) ^ 2 - radius ^ 2;
+
 	VectorSubtract(start, origin, v1);
 	// dir is normalized so a = 1
-	// a = 1.0f; // dir[0] * dir[0] + dir[1] * dir[1] + dir[2] * dir[2];
+	//a = 1.0f; // dir[0] * dir[0] + dir[1] * dir[1] + dir[2] * dir[2];
 	b = 2.0f * (dir[0] * v1[0] + dir[1] * v1[1] + dir[2] * v1[2]);
 	c = v1[0] * v1[0] + v1[1] * v1[1] + v1[2] * v1[2] - (radius + RADIUS_EPSILON) * (radius + RADIUS_EPSILON);
-
-	d = b * b - 4.0f * c; //*a;
+	d = b * b - 4.0f * c; // * a;
 
 	if (d > 0) {
 		sqrtd = SquareRootFloat(d);
@@ -963,13 +983,13 @@ void CM_TraceThroughSphere(traceWork_t *tw, vec3_t origin, float radius, vec3_t 
 			VectorSubtract(end, start, dir);
 			VectorMA(start, fraction, dir, intersection);
 			VectorSubtract(intersection, origin, dir);
-			#ifdef CAPSULE_DEBUG
-				l2 = VectorLength(dir);
+#ifdef CAPSULE_DEBUG
+			l2 = VectorLength(dir);
 
-				if (l2 < radius) {
-					int bah = 1;
-				}
-			#endif
+			if (l2 < radius) {
+				int bah = 1;
+			}
+#endif
 			scale = 1 / (radius + RADIUS_EPSILON);
 			VectorScale(dir, scale, dir);
 			VectorCopy(dir, tw->trace.plane.normal);
@@ -978,7 +998,7 @@ void CM_TraceThroughSphere(traceWork_t *tw, vec3_t origin, float radius, vec3_t 
 			tw->trace.contents = CONTENTS_BODY;
 		}
 	} else if (d == 0) {
-		// t1 = (-b) / 2;
+		//t1 = (-b) / 2;
 		// slide along the sphere
 	}
 	// no intersection at all
@@ -993,9 +1013,10 @@ Get the first intersection of the ray with the cylinder the cylinder extends hal
 */
 void CM_TraceThroughVerticalCylinder(traceWork_t *tw, vec3_t origin, float radius, float halfheight, vec3_t start, vec3_t end) {
 	float length, scale, fraction, l1, l2;
-	// float a;
+	//float a;
 	float b, c, d, sqrtd;
 	vec3_t v1, dir, start2d, end2d, org2d, intersection;
+
 	// 2d coordinates
 	VectorSet(start2d, start[0], start[1], 0);
 	VectorSet(end2d, end[0], end[1], 0);
@@ -1004,12 +1025,14 @@ void CM_TraceThroughVerticalCylinder(traceWork_t *tw, vec3_t origin, float radiu
 	if (start[2] <= origin[2] + halfheight && start[2] >= origin[2] - halfheight) {
 		// if inside the cylinder
 		VectorSubtract(start2d, org2d, dir);
+
 		l1 = VectorLengthSquared(dir);
 
 		if (l1 < Square(radius)) {
 			tw->trace.fraction = 0;
 			tw->trace.startsolid = qtrue;
 			VectorSubtract(end2d, org2d, dir);
+
 			l1 = VectorLengthSquared(dir);
 
 			if (l1 < Square(radius)) {
@@ -1021,27 +1044,29 @@ void CM_TraceThroughVerticalCylinder(traceWork_t *tw, vec3_t origin, float radiu
 	}
 
 	VectorSubtract(end2d, start2d, dir);
+
 	length = VectorNormalize(dir);
 	l1 = CM_DistanceFromLineSquared(org2d, start2d, end2d, dir);
+
 	VectorSubtract(end2d, org2d, v1);
+
 	l2 = VectorLengthSquared(v1);
 	// if no intersection with the cylinder and the end point is at least an epsilon away
 	if (l1 >= Square(radius) && l2 > Square(radius + SURFACE_CLIP_EPSILON)) {
 		return;
 	}
+
 	// (start[0] - origin[0] - t * dir[0]) ^ 2 + (start[1] - origin[1] - t * dir[1]) ^ 2 = radius ^ 2
 	// (v1[0] + t * dir[0]) ^ 2 + (v1[1] + t * dir[1]) ^ 2 = radius ^ 2;
-	// v1[0] ^ 2 + 2 * v1[0] * t * dir[0] + (t * dir[0]) ^ 2 + 
-	// 					v1[1] ^ 2 + 2 * v1[1] * t * dir[1] + (t * dir[1]) ^ 2 = radius ^ 2
-	// t ^ 2 * (dir[0] ^ 2 + dir[1] ^ 2) + t * (2 * v1[0] * dir[0] + 2 * v1[1] * dir[1]) + 
-	// 					v1[0] ^ 2 + v1[1] ^ 2 - radius ^ 2 = 0
+	// v1[0] ^ 2 + 2 * v1[0] * t * dir[0] + (t * dir[0]) ^ 2 + v1[1] ^ 2 + 2 * v1[1] * t * dir[1] + (t * dir[1]) ^ 2 = radius ^ 2
+	// t ^ 2 * (dir[0] ^ 2 + dir[1] ^ 2) + t * (2 * v1[0] * dir[0] + 2 * v1[1] * dir[1]) + v1[0] ^ 2 + v1[1] ^ 2 - radius ^ 2 = 0
+
 	VectorSubtract(start, origin, v1);
 	// dir is normalized so we can use a = 1
-	// a = 1.0f; //*(dir[0] * dir[0] + dir[1] * dir[1]);
+	//a = 1.0f; // * (dir[0] * dir[0] + dir[1] * dir[1]);
 	b = 2.0f * (v1[0] * dir[0] + v1[1] * dir[1]);
 	c = v1[0] * v1[0] + v1[1] * v1[1] - (radius + RADIUS_EPSILON) * (radius + RADIUS_EPSILON);
-
-	d = b * b - 4.0f * c; //*a;
+	d = b * b - 4.0f * c; // * a;
 
 	if (d > 0) {
 		sqrtd = SquareRootFloat(d);
@@ -1059,17 +1084,16 @@ void CM_TraceThroughVerticalCylinder(traceWork_t *tw, vec3_t origin, float radiu
 			VectorMA(start, fraction, dir, intersection);
 			// if the intersection is between the cylinder lower and upper bound
 			if (intersection[2] <= origin[2] + halfheight && intersection[2] >= origin[2] - halfheight) {
-				// 
 				tw->trace.fraction = fraction;
 				VectorSubtract(intersection, origin, dir);
 				dir[2] = 0;
-				#ifdef CAPSULE_DEBUG
-					l2 = VectorLength(dir);
+#ifdef CAPSULE_DEBUG
+				l2 = VectorLength(dir);
 
-					if (l2 <= radius) {
-						int bah = 1;
-					}
-				#endif
+				if (l2 <= radius) {
+					int bah = 1;
+				}
+#endif
 				scale = 1 / (radius + RADIUS_EPSILON);
 				VectorScale(dir, scale, dir);
 				VectorCopy(dir, tw->trace.plane.normal);
@@ -1079,7 +1103,7 @@ void CM_TraceThroughVerticalCylinder(traceWork_t *tw, vec3_t origin, float radiu
 			}
 		}
 	} else if (d == 0) {
-		// t[0] = (-b) / 2 * a;
+		//t[0] = (-b) / 2 * a;
 		// slide along the cylinder
 	}
 	// no intersection at all
@@ -1101,8 +1125,7 @@ void CM_TraceCapsuleThroughCapsule(traceWork_t *tw, clipHandle_t model) {
 
 	CM_ModelBounds(model, mins, maxs);
 	// test trace bounds vs. capsule bounds
-	if (tw->bounds[0][0] > maxs[0] + RADIUS_EPSILON || tw->bounds[0][1] > maxs[1] + RADIUS_EPSILON || tw->bounds[0][2] > maxs[2] + RADIUS_EPSILON || tw->bounds[1][0] < mins[0] - RADIUS_EPSILON || tw->bounds[1][1] < mins[1] - RADIUS_EPSILON || tw->bounds[1][2] < mins[2] - RADIUS_EPSILON
-	) {
+	if (tw->bounds[0][0] > maxs[0] + RADIUS_EPSILON || tw->bounds[0][1] > maxs[1] + RADIUS_EPSILON || tw->bounds[0][2] > maxs[2] + RADIUS_EPSILON || tw->bounds[1][0] < mins[0] - RADIUS_EPSILON || tw->bounds[1][1] < mins[1] - RADIUS_EPSILON || tw->bounds[1][2] < mins[2] - RADIUS_EPSILON) {
 		return;
 	}
 	// top origin and bottom origin of each sphere at start and end of trace
@@ -1167,7 +1190,7 @@ void CM_TraceBoundingBoxThroughCapsule(traceWork_t *tw, clipHandle_t model) {
 	}
 	// replace the bounding box with the capsule
 	tw->type = TT_CAPSULE;
-	tw->sphere.radius = (size[1][0] > size[1][2]) ? size[1][2]: size[1][0];
+	tw->sphere.radius = (size[1][0] > size[1][2]) ? size[1][2] : size[1][0];
 	tw->sphere.halfheight = size[1][2];
 	VectorSet(tw->sphere.offset, 0, 0, size[1][2] - tw->sphere.radius);
 	// replace the capsule with the bounding box
@@ -1197,7 +1220,7 @@ void CM_TraceThroughTree(traceWork_t *tw, int num, float p1f, float p2f, vec3_t 
 	float midf;
 
 	if (tw->trace.fraction <= p1f) {
-		return;		// already hit something nearer
+		return; // already hit something nearer
 	}
 	// if < 0, we are in a leaf node
 	if (num < 0) {
@@ -1235,12 +1258,12 @@ void CM_TraceThroughTree(traceWork_t *tw, int num, float p1f, float p2f, vec3_t 
 	}
 	// put the crosspoint SURFACE_CLIP_EPSILON pixels on the near side
 	if (t1 < t2) {
-		idist = 1.0 /  (t1 - t2);
+		idist = 1.0 / (t1 - t2);
 		side = 1;
 		frac2 = (t1 + offset + SURFACE_CLIP_EPSILON) * idist;
 		frac = (t1 - offset + SURFACE_CLIP_EPSILON) * idist;
 	} else if (t1 > t2) {
-		idist = 1.0 /  (t1 - t2);
+		idist = 1.0 / (t1 - t2);
 		side = 0;
 		frac2 = (t1 - offset - SURFACE_CLIP_EPSILON) * idist;
 		frac = (t1 + offset + SURFACE_CLIP_EPSILON) * idist;
@@ -1260,9 +1283,9 @@ void CM_TraceThroughTree(traceWork_t *tw, int num, float p1f, float p2f, vec3_t 
 
 	midf = p1f + (p2f - p1f) * frac;
 
-	mid[0] = p1[0] + frac *(p2[0] - p1[0]);
-	mid[1] = p1[1] + frac *(p2[1] - p1[1]);
-	mid[2] = p1[2] + frac *(p2[2] - p1[2]);
+	mid[0] = p1[0] + frac * (p2[0] - p1[0]);
+	mid[1] = p1[1] + frac * (p2[1] - p1[1]);
+	mid[2] = p1[2] + frac * (p2[2] - p1[2]);
 
 	CM_TraceThroughTree(tw, node->children[side], p1f, midf, p1, mid);
 	// go past the node
@@ -1276,15 +1299,12 @@ void CM_TraceThroughTree(traceWork_t *tw, int num, float p1f, float p2f, vec3_t 
 
 	midf = p1f + (p2f - p1f) * frac2;
 
-	mid[0] = p1[0] + frac2 *(p2[0] - p1[0]);
-	mid[1] = p1[1] + frac2 *(p2[1] - p1[1]);
-	mid[2] = p1[2] + frac2 *(p2[2] - p1[2]);
+	mid[0] = p1[0] + frac2 * (p2[0] - p1[0]);
+	mid[1] = p1[1] + frac2 * (p2[1] - p1[1]);
+	mid[2] = p1[2] + frac2 * (p2[2] - p1[2]);
 
 	CM_TraceThroughTree(tw, node->children[side ^ 1], midf, p2f, mid, p2);
 }
-
-// ======================================================================
-
 
 /*
 =======================================================================================================================================
@@ -1299,20 +1319,19 @@ void CM_Trace(trace_t *results, const vec3_t start, const vec3_t end, vec3_t min
 
 	cmod = CM_ClipHandleToModel(model);
 
-	cm.checkcount++;		// for multi - check avoidance
-
-	c_traces++;				// for statistics, may be zeroed
-
+	cm.checkcount++; // for multi-check avoidance
+	c_traces++; // for statistics, may be zeroed
 	// fill in a default trace
 	Com_Memset(&tw, 0, sizeof(tw));
-	tw.trace.fraction = 1;	// assume it goes the entire distance until shown otherwise
+
+	tw.trace.fraction = 1; // assume it goes the entire distance until shown otherwise
 	VectorCopy(origin, tw.modelOrigin);
+
 	tw.type = type;
 
 	if (!cm.numNodes) {
 		*results = tw.trace;
-
-		return;	// map not loaded, shouldn't happen
+		return; // map not loaded, shouldn't happen
 	}
 	// allow NULL to be passed in for 0, 0, 0
 	if (!mins) {
@@ -1336,7 +1355,7 @@ void CM_Trace(trace_t *results, const vec3_t start, const vec3_t end, vec3_t min
 	if (sphere) {
 		tw.sphere = *sphere;
 	} else {
-		tw.sphere.radius = (tw.size[1][0] > tw.size[1][2]) ? tw.size[1][2]: tw.size[1][0];
+		tw.sphere.radius = (tw.size[1][0] > tw.size[1][2]) ? tw.size[1][2] : tw.size[1][0];
 		tw.sphere.halfheight = tw.size[1][2];
 		VectorSet(tw.sphere.offset, 0, 0, tw.size[1][2] - tw.sphere.radius);
 	}
@@ -1404,7 +1423,7 @@ void CM_Trace(trace_t *results, const vec3_t start, const vec3_t end, vec3_t min
 				tw.type = TT_AABB;
 				CM_TestInLeaf(&tw, &cmod->leaf);
 			} else
-#elif defined(ALWAYS_CAPSULE_VS_CAPSULE)
+#elif defined (ALWAYS_CAPSULE_VS_CAPSULE)
 			if (model == BOX_MODEL_HANDLE || model == CAPSULE_MODEL_HANDLE) {
 				CM_TestCapsuleInCapsule(&tw, model);
 			} else
@@ -1422,9 +1441,7 @@ void CM_Trace(trace_t *results, const vec3_t start, const vec3_t end, vec3_t min
 			CM_PositionTest(&tw);
 		}
 	} else {
-		// 
 		// check for point special case
-		// 
 		if (tw.size[0][0] == 0 && tw.size[0][1] == 0 && tw.size[0][2] == 0) {
 			tw.isPoint = qtrue;
 			VectorClear(tw.extents);
@@ -1435,14 +1452,13 @@ void CM_Trace(trace_t *results, const vec3_t start, const vec3_t end, vec3_t min
 			tw.extents[2] = tw.size[1][2];
 		}
 		// general sweeping through world
-		// 
 		if (model) {
 #ifdef ALWAYS_BBOX_VS_BBOX
 			if (model == BOX_MODEL_HANDLE || model == CAPSULE_MODEL_HANDLE) {
 				tw.type = TT_AABB;
 				CM_TraceThroughLeaf(&tw, &cmod->leaf);
 			} else
-#elif defined(ALWAYS_CAPSULE_VS_CAPSULE)
+#elif defined (ALWAYS_CAPSULE_VS_CAPSULE)
 			if (model == BOX_MODEL_HANDLE || model == CAPSULE_MODEL_HANDLE) {
 				CM_TraceCapsuleThroughCapsule(&tw, model);
 			} else
@@ -1471,10 +1487,8 @@ void CM_Trace(trace_t *results, const vec3_t start, const vec3_t end, vec3_t min
 	// If allsolid is set (was entirely inside something solid), the plane is not valid.
 	// If fraction == 1.0, we never hit anything, and thus the plane is not valid.
 	// Otherwise, the normal on the plane should have unit length
-        assert(tw.trace.allsolid ||
-               tw.trace.fraction == 1.0 ||
-               VectorLengthSquared(tw.trace.plane.normal) > 0.9999);
- *results = tw.trace;
+	assert(tw.trace.allsolid || tw.trace.fraction == 1.0 || VectorLengthSquared(tw.trace.plane.normal) > 0.9999);
+	*results = tw.trace;
 }
 
 /*
@@ -1563,12 +1577,13 @@ void CM_TransformedBoxTrace(trace_t *results, const vec3_t start, const vec3_t e
 		TransposeMatrix(matrix, transpose);
 		RotatePoint(trace.plane.normal, transpose);
 	}
-	// re-calculate the end position of the trace because the trace.endpos calculated by CM_Trace could be rotated and have an offset
+	// re-calculate the end position of the trace because the trace.endpos
+	// calculated by CM_Trace could be rotated and have an offset
 	trace.endpos[0] = start[0] + trace.fraction * (end[0] - start[0]);
 	trace.endpos[1] = start[1] + trace.fraction * (end[1] - start[1]);
 	trace.endpos[2] = start[2] + trace.fraction * (end[2] - start[2]);
 
- *results = trace;
+	*results = trace;
 }
 
 /*
@@ -1584,22 +1599,22 @@ void CM_BiSphereTrace(trace_t *results, const vec3_t start, const vec3_t end, fl
 
 	cmod = CM_ClipHandleToModel(model);
 
-	cm.checkcount++;		// for multi - check avoidance
-
-	c_traces++;				// for statistics, may be zeroed
-
+	cm.checkcount++; // for multi - check avoidance
+	c_traces++; // for statistics, may be zeroed
 	// fill in a default trace
 	Com_Memset(&tw, 0, sizeof(tw));
+
 	tw.trace.fraction = 1.0f; // assume it goes the entire distance until shown otherwise
+
 	VectorCopy(vec3_origin, tw.modelOrigin);
+
 	tw.type = TT_BISPHERE;
 	tw.testLateralCollision = qtrue;
 	tw.trace.lateralFraction = 1.0f;
 
 	if (!cm.numNodes) {
 		*results = tw.trace;
-
-		return;	// map not loaded, shouldn't happen
+		return; // map not loaded, shouldn't happen
 	}
 	// set basic parms
 	tw.contents = mask;
@@ -1625,37 +1640,38 @@ void CM_BiSphereTrace(trace_t *results, const vec3_t start, const vec3_t end, fl
 	tw.extents[1] = largestRadius;
 	tw.extents[2] = largestRadius;
 	// general sweeping through world
-	if (model)
+	if (model) {
 		CM_TraceThroughLeaf(&tw, &cmod->leaf);
 	} else {
 		CM_TraceThroughTree(&tw, 0, 0.0f, 1.0f, tw.start, tw.end);
-	// generate endpos from the original, unmodified start/end
+	}
+	// generate endpos from the original, unmodified start / end
 	if (tw.trace.fraction == 1.0f) {
 		VectorCopy(end, tw.trace.endpos);
 	} else {
-		for (i = 0; i < 3; i++)
+		for (i = 0; i < 3; i++) {
 			tw.trace.endpos[i] = start[i] + tw.trace.fraction * (end[i] - start[i]);
+		}
 	}
-	// If allsolid is set(was entirely inside something solid), the plane is not valid.
-	// If fraction == 1.0, we never hit anything, and thus the plane is not valid.
-	// Otherwise, the normal on the plane should have unit length
-	assert(tw.trace.allsolid || tw.trace.fraction == 1.0 ||
-			VectorLengthSquared(tw.trace.plane.normal) > 0.9999);
+	// if allsolid is set(was entirely inside something solid), the plane is not valid.
+	// if fraction == 1.0, we never hit anything, and thus the plane is not valid.
+	// otherwise, the normal on the plane should have unit length
+	assert(tw.trace.allsolid || tw.trace.fraction == 1.0 || VectorLengthSquared(tw.trace.plane.normal) > 0.9999);
 
- *results = tw.trace;
+	*results = tw.trace;
 }
 
 /*
 =======================================================================================================================================
 CM_TransformedBiSphereTrace
 
-Handles offseting and rotation of the end points for moving and
-rotating entities
+Handles offseting and rotation of the end points for moving and rotating entities.
 =======================================================================================================================================
 */
 void CM_TransformedBiSphereTrace(trace_t *results, const vec3_t start, const vec3_t end, float startRad, float endRad, clipHandle_t model, int mask, const vec3_t origin) {
 	trace_t trace;
 	vec3_t start_l, end_l;
+
 	// subtract origin offset
 	VectorSubtract(start, origin, start_l);
 	VectorSubtract(end, origin, end_l);
@@ -1667,5 +1683,5 @@ void CM_TransformedBiSphereTrace(trace_t *results, const vec3_t start, const vec
 	trace.endpos[1] = start[1] + trace.fraction * (end[1] - start[1]);
 	trace.endpos[2] = start[2] + trace.fraction * (end[2] - start[2]);
 
- *results = trace;
+	*results = trace;
 }

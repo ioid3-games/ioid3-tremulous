@@ -1,24 +1,29 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2005 Id Software, Inc.
-Copyright (C) 2000 - 2013 Darklegion Development
+Copyright(C) 1999 - 2005 Id Software, Inc.
+Copyright(C) 2000 - 2013 Darklegion Development
 
-This file is part of Tremulous source code.
+This file is part of Tremulous.
 
-Tremulous source code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+Tremulous is free software; you can redistribute it
+and / or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 2 of the License, 
+or(at your option) any later version.
 
-Tremulous source code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Tremulous is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Tremulous source code; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+You should have received a copy of the GNU General Public License
+along with Tremulous; if not, write to the Free Software
+Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
 =======================================================================================================================================
 */
+//
+// this file must be identical in the quake and utils directories
 
-// This file must be identical in the quake and utils directories
-
-// contents flags are separate bits
+// contents flags are seperate bits
 // a given brush can contribute multiple content bits
 
 // these definitions also need to be in q_shared.h!
@@ -81,6 +86,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 #define SURF_DUST				0x40000 // leave a dust trail when walking on this surface
 
 // custominfoparms below
-#define SURF_NOALIENBUILD	0x80000 // disallow alien building
+#define SURF_NOALIENBUILD	0x80000	// disallow alien building
 #define SURF_NOHUMANBUILD	0x100000 // disallow human building
 #define SURF_NOBUILD		0x200000 // disallow building

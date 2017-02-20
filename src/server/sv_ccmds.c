@@ -1,18 +1,23 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2005 Id Software, Inc.
-Copyright (C) 2000 - 2013 Darklegion Development
+Copyright(C) 1999 - 2005 Id Software, Inc.
+Copyright(C) 2000 - 2013 Darklegion Development
 
-This file is part of Tremulous source code.
+This file is part of Tremulous.
 
-Tremulous source code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+Tremulous is free software; you can redistribute it
+and / or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 2 of the License, 
+or(at your option) any later version.
 
-Tremulous source code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Tremulous is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Tremulous source code; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+You should have received a copy of the GNU General Public License
+along with Tremulous; if not, write to the Free Software
+Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
 =======================================================================================================================================
 */
 
@@ -21,17 +26,19 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 /*
 =======================================================================================================================================
 
-OPERATOR CONSOLE ONLY COMMANDS
+	OPERATOR CONSOLE ONLY COMMANDS
 
-These commands can only be entered from stdin or by a remote operator datagram
+	These commands can only be entered from stdin or by a remote operator datagram.
+
 =======================================================================================================================================
 */
+
 
 /*
 =======================================================================================================================================
 SV_Map_f
 
-Restart the server on a different map
+Restart the server on a different map.
 =======================================================================================================================================
 */
 static void SV_Map_f(void) {
@@ -64,8 +71,7 @@ static void SV_Map_f(void) {
 		cheat = qfalse;
 		killBots = qfalse;
 	}
-	// save the map name here cause on a map restart we reload the autogen.cfg
-	// and thus nuke the arguments of the map command
+	// save the map name here cause on a map restart we reload the autogen.cfg and thus nuke the arguments of the map command
 	Q_strncpyz(mapname, map, sizeof(mapname));
 	// start up the map
 	SV_SpawnServer(mapname, killBots);
@@ -77,11 +83,9 @@ static void SV_Map_f(void) {
 	} else {
 		Cvar_Set("sv_cheats", "0");
 	}
-	// This forces the local master server IP address cache
-	// to be updated on sending the next heartbeat
-	for (i = 0; i < MAX_MASTER_SERVERS; i++) {
+	// this forces the local master server IP address cache to be updated on sending the next heartbeat
+	for (i = 0; i < MAX_MASTER_SERVERS; i++)
 		sv_master[i]->modified = qtrue;
-	}
 }
 
 /*
@@ -182,7 +186,7 @@ static void SV_MapRestart_f(void) {
 			continue;
 		}
 
-		if (client->state == CS_ACTIVE) {
+		if (client->state == CS_ACTIVE)
 			SV_ClientEnterWorld(client, &client->lastUsercmd);
 		} else {
 			// If we don't reset client->lastUsercmd and are restarting during map load, the client will hang because we'll use the
@@ -204,6 +208,7 @@ Also called by SV_DropClient, SV_DirectConnect, and SV_SpawnServer.
 =======================================================================================================================================
 */
 void SV_Heartbeat_f(void) {
+
 	svs.nextHeartbeatTime = -9999999;
 }
 
@@ -247,12 +252,14 @@ static void SV_Systeminfo_f(void) {
 
 /*
 =======================================================================================================================================
-SV_KillServer_f
+SV_KillServer
 =======================================================================================================================================
 */
 static void SV_KillServer_f(void) {
+
 	SV_Shutdown("killserver");
 }
+
 
 /*
 =======================================================================================================================================
@@ -307,3 +314,4 @@ void SV_RemoveOperatorCommands(void) {
 	Cmd_RemoveCommand("sectorlist");
 #endif
 }
+

@@ -1,39 +1,49 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2005 Id Software, Inc.
-Copyright (C) 2000 - 2013 Darklegion Development
+Copyright(C) 1999 - 2005 Id Software, Inc.
+Copyright(C) 2000 - 2013 Darklegion Development
 
-This file is part of Tremulous source code.
+This file is part of Tremulous.
 
-Tremulous source code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+Tremulous is free software; you can redistribute it
+and / or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 2 of the License, 
+or(at your option) any later version.
 
-Tremulous source code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Tremulous is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Tremulous source code; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+You should have received a copy of the GNU General Public License
+along with Tremulous; if not, write to the Free Software
+Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
 =======================================================================================================================================
 */
 #include "client.h"
 
-// key up events are sent even if in console mode
+/*
+
+key up events are sent even if in console mode
+
+*/
+
 field_t historyEditLines[COMMAND_HISTORY];
-int nextHistoryLine;		// the last line in the history buffer, not masked
+
+int nextHistoryLine; // the last line in the history buffer, not masked
 int historyLine; // the line being displayed from history buffer will be <= nextHistoryLine
 
 field_t g_consoleField;
+
 qboolean key_overstrikeMode;
+
 int anykeydown;
 qkey_t keys[MAX_KEYS];
-
 
 typedef struct {
 	char *name;
 	int keynum;
 } keyname_t;
-
-
 // names not in this list can either be lowercase ascii, or '0xnn' hex sequences
 keyname_t keynames[] = {
 	{"TAB", K_TAB},
@@ -50,6 +60,7 @@ keyname_t keynames[] = {
 	{"SHIFT", K_SHIFT},
 	{"COMMAND", K_COMMAND},
 	{"CAPSLOCK", K_CAPSLOCK},
+
 	{"F1", K_F1},
 	{"F2", K_F2},
 	{"F3", K_F3},
@@ -145,7 +156,7 @@ keyname_t keynames[] = {
 	{"KP_STAR", K_KP_STAR},
 	{"KP_EQUALS", K_KP_EQUALS},
 	{"PAUSE", K_PAUSE},
-	{"SEMICOLON", ';'}, // because a raw semicolon separates commands
+	{"SEMICOLON", '; '}, // because a raw semicolon seperates commands
 
 	{"WORLD_0", K_WORLD_0},
 	{"WORLD_1", K_WORLD_1},
@@ -255,6 +266,31 @@ keyname_t keynames[] = {
 	{"POWER", K_POWER},
 	{"EURO", K_EURO},
 	{"UNDO", K_UNDO},
+	{"PAD0_A", K_PAD0_A},
+	{"PAD0_B", K_PAD0_B},
+	{"PAD0_X", K_PAD0_X},
+	{"PAD0_Y", K_PAD0_Y},
+	{"PAD0_BACK", K_PAD0_BACK},
+	{"PAD0_GUIDE", K_PAD0_GUIDE},
+	{"PAD0_START", K_PAD0_START},
+	{"PAD0_LEFTSTICK_CLICK", K_PAD0_LEFTSTICK_CLICK},
+	{"PAD0_RIGHTSTICK_CLICK", K_PAD0_RIGHTSTICK_CLICK},
+	{"PAD0_LEFTSHOULDER", K_PAD0_LEFTSHOULDER},
+	{"PAD0_RIGHTSHOULDER", K_PAD0_RIGHTSHOULDER},
+	{"PAD0_DPAD_UP", K_PAD0_DPAD_UP},
+	{"PAD0_DPAD_DOWN", K_PAD0_DPAD_DOWN},
+	{"PAD0_DPAD_LEFT", K_PAD0_DPAD_LEFT},
+	{"PAD0_DPAD_RIGHT", K_PAD0_DPAD_RIGHT},
+	{"PAD0_LEFTSTICK_LEFT", K_PAD0_LEFTSTICK_LEFT},
+	{"PAD0_LEFTSTICK_RIGHT", K_PAD0_LEFTSTICK_RIGHT},
+	{"PAD0_LEFTSTICK_UP", K_PAD0_LEFTSTICK_UP},
+	{"PAD0_LEFTSTICK_DOWN", K_PAD0_LEFTSTICK_DOWN},
+	{"PAD0_RIGHTSTICK_LEFT", K_PAD0_RIGHTSTICK_LEFT},
+	{"PAD0_RIGHTSTICK_RIGHT", K_PAD0_RIGHTSTICK_RIGHT},
+	{"PAD0_RIGHTSTICK_UP", K_PAD0_RIGHTSTICK_UP},
+	{"PAD0_RIGHTSTICK_DOWN", K_PAD0_RIGHTSTICK_DOWN},
+	{"PAD0_LEFTTRIGGER", K_PAD0_LEFTTRIGGER},
+	{"PAD0_RIGHTTRIGGER", K_PAD0_RIGHTTRIGGER},
 	{NULL, 0}
 };
 
@@ -266,11 +302,13 @@ keyname_t keynames[] = {
 =======================================================================================================================================
 */
 
+
 /*
 =======================================================================================================================================
-Field_VariableSizeDraw
+Field_Draw
 
-Handles horizontal scrolling and cursor blinking. x, y, and width are in pixels.
+Handles horizontal scrolling and cursor blinking
+x, y, and width are in pixels.
 =======================================================================================================================================
 */
 void Field_VariableSizeDraw(field_t *edit, int x, int y, int width, int size, qboolean showCursor, qboolean noColorEscape) {
@@ -301,12 +339,13 @@ void Field_VariableSizeDraw(field_t *edit, int x, int y, int width, int size, qb
 	if (prestep + drawLen > len) {
 		drawLen = len - prestep;
 	}
-	// extract <drawLen> characters from the field at <prestep>
+	// extract < drawLen > characters from the field at < prestep>
 	if (drawLen >= MAX_STRING_CHARS) {
 		Com_Error(ERR_DROP, "drawLen >= MAX_STRING_CHARS");
 	}
 
 	Com_Memcpy(str, edit->buffer + prestep, drawLen);
+
 	str[drawLen] = 0;
 	// draw it
 	if (size == SMALLCHAR_WIDTH) {
@@ -321,7 +360,7 @@ void Field_VariableSizeDraw(field_t *edit, int x, int y, int width, int size, qb
 	// draw the cursor
 	if (showCursor) {
 		if ((int)(cls.realtime >> 8) & 1) {
-			return;		// off blink
+			return; // off blink
 		}
 
 		if (key_overstrikeMode) {
@@ -338,7 +377,6 @@ void Field_VariableSizeDraw(field_t *edit, int x, int y, int width, int size, qb
 			str[0] = cursorChar;
 			str[1] = 0;
 			SCR_DrawBigString(x + (edit->cursor - prestep - i) * size, y, str, 1.0, qfalse);
-
 		}
 	}
 }
@@ -390,11 +428,12 @@ void Field_Paste(field_t *edit) {
 Field_KeyDownEvent
 
 Performs the basic line editing functions for the console, in-game talk, and menu fields.
-Key events are used for non-printable characters, others are gotten from char events.
+Key events are used for non - printable characters, others are gotten from char events.
 =======================================================================================================================================
 */
 void Field_KeyDownEvent(field_t *edit, int key) {
 	int len;
+
 	// shift-insert is paste
 	if (((key == K_INS) || (key == K_KP_INS)) && keys[K_SHIFT].down) {
 		Field_Paste(edit);
@@ -435,7 +474,7 @@ void Field_KeyDownEvent(field_t *edit, int key) {
 		default:
 			break;
 	}
-	// Change scroll if cursor is no longer visible
+	// change scroll if cursor is no longer visible
 	if (edit->cursor < edit->scroll) {
 		edit->scroll = edit->cursor;
 	} else if (edit->cursor >= edit->scroll + edit->widthInChars && edit->cursor <= len) {
@@ -445,25 +484,25 @@ void Field_KeyDownEvent(field_t *edit, int key) {
 
 /*
 =======================================================================================================================================
-Field_CharEvent
+Field_CharEvent.
 =======================================================================================================================================
 */
 void Field_CharEvent(field_t *edit, int ch) {
 	int len;
 
-	if (ch == 'v' - 'a' + 1) {	// ctrl-v is paste
+	if (ch == 'v'-'a' + 1) { // ctrl - v is paste
 		Field_Paste(edit);
 		return;
 	}
 
-	if (ch == 'c' - 'a' + 1) {	// ctrl-c clears the field
+	if (ch == 'c'-'a' + 1) { // ctrl - c clears the field
 		Field_Clear(edit);
 		return;
 	}
 
 	len = strlen(edit->buffer);
 
-	if (ch == 'h' - 'a' + 1) {	// ctrl-h is backspace
+	if (ch == 'h'-'a' + 1){ // ctrl - h is backspace
 		if (edit->cursor > 0) {
 			memmove(edit->buffer + edit->cursor - 1, edit->buffer + edit->cursor, len + 1 - edit->cursor);
 			edit->cursor--;
@@ -476,13 +515,13 @@ void Field_CharEvent(field_t *edit, int ch) {
 		return;
 	}
 
-	if (ch == 'a' - 'a' + 1) {	// ctrl-a is home
+	if (ch == 'a'-'a' + 1) { // ctrl - a is home
 		edit->cursor = 0;
 		edit->scroll = 0;
 		return;
 	}
 
-	if (ch == 'e' - 'a' + 1) {	// ctrl-e is end
+	if (ch == 'e'-'a' + 1) { // ctrl - e is end
 		edit->cursor = len;
 		edit->scroll = edit->cursor - edit->widthInChars;
 		return;
@@ -493,13 +532,13 @@ void Field_CharEvent(field_t *edit, int ch) {
 	}
 
 	if (key_overstrikeMode) {
-		// - 2 to leave room for the leading slash and trailing \0
+		// -2 to leave room for the leading slash and trailing \0
 		if (edit->cursor == MAX_EDIT_LINE - 2)
 			return;
 		edit->buffer[edit->cursor] = ch;
 		edit->cursor++;
-	} else {	// insert mode
-		// - 2 to leave room for the leading slash and trailing \0
+	} else { // insert mode
+		// -2 to leave room for the leading slash and trailing \0
 		if (len == MAX_EDIT_LINE - 2) {
 			return; // all full
 		}
@@ -534,10 +573,11 @@ Handles history and console scrollback.
 =======================================================================================================================================
 */
 void Console_Key(int key) {
-	// ctrl-L clears screen
+
+	// ctrl - L clears screen
 	if (key == 'l' && keys[K_CTRL].down) {
-		Cbuf_AddText("clear\n");
-		return;
+			Cbuf_AddText("clear\n");
+			return;
 	}
 	// enter finishes the line
 	if (key == K_ENTER || key == K_KP_ENTER) {
@@ -553,12 +593,12 @@ void Console_Key(int key) {
 		Com_Printf("]%s\n", g_consoleField.buffer);
 		// leading slash is an explicit command
 		if (g_consoleField.buffer[0] == '\\' || g_consoleField.buffer[0] == '/') {
-			Cbuf_AddText(g_consoleField.buffer + 1);	// valid command
+			Cbuf_AddText(g_consoleField.buffer + 1); // valid command
 			Cbuf_AddText("\n");
 		} else {
 			// other text will be chat messages
 			if (!g_consoleField.buffer[0]) {
-				return;	// empty lines just scroll the console without adding to history
+				return; // empty lines just scroll the console without adding to history
 			} else {
 				Cbuf_AddText("cmd say ");
 				Cbuf_AddText(g_consoleField.buffer);
@@ -577,7 +617,9 @@ void Console_Key(int key) {
 		CL_SaveConsoleHistory();
 
 		if (clc.state == CA_DISCONNECTED) {
-			SCR_UpdateScreen(); // force an update, because the command may take some time
+			SCR_UpdateScreen(); // force an update, because the command
+		} // may take some time
+		
 		return;
 	}
 	// command completion
@@ -586,7 +628,7 @@ void Console_Key(int key) {
 		Field_AutoComplete(&g_consoleField);
 		return;
 	}
-	// command history (ctrl-p ctrl-n for unix style)
+	// command history(ctrl - p ctrl - n for unix style)
 
 	if ((key == K_MWHEELUP && keys[K_SHIFT].down) || (key == K_UPARROW) || (key == K_KP_UPARROW) || ((tolower(key) == 'p') && keys[K_CTRL].down)) {
 		if (nextHistoryLine - historyLine < COMMAND_HISTORY && historyLine > 0) {
@@ -624,7 +666,7 @@ void Console_Key(int key) {
 	if (key == K_MWHEELUP) { // added some mousewheel functionality to the console
 		Con_PageUp();
 
-		if (keys[K_CTRL].down) { // hold <ctrl> to accelerate scrolling
+		if (keys[K_CTRL].down) { // hold < ctrl > to accelerate scrolling
 			Con_PageUp();
 			Con_PageUp();
 		}
@@ -632,22 +674,22 @@ void Console_Key(int key) {
 		return;
 	}
 
-	if (key == K_MWHEELDOWN) { // added some mousewheel functionality to the console
+	if (key == K_MWHEELDOWN) { // some mousewheel functionality to the console
 		Con_PageDown();
 
-		if (keys[K_CTRL].down) { // hold <ctrl> to accelerate scrolling
+		if (keys[K_CTRL].down) { // hold < ctrl > to accelerate scrolling
 			Con_PageDown();
 			Con_PageDown();
 		}
 
 		return;
 	}
-	// ctrl-home = top of console
+	// ctrl - home = top of console
 	if (key == K_HOME && keys[K_CTRL].down) {
 		Con_Top();
 		return;
 	}
-	// ctrl-end = bottom of console
+	// ctrl - end = bottom of console
 	if (key == K_END && keys[K_CTRL].down) {
 		Con_Bottom();
 		return;
@@ -656,10 +698,11 @@ void Console_Key(int key) {
 	Field_KeyDownEvent(&g_consoleField, key);
 }
 
-
-// ============================================================================
-
-
+/*
+=======================================================================================================================================
+Key_GetOverstrikeMode
+=======================================================================================================================================
+*/
 qboolean Key_GetOverstrikeMode(void) {
 	return key_overstrikeMode;
 }
@@ -691,8 +734,8 @@ qboolean Key_IsDown(int keynum) {
 =======================================================================================================================================
 Key_StringToKeynum
 
-Returns a key number to be used to index keys[] by looking at the given string.
-Single ascii characters return themselves, while the K_* names are matched up.
+Returns a key number to be used to index keys[] by looking at the given string. Single ascii characters return themselves, while the
+K_ * names are matched up.
 0x11 will be interpreted as raw hex, which will allow new controlers to be configured even if they don't have defined names.
 =======================================================================================================================================
 */
@@ -716,8 +759,9 @@ int Key_StringToKeynum(char *str) {
 	}
 	// scan for a text match
 	for (kn = keynames; kn->name; kn++) {
-		if (!Q_stricmp(str, kn->name))
+		if (!Q_stricmp(str, kn->name)) {
 			return kn->keynum;
+		}
 	}
 
 	return -1;
@@ -727,7 +771,7 @@ int Key_StringToKeynum(char *str) {
 =======================================================================================================================================
 Key_KeynumToString
 
-Returns a string (either a single ascii char, a K_* name, or a 0x11 hex string) for the given keynum.
+Returns a string (either a single ascii char, a K_ * name, or a 0x11 hex string) for the given keynum.
 =======================================================================================================================================
 */
 char *Key_KeynumToString(int keynum) {
@@ -742,8 +786,8 @@ char *Key_KeynumToString(int keynum) {
 	if (keynum < 0 || keynum >= MAX_KEYS) {
 		return "<OUT OF RANGE>";
 	}
-	// check for printable ascii (don't use quote)
-	if (keynum > 32 && keynum < 127 && keynum != '"' && keynum != ';') {
+	// check for printable ascii(don't use quote)
+	if (keynum > 32 && keynum < 127 && keynum != '"' && keynum != '; ') {
 		tinystr[0] = keynum;
 		tinystr[1] = 0;
 		return tinystr;
@@ -783,8 +827,8 @@ void Key_SetBinding(int keynum, const char *binding) {
 	}
 	// allocate memory for new binding
 	keys[keynum].binding = CopyString(binding);
-	// consider this like modifying an archived cvar, so the file write will be triggered at the next opportunity
-	cvar_modifiedFlags |= CVAR_ARCHIVE;
+	// consider this like modifying an archived cvar, so the file write will be triggered at the next oportunity
+	cvar_modifiedFlags|= CVAR_ARCHIVE;
 }
 
 /*
@@ -809,14 +853,15 @@ Key_GetKey
 int Key_GetKey(const char *binding) {
 	int i;
 
-  if (binding) {
-  	for (i = 0; i < MAX_KEYS; i++) {
-      if (keys[i].binding && Q_stricmp(binding, keys[i].binding) == 0) {
-        return i;
-   }
- }
-}
-  return -1;
+	if (binding) {
+		for (i = 0; i < MAX_KEYS; i++) {
+			if (keys[i].binding && Q_stricmp(binding, keys[i].binding) == 0) {
+				return i;
+			}
+		}
+	}
+
+	return -1;
 }
 
 /*
@@ -828,7 +873,7 @@ void Key_Unbind_f(void) {
 	int b;
 
 	if (Cmd_Argc() != 2) {
-		Com_Printf("unbind <key> : remove commands from a key\n");
+		Com_Printf("unbind < key > : remove commands from a key\n");
 		return;
 	}
 
@@ -850,9 +895,11 @@ Key_Unbindall_f
 void Key_Unbindall_f(void) {
 	int i;
 
-	for (i = 0; i < MAX_KEYS; i++)
-		if (keys[i].binding)
+	for (i = 0; i < MAX_KEYS; i++) {
+		if (keys[i].binding) {
 			Key_SetBinding(i, "");
+		}
+	}
 }
 
 /*
@@ -867,7 +914,7 @@ void Key_Bind_f(void) {
 	c = Cmd_Argc();
 
 	if (c < 2) {
-		Com_Printf("bind <key> [command] : attach a command to a key\n");
+		Com_Printf("bind < key > [command] : attach a command to a key\n");
 		return;
 	}
 
@@ -879,20 +926,23 @@ void Key_Bind_f(void) {
 	}
 
 	if (c == 2) {
-		if (keys[b].binding && keys[b].binding[0])
+		if (keys[b].binding && keys[b].binding[0]) {
 			Com_Printf("\"%s\" = \"%s\"\n", Key_KeynumToString(b), keys[b].binding);
 		} else {
 			Com_Printf("\"%s\" is not bound\n", Key_KeynumToString(b));
+		}
+
 		return;
 	}
-	
-// copy the rest of the command line
-	cmd[0] = 0;		// start out with a null string
+	// copy the rest of the command line
+	cmd[0] = 0; // start out with a null string
+
 	for (i = 2; i < c; i++) {
 		strcat(cmd, Cmd_Argv(i));
 
-		if (i != (c - 1))
+		if (i != (c - 1)) {
 			strcat(cmd, " ");
+		}
 	}
 
 	Key_SetBinding(b, cmd);
@@ -913,7 +963,6 @@ void Key_WriteBindings(fileHandle_t f) {
 	for (i = 0; i < MAX_KEYS; i++) {
 		if (keys[i].binding && keys[i].binding[0]) {
 			FS_Printf(f, "bind %s \"%s\"\n", Key_KeynumToString(i), keys[i].binding);
-
 		}
 	}
 }
@@ -938,11 +987,12 @@ void Key_Bindlist_f(void) {
 Key_KeynameCompletion
 =======================================================================================================================================
 */
-void Key_KeynameCompletion(void (*callback) (const char *s)) {
+void Key_KeynameCompletion(void (*callback)(const char *s)) {
 	int i;
 
-	for (i = 0; keynames[i].name != NULL; i++)
+	for (i = 0; keynames[i].name != NULL; i++) {
 		callback(keynames[i].name);
+	}
 }
 
 /*
@@ -953,11 +1003,12 @@ Key_CompleteUnbind
 static void Key_CompleteUnbind(char *args, int argNum) {
 
 	if (argNum == 2) {
-		// Skip "unbind"
+		// skip "unbind"
 		char *p = Com_SkipTokens(args, 1, " ");
 
-		if (p > args)
+		if (p > args) {
 			Field_CompleteKeyname();
+		}
 	}
 }
 
@@ -970,17 +1021,19 @@ static void Key_CompleteBind(char *args, int argNum) {
 	char *p;
 
 	if (argNum == 2) {
-		// Skip "bind"
+		// skip "bind "
 		p = Com_SkipTokens(args, 1, " ");
 
-		if (p > args)
+		if (p > args) {
 			Field_CompleteKeyname();
+		}
 	} else if (argNum >= 3) {
-		// Skip "bind <key>"
+		// skip "bind < key>"
 		p = Com_SkipTokens(args, 2, " ");
 
-		if (p > args)
+		if (p > args) {
 			Field_CompleteCommand(p, qtrue, qtrue);
+		}
 	}
 }
 
@@ -990,6 +1043,7 @@ CL_InitKeyCommands
 =======================================================================================================================================
 */
 void CL_InitKeyCommands(void) {
+
 	// register our functions
 	Cmd_AddCommand("bind", Key_Bind_f);
 	Cmd_SetCommandCompletionFunc("bind", Key_CompleteBind);
@@ -1049,19 +1103,21 @@ void CL_ParseBinding(int key, qboolean down, unsigned time) {
 	allowUpCmds = (clc.state != CA_DISCONNECTED);
 
 	while (1) {
-		while (isspace(*p))
+		while (isspace(*p)) {
 			p++;
-		end = strchr(p, ';');
+		}
 
-		if (end)
+		end = strchr(p, '; ');
+
+		if (end) {
 			*end = '\0';
+		}
 
-		if (*p == '+') {
-			// button commands add keynum and time as parameters
-			// so that multiple sources can be discriminated and subframe corrected
+		if (*p == ' + ') {
+			// button commands add keynum and time as parameters so that multiple sources can be discriminated and subframe corrected
 			if (allCommands || (allowUpCmds && !down)) {
 				char cmd[1024];
-				Com_sprintf(cmd, sizeof(cmd), "%c%s %d %d\n", (down) ? '+' : '-', p + 1, key, time);
+				Com_sprintf(cmd, sizeof(cmd), "%c%s %d %d\n", (down) ? ' + ' : '-', p + 1, key, time);
 				Cbuf_AddText(cmd);
 			}
 		} else if (down) {
@@ -1091,8 +1147,9 @@ void CL_KeyDownEvent(int key, unsigned time) {
 	keys[key].down = qtrue;
 	keys[key].repeats++;
 
-	if (keys[key].repeats == 1)
+	if (keys[key].repeats == 1) {
 		anykeydown++;
+	}
 
 	if (keys[K_ALT].down && key == K_ENTER) {
 		Cvar_SetValue("r_fullscreen", !Cvar_VariableIntegerValue("r_fullscreen"));
@@ -1137,7 +1194,7 @@ void CL_KeyDownEvent(int key, unsigned time) {
 	}
 	// send the bound action
 	CL_ParseBinding(key, qtrue, time);
-	// distribute the key down event to the appropriate handler
+	// distribute the key down event to the apropriate handler
 	if (Key_GetCatcher() & KEYCATCH_CONSOLE) {
 		Console_Key(key);
 	} else if (Key_GetCatcher() & KEYCATCH_UI) {
@@ -1147,7 +1204,8 @@ void CL_KeyDownEvent(int key, unsigned time) {
 	} else if (Key_GetCatcher() & KEYCATCH_CGAME) {
 		if (cgvm) {
 			VM_Call(cgvm, CG_KEY_EVENT, key, qtrue);
-		}	} else if (clc.state == CA_DISCONNECTED) {
+		}
+	} else if (clc.state == CA_DISCONNECTED) {
 		Console_Key(key);
 	}
 }
@@ -1167,11 +1225,11 @@ void CL_KeyUpEvent(int key, unsigned time) {
 	if (anykeydown < 0) {
 		anykeydown = 0;
 	}
-	// don't process key-up events for the console key
+	// don't process key - up events for the console key
 	if (key == K_CONSOLE || (key == K_ESCAPE && keys[K_SHIFT].down)) {
 		return;
 	}
-	// key up events only perform actions if the game key binding is a button command (leading + sign). These will be processed even in
+	// key up events only perform actions if the game key binding is a button command(leading + sign).  These will be processed even in
 	// console mode and menu mode, to keep the character from continuing an action started before a mode switch.
 	CL_ParseBinding(key, qfalse, time);
 
@@ -1191,25 +1249,27 @@ Called by the system for both key up and key down events.
 */
 void CL_KeyEvent(int key, qboolean down, unsigned time) {
 
-	if (down)
+	if (down) {
 		CL_KeyDownEvent(key, time);
 	} else {
 		CL_KeyUpEvent(key, time);
+	}
 }
 
 /*
 =======================================================================================================================================
 CL_CharEvent
 
-Normal keyboard characters, already shifted / capslocked / etc.
+Normal keyboard characters, already shifted/capslocked/etc.
 =======================================================================================================================================
 */
 void CL_CharEvent(int key) {
+
 	// delete is not a printable character and is otherwise handled by Field_KeyDownEvent
 	if (key == 127) {
 		return;
 	}
-	// distribute the key down event to the appropriate handler
+	// distribute the key down event to the apropriate handler
 	if (Key_GetCatcher() & KEYCATCH_CONSOLE) {
 		Field_CharEvent(&g_consoleField, key);
 	} else if (Key_GetCatcher() & KEYCATCH_UI) {
@@ -1283,15 +1343,17 @@ Key_SetCatcher
 =======================================================================================================================================
 */
 void Key_SetCatcher(int catcher) {
-	// If the catcher state is changing, clear all key states
-	if (catcher != keyCatchers)
+
+	// if the catcher state is changing, clear all key states
+	if (catcher != keyCatchers) {
 		Key_ClearStates();
+	}
 
 	keyCatchers = catcher;
 }
 
-// This must not exceed MAX_CMD_LINE
-#define MAX_CONSOLE_SAVE_BUFFER	1024
+// this must not exceed MAX_CMD_LINE
+#define MAX_CONSOLE_SAVE_BUFFER 1024
 #define CONSOLE_HISTORY_FILE "q3history"
 static char consoleSaveBuffer[MAX_CONSOLE_SAVE_BUFFER];
 static int consoleSaveBufferSize = 0;
@@ -1352,12 +1414,14 @@ void CL_LoadConsoleHistory(void) {
 
 		memmove(&historyEditLines[0], &historyEditLines[i + 1], numLines * sizeof(field_t));
 
-		for (i = numLines; i < COMMAND_HISTORY; i++)
+		for (i = numLines; i < COMMAND_HISTORY; i++) {
 			Field_Clear(&historyEditLines[i]);
+		}
 
 		historyLine = nextHistoryLine = numLines;
 	} else {
 		Com_Printf("Couldn't read %s.\n", CONSOLE_HISTORY_FILE);
+	}
 
 	FS_FCloseFile(f);
 }
@@ -1377,7 +1441,6 @@ void CL_SaveConsoleHistory(void) {
 	consoleSaveBuffer[0] = '\0';
 
 	i = (nextHistoryLine - 1) % COMMAND_HISTORY;
-
 	do {
 		if (historyEditLines[i].buffer[0]) {
 			lineLength = strlen(historyEditLines[i].buffer);
@@ -1387,8 +1450,9 @@ void CL_SaveConsoleHistory(void) {
 
 			if (saveBufferLength + additionalLength < MAX_CONSOLE_SAVE_BUFFER) {
 				Q_strcat(consoleSaveBuffer, MAX_CONSOLE_SAVE_BUFFER, va("%d %d %d %s ", historyEditLines[i].cursor, historyEditLines[i].scroll, lineLength, historyEditLines[i].buffer));
-			} else
+			} else {
 				break;
+			}
 		}
 
 		i = (i - 1 + COMMAND_HISTORY) % COMMAND_HISTORY;
@@ -1405,8 +1469,9 @@ void CL_SaveConsoleHistory(void) {
 		return;
 	}
 
-	if (FS_Write(consoleSaveBuffer, consoleSaveBufferSize, f) < consoleSaveBufferSize)
+	if (FS_Write(consoleSaveBuffer, consoleSaveBufferSize, f) < consoleSaveBufferSize) {
 		Com_Printf("Couldn't write %s.\n", CONSOLE_HISTORY_FILE);
+	}
 
 	FS_FCloseFile(f);
 }

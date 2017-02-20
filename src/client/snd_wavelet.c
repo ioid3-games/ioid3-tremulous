@@ -1,18 +1,23 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2005 Id Software, Inc.
-Copyright (C) 2000 - 2013 Darklegion Development
+Copyright(C) 1999 - 2005 Id Software, Inc.
+Copyright(C) 2000 - 2013 Darklegion Development
 
-This file is part of Tremulous source code.
+This file is part of Tremulous.
 
-Tremulous source code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+Tremulous is free software; you can redistribute it
+and / or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 2 of the License, 
+or(at your option) any later version.
 
-Tremulous source code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Tremulous is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Tremulous source code; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+You should have received a copy of the GNU General Public License
+along with Tremulous; if not, write to the Free Software
+Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
 =======================================================================================================================================
 */
 
@@ -21,16 +26,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 #define C0 0.4829629131445341
 #define C1 0.8365163037378079
 #define C2 0.2241438680420134
-#define C3 -0.1294095225512604
+#define C3 - 0.1294095225512604
 
-/*
-=======================================================================================================================================
-daub4
-=======================================================================================================================================
-*/
 void daub4(float b[], unsigned long n, int isign) {
 	float wksp[4097] = {0.0f};
-	float *a = b - 1;						// numerical recipies so a[1] = b[0]
+	float *a = b - 1; 						// numerical recipies so a[1] = b[0]
 
 	unsigned long nh, nh1, i, j;
 
@@ -39,7 +39,7 @@ void daub4(float b[], unsigned long n, int isign) {
 	nh1 = (nh = n >> 1) + 1;
 
 	if (isign >= 0) {
-		for (i = 1, j = 1;j <= n - 3;j += 2, i++) {
+		for (i = 1, j = 1; j <= n - 3; j += 2, i++) {
 			wksp[i] = C0 * a[j] + C1 * a[j + 1] + C2 * a[j + 2] + C3 * a[j + 3];
 			wksp[i + nh] = C3 * a[j] - C2 * a[j + 1] + C1 * a[j + 2] - C0 * a[j + 3];
 		}
@@ -61,74 +61,47 @@ void daub4(float b[], unsigned long n, int isign) {
 	}
 }
 
-/*
-=======================================================================================================================================
-wt1
-=======================================================================================================================================
-*/
 void wt1(float a[], unsigned long n, int isign) {
 	unsigned long nn;
 	int inverseStartLength = n / 4;
 
-	if (n < inverseStartLength) {
-		return;
-	}
+	if (n < inverseStartLength) return;
 
 	if (isign >= 0) {
-		for (nn = n; nn >= inverseStartLength; nn >>= 1) {
-			daub4(a, nn, isign);
-		}
+		for (nn = n; nn >= inverseStartLength; nn >>= 1) daub4(a, nn, isign);
 	} else {
-		for (nn = inverseStartLength; nn <= n; nn <<= 1) {
-			daub4(a, nn, isign);
-		}
+		for (nn = inverseStartLength; nn <= n; nn <<= 1) daub4(a, nn, isign);
 	}
 }
 
-// The number of bits required by each value
+/* The number of bits required by each value */
 static unsigned char numBits[] = {
-	0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
-	6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
-	7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
-	7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
-	8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-	8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-	8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-	8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+   0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+	 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+	 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+	 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+	 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+	 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+	 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+	 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
 };
 
-/*
-=======================================================================================================================================
-MuLawEncode
-=======================================================================================================================================
-*/
 byte MuLawEncode(short s) {
 	unsigned long adjusted;
 	byte sign, exponent, mantissa;
 
-	sign = (s < 0) ? 0 : 0x80;
+	sign = (s < 0)?0:0x80;
 
-	if (s < 0) {
-		s = -s;
-	}
-
+	if (s < 0) s = -s;
 	adjusted = (long)s << (16 - sizeof(short) * 8);
 	adjusted += 128L + 4L;
 
-	if (adjusted > 32767) {
-		adjusted = 32767;
-	}
-
+	if (adjusted > 32767) adjusted = 32767;
 	exponent = numBits[(adjusted >> 7)&0xff] - 1;
 	mantissa = (adjusted >> (exponent + 3))&0xf;
 	return ~(sign|(exponent << 4)|mantissa);
 }
 
-/*
-=======================================================================================================================================
-MuLawDecode
-=======================================================================================================================================
-*/
 short MuLawDecode(byte uLaw) {
 	signed long adjusted;
 	byte exponent, mantissa;
@@ -138,29 +111,21 @@ short MuLawDecode(byte uLaw) {
 	mantissa = (uLaw&0xf) + 16;
 	adjusted = (mantissa << (exponent + 3)) - 128 - 4;
 
-	return (uLaw & 0x80) ? adjusted : -adjusted;
+	return (uLaw & 0x80)? adjusted : - adjusted;
 }
 
 short mulawToShort[256];
 static qboolean madeTable = qfalse;
+
 static int NXStreamCount;
 
-/*
-=======================================================================================================================================
-NXPutc
-=======================================================================================================================================
-*/
 void NXPutc(NXStream *stream, char out) {
 	stream[NXStreamCount++] = out;
 }
 
-/*
-=======================================================================================================================================
-encodeWavelet
-=======================================================================================================================================
-*/
+
 void encodeWavelet(sfx_t *sfx, short *packets) {
-	float wksp[4097] = {0}, temp;
+	float wksp[4097] = {0},temp;
 	int i, samples, size;
 	sndBuffer *newchunk, *chunk;
 	byte *out;
@@ -209,12 +174,7 @@ void encodeWavelet(sfx_t *sfx, short *packets) {
 		for (i = 0; i < size; i++) {
 			temp = wksp[i];
 
-			if (temp > 32767) {
-				temp = 32767;
-			} else if (temp < -32768) {
-				temp = -32768;
-			}
-
+			if (temp > 32767) temp = 32767; else if (temp < -32768) temp = -32768;
 			out[i] = MuLawEncode((short)temp);
 		}
 
@@ -223,11 +183,6 @@ void encodeWavelet(sfx_t *sfx, short *packets) {
 	}
 }
 
-/*
-=======================================================================================================================================
-decodeWavelet
-=======================================================================================================================================
-*/
 void decodeWavelet(sndBuffer *chunk, short *to) {
 	float wksp[4097] = {0};
 	int i;
@@ -242,20 +197,14 @@ void decodeWavelet(sndBuffer *chunk, short *to) {
 
 	wt1(wksp, size, -1);
 
-	if (!to) {
-		return;
-	}
+	if (!to) return;
 
 	for (i = 0; i < size; i++) {
 		to[i] = wksp[i];
 	}
 }
 
-/*
-=======================================================================================================================================
-encodeMuLaw
-=======================================================================================================================================
-*/
+
 void encodeMuLaw(sfx_t *sfx, short *packets) {
 	int i, samples, size, grade, poop;
 	sndBuffer *newchunk, *chunk;
@@ -310,11 +259,6 @@ void encodeMuLaw(sfx_t *sfx, short *packets) {
 	}
 }
 
-/*
-=======================================================================================================================================
-decodeMuLaw
-=======================================================================================================================================
-*/
 void decodeMuLaw(sndBuffer *chunk, short *to) {
 	int i;
 	byte *out;
@@ -326,3 +270,5 @@ void decodeMuLaw(sndBuffer *chunk, short *to) {
 		to[i] = mulawToShort[out[i]];
 	}
 }
+
+

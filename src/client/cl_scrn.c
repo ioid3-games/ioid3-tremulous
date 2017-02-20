@@ -1,24 +1,26 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2005 Id Software, Inc.
-Copyright (C) 2000 - 2013 Darklegion Development
+Copyright(C) 1999 - 2005 Id Software, Inc.
+Copyright(C) 2000 - 2013 Darklegion Development
 
-This file is part of Tremulous source code.
+This file is part of Tremulous.
 
-Tremulous source code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+Tremulous is free software; you can redistribute it
+and / or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 2 of the License, 
+or(at your option) any later version.
 
-Tremulous source code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Tremulous is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Tremulous source code; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+You should have received a copy of the GNU General Public License
+along with Tremulous; if not, write to the Free Software
+Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
 =======================================================================================================================================
 */
-
-/**************************************************************************************************************************************
- Master for refresh, status bar, console, chat, notify, etc.
-**************************************************************************************************************************************/
+// cl_scrn.c--master for refresh, status bar, console, chat, notify, etc
 
 #include "client.h"
 
@@ -58,10 +60,10 @@ void SCR_AdjustFrom640(float *x, float *y, float *w, float *h) {
 	float xscale;
 	float yscale;
 #if 0
-		// adjust for wide screens
-		if (cls.glconfig.vidWidth * 480 > cls.glconfig.vidHeight * 640) {
-			*x += 0.5 * (cls.glconfig.vidWidth - (cls.glconfig.vidHeight * 640 / 480));
-		}
+	// adjust for wide screens
+	if (cls.glconfig.vidWidth * 480 > cls.glconfig.vidHeight * 640) {
+		*x += 0.5 * (cls.glconfig.vidWidth - (cls.glconfig.vidHeight * 640 / 480));
+	}
 #endif
 	// scale for screen sizes
 	xscale = cls.glconfig.vidWidth / 640.0;
@@ -96,7 +98,6 @@ void SCR_FillRect(float x, float y, float width, float height, const float *colo
 
 	SCR_AdjustFrom640(&x, &y, &width, &height);
 	re.DrawStretchPic(x, y, width, height, 0, 0, 0, 0, cls.whiteShader);
-
 	re.SetColor(NULL);
 }
 
@@ -124,7 +125,7 @@ static void SCR_DrawChar(int x, int y, float size, int ch) {
 	float frow, fcol;
 	float ax, ay, aw, ah;
 
-	ch &= 255;
+	ch & = 255;
 
 	if (ch == ' ') {
 		return;
@@ -162,7 +163,7 @@ void SCR_DrawSmallChar(int x, int y, int ch) {
 	float frow, fcol;
 	float size;
 
-	ch &= 255;
+	ch & = 255;
 
 	if (ch == ' ') {
 		return;
@@ -184,9 +185,9 @@ void SCR_DrawSmallChar(int x, int y, int ch) {
 
 /*
 =======================================================================================================================================
-SCR_DrawStringExt
+SCR_DrawBigString[Color]
 
-Draws a multi-colored string with a drop shadow, optionally forcing to a fixed color.
+Draws a multi - colored string with a drop shadow, optionally forcing to a fixed color.
 Coordinates are at 640 by 480 virtual resolution.
 =======================================================================================================================================
 */
@@ -194,6 +195,7 @@ void SCR_DrawStringExt(int x, int y, float size, const char *string, float *setC
 	vec4_t color;
 	const char *s;
 	int xx;
+
 	// draw the drop shadow
 	color[0] = color[1] = color[2] = 0;
 	color[3] = setColor[3];
@@ -262,15 +264,16 @@ void SCR_DrawBigStringColor(int x, int y, const char *s, vec4_t color, qboolean 
 
 /*
 =======================================================================================================================================
-SCR_DrawSmallStringExt
+SCR_DrawSmallString[Color]
 
-Draws a multi-colored string with a drop shadow, optionally forcing to a fixed color.
+Draws a multi - colored string with a drop shadow, optionally forcing to a fixed color.
 =======================================================================================================================================
 */
 void SCR_DrawSmallStringExt(int x, int y, const char *string, float *setColor, qboolean forceColor, qboolean noColorEscape) {
 	vec4_t color;
 	const char *s;
 	int xx;
+
 	// draw the colored text
 	s = string;
 	xx = x;
@@ -300,9 +303,7 @@ void SCR_DrawSmallStringExt(int x, int y, const char *string, float *setColor, q
 
 /*
 =======================================================================================================================================
-SCR_Strlen
-
-Skips color escape codes.
+SCR_Strlen--skips color escape codes
 =======================================================================================================================================
 */
 static int SCR_Strlen(const char *str) {
@@ -334,7 +335,7 @@ int SCR_GetBigStringWidth(const char *str) {
 =======================================================================================================================================
 SCR_DrawVoipMeter
 
-FIXME: inherited from ioq3, move to cgame/ui
+FIXME: inherited from ioq3, move to cgame / ui.
 =======================================================================================================================================
 */
 void SCR_DrawVoipMeter(void) {
@@ -343,29 +344,19 @@ void SCR_DrawVoipMeter(void) {
 	int limit, i;
 
 	if (!cl_voipShowMeter->integer) {
-		return;
-	}
-	// player doesn't want to show meter at all.
+		return; // player doesn't want to show meter at all.
 	} else if (!cl_voipSend->integer) {
-		return;
-	}
-	// not recording at the moment.
+		return; // not recording at the moment.
 	} else if (clc.state != CA_ACTIVE) {
-		return;
-	}
-	// not connected to a server.
+		return; // not connected to a server.
 	} else if (!clc.voipEnabled) {
-		return;
-	}
-	// server doesn't support VoIP.
+		return; // server doesn't support VoIP.
 	} else if (clc.demoplaying) {
-		return;
-	}
-	// playing back a demo.
+		return; // playing back a demo.
 	} else if (!cl_voip->integer) {
-		return;
+		return; // client has VoIP support disabled.
 	}
-	// client has VoIP support disabled.
+
 	limit = (int)(clc.voipPower * 10.0f);
 
 	if (limit > 10) {
@@ -382,7 +373,7 @@ void SCR_DrawVoipMeter(void) {
 
 	buffer[i] = '\0';
 
-	sprintf(string, "VoIP: [%s]", buffer);
+	sprintf(string, "VoIP : [%s]", buffer);
 	SCR_DrawStringExt(320 - strlen(string) * 4, 10, 8, string, g_color_table[7], qtrue, qfalse);
 }
 #endif
@@ -481,7 +472,7 @@ void SCR_DrawScreenField(stereoFrame_t stereoFrame) {
 	if (uivm && !uiFullscreen) {
 		switch (clc.state) {
 			default:
-				Com_Error(ERR_FATAL, "SCR_DrawScreenField: bad clc.state");
+				Com_Error(ERR_FATAL, "SCR_DrawScreenField : bad clc.state");
 				break;
 			case CA_CINEMATIC:
 				SCR_DrawCinematic();
@@ -494,8 +485,7 @@ void SCR_DrawScreenField(stereoFrame_t stereoFrame) {
 			case CA_CONNECTING:
 			case CA_CHALLENGING:
 			case CA_CONNECTED:
-				// connecting clients will only show the connection dialog
-				// refresh to update the time
+				// connecting clients will only show the connection dialog refresh to update the time
 				VM_Call(uivm, UI_REFRESH, cls.realtime);
 				VM_Call(uivm, UI_DRAW_CONNECT_SCREEN, qfalse);
 				break;
@@ -536,17 +526,17 @@ void SCR_UpdateScreen(void) {
 	static int recursive;
 
 	if (!scr_initialized) {
-		return; // not initialized yet
+		return; 				// not initialized yet
 	}
 
 	if (++recursive > 2) {
-		Com_Error(ERR_FATAL, "SCR_UpdateScreen: recursively called");
+		Com_Error(ERR_FATAL, "SCR_UpdateScreen : recursively called");
 	}
 
 	recursive = 1;
-	// If there is no VM, there are also no rendering commands issued. Stop the renderer in that case.
+	// if there is no VM, there are also no rendering commands issued. Stop the renderer in that case.
 	if (uivm || com_dedicated->integer) {
-		// XXX
+		// xXX
 		int in_anaglyphMode = Cvar_VariableIntegerValue("r_anaglyphMode");
 		// if running in stereo, we need to draw the frame twice
 		if (cls.glconfig.stereoEnabled || in_anaglyphMode) {
@@ -565,3 +555,4 @@ void SCR_UpdateScreen(void) {
 
 	recursive = 0;
 }
+

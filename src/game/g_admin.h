@@ -1,22 +1,22 @@
 /*
 =======================================================================================================================================
-Copyright (C) 2000 - 2013 Darklegion Development
+Copyright(C) 2000 - 2013 Darklegion Development
 
 This file is part of Tremulous.
 
 Tremulous is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
+and / or modify it under the terms of the GNU General Public License as
 published by the Free Software Foundation; either version 2 of the License, 
-or (at your option) any later version.
+or(at your option) any later version.
 
 Tremulous is distributed in the hope that it will be
 useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with Tremulous; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
 =======================================================================================================================================
 */
 
@@ -48,54 +48,52 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * CANIPBAN - allows banning not - necessarily - connected players with CIDR notation
  * ACTIVITY - inactivity rules do not apply to them
  * IMMUTABLE - admin commands cannot be used on them
- * INCOGNITO - does not show up as an admin in  / listplayers
+ * INCOGNITO - does not show up as an admin in / listplayers
  * ALLFLAGS - all flags(including command flags) apply to this player
- * ADMINCHAT - receieves and can send  / a admin messages
+ * ADMINCHAT - receieves and can send / a admin messages
  */
-#define ADMF_IMMUNITY        "IMMUNITY"
+#define ADMF_IMMUNITY				"IMMUNITY"
 #define ADMF_NOCENSORFLOOD   "NOCENSORFLOOD"
-#define ADMF_SPEC_ALLCHAT    "SPECALLCHAT"
+#define ADMF_SPEC_ALLCHAT		"SPECALLCHAT"
 #define ADMF_FORCETEAMCHANGE "FORCETEAMCHANGE"
 #define ADMF_UNACCOUNTABLE   "UNACCOUNTABLE"
 #define ADMF_NO_VOTE_LIMIT   "NOVOTELIMIT"
-#define ADMF_CAN_PERM_BAN    "CANPERMBAN"
-#define ADMF_CAN_IP_BAN      "CANIPBAN"
-#define ADMF_ACTIVITY        "ACTIVITY"
+#define ADMF_CAN_PERM_BAN		"CANPERMBAN"
+#define ADMF_CAN_IP_BAN			"CANIPBAN"
+#define ADMF_ACTIVITY				"ACTIVITY"
 
-#define ADMF_IMMUTABLE       "IMMUTABLE"
-#define ADMF_INCOGNITO       "INCOGNITO"
-#define ADMF_ALLFLAGS        "ALLFLAGS"
-#define ADMF_ADMINCHAT       "ADMINCHAT"
+#define ADMF_IMMUTABLE			"IMMUTABLE"
+#define ADMF_INCOGNITO			"INCOGNITO"
+#define ADMF_ALLFLAGS				"ALLFLAGS"
+#define ADMF_ADMINCHAT			"ADMINCHAT"
 
 #define MAX_ADMIN_LISTITEMS 20
 #define MAX_ADMIN_SHOWBANS 10
 
 typedef struct {
-  char *keyword;
-  qboolean(*handler) (gentity_t *ent);
-  qboolean silent;
-  char *flag;
-  char *function; // used in  / adminhelp
-  char *syntax; // used in  / adminhelp
+	char *keyword;
+	qboolean(*handler)(gentity_t *ent);
+	qboolean silent;
+	char *flag;
+	char *function; // used in / adminhelp
+	char *syntax; // used in / adminhelp
 }
 g_admin_cmd_t;
 
-typedef struct g_admin_level
-{
-  struct g_admin_level *next;
+typedef struct g_admin_level {
+	struct g_admin_level *next;
 	int level;
-  char name[MAX_NAME_LENGTH];
-  char flags[MAX_ADMIN_FLAGS];
+	char name[MAX_NAME_LENGTH];
+	char flags[MAX_ADMIN_FLAGS];
 }
 g_admin_level_t;
 
-typedef struct g_admin_admin
-{
-  struct g_admin_admin *next;
+typedef struct g_admin_admin {
+	struct g_admin_admin *next;
 	int level;
-  char guid[33];
-  char name[MAX_NAME_LENGTH];
-  char flags[MAX_ADMIN_FLAGS];
+	char guid[33];
+	char name[MAX_NAME_LENGTH];
+	char flags[MAX_ADMIN_FLAGS];
 }
 g_admin_admin_t;
 
@@ -105,37 +103,34 @@ addr_ts are passed as "arg" to admin_search for IP address matching
 admin_search prints(char *)arg, so the stringified address needs to be first
 */
 typedef struct {
-  char str[44];
+	char str[44];
   enum
-  {
-    IPv4, 
-    IPv6
-} type;
-  byte addr[ADDRLEN];
+	{
+		IPv4, IPv6
+	} type;
+	byte addr[ADDRLEN];
 	int mask;
 } addr_t;
 
-typedef struct g_admin_ban
-{
-  struct g_admin_ban *next;
-  char name[MAX_NAME_LENGTH];
-  char guid[33];
+typedef struct g_admin_ban {
+	struct g_admin_ban *next;
+	char name[MAX_NAME_LENGTH];
+	char guid[33];
   addr_t ip;
-  char reason[MAX_ADMIN_BAN_REASON];
-  char made[18]; // big enough for strftime() %c
- int expires;
-  char banner[MAX_NAME_LENGTH];
+	char reason[MAX_ADMIN_BAN_REASON];
+	char made[18]; // big enough for strftime() %c
+	int expires;
+	char banner[MAX_NAME_LENGTH];
 	int warnCount;
 }
 g_admin_ban_t;
 
-typedef struct g_admin_command
-{
-  struct g_admin_command *next;
-  char command[MAX_ADMIN_CMD_LEN];
-  char exec[MAX_QPATH];
-  char desc[50];
-  char flag[MAX_ADMIN_FLAG_LEN];
+typedef struct g_admin_command {
+	struct g_admin_command *next;
+	char command[MAX_ADMIN_CMD_LEN];
+	char exec[MAX_QPATH];
+	char desc[50];
+	char flag[MAX_ADMIN_FLAG_LEN];
 }
 g_admin_command_t;
 
@@ -171,6 +166,7 @@ qboolean G_admin_admintest(gentity_t *ent);
 qboolean G_admin_allready(gentity_t *ent);
 qboolean G_admin_endvote(gentity_t *ent);
 qboolean G_admin_spec999(gentity_t *ent);
+qboolean G_admin_transform(gentity_t *ent);
 qboolean G_admin_rename(gentity_t *ent);
 qboolean G_admin_restart(gentity_t *ent);
 qboolean G_admin_nextmap(gentity_t *ent);
@@ -181,8 +177,8 @@ qboolean G_admin_builder(gentity_t *ent);
 qboolean G_admin_buildlog(gentity_t *ent);
 qboolean G_admin_revert(gentity_t *ent);
 
-void G_admin_print(gentity_t *ent, char *m);
-void G_admin_buffer_print(gentity_t *ent, char *m);
+void G_admin_print(gentity_t *ent, const char *m);
+void G_admin_buffer_print(gentity_t *ent, const char *m);
 void G_admin_buffer_begin(void);
 void G_admin_buffer_end(gentity_t *ent);
 

@@ -1,54 +1,54 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2005 Id Software, Inc.
-Copyright (C) 2000 - 2013 Darklegion Development
+Copyright(C) 1999 - 2005 Id Software, Inc.
+Copyright(C) 2000 - 2013 Darklegion Development
 
-This file is part of Tremulous source code.
+This file is part of Tremulous.
 
-Tremulous source code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+Tremulous is free software; you can redistribute it
+and / or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 2 of the License, 
+or(at your option) any later version.
 
-Tremulous source code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Tremulous is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Tremulous source code; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+You should have received a copy of the GNU General Public License
+along with Tremulous; if not, write to the Free Software
+Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
 =======================================================================================================================================
 */
-
 // console.c
 
 #include "client.h"
 
-
 int g_console_field_width = 78;
-
 
 #define NUM_CON_TIMES 4
 
-#define CON_TEXTSIZE	163840
+#define CON_TEXTSIZE 163840
 typedef struct {
 	qboolean initialized;
-
 	short text[CON_TEXTSIZE];
 	int current;		// line where next message will be printed
-	int x;				// offset in current line for next print
+	int x; 				// offset in current line for next print
 	int display;		// bottom of console displays this line
 	int linewidth;		// characters across screen
 	int totallines;		// total lines in console scrollback
 	float xadjust;		// for wide aspect screens
 	float displayFrac;	// aproaches finalFrac at scr_conspeed
-	float finalFrac;		// 0.0 to 1.0 lines of console to display
+	float finalFrac;	// 0.0 to 1.0 lines of console to display
 	int vislines;		// in scanlines
-
 	vec4_t color;
 } console_t;
 
 console_t con;
+
 cvar_t *con_conspeed;
 
-#define DEFAULT_CONSOLE_WIDTH	78
-
+#define DEFAULT_CONSOLE_WIDTH 78
 
 /*
 =======================================================================================================================================
@@ -56,7 +56,8 @@ Con_ToggleConsole_f
 =======================================================================================================================================
 */
 void Con_ToggleConsole_f(void) {
-	// Can't toggle the console when it's the only thing available
+
+	// can't toggle the console when it's the only thing available
 	if (clc.state == CA_DISCONNECTED && Key_GetCatcher() == KEYCATCH_CONSOLE) {
 		return;
 	}
@@ -89,7 +90,7 @@ void Con_Clear_f(void) {
 		con.text[i] = (ColorIndex(COLOR_WHITE) << 8)|' ';
 	}
 
-	Con_Bottom();		// go to end
+	Con_Bottom(); // go to end
 }
 
 /*
@@ -108,7 +109,7 @@ void Con_Dump_f(void) {
 	char filename[MAX_QPATH];
 
 	if (Cmd_Argc() != 2) {
-		Com_Printf("usage: condump <filename>\n");
+		Com_Printf("usage : condump < filename > \n");
 		return;
 	}
 
@@ -127,10 +128,11 @@ void Con_Dump_f(void) {
 	for (l = con.current - con.totallines + 1; l <= con.current; l++) {
 		line = con.text + (l%con.totallines) * con.linewidth;
 
-		for (x = 0; x < con.linewidth; x++)
+		for (x = 0; x < con.linewidth; x++) {
 			if ((line[x] & 0xff) != ' ') {
 				break;
 			}
+		}
 
 		if (x != con.linewidth) {
 			break;
@@ -199,7 +201,6 @@ void Con_CheckResize(void) {
 	}
 
 	if (width < 1) { // video hasn't been initialized yet
-	
 		width = DEFAULT_CONSOLE_WIDTH;
 		con.linewidth = width;
 		con.totallines = CON_TEXTSIZE / con.linewidth;
@@ -317,17 +318,18 @@ void Con_Linefeed(qboolean skipnotify) {
 =======================================================================================================================================
 CL_ConsolePrint
 
-Handles cursor positioning, line wrapping, etc. All console printing must go through this in order to be logged to disk.
+Handles cursor positioning, line wrapping, etc.
+All console printing must go through this in order to be logged to disk.
 If no console is visible, the text will appear at the top of the game window.
 =======================================================================================================================================
 */
-void CL_ConsolePrint(char *txt) {
+void CL_ConsolePrint(const char *txt) {
 	int y, l;
 	unsigned char c;
 	unsigned short color;
-	qboolean skipnotify = qfalse;
+	qboolean skipnotify = qfalse; // nERVE - SMF
 
-	// TTimo - prefix for text that shows up in console but not in notify
+	// tTimo - prefix for text that shows up in console but not in notify
 	// backported from RTCW
 	if (!Q_strncmp(txt, "[skipnotify]", 12)) {
 		skipnotify = qtrue;
@@ -350,12 +352,13 @@ void CL_ConsolePrint(char *txt) {
 		// feed the text to cgame
 		Cmd_TokenizeString(txt);
 		CL_GameConsoleText();
+
 		Cmd_RestoreCmdContext();
 	}
 
 	color = ColorIndex(COLOR_WHITE);
 
-	while ((c = *((unsigned char *)txt)) != 0) {
+	while ((c = * ((unsigned char *) txt)) != 0) {
 		if (Q_IsColorString(txt)) {
 			color = ColorIndex(*(txt + 1));
 			txt += 2;
@@ -409,7 +412,7 @@ void CL_ConsolePrint(char *txt) {
 =======================================================================================================================================
 Con_DrawInput
 
-Draw the editline after a ] prompt.
+Draw the editline after a] prompt.
 =======================================================================================================================================
 */
 void Con_DrawInput(void) {
@@ -441,7 +444,7 @@ void Con_DrawSolidConsole(float frac) {
 	short *text;
 	int row;
 	int lines;
-//	qhandle_t conShader;
+// 	qhandle_t conShader;
 	int currentColor;
 	vec4_t color;
 
@@ -472,7 +475,6 @@ void Con_DrawSolidConsole(float frac) {
 	color[3] = 1;
 	SCR_FillRect(0, y, SCREEN_WIDTH, 2, color);
 	// draw the version number
-
 	re.SetColor(g_color_table[ColorIndex(COLOR_RED)]);
 
 	i = strlen(Q3_VERSION);
@@ -482,8 +484,7 @@ void Con_DrawSolidConsole(float frac) {
 	}
 	// draw the text
 	con.vislines = lines;
-	rows = (lines - SMALLCHAR_HEIGHT) / SMALLCHAR_HEIGHT;		// rows of text to draw
-
+	rows = (lines - SMALLCHAR_HEIGHT) / SMALLCHAR_HEIGHT; // rows of text to draw
 	y = lines - (SMALLCHAR_HEIGHT * 3);
 	// draw from the bottom up
 	if (con.display != con.current) {
@@ -540,7 +541,7 @@ void Con_DrawSolidConsole(float frac) {
 
 /*
 =======================================================================================================================================
-Con_DrawConsole
+Con_DrawConsole.
 =======================================================================================================================================
 */
 void Con_DrawConsole(void) {
@@ -549,7 +550,7 @@ void Con_DrawConsole(void) {
 	Con_CheckResize();
 	// if disconnected, render console full screen
 	if (clc.state == CA_DISCONNECTED) {
-		if (!(Key_GetCatcher() & (KEYCATCH_UI|KEYCATCH_CGAME))) {
+		if (!(Key_GetCatcher() &(KEYCATCH_UI|KEYCATCH_CGAME))) {
 			Con_DrawSolidConsole(1.0);
 			return;
 		}
@@ -559,7 +560,7 @@ void Con_DrawConsole(void) {
 		Con_DrawSolidConsole(con.displayFrac);
 	}
 
-	if (Key_GetCatcher() & (KEYCATCH_UI|KEYCATCH_CGAME)) {
+	if (Key_GetCatcher() &(KEYCATCH_UI|KEYCATCH_CGAME)) {
 		return;
 	}
 }
@@ -601,6 +602,7 @@ Con_PageUp
 =======================================================================================================================================
 */
 void Con_PageUp(void) {
+
 	con.display -= 2;
 
 	if (con.current - con.display >= con.totallines) {
@@ -614,6 +616,7 @@ Con_PageDown
 =======================================================================================================================================
 */
 void Con_PageDown(void) {
+
 	con.display += 2;
 
 	if (con.display > con.current) {
@@ -627,6 +630,7 @@ Con_Top
 =======================================================================================================================================
 */
 void Con_Top(void) {
+
 	con.display = con.totallines;
 
 	if (con.current - con.display >= con.totallines) {
@@ -656,6 +660,7 @@ void Con_Close(void) {
 
 	Field_Clear(&g_consoleField);
 	Key_SetCatcher(Key_GetCatcher() & ~KEYCATCH_CONSOLE);
+
 	con.finalFrac = 0; // none visible
 	con.displayFrac = 0;
 }

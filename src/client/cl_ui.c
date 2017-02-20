@@ -1,18 +1,23 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2005 Id Software, Inc.
-Copyright (C) 2000 - 2013 Darklegion Development
+Copyright(C) 1999 - 2005 Id Software, Inc.
+Copyright(C) 2000 - 2013 Darklegion Development
 
-This file is part of Tremulous source code.
+This file is part of Tremulous.
 
-Tremulous source code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+Tremulous is free software; you can redistribute it
+and / or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 2 of the License, 
+or(at your option) any later version.
 
-Tremulous source code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Tremulous is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Tremulous source code; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+You should have received a copy of the GNU General Public License
+along with Tremulous; if not, write to the Free Software
+Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
 =======================================================================================================================================
 */
 
@@ -29,11 +34,9 @@ static void GetClientState(uiClientState_t *state) {
 
 	state->connectPacketCount = clc.connectPacketCount;
 	state->connState = clc.state;
-
 	Q_strncpyz(state->servername, clc.servername, sizeof(state->servername));
 	Q_strncpyz(state->updateInfoString, cls.updateInfoString, sizeof(state->updateInfoString));
 	Q_strncpyz(state->messageString, clc.serverMessage, sizeof(state->messageString));
-
 	state->clientNum = cl.snap.ps.clientNum;
 }
 
@@ -45,7 +48,6 @@ LAN_LoadCachedServers
 void LAN_LoadCachedServers(void) {
 	int size;
 	fileHandle_t fileIn;
-
 	cls.numglobalservers = cls.numfavoriteservers = 0;
 	cls.numGlobalServerAddresses = 0;
 
@@ -78,9 +80,7 @@ void LAN_SaveServersToCache(void) {
 
 	FS_Write(&cls.numglobalservers, sizeof(int), fileOut);
 	FS_Write(&cls.numfavoriteservers, sizeof(int), fileOut);
-
 	size = sizeof(cls.globalServers) + sizeof(cls.favoriteServers);
-
 	FS_Write(&size, sizeof(int), fileOut);
 	FS_Write(&cls.globalServers, sizeof(cls.globalServers), fileOut);
 	FS_Write(&cls.favoriteServers, sizeof(cls.favoriteServers), fileOut);
@@ -101,12 +101,12 @@ qboolean GetNews(qboolean begin) {
 	if (begin) { // if not already using curl, start the download
 		if (!clc.downloadCURLM) {
 			if (!CL_cURL_Init()) {
-				Cvar_Set("cl_newsString", "^1Error: Could not load cURL library");
+				Cvar_Set("cl_newsString", "^1Error : Could not load cURL library");
 				return qtrue;
 			}
 
 			clc.activeCURLNotGameRelated = qtrue;
-			CL_cURL_BeginDownload("news.dat", "http:// tremulous.net/clientnews.txt");
+			CL_cURL_BeginDownload("news.dat", "http:// grangerhub.com / wp - content / uploads / clientnews.txt");
 			return qfalse;
 		}
 	}
@@ -144,7 +144,6 @@ LAN_ResetPings
 static void LAN_ResetPings(int source) {
 	int count, i;
 	serverInfo_t *servers = NULL;
-
 	count = 0;
 
 	switch (source) {
@@ -293,7 +292,7 @@ static int LAN_GetServerCount(int source) {
 
 /*
 =======================================================================================================================================
-LAN_GetServerAddressString
+LAN_GetLocalServerAddressString
 =======================================================================================================================================
 */
 static void LAN_GetServerAddressString(int source, int n, char *buf, int buflen) {
@@ -334,7 +333,6 @@ LAN_GetServerInfo
 static void LAN_GetServerInfo(int source, int n, char *buf, int buflen) {
 	char info[MAX_STRING_CHARS];
 	serverInfo_t *server = NULL;
-
 	info[0] = '\0';
 
 	switch (source) {
@@ -486,9 +484,8 @@ static int LAN_CompareServers(int source, int sortKey, int sortDir, int s1, int 
 				int i;
 
 				for (p = server1->hostName, i = 0; *p != '\0'; p++) {
-					if (Q_isalpha(*p)) {
+					if (Q_isalpha(*p))
 						hostName1[i++] = *p;
-					}
 				}
 
 				hostName1[i] = '\0';
@@ -600,7 +597,7 @@ static void LAN_MarkServerVisible(int source, int n, qboolean visible) {
 				server = &cls.localServers[0];
 				break;
 			case AS_MPLAYER:
-			case AS_GLOBAL:
+			case AS_GLOBAL :
 				server = &cls.globalServers[0];
 				count = MAX_GLOBAL_SERVERS;
 				break;
@@ -691,11 +688,11 @@ int LAN_GetServerStatus(char *serverAddress, char *serverStatus, int maxLen) {
 
 /*
 =======================================================================================================================================
-CL_GetGlconfig
+CL_GetGlConfig
 =======================================================================================================================================
 */
 static void CL_GetGlconfig(glconfig_t *config) {
- *config = cls.glconfig;
+	*config = cls.glconfig;
 }
 
 /*
@@ -895,7 +892,7 @@ intptr_t CL_UISystemCalls(intptr_t *args) {
 		case UI_KEY_GETCATCHER:
 			return Key_GetCatcher();
 		case UI_KEY_SETCATCHER:
-			// Don't allow the ui module to close the console
+			// don't allow the ui module to close the console
 			Key_SetCatcher(args[1]|(Key_GetCatcher() & KEYCATCH_CONSOLE));
 			return 0;
 		case UI_GETCLIPBOARDDATA:
@@ -1020,7 +1017,7 @@ intptr_t CL_UISystemCalls(intptr_t *args) {
 			re.RemapShader(VMA(1), VMA(2), VMA(3));
 			return 0;
 		default:
-			Com_Error(ERR_DROP, "Bad UI system trap: %ld", (long int)args[0]);
+			Com_Error(ERR_DROP, "Bad UI system trap : %ld", (long int) args[0]);
 	}
 
 	return 0;
@@ -1032,7 +1029,6 @@ CL_ShutdownUI
 =======================================================================================================================================
 */
 void CL_ShutdownUI(void) {
-
 	Key_SetCatcher(Key_GetCatcher() & ~KEYCATCH_UI);
 	cls.uiStarted = qfalse;
 
@@ -1054,45 +1050,35 @@ CL_InitUI
 
 void CL_InitUI(void) {
 	int v;
-	vmInterpret_t interpret;
-
-	// load the dll or bytecode
-	interpret = Cvar_VariableValue("vm_ui");
+	vmInterpret_t i = Cvar_VariableValue("vm_ui");
 
 	if (cl_connectedToPureServer) {
-		// if sv_pure is set we only allow qvms to be loaded
-		if (interpret != VMI_COMPILED && interpret != VMI_BYTECODE) {
-			interpret = VMI_COMPILED;
+		if (i != VMI_COMPILED && i != VMI_BYTECODE) {
+			i = VMI_COMPILED;
 		}
 	}
 
-	uivm = VM_Create("ui", CL_UISystemCalls, interpret);
+	uivm = VM_Create("ui", CL_UISystemCalls, i);
 
 	if (!uivm) {
-		Com_Printf("Failed to find a valid UI vm. The following paths were searched:\n");
-		Cmd_ExecuteString("path  / \n");
-		Com_Error(ERR_FATAL, "VM_Create on UI failed");
-	}
-	// sanity check
-	v = VM_Call(uivm, UI_GETAPIVERSION);
-
-	if (v == UI_OLD_API_VERSION) {
-		// init for this gamestate
-		VM_Call(uivm, UI_INIT, (clc.state >= CA_AUTHORIZING && clc.state < CA_ACTIVE));
-	} else if (v != UI_API_VERSION) {
-		// Free uivm now, so UI_SHUTDOWN doesn't get called later.
-		VM_Free(uivm);
-		uivm = NULL;
-
-		Com_Error(ERR_DROP, "User Interface is version %d, expected %d", v, UI_API_VERSION);
 		cls.uiStarted = qfalse;
-	} else {
-		// init for this gamestate
-		VM_Call(uivm, UI_INIT, (clc.state >= CA_AUTHORIZING && clc.state < CA_ACTIVE));
-		// show where the ui folder was loaded from
-		Cmd_ExecuteString("which ui/\n");
+		Com_Error(ERR_DROP, "VM_Create on UI failed");
+		return; // CANT GET HERE
 	}
 
+	switch ((v = VM_Call(uivm, UI_GETAPIVERSION))) {
+		case UI_API_VERSION:
+		case UI_OLD_API_VERSION: // FIXIT - L: REMOVE ME
+			VM_Call(uivm, UI_INIT, (clc.state >= CA_AUTHORIZING && clc.state < CA_ACTIVE));
+			break;
+		default:
+			VM_Free(uivm); // do now, avoid UI_SHUTDOWN later.
+			uivm = NULL;
+			cls.uiStarted = qfalse;
+			Com_Error(ERR_DROP, "User Interface is version %d, expected %d", v, UI_API_VERSION);
+			return; // CANT GET HERE
+	};
+	// FIXIT - L : Get rid of this.
 	clc.newsString[0] = '\0';
 }
 
@@ -1100,7 +1086,7 @@ void CL_InitUI(void) {
 =======================================================================================================================================
 UI_GameCommand
 
-See if the current console command is claimed by the ui
+See if the current console command is claimed by the ui.
 =======================================================================================================================================
 */
 qboolean UI_GameCommand(void) {

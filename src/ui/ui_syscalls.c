@@ -1,23 +1,23 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2005 Id Software, Inc.
-Copyright (C) 2000 - 2013 Darklegion Development
+Copyright(C) 1999 - 2005 Id Software, Inc.
+Copyright(C) 2000 - 2013 Darklegion Development
  
 This file is part of Tremulous.
  
 Tremulous is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
+and / or modify it under the terms of the GNU General Public License as
 published by the Free Software Foundation; either version 2 of the License, 
-or (at your option) any later version.
+or(at your option) any later version.
  
 Tremulous is distributed in the hope that it will be
 useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
  
 You should have received a copy of the GNU General Public License
 along with Tremulous; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
 =======================================================================================================================================
 */
 
@@ -34,8 +34,8 @@ Q_EXPORT void dllEntry(intptr_t(QDECL *syscallptr)(intptr_t arg, ...)) {
 
 int PASSFLOAT(float x) {
 	float floatTemp;
-  floatTemp = x;
-  return * (int *)& floatTemp;
+	floatTemp = x;
+	return * (int *) & floatTemp;
 }
 
 void trap_Print(const char *string) {
@@ -44,7 +44,7 @@ void trap_Print(const char *string) {
 
 void trap_Error(const char *string) {
 	syscall(UI_ERROR, string);
- // shut up GCC warning about returning functions, because we know better
+	// shut up GCC warning about returning functions, because we know better
   exit(1);
 }
 
@@ -67,7 +67,7 @@ void trap_Cvar_Set(const char *var_name, const char *value) {
 float trap_Cvar_VariableValue(const char *var_name) {
 	int temp;
   temp = syscall(UI_CVAR_VARIABLEVALUE, var_name);
-  return (*(float *)& temp);
+	return (*(float *) & temp);
 }
 
 void trap_Cvar_VariableStringBuffer(const char *var_name, char *buffer, int bufsize) {
@@ -358,29 +358,26 @@ int trap_RealTime(qtime_t *qtime) {
 	return syscall(UI_REAL_TIME, qtime);
 }
 
-// this returns a handle. arg0 is the name in the format "idlogo.roq", set arg1 to NULL, alteredstates to qfalse(do not alter gamestate)
+// this returns a handle.  arg0 is the name in the format "idlogo.roq", set arg1 to NULL, alteredstates to qfalse(do not alter gamestate)
 int trap_CIN_PlayCinematic(const char *arg0, int xpos, int ypos, int width, int height, int bits) {
 	return syscall(UI_CIN_PLAYCINEMATIC, arg0, xpos, ypos, width, height, bits);
 }
 
-// stops playing the cinematic and ends it. should always return FMV_EOF
+// stops playing the cinematic and ends it.  should always return FMV_EOF
 // cinematics must be stopped in reverse order of when they are started
 e_status trap_CIN_StopCinematic(int handle) {
 	return syscall(UI_CIN_STOPCINEMATIC, handle);
 }
 
-
-// will run a frame of the cinematic but will not draw it. Will return FMV_EOF if the end of the cinematic has been reached.
+// will run a frame of the cinematic but will not draw it.  Will return FMV_EOF if the end of the cinematic has been reached.
 e_status trap_CIN_RunCinematic(int handle) {
 	return syscall(UI_CIN_RUNCINEMATIC, handle);
 }
-
 
 // draws the current frame
 void trap_CIN_DrawCinematic(int handle) {
 	syscall(UI_CIN_DRAWCINEMATIC, handle);
 }
-
 
 // allows you to resize the animation dynamically
 void trap_CIN_SetExtents(int handle, int x, int y, int w, int h) {

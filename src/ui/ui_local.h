@@ -1,23 +1,23 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2005 Id Software, Inc.
-Copyright (C) 2000 - 2013 Darklegion Development
+Copyright(C) 1999 - 2005 Id Software, Inc.
+Copyright(C) 2000 - 2013 Darklegion Development
  
 This file is part of Tremulous.
  
 Tremulous is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
+and / or modify it under the terms of the GNU General Public License as
 published by the Free Software Foundation; either version 2 of the License, 
-or (at your option) any later version.
+or(at your option) any later version.
  
 Tremulous is distributed in the hope that it will be
 useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
  
 You should have received a copy of the GNU General Public License
 along with Tremulous; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
 =======================================================================================================================================
 */
 
@@ -31,9 +31,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../game/bg_public.h"
 #include "ui_shared.h"
 
-
 // ui_main.c
-
 void UI_Report(void);
 void UI_Load(void);
 void UI_LoadMenus(const char *menuFile, qboolean reset);
@@ -42,11 +40,9 @@ void UI_ClearScores(void);
 void UI_LoadArenas(void);
 void UI_ServerInfo(void);
 void UI_UpdateNews(qboolean);
-
 void UI_RegisterCvars(void);
 void UI_UpdateCvars(void);
 void UI_DrawConnectScreen(qboolean overlay);
-
 // new ui stuff
 #define MAX_MAPS 128
 #define MAX_PINGREQUESTS 32
@@ -64,29 +60,25 @@ void UI_DrawConnectScreen(qboolean overlay);
 #define MAX_RESOLUTIONS 32
 
 typedef struct {
-  const char *mapName;
-  const char *mapLoadName;
-  const char *imageName;
+	const char *mapName;
+	const char *mapLoadName;
+	const char *imageName;
 	int cinematic;
-  qhandle_t levelShot;
-}
-mapInfo;
+	qhandle_t levelShot;
+} mapInfo;
 
 typedef struct serverFilter_s {
-  const char *description;
-  const char *basedir;
-}
-serverFilter_t;
+	const char *description;
+	const char *basedir;
+} serverFilter_t;
 
 typedef struct {
-  char adrstr[MAX_ADDRESSLENGTH];
+	char adrstr[MAX_ADDRESSLENGTH];
 	int start;
-}
-pinglist_t;
-
+} pinglist_t;
 
 typedef struct serverStatus_s {
-  pinglist_t pingList[MAX_PINGREQUESTS];
+	pinglist_t pingList[MAX_PINGREQUESTS];
 	int numqueriedservers;
 	int currentping;
 	int nextpingtime;
@@ -95,16 +87,16 @@ typedef struct serverStatus_s {
 	int numServers;
 	int sortKey;
 	int sortDir;
-  qboolean sorted;
+	qboolean sorted;
 	int lastCount;
-  qboolean refreshActive;
+	qboolean refreshActive;
 	int currentServer;
 	int displayServers[MAX_DISPLAY_SERVERS];
 	int numDisplayServers;
 	int numPlayersOnServers;
 	int nextDisplayRefresh;
 	int nextSortTime;
-  qhandle_t currentServerPreview;
+	qhandle_t currentServerPreview;
 	int currentServerCinematic;
 	int motdLen;
 	int motdWidth;
@@ -112,82 +104,72 @@ typedef struct serverStatus_s {
 	int motdPaintX2;
 	int motdOffset;
 	int motdTime;
-  char motd[MAX_STRING_CHARS];
-}
-serverStatus_t;
-
+	char motd[MAX_STRING_CHARS];
+} serverStatus_t;
 
 typedef struct {
-  char adrstr[MAX_ADDRESSLENGTH];
-  char name[MAX_ADDRESSLENGTH];
+	char adrstr[MAX_ADDRESSLENGTH];
+	char name[MAX_ADDRESSLENGTH];
 	int startTime;
 	int serverNum;
-  qboolean valid;
-}
-pendingServer_t;
+	qboolean valid;
+} pendingServer_t;
 
 typedef struct {
- int num;
-  pendingServer_t server[MAX_SERVERSTATUSREQUESTS];
-}
-pendingServerStatus_t;
+	int num;
+	pendingServer_t server[MAX_SERVERSTATUSREQUESTS];
+} pendingServerStatus_t;
 
 typedef struct {
-  char address[MAX_ADDRESSLENGTH];
-  char *lines[MAX_SERVERSTATUS_LINES][4];
-  char text[MAX_SERVERSTATUS_TEXT];
-  char pings[MAX_CLIENTS * 3];
+	char address[MAX_ADDRESSLENGTH];
+	char *lines[MAX_SERVERSTATUS_LINES][4];
+	char text[MAX_SERVERSTATUS_TEXT];
+	char pings[MAX_CLIENTS * 3];
 	int numLines;
-}
-serverStatusInfo_t;
+} serverStatusInfo_t;
 
 typedef struct {
-  char text[MAX_NEWS_LINES][MAX_NEWS_LINEWIDTH];
+	char text[MAX_NEWS_LINES][MAX_NEWS_LINEWIDTH];
 	int numLines;
-  qboolean refreshActive;
+	qboolean refreshActive;
 	int refreshtime;
-}
-newsInfo_t;
+} newsInfo_t;
 
 typedef struct {
-  const char *modName;
-  const char *modDescr;
-}
-modInfo_t;
+	const char *modName;
+	const char *modDescr;
+} modInfo_t;
 
 typedef enum {
-  INFOTYPE_TEXT, 
-  INFOTYPE_BUILDABLE, 
-  INFOTYPE_CLASS, 
-  INFOTYPE_WEAPON, 
-  INFOTYPE_UPGRADE
+	INFOTYPE_TEXT,
+	INFOTYPE_BUILDABLE,
+	INFOTYPE_CLASS,
+	INFOTYPE_WEAPON,
+	INFOTYPE_UPGRADE,
+	INFOTYPE_VOICECMD
 } infoType_t;
 
 typedef struct {
-  const char *text;
-  const char *cmd;
-  infoType_t type;
-  union
-  {
-    const char *text;
-    buildable_t buildable;
-    class_t pclass;
-    weapon_t weapon;
-    upgrade_t upgrade;
-} v;
-}
-menuItem_t;
+	const char *text;
+	const char *cmd;
+	infoType_t type;
+	union {
+		const char *text;
+		buildable_t buildable;
+		class_t pclass;
+		weapon_t weapon;
+		upgrade_t upgrade;
+	} v;
+} menuItem_t;
 
 typedef struct {
- int w;
+	int w;
 	int h;
-}
-resolution_t;
+} resolution_t;
 
 typedef struct {
-  displayContextDef_t uiDC;
-
- int playerCount;
+	displayContextDef_t uiDC;
+	int playerCount;
 	int myTeamCount;
 	int teamPlayerIndex;
 	int playerRefresh;
@@ -195,98 +177,83 @@ typedef struct {
 	int playerNumber;
 	int myPlayerIndex;
 	int ignoreIndex;
-  char playerNames[MAX_CLIENTS][MAX_NAME_LENGTH];
-  char rawPlayerNames[MAX_CLIENTS][MAX_NAME_LENGTH];
-  char teamNames[MAX_CLIENTS][MAX_NAME_LENGTH];
-  char rawTeamNames[MAX_CLIENTS][MAX_NAME_LENGTH];
+	char playerNames[MAX_CLIENTS][MAX_NAME_LENGTH];
+	char rawPlayerNames[MAX_CLIENTS][MAX_NAME_LENGTH];
+	char teamNames[MAX_CLIENTS][MAX_NAME_LENGTH];
+	char rawTeamNames[MAX_CLIENTS][MAX_NAME_LENGTH];
 	int clientNums[MAX_CLIENTS];
 	int teamClientNums[MAX_CLIENTS];
-  clientList_t ignoreList[MAX_CLIENTS];
-
- int mapCount;
-  mapInfo mapList[MAX_MAPS];
-
-  modInfo_t modList[MAX_MODS];
+	clientList_t ignoreList[MAX_CLIENTS];
+	int mapCount;
+	mapInfo mapList[MAX_MAPS];
+	modInfo_t modList[MAX_MODS];
 	int modCount;
 	int modIndex;
-
-  const char *demoList[MAX_DEMOS];
+	const char *demoList[MAX_DEMOS];
 	int demoCount;
 	int demoIndex;
-
-  const char *movieList[MAX_MOVIES];
+	const char *movieList[MAX_MOVIES];
 	int movieCount;
 	int movieIndex;
 	int previewMovie;
-
-  menuItem_t teamList[4];
+	menuItem_t teamList[4];
 	int teamCount;
 	int teamIndex;
-
-  menuItem_t alienClassList[3];
+	menuItem_t alienClassList[3];
 	int alienClassCount;
 	int alienClassIndex;
-
-  menuItem_t humanItemList[3];
+	menuItem_t humanItemList[3];
 	int humanItemCount;
 	int humanItemIndex;
-
-  menuItem_t humanArmouryBuyList[32];
+	menuItem_t humanArmouryBuyList[32];
 	int humanArmouryBuyCount;
 	int humanArmouryBuyIndex;
-
-  menuItem_t humanArmourySellList[32];
+	menuItem_t humanArmourySellList[32];
 	int humanArmourySellCount;
 	int humanArmourySellIndex;
-
-  menuItem_t alienUpgradeList[16];
+	menuItem_t alienUpgradeList[16];
 	int alienUpgradeCount;
 	int alienUpgradeIndex;
-
-  menuItem_t alienBuildList[32];
+	menuItem_t alienBuildList[32];
 	int alienBuildCount;
 	int alienBuildIndex;
-
-  menuItem_t humanBuildList[32];
+	menuItem_t humanBuildList[32];
 	int humanBuildCount;
 	int humanBuildIndex;
-
-  menuItem_t helpList[MAX_HELP_INFOPANES];
+	menuItem_t voiceCmdList[32];
+	int voiceCmdCount;
+	int voiceCmdIndex;
+	menuItem_t helpList[MAX_HELP_INFOPANES];
 	int helpCount;
 	int helpIndex;
-
- int weapons;
+	int weapons;
 	int upgrades;
-
-  serverStatus_t serverStatus;
-
- // for showing the game news window
-  newsInfo_t newsInfo;
-
- // for the showing the status of a server
-  char serverStatusAddress[MAX_ADDRESSLENGTH];
-  serverStatusInfo_t serverStatusInfo;
+	serverStatus_t serverStatus;
+	// for showing the game news window
+	newsInfo_t newsInfo;
+	// for the showing the status of a server
+	char serverStatusAddress[MAX_ADDRESSLENGTH];
+	serverStatusInfo_t serverStatusInfo;
 	int nextServerStatusRefresh;
-
- // to retrieve the status of server to find a player
-  pendingServerStatus_t pendingServerStatus;
-  char findPlayerName[MAX_STRING_CHARS];
-  char foundPlayerServerAddresses[MAX_FOUNDPLAYER_SERVERS][MAX_ADDRESSLENGTH];
-  char foundPlayerServerNames[MAX_FOUNDPLAYER_SERVERS][MAX_ADDRESSLENGTH];
+	// to retrieve the status of server to find a player
+	pendingServerStatus_t pendingServerStatus;
+	char findPlayerName[MAX_STRING_CHARS];
+	char foundPlayerServerAddresses[MAX_FOUNDPLAYER_SERVERS][MAX_ADDRESSLENGTH];
+	char foundPlayerServerNames[MAX_FOUNDPLAYER_SERVERS][MAX_ADDRESSLENGTH];
 	int currentFoundPlayerServer;
 	int numFoundPlayerServers;
 	int nextFindPlayerRefresh;
-
-  resolution_t resolutions[MAX_RESOLUTIONS];
+	resolution_t resolutions[MAX_RESOLUTIONS];
 	int numResolutions;
 	int resolutionIndex;
+	voice_t *voices;
+	qboolean inGameLoad;
+	qboolean chatTeam;
+	qboolean voiceCmd;
+} uiInfo_t;
 
-  qboolean inGameLoad;
-
-  qboolean chatTeam;
-}
-uiInfo_t;
 extern uiInfo_t uiInfo;
+
 qboolean UI_ConsoleCommand(int realTime);
 char *UI_Cvar_VariableString(const char *var_name);
 void UI_SetColor(const float *rgba);
@@ -294,10 +261,7 @@ void UI_AdjustFrom640(float *x, float *y, float *w, float *h);
 void UI_Refresh(int time);
 void UI_DrawHandlePic(float x, float y, float w, float h, qhandle_t hShader);
 void UI_FillRect(float x, float y, float width, float height, const float *color);
-
-
 // ui_syscalls.c
-
 void trap_Print(const char *string);
 void trap_Error(const char *string) __attribute__((noreturn));
 int trap_Milliseconds(void);
@@ -372,13 +336,11 @@ void trap_R_RegisterFont(const char *pFontname, int pointSize, fontInfo_t *font)
 void trap_S_StopBackgroundTrack(void);
 void trap_S_StartBackgroundTrack(const char *intro, const char *loop);
 int trap_CIN_PlayCinematic(const char *arg0, int xpos, int ypos, int width, int height, int bits);
-e_status  trap_CIN_StopCinematic(int handle);
-e_status  trap_CIN_RunCinematic(int handle);
+e_status trap_CIN_StopCinematic(int handle);
+e_status trap_CIN_RunCinematic(int handle);
 void trap_CIN_DrawCinematic(int handle);
 void trap_CIN_SetExtents(int handle, int x, int y, int w, int h);
 int trap_RealTime(qtime_t *qtime);
 void trap_R_RemapShader(const char *oldShader, const char *newShader, const char *timeOffset);
-
 void trap_SetPbClStatus(int status);
-
 #endif

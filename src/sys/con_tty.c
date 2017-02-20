@@ -1,45 +1,44 @@
 /*
-=======================================================================================================================================
+===========================================================================
 Copyright (C) 1999-2005 Id Software, Inc.
-Copyright (C) 2000 - 2013 Darklegion Development
+Copyright (C) 2000-2013 Darklegion Development
 
-This file is part of Tremulous source code.
+This file is part of Tremulous.
 
-Tremulous source code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+Tremulous is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 2 of the License,
+or (at your option) any later version.
 
-Tremulous source code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Tremulous is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Tremulous source code; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
-=======================================================================================================================================
+You should have received a copy of the GNU General Public License
+along with Tremulous; if not, write to the Free Software
+Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+===========================================================================
 */
 
+/**************************************************************************************************************************************
+ TTY console routines.
+
+ NOTE: if the user is editing a line when something gets printed to the early console then it won't look good so we provide CON_Hide
+ and CON_Show to be called before and after a stdout or stderr output.
+**************************************************************************************************************************************/
 
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
 #include "sys_local.h"
-
 #ifndef DEDICATED
 #include "../client/client.h"
 #endif
-
 #include <unistd.h>
 #include <signal.h>
 #include <termios.h>
 #include <fcntl.h>
 #include <sys/time.h>
-
-/*
-=======================================================================================================================================
-tty console routines
-
-NOTE: if the user is editing a line when something gets printed to the early
-console then it won't look good so we provide CON_Hide and CON_Show to be
-called before and after a stdout or stderr output
-=======================================================================================================================================
-*/
 
 extern qboolean stdinIsATTY;
 static qboolean stdin_active;
@@ -47,7 +46,6 @@ static qboolean stdin_active;
 static qboolean ttycon_on = qfalse;
 static int ttycon_hide = 0;
 static int ttycon_show_overdue = 0;
-
 // some key codes that the terminal may be using, initialised on start up
 static int TTY_erase;
 static int TTY_eof;
@@ -63,7 +61,6 @@ static int hist_current = -1, hist_count = 0;
 #else
 #define TTY_CONSOLE_PROMPT "]"
 #endif
-
 /*
 =======================================================================================================================================
 CON_FlushIn
@@ -75,7 +72,7 @@ FIXME relevant?
 static void CON_FlushIn(void) {
 	char key;
 
-	while (read(STDIN_FILENO, &key, 1)!= -1);
+	while (read(STDIN_FILENO, &key, 1) != -1);
 }
 
 /*
@@ -215,6 +212,7 @@ Hist_Prev
 */
 field_t *Hist_Prev(void) {
 	int hist_prev;
+
 	assert(hist_count <= CON_HISTORY);
 	assert(hist_count >= 0);
 	assert(hist_current >= -1);
@@ -235,6 +233,7 @@ Hist_Next
 =======================================================================================================================================
 */
 field_t *Hist_Next(void) {
+
 	assert(hist_count <= CON_HISTORY);
 	assert(hist_count >= 0);
 	assert(hist_current >= -1);
@@ -293,7 +292,6 @@ void CON_Init(void) {
 	TTY_erase = TTY_tc.c_cc[VERASE];
 	TTY_eof = TTY_tc.c_cc[VEOF];
 	tc = TTY_tc;
-
 	/*
 	ECHO: don't echo input characters
 	ICANON: enable canonical mode. This enables the special
@@ -301,19 +299,21 @@ void CON_Init(void) {
 	STATUS, and WERASE, and buffers by lines.
 	ISIG: when any of the characters INTR, QUIT, SUSP, or
 	DSUSP are received, generate the corresponding signal
- */
+	*/
 	tc.c_lflag &= ~(ECHO|ICANON);
-
 	/*
 	ISTRIP strip off bit 8
 	INPCK enable input parity checking
- */
+	*/
 	tc.c_iflag &= ~(ISTRIP|INPCK);
 	tc.c_cc[VMIN] = 1;
 	tc.c_cc[VTIME] = 0;
+
 	tcsetattr(STDIN_FILENO, TCSADRAIN, &tc);
+
 	ttycon_on = qtrue;
 	ttycon_hide = 1; // Mark as hidden, so prompt is shown in CON_Show
+
 	CON_Show();
 }
 
@@ -364,7 +364,6 @@ char *CON_Input(void) {
 					} else {
 						text[0] = '\0';
 					}
-
 					// push it in history
 					Hist_Add(&TTY_con);
 					CON_Hide();
@@ -439,8 +438,9 @@ char *CON_Input(void) {
 				return NULL;
 			}
 
-			if (TTY_con.cursor >= sizeof(text) - 1)
+			if (TTY_con.cursor >= sizeof(text) - 1) {
 				return NULL;
+			}
 			// push regular character
 			TTY_con.buffer[TTY_con.cursor] = key;
 			TTY_con.cursor++; // next char will always be '\0'
@@ -459,8 +459,9 @@ char *CON_Input(void) {
 		timeout.tv_sec = 0;
 		timeout.tv_usec = 0;
 
-		if (select(STDIN_FILENO + 1, &fdset, NULL, NULL, &timeout) == -1 || !FD_ISSET(STDIN_FILENO, &fdset))
+		if (select(STDIN_FILENO + 1, &fdset, NULL, NULL, &timeout) == -1 || !FD_ISSET(STDIN_FILENO, &fdset)) {
 			return NULL;
+		}
 
 		len = read(STDIN_FILENO, text, sizeof(text));
 
@@ -469,9 +470,11 @@ char *CON_Input(void) {
 			return NULL;
 		}
 
-		if (len < 1)
+		if (len < 1) {
 			return NULL;
-		text[len - 1] = 0;   // rip off the /n and terminate
+		}
+
+		text[len - 1] = 0; // rip off the /n and terminate
 
 		return text;
 	}
@@ -492,10 +495,11 @@ void CON_Print(const char *msg) {
 
 	CON_Hide();
 
-	if (com_ansiColor && com_ansiColor->integer)
+	if (com_ansiColor && com_ansiColor->integer) {
 		Sys_AnsiColorPrint(msg);
 	} else {
 		fputs(msg, stderr);
+	}
 
 	if (!ttycon_on) {
 		// CON_Hide didn't do anything.

@@ -1,82 +1,78 @@
 /*
-=======================================================================================================================================
-Copyright (C) 2008 Przemyslaw Iskra < sparky@pld - linux.org>
-Copyright (C) 2000 - 2013 Darklegion Development
+===========================================================================
+Copyright (C) 2008 Przemyslaw Iskra <sparky@pld-linux.org>
+Copyright (C) 2000-2013 Darklegion Development
 
 This file is part of Tremulous.
 
 Tremulous is free software; you can redistribute it
 and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the License, 
+published by the Free Software Foundation; either version 2 of the License,
 or (at your option) any later version.
 
 Tremulous is distributed in the hope that it will be
 useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with Tremulous; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-=======================================================================================================================================
+===========================================================================
 */
 
-#include <sys/types.h> /* needed by sys/mman.h on OSX */
+#include <sys/types.h> // needed by sys/mman.h on OSX
 #include <sys/mman.h>
 #include <sys/time.h>
 #include <time.h>
 #include <stddef.h>
-
 #ifndef MAP_ANONYMOUS
 #define MAP_ANONYMOUS MAP_ANON
 #endif
-
 #include "vm_local.h"
 #include "vm_powerpc_asm.h"
 
-/*
- * VM_TIMES enables showing information about time spent inside
- * and outside generated code
- */
+// VM_TIMES enables showing information about time spent inside and outside generated code.
+
 //#define VM_TIMES
 #ifdef VM_TIMES
 #include <sys/times.h>
 static clock_t time_outside_vm = 0;
 static clock_t time_total_vm = 0;
 #endif
-
-/* exit() won't be called but use it because it is marked with noreturn */
+// exit() won't be called but use it because it is marked with noreturn
 #define DIE(reason) Com_Error(ERR_DROP, "vm_powerpc compiler error: " reason)
 
-/*
- * vm_powerpc uses large quantities of memory during compilation, 
- * Z_Malloc memory may not be enough for some big qvm files
- */
+// vm_powerpc uses large quantities of memory during compilation, Z_Malloc memory may not be enough for some big qvm files.
 
 //#define VM_SYSTEM_MALLOC
 #ifdef VM_SYSTEM_MALLOC
-static inline void *
-PPC_Malloc(size_t size) {
+/*
+=======================================================================================================================================
+PPC_Malloc
+=======================================================================================================================================
+*/
+static inline void *PPC_Malloc(size_t size) {
 	void *mem = malloc(size);
 
-	if (!mem)
+	if (!mem) {
 		DIE("Not enough memory");
+	}
 
 	return mem;
 }
+
 #define PPC_Free free
 #else
 #define PPC_Malloc Z_Malloc
 #define PPC_Free Z_Free
 #endif
-
 /*
  * optimizations:
- * - hole: bubble optimization(OP_CONST + instruction)
- * - copy: inline OP_BLOCK_COPY for lengths under 16 / 32 bytes
+ * - hole: bubble optimization (OP_CONST + instruction)
+ * - copy: inline OP_BLOCK_COPY for lengths under 16/32 bytes
  * - mask: use rlwinm instruction as dataMask
  */
-
 #ifdef __OPTIMIZE__
 #define OPTIMIZE_HOLE 1
 #define OPTIMIZE_COPY 1
@@ -86,76 +82,68 @@ PPC_Malloc(size_t size) {
 #define OPTIMIZE_COPY 0
 #define OPTIMIZE_MASK 0
 #endif
-
 /*
  * SUPPORTED TARGETS:
  * - Linux 32 bits
- *(http:// refspecs.freestandards.org/elf / elfspec_ppc.pdf)
- *  * LR at r0 + 4
- *  * Local variable space not needed
- *    ->store caller safe regs at 16 + 
+ *   (http://refspecs.freestandards.org/elf/elfspec_ppc.pdf)
+ *   * LR at r0 + 4
+ *   * Local variable space not needed
+ *     -> store caller safe regs at 16+
  *
- * - Linux 64 bits(not fully conformant)
- *(http://www.ibm.com/developerworks / linux / library / l - powasm4.html)
- *  * needs "official procedure descriptors"(only first function has one)
- *  * LR at r0 + 16
- *  * local variable space required, min 64 bytes, starts at 48
- *    ->store caller safe regs at 128 + 
+ * - Linux 64 bits (not fully conformant)
+ *   (http://www.ibm.com/developerworks/linux/library/l-powasm4.html)
+ *   * needs "official procedure descriptors" (only first function has one)
+ *   * LR at r0 + 16
+ *   * local variable space required, min 64 bytes, starts at 48
+ *     -> store caller safe regs at 128+
  *
  * - OS X 32 bits
- *(http:// developer.apple.com/documentation / DeveloperTools / Conceptual / LowLevelABI / Articles / 32bitPowerPC.html)
- *  * LR at r0 + 8
- *  * local variable space required, min 32 bytes(?), starts at 24
- *    ->store caller safe regs at 64 + 
+ *   (http://developer.apple.com/documentation/DeveloperTools/Conceptual/LowLevelABI/Articles/32bitPowerPC.html)
+ *   * LR at r0 + 8
+ *   * local variable space required, min 32 bytes (?), starts at 24
+ *     -> store caller safe regs at 64+
  *
- * - OS X 64 bits(completely untested)
- *(http:// developer.apple.com/documentation / DeveloperTools / Conceptual / LowLevelABI / Articles / 64bitPowerPC.html)
- *  * LR at r0 + 16
- *  * local variable space required, min 64 bytes(?), starts at 48
- *    ->store caller safe regs at 128 + 
+ * - OS X 64 bits (completely untested)
+ *   (http://developer.apple.com/documentation/DeveloperTools/Conceptual/LowLevelABI/Articles/64bitPowerPC.html)
+ *   * LR at r0 + 16
+ *   * local variable space required, min 64 bytes (?), starts at 48
+ *     -> store caller safe regs at 128+
  */
 
-/* Select Length - first value on 32 bits, second on 64 */
+// Select Length - first value on 32 bits, second on 64
 #ifdef __PPC64__
-#define SL(a, b)(b)
+#define SL(a, b) (b)
 #else
-#define SL(a, b)(a)
+#define SL(a, b) (a)
 #endif
-
-/* Select ABI - first for ELF, second for OS X */
+// Select ABI - first for ELF, second for OS X
 #ifdef __ELF__
-#define SA(a, b)(a)
+#define SA(a, b) (a)
 #else
-#define SA(a, b)(b)
+#define SA(a, b) (b)
 #endif
-
-#define ELF32	SL(SA(1, 0), 0)
-#define ELF64	SL(0, SA(1, 0))
-#define OSX32	SL(SA(0, 1), 0)
-#define OSX64	SL(0, SA(0, 1))
-
-/* native length load / store instructions(L stands for long) */
-#define iSTLU	SL(iSTWU, iSTDU)
-#define iSTL	SL(iSTW, iSTD)
-#define iLL	SL(iLWZ, iLD)
-#define iLLX	SL(iLWZX, iLDX)
-
-/* register length */
-#define GPRLEN	SL(4, 8)
-#define FPRLEN	(8)
-/* shift that many bits to obtain value miltiplied by GPRLEN */
-#define GPRLEN_SHIFT	SL(2, 3)
-
-/* Link register position */
-#define STACK_LR	SL(SA(4, 8), 16)
-/* register save position */
-#define STACK_SAVE	SL(SA(16, 64), 128)
-/* temporary space, for float < ->int exchange */
-#define STACK_TEMP	SL(SA(8, 24), 48)
-/* red zone temporary space, used instead of STACK_TEMP if stack isn't
- * prepared properly */
-#define STACK_RTEMP	(-16)
-
+#define ELF32 SL(SA(1, 0), 0)
+#define ELF64 SL(0, SA(1, 0))
+#define OSX32 SL(SA(0, 1), 0)
+#define OSX64 SL(0, SA(0, 1))
+// native length load/store instructions (L stands for long)
+#define iSTLU SL(iSTWU, iSTDU)
+#define iSTL SL(iSTW, iSTD)
+#define iLL SL(iLWZ, iLD)
+#define iLLX SL(iLWZX, iLDX)
+// register length
+#define GPRLEN SL(4, 8)
+#define FPRLEN (8)
+// shift that many bits to obtain value miltiplied by GPRLEN
+#define GPRLEN_SHIFT SL(2, 3)
+// Link register position
+#define STACK_LR SL(SA(4, 8), 16)
+// register save position
+#define STACK_SAVE SL(SA(16, 64), 128)
+// temporary space, for float<->int exchange
+#define STACK_TEMP SL(SA(8, 24), 48)
+// red zone temporary space, used instead of STACK_TEMP if stack isn't prepared properly
+#define STACK_RTEMP (-16)
 #if ELF64
 /*
  * Official Procedure Descriptor
@@ -168,54 +156,103 @@ typedef struct {
 	void *env;
 } opd_t;
 #endif
-
-
 /*
  * opcode information table:
  * - length of immediate value
  * - returned register type
  * - required register(s) type
  */
-#define opImm0	0x0000 /* no immediate */
-#define opImm1	0x0001 /* 1 byte immadiate value after opcode */
-#define opImm4	0x0002 /* 4 bytes immediate value after opcode */
+#define opImm0		0x0000 // no immediate
+#define opImm1		0x0001 // 1 byte immadiate value after opcode
+#define opImm4		0x0002 // 4 bytes immediate value after opcode
 
-#define opRet0	0x0000 /* returns nothing */
-#define opRetI	0x0004 /* returns integer */
-#define opRetF	0x0008 /* returns float */
-#define opRetIF	(opRetI|opRetF) /* returns integer or float */
+#define opRet0		0x0000 // returns nothing
+#define opRetI		0x0004 // returns integer
+#define opRetF		0x0008 // returns float
+#define opRetIF		(opRetI|opRetF) // returns integer or float
 
-#define opArg0	0x0000 /* requires nothing */
-#define opArgI	0x0010 /* requires integer(s) */
-#define opArgF	0x0020 /* requires float (s) */
-#define opArgIF	(opArgI|opArgF) /* requires integer or float */
+#define opArg0		0x0000 // requires nothing
+#define opArgI		0x0010 // requires integer(s)
+#define opArgF		0x0020 // requires float(s)
+#define opArgIF		(opArgI|opArgF) // requires integer or float
 
-#define opArg2I	0x0040 /* requires second argument, integer */
-#define opArg2F	0x0080 /* requires second argument, float */
-#define opArg2IF(opArg2I|opArg2F) /* requires second argument, integer or float */
+#define opArg2I		0x0040 // requires second argument, integer
+#define opArg2F		0x0080 // requires second argument, float
+#define opArg2IF	(opArg2I|opArg2F) // requires second argument, integer or float
 
 static const unsigned char vm_opInfo[256] = {
-	[OP_UNDEF] = opImm0, [OP_IGNORE] = opImm0, [OP_BREAK] = opImm0, [OP_ENTER] = opImm4, /* OP_LEAVE has to accept floats, they will be converted to ints */
-	[OP_LEAVE] = opImm4|opRet0|opArgIF, /* only STORE4 and POP use values from OP_CALL, * no need to convert floats back */
-	[OP_CALL] = opImm0|opRetI|opArgI, [OP_PUSH] = opImm0|opRetIF, [OP_POP] = opImm0|opRet0|opArgIF, [OP_CONST] = opImm4|opRetIF, [OP_LOCAL] = opImm4|opRetI, [OP_JUMP] = opImm0|opRet0|opArgI,
-
-	[OP_EQ] = opImm4|opRet0|opArgI|opArg2I, [OP_NE] = opImm4|opRet0|opArgI|opArg2I, [OP_LTI] = opImm4|opRet0|opArgI|opArg2I, [OP_LEI] = opImm4|opRet0|opArgI|opArg2I, [OP_GTI] = opImm4|opRet0|opArgI|opArg2I, [OP_GEI] = opImm4|opRet0|opArgI|opArg2I, [OP_LTU] = opImm4|opRet0|opArgI|opArg2I, [OP_LEU] = opImm4|opRet0|opArgI|opArg2I, [OP_GTU] = opImm4|opRet0|opArgI|opArg2I, [OP_GEU] = opImm4|opRet0|opArgI|opArg2I, [OP_EQF] = opImm4|opRet0|opArgF|opArg2F, [OP_NEF] = opImm4|opRet0|opArgF|opArg2F, [OP_LTF] = opImm4|opRet0|opArgF|opArg2F, [OP_LEF] = opImm4|opRet0|opArgF|opArg2F, [OP_GTF] = opImm4|opRet0|opArgF|opArg2F, [OP_GEF] = opImm4|opRet0|opArgF|opArg2F,
-
-	[OP_LOAD1] = opImm0|opRetI|opArgI, [OP_LOAD2] = opImm0|opRetI|opArgI, [OP_LOAD4] = opImm0|opRetIF| opArgI, [OP_STORE1] = opImm0|opRet0|opArgI|opArg2I, [OP_STORE2] = opImm0|opRet0|opArgI|opArg2I, [OP_STORE4] = opImm0|opRet0|opArgIF| opArg2I, [OP_ARG] = opImm1|opRet0|opArgIF, [OP_BLOCK_COPY] = opImm4|opRet0|opArgI|opArg2I,
-
-	[OP_SEX8] = opImm0|opRetI|opArgI, [OP_SEX16] = opImm0|opRetI|opArgI, [OP_NEGI] = opImm0|opRetI|opArgI, [OP_ADD] = opImm0|opRetI|opArgI|opArg2I, [OP_SUB] = opImm0|opRetI|opArgI|opArg2I, [OP_DIVI] = opImm0|opRetI|opArgI|opArg2I, [OP_DIVU] = opImm0|opRetI|opArgI|opArg2I, [OP_MODI] = opImm0|opRetI|opArgI|opArg2I, [OP_MODU] = opImm0|opRetI|opArgI|opArg2I, [OP_MULI] = opImm0|opRetI|opArgI|opArg2I, [OP_MULU] = opImm0|opRetI|opArgI|opArg2I, [OP_BAND] = opImm0|opRetI|opArgI|opArg2I, [OP_BOR] = opImm0|opRetI|opArgI|opArg2I, [OP_BXOR] = opImm0|opRetI|opArgI|opArg2I, [OP_BCOM] = opImm0|opRetI|opArgI, [OP_LSH] = opImm0|opRetI|opArgI|opArg2I, [OP_RSHI] = opImm0|opRetI|opArgI|opArg2I, [OP_RSHU] = opImm0|opRetI|opArgI|opArg2I, [OP_NEGF] = opImm0|opRetF|opArgF, [OP_ADDF] = opImm0|opRetF|opArgF|opArg2F, [OP_SUBF] = opImm0|opRetF|opArgF|opArg2F, [OP_DIVF] = opImm0|opRetF|opArgF|opArg2F, [OP_MULF] = opImm0|opRetF|opArgF|opArg2F, [OP_CVIF] = opImm0|opRetF|opArgI, [OP_CVFI] = opImm0|opRetI|opArgF,
+	[OP_UNDEF] = opImm0,
+	[OP_IGNORE] = opImm0,
+	[OP_BREAK] = opImm0,
+	[OP_ENTER] = opImm4,
+	// OP_LEAVE has to accept floats, they will be converted to ints
+	[OP_LEAVE] = opImm4|opRet0|opArgIF,
+	// only STORE4 and POP use values from OP_CALL, no need to convert floats back
+	[OP_CALL] = opImm0|opRetI|opArgI,
+	[OP_PUSH] = opImm0|opRetIF,
+	[OP_POP] = opImm0|opRet0|opArgIF,
+	[OP_CONST] = opImm4|opRetIF,
+	[OP_LOCAL] = opImm4|opRetI,
+	[OP_JUMP] = opImm0|opRet0|opArgI,
+	[OP_EQ] = opImm4|opRet0|opArgI|opArg2I,
+	[OP_NE] = opImm4|opRet0|opArgI|opArg2I,
+	[OP_LTI] = opImm4|opRet0|opArgI|opArg2I,
+	[OP_LEI] = opImm4|opRet0|opArgI|opArg2I,
+	[OP_GTI] = opImm4|opRet0|opArgI|opArg2I,
+	[OP_GEI] = opImm4|opRet0|opArgI|opArg2I,
+	[OP_LTU] = opImm4|opRet0|opArgI|opArg2I,
+	[OP_LEU] = opImm4|opRet0|opArgI|opArg2I,
+	[OP_GTU] = opImm4|opRet0|opArgI|opArg2I,
+	[OP_GEU] = opImm4|opRet0|opArgI|opArg2I,
+	[OP_EQF] = opImm4|opRet0|opArgF|opArg2F,
+	[OP_NEF] = opImm4|opRet0|opArgF|opArg2F,
+	[OP_LTF] = opImm4|opRet0|opArgF|opArg2F,
+	[OP_LEF] = opImm4|opRet0|opArgF|opArg2F,
+	[OP_GTF] = opImm4|opRet0|opArgF|opArg2F,
+	[OP_GEF] = opImm4|opRet0|opArgF|opArg2F,
+	[OP_LOAD1] = opImm0|opRetI|opArgI,
+	[OP_LOAD2] = opImm0|opRetI|opArgI,
+	[OP_LOAD4] = opImm0|opRetIF| opArgI,
+	[OP_STORE1] = opImm0|opRet0|opArgI|opArg2I,
+	[OP_STORE2] = opImm0|opRet0|opArgI|opArg2I,
+	[OP_STORE4] = opImm0|opRet0|opArgIF| opArg2I,
+	[OP_ARG] = opImm1|opRet0|opArgIF,
+	[OP_BLOCK_COPY] = opImm4|opRet0|opArgI|opArg2I,
+	[OP_SEX8] = opImm0|opRetI|opArgI,
+	[OP_SEX16] = opImm0|opRetI|opArgI,
+	[OP_NEGI] = opImm0|opRetI|opArgI,
+	[OP_ADD] = opImm0|opRetI|opArgI|opArg2I,
+	[OP_SUB] = opImm0|opRetI|opArgI|opArg2I,
+	[OP_DIVI] = opImm0|opRetI|opArgI|opArg2I,
+	[OP_DIVU] = opImm0|opRetI|opArgI|opArg2I,
+	[OP_MODI] = opImm0|opRetI|opArgI|opArg2I,
+	[OP_MODU] = opImm0|opRetI|opArgI|opArg2I,
+	[OP_MULI] = opImm0|opRetI|opArgI|opArg2I,
+	[OP_MULU] = opImm0|opRetI|opArgI|opArg2I,
+	[OP_BAND] = opImm0|opRetI|opArgI|opArg2I,
+	[OP_BOR] = opImm0|opRetI|opArgI|opArg2I,
+	[OP_BXOR] = opImm0|opRetI|opArgI|opArg2I,
+	[OP_BCOM] = opImm0|opRetI|opArgI,
+	[OP_LSH] = opImm0|opRetI|opArgI|opArg2I,
+	[OP_RSHI] = opImm0|opRetI|opArgI|opArg2I,
+	[OP_RSHU] = opImm0|opRetI|opArgI|opArg2I,
+	[OP_NEGF] = opImm0|opRetF|opArgF,
+	[OP_ADDF] = opImm0|opRetF|opArgF|opArg2F,
+	[OP_SUBF] = opImm0|opRetF|opArgF|opArg2F,
+	[OP_DIVF] = opImm0|opRetF|opArgF|opArg2F,
+	[OP_MULF] = opImm0|opRetF|opArgF|opArg2F,
+	[OP_CVIF] = opImm0|opRetF|opArgI,
+	[OP_CVFI] = opImm0|opRetI|opArgF,
 };
-
-/*
- * source instruction data
- */
+// source instruction data
 typedef struct source_instruction_s source_instruction_t;
+
 struct source_instruction_s {
 	// opcode
 	unsigned long int op;
 	// number of instruction
 	unsigned long int i_count;
-	// immediate value(if any)
+	// immediate value (if any)
 	union {
 		unsigned int i;
 		signed int si;
@@ -231,16 +268,11 @@ struct source_instruction_s {
 	// next instruction
 	source_instruction_t *next;
 };
-
-
-
-/*
- * read - only data needed by the generated code
- */
+// read-only data needed by the generated code
 typedef struct VM_Data {
 	// length of this struct + data
 	size_t dataLength;
-	// compiled code size(in bytes)
+	// compiled code size (in bytes)
 	// it only is code size, without the data
 	size_t codeLength;
 	// function pointers, no use to waste registers for them
@@ -252,7 +284,6 @@ typedef struct VM_Data {
 	unsigned int dataMask;
 	// fixed number used to convert from integer to float
 	unsigned int floatBase; // 0x59800004
-
 #if ELF64
 	// official procedure descriptor
 	opd_t opd;
@@ -261,18 +292,21 @@ typedef struct VM_Data {
 	// this data has dynamic length, thus '0' here
 	unsigned int data[0];
 } vm_data_t;
+
 #ifdef offsetof
-#define VM_Data_Offset(field)	offsetof(vm_data_t, field)
+#define VM_Data_Offset(field) offsetof(vm_data_t, field)
 #else
 #define OFFSET(structName, field) \
-	((void *)& (((structName *)NULL)->field) - NULL)
-#define VM_Data_Offset(field)	OFFSET(vm_data_t, field)
+	((void *)&(((structName *)NULL)->field) - NULL)
+#define VM_Data_Offset(field) OFFSET(vm_data_t, field)
 #endif
-
-
 /*
- * functions used by generated code
- */
+=======================================================================================================================================
+VM_AsmCall
+
+Functions used by generated code.
+=======================================================================================================================================
+*/
 static long int VM_AsmCall(int callSyscallInvNum, int callProgramStack) {
 	vm_t *savedVM = currentVM;
 	long int i, ret;
@@ -288,17 +322,16 @@ static long int VM_AsmCall(int callSyscallInvNum, int callProgramStack) {
 		intptr_t *argPosition = (intptr_t *)((byte *)currentVM->dataBase + callProgramStack + 4);
 		// generated code does not invert syscall number
 		argPosition[0] = -1 - callSyscallInvNum;
-
 		ret = currentVM->systemCall(argPosition);
 	} else {
 		intptr_t args[MAX_VMSYSCALL_ARGS];
 		// generated code does not invert syscall number
 		args[0] = -1 - callSyscallInvNum;
-
 		int *argPosition = (int *)((byte *)currentVM->dataBase + callProgramStack + 4);
 
-		for (i = 1; i < ARRAY_LEN(args); i++)
+		for (i = 1; i < ARRAY_LEN(args); i++) {
 			args[i] = argPosition[i];
+		}
 
 		ret = currentVM->systemCall(args);
 	}
@@ -312,7 +345,7 @@ static long int VM_AsmCall(int callSyscallInvNum, int callProgramStack) {
 }
 
 /*
- * code - block descriptors
+ * code-block descriptors
  */
 typedef struct dest_instruction dest_instruction_t;
 typedef struct symbolic_jump symbolic_jump_t;
@@ -320,9 +353,9 @@ typedef struct symbolic_jump symbolic_jump_t;
 struct symbolic_jump {
 	// number of source instruction it has to jump to
 	unsigned long int jump_to;
-	// jump condition true / false, (4 * cr7 + (eq|gt..))
+	// jump condition true/false, (4 * cr7 + (eq|gt..))
 	long int bo, bi;
-	// extensions / modifiers(branch - link)
+	// extensions / modifiers (branch-link)
 	unsigned long ext;
 	// dest_instruction refering to this jump
 	dest_instruction_t *parent;
@@ -335,7 +368,7 @@ struct dest_instruction {
 	unsigned long int count;
 	// source instruction number
 	unsigned long int i_count;
-	// exact(for instructins), or maximum(for jump) length
+	// exact (for instructins), or maximum (for jump) length
 	unsigned short length;
 
 	dest_instruction_t *next;
@@ -344,8 +377,7 @@ struct dest_instruction {
 	// if jump is NULL than all the instructions will be here
 	ppc_instruction_t code[0];
 };
-
-// first and last instruction, 
+// first and last instruction,
 // di_first is a dummy instruction
 static dest_instruction_t *di_first = NULL, *di_last = NULL;
 // number of instructions
@@ -354,59 +386,68 @@ static unsigned long int di_count = 0;
 // actual instructions, just used to check how long the jump is going
 // to be and whether it is positive or negative
 static dest_instruction_t **di_pointers = NULL;
-
 // output instructions which does not come from source code
 // use false i_count value
 #define FALSE_ICOUNT 0xffffffff
 
-
 /*
- * append specified instructions at the end of instruction chain
- */
-static void PPC_Append(
-		dest_instruction_t *di_now, unsigned long int i_count
-  ) {
+=======================================================================================================================================
+PPC_Append
+
+Append specified instructions at the end of instruction chain.
+=======================================================================================================================================
+*/
+static void PPC_Append(dest_instruction_t *di_now, unsigned long int i_count) {
+
 	di_now->count = di_count++;
 	di_now->i_count = i_count;
 	di_now->next = NULL;
-
 	di_last->next = di_now;
 	di_last = di_now;
 
 	if (i_count != FALSE_ICOUNT) {
-		if (!di_pointers[i_count])
+		if (!di_pointers[i_count]) {
 			di_pointers[i_count] = di_now;
+		}
 	}
 }
 
 /*
- * make space for instructions and append
- */
-static void PPC_AppendInstructions(
-		unsigned long int i_count, size_t num_instructions, const ppc_instruction_t *is
-) {
+=======================================================================================================================================
+PPC_AppendInstructions
 
-	if (num_instructions < 0)
+Make space for instructions and append.
+=======================================================================================================================================
+*/
+static void PPC_AppendInstructions(unsigned long int i_count, size_t num_instructions, const ppc_instruction_t *is) {
+
+	if (num_instructions < 0) {
 		num_instructions = 0;
+	}
+
 	size_t iBytes = sizeof(ppc_instruction_t) * num_instructions;
 	dest_instruction_t *di_now = PPC_Malloc(sizeof(dest_instruction_t) + iBytes);
 
 	di_now->length = num_instructions;
 	di_now->jump = NULL;
 
-	if (iBytes > 0)
-		memcpy(& (di_now->code[0]), is, iBytes);
+	if (iBytes > 0) {
+		memcpy(&(di_now->code[0]), is, iBytes);
+	}
 
 	PPC_Append(di_now, i_count);
 }
 
-/*
- * create symbolic jump and append
- */
 static symbolic_jump_t *sj_first = NULL, *sj_last = NULL;
-static void PPC_PrepareJump(
-		unsigned long int i_count, unsigned long int dest, long int bo, long int bi, unsigned long int ext
-) {
+
+/*
+=======================================================================================================================================
+PPC_PrepareJump
+
+Create symbolic jump and append.
+=======================================================================================================================================
+*/
+static void PPC_PrepareJump(unsigned long int i_count, unsigned long int dest, long int bo, long int bi, unsigned long int ext) {
 	dest_instruction_t *di_now = PPC_Malloc(sizeof(dest_instruction_t));
 	symbolic_jump_t *sj = PPC_Malloc(sizeof(symbolic_jump_t));
 
@@ -416,7 +457,6 @@ static void PPC_PrepareJump(
 	sj->ext = ext;
 	sj->parent = di_now;
 	sj->nextJump = NULL;
-
 	sj_last->nextJump = sj;
 	sj_last = sj;
 
@@ -434,31 +474,29 @@ static void PPC_PrepareJump(
 	size_t num_instructions = 0; \
 	long int force_emit = 0; \
 	ppc_instruction_t instructions[50];
-
 #define pushIn(inst) \
 	(instructions[num_instructions++] = inst)
 #define in(inst, args...) pushIn(IN(inst, args))
-
 #define emitEnd() \
-	do{\
+	do { \
 		if (num_instructions || force_emit) \
 			PPC_AppendInstructions(i_count, num_instructions, instructions);\
 		num_instructions = 0; \
 	} while (0)
-
 #define emitJump(dest, bo, bi, ext) \
-	do {\
+	do { \
 		emitEnd(); \
 		PPC_PrepareJump(i_count, dest, bo, bi, ext); \
 	} while (0)
 
-
 /*
- * definitions for creating .data section, 
+ * definitions for creating .data section,
  * used in cases where constant float is needed
  */
 #define LOCAL_DATA_CHUNK 50
+
 typedef struct local_data_s local_data_t;
+
 struct local_data_s {
 	// number of data in this structure
 	long int count;
@@ -467,19 +505,22 @@ struct local_data_s {
 	// next chunk, if this one wasn't enough
 	local_data_t *next;
 };
-
 // first data chunk
 static local_data_t *data_first = NULL;
 // total number of data
 static long int data_acc = 0;
 
 /*
- * append the data and return its offset
- */
-static size_t
-PPC_PushData(unsigned int datum) {
+=======================================================================================================================================
+PPC_PushData
+
+Append the data and return its offset.
+=======================================================================================================================================
+*/
+static size_t PPC_PushData(unsigned int datum) {
 	local_data_t *d_now = data_first;
 	long int accumulated = 0;
+
 	// check whether we have this one already
 	do {
 		long int i;
@@ -491,8 +532,9 @@ PPC_PushData(unsigned int datum) {
 			}
 		}
 
-		if (!d_now->next)
+		if (!d_now->next) {
 			break;
+		}
 
 		accumulated += d_now->count;
 		d_now = d_now->next;
@@ -515,28 +557,33 @@ PPC_PushData(unsigned int datum) {
 	return VM_Data_Offset(data[accumulated]);
 }
 
-/*
- * find leading zeros in dataMask to implement it with
- * "rotate and mask" instruction
- */
 static long int fastMaskHi = 0, fastMaskLo = 31;
+
+/*
+=======================================================================================================================================
+PPC_MakeFastMask
+
+Find leading zeros in dataMask to implement it with "rotate and mask" instruction.
+=======================================================================================================================================
+*/
 static void PPC_MakeFastMask(int mask) {
 #if defined(__GNUC__) && (__GNUC__ >= 4 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 4))
-	/* count leading zeros */
+	// count leading zeros
 	fastMaskHi = __builtin_clz(mask);
-
-	/* count trailing zeros */
+	// count trailing zeros
 	fastMaskLo = 31 - __builtin_ctz(mask);
 #else
 	fastMaskHi = 0;
 
-	while ((mask & (0x80000000 >> fastMaskHi)) == 0)
+	while ((mask & (0x80000000 >> fastMaskHi)) == 0) {
 		fastMaskHi++;
+	}
 
 	fastMaskLo = 31;
 
-	while ((mask & (0x80000000 >> fastMaskLo)) == 0)
+	while ((mask & (0x80000000 >> fastMaskLo)) == 0) {
 		fastMaskLo--;
+	}
 #endif
 }
 
@@ -544,42 +591,55 @@ static void PPC_MakeFastMask(int mask) {
  * register definitions
  */
 
-/* registers which are global for generated code */
+// registers which are global for generated code
 
-// pointer to VM_Data(constant)
+// pointer to VM_Data (constant)
 #define rVMDATA r14
-// vm->dataBase(constant)
+// vm->dataBase (constant)
 #define rDATABASE r15
-// programStack(variable)
+// programStack (variable)
 #define rPSTACK r16
 
 /*
- * function local registers, 
+ * function local registers,
  *
  * normally only volatile registers are used, but if there aren't enough
  * or function has to preserve some value while calling annother one
  * then caller safe registers are used as well
  */
 static const long int gpr_list[] = {
-	/* caller safe registers, normally only one is used */
-	r24, r23, r22, r21, r20, r19, r18, r17, /* volatile registers(preferred), * normally no more than 5 is used */
-	r3, r4, r5, r6, r7, r8, r9, r10,
+	// caller safe registers, normally only one is used
+	r24, r23, r22, r21,
+	r20, r19, r18, r17,
+	// volatile registers (preferred), normally no more than 5 is used
+	r3, r4, r5, r6,
+	r7, r8, r9, r10,
 };
 
-static const long int gpr_vstart = 8; /* position of first volatile register */
+static const long int gpr_vstart = 8; // position of first volatile register
 static const long int gpr_total = ARRAY_LEN(gpr_list);
+
 static const long int fpr_list[] = {
-	/* static registers, normally none is used */
-	f20, f21, f19, f18, f17, f16, f15, f14, /* volatile registers(preferred), * normally no more than 7 is used */
-	f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13,
+	// static registers, normally none is used
+	f20, f21, f19, f18,
+	f17, f16, f15, f14,
+	// volatile registers (preferred), normally no more than 7 is used
+	f0, f1, f2, f3,
+	f4, f5, f6, f7,
+	f8, f9, f10, f11,
+	f12, f13,
 };
 
 static const long int fpr_vstart = 8;
 static const long int fpr_total = ARRAY_LEN(fpr_list);
 
 /*
- * prepare some dummy structures and emit init code
- */
+=======================================================================================================================================
+PPC_CompileInit
+
+Prepare some dummy structures and emit init code.
+=======================================================================================================================================
+*/
 static void PPC_CompileInit(void) {
 	di_first = di_last = PPC_Malloc(sizeof(dest_instruction_t));
 	di_first->count = 0;
@@ -594,13 +654,13 @@ static void PPC_CompileInit(void) {
 	data_first->next = NULL;
 
 	/*
- *init function:
- *saves old values of global registers and sets our values
-	*function prototype is:
- *int begin(void *data, int programStack, void *vm->dataBase)
+	 * init function:
+	 * saves old values of global registers and sets our values
+	 * function prototype is:
+	 *  int begin(void *data, int programStack, void *vm->dataBase)
 	 */
 
-	/* first instruction must not be placed on instruction list */
+	// first instruction must not be placed on instruction list
 	emitStart(FALSE_ICOUNT);
 
 	long int stack = STACK_SAVE + 4 * GPRLEN;
@@ -627,35 +687,37 @@ static void PPC_CompileInit(void) {
 }
 
 // rFIRST is the copy of the top value on the opstack
-#define rFIRST		(gpr_list[gpr_pos - 1])
+#define rFIRST (gpr_list[gpr_pos - 1])
 // second value on the opstack
-#define rSECOND		(gpr_list[gpr_pos - 2])
+#define rSECOND (gpr_list[gpr_pos - 2])
 // temporary registers, not on the opstack
 #define rTEMP(x) (gpr_list[gpr_pos + x])
-#define rTMP		rTEMP(0)
-
-#define fFIRST		(fpr_list[fpr_pos - 1])
-#define fSECOND		(fpr_list[fpr_pos - 2])
+#define rTMP rTEMP(0)
+#define fFIRST (fpr_list[fpr_pos - 1])
+#define fSECOND (fpr_list[fpr_pos - 2])
 #define fTEMP(x) (fpr_list[fpr_pos + x])
-#define fTMP		fTEMP(0)
-
+#define fTMP fTEMP(0)
 // register types
-#define rTYPE_STATIC	0x01
-#define rTYPE_FLOAT	0x02
-
+#define rTYPE_STATIC 0x01
+#define rTYPE_FLOAT 0x02
 // what type should this opcode return
-#define RET_INT		(!(i_now->regR & rTYPE_FLOAT))
-#define RET_FLOAT	(i_now->regR & rTYPE_FLOAT)
+#define RET_INT (!(i_now->regR & rTYPE_FLOAT))
+#define RET_FLOAT (i_now->regR & rTYPE_FLOAT)
 // what type should it accept
-#define ARG_INT		(!i_now->regA1)
-#define ARG_FLOAT	(i_now->regA1)
-#define ARG2_INT	(!i_now->regA2)
-#define ARG2_FLOAT	(i_now->regA2)
+#define ARG_INT (!i_now->regA1)
+#define ARG_FLOAT (i_now->regA1)
+#define ARG2_INT (!i_now->regA2)
+#define ARG2_FLOAT (i_now->regA2)
 
 /*
- * emit OP_CONST, called if nothing has used the const value directly
- */
-static void PPC_EmitConst(source_instruction_t *const i_const) {
+=======================================================================================================================================
+PPC_EmitConst
+
+Emit OP_CONST, called if nothing has used the const value directly.
+=======================================================================================================================================
+*/
+static void PPC_EmitConst(source_instruction_t * const i_const) {
+
 	emitStart(i_const->i_count);
 
 	if (!(i_const->regR & rTYPE_FLOAT)) {
@@ -670,44 +732,50 @@ static void PPC_EmitConst(source_instruction_t *const i_const) {
 		} else {
 			in(iLIS, rFIRST, i_const->arg.ss[0]);
 
-			if (i_const->arg.us[1] != 0)
+			if (i_const->arg.us[1] != 0) {
 				in(iORI, rFIRST, rFIRST, i_const->arg.us[1]);
+			}
 		}
 	} else {
 		// fpr_pos needed for "fFIRST" to work
 		long int fpr_pos = i_const->regPos;
-		// there's no good way to generate the data, // just read it from data section
+		// there's no good way to generate the data, just read it from data section
 		in(iLFS, fFIRST, PPC_PushData(i_const->arg.i), rVMDATA);
 	}
 
 	emitEnd();
 }
+
 #define MAYBE_EMIT_CONST() if (i_const) PPC_EmitConst(i_const)
 
 /*
- * emit empty instruction, just sets the needed pointers
- */
-static inline void PPC_EmitNull(source_instruction_t *const i_null) {
+=======================================================================================================================================
+PPC_EmitNull
+
+Emit empty instruction, just sets the needed pointers.
+=======================================================================================================================================
+*/
+static inline void PPC_EmitNull(source_instruction_t * const i_null) {
 	PPC_AppendInstructions(i_null->i_count, 0, NULL);
 }
+
 #define EMIT_FALSE_CONST() PPC_EmitNull(i_const)
 
-
 /*
- * analize function for register usage and whether it needs stack(r1) prepared
- */
-static void VM_AnalyzeFunction(
-		source_instruction_t *const i_first, long int *prepareStack, long int *gpr_start_pos, long int *fpr_start_pos
-	) {
-	source_instruction_t *i_now = i_first;
+=======================================================================================================================================
+VM_AnalyzeFunction
 
+Analize function for register usage and whether it needs stack (r1) prepared.
+=======================================================================================================================================
+*/
+static void VM_AnalyzeFunction(source_instruction_t * const i_first, long int *prepareStack, long int *gpr_start_pos, long int *fpr_start_pos) {
+	source_instruction_t *i_now = i_first;
 	source_instruction_t *value_provider[20] = {NULL};
 	unsigned long int opstack_depth = 0;
-
 	/*
-	*first step:
- *remember what codes returned some value and mark the value type
- *when we get to know what it should be
+	 * first step:
+	 *  remember what codes returned some value and mark the value type
+	 *  when we get to know what it should be
 	 */
 	while ((i_now = i_now->next)) {
 		unsigned long int op = i_now->op;
@@ -715,15 +783,14 @@ static void VM_AnalyzeFunction(
 
 		if (opi & opArgIF) {
 			assert(opstack_depth > 0);
-
 			opstack_depth--;
 			source_instruction_t *vp = value_provider[opstack_depth];
 			unsigned long int vpopi = vm_opInfo[vp->op];
 
 			if ((opi & opArgI) && (vpopi & opRetI)) {
 				// instruction accepts integer, provider returns integer
-				// vp->regR |= rTYPE_INT;
-				// i_now->regA1 = rTYPE_INT;
+				//vp->regR |= rTYPE_INT;
+				//i_now->regA1 = rTYPE_INT;
 			} else if ((opi & opArgF) && (vpopi & opRetF)) {
 				// instruction accepts float, provider returns float
 				vp->regR |= rTYPE_FLOAT; // use OR here - could be marked as static
@@ -737,15 +804,14 @@ static void VM_AnalyzeFunction(
 
 		if (opi & opArg2IF) {
 			assert(opstack_depth > 0);
-
 			opstack_depth--;
 			source_instruction_t *vp = value_provider[opstack_depth];
 			unsigned long int vpopi = vm_opInfo[vp->op];
 
 			if ((opi & opArg2I) && (vpopi & opRetI)) {
 				// instruction accepts integer, provider returns integer
-				// vp->regR |= rTYPE_INT;
-				// i_now->regA2 = rTYPE_INT;
+				//vp->regR |= rTYPE_INT;
+				//i_now->regA2 = rTYPE_INT;
 			} else if ((opi & opArg2F) && (vpopi & opRetF)) {
 				// instruction accepts float, provider returns float
 				vp->regR |= rTYPE_FLOAT; // use OR here - could be marked as static
@@ -757,11 +823,9 @@ static void VM_AnalyzeFunction(
 			}
 		}
 
-		if ((op == OP_CALL)
-				||
-			(op == OP_BLOCK_COPY && (i_now->arg.i > SL(16, 32) || !OPTIMIZE_COPY))
-	) {
+		if ((op == OP_CALL) || (op == OP_BLOCK_COPY && (i_now->arg.i > SL(16, 32) || !OPTIMIZE_COPY))) {
 			long int i;
+
 			*prepareStack = 1;
 			// force caller safe registers so we won't have to save them
 			for (i = 0; i < opstack_depth; i++) {
@@ -775,15 +839,14 @@ static void VM_AnalyzeFunction(
 			opstack_depth++;
 		}
 	}
-
 	/*
- *second step:
- *now that we know register types; compute exactly how many registers
- *of each type we need
+	 * second step:
+	 *  now that we know register types; compute exactly how many registers
+	 *  of each type we need
 	 */
-
 	i_now = i_first;
 	long int needed_reg[4] = {0, 0, 0, 0}, max_reg[4] = {0, 0, 0, 0};
+
 	opstack_depth = 0;
 
 	while ((i_now = i_now->next)) {
@@ -794,42 +857,44 @@ static void VM_AnalyzeFunction(
 			assert(opstack_depth > 0);
 			opstack_depth--;
 			source_instruction_t *vp = value_provider[opstack_depth];
-
 			needed_reg[(vp->regR & 2)] -= 1;
 
-			if (vp->regR & 1) // static
+			if (vp->regR & 1) { // static
 				needed_reg[(vp->regR & 3)] -= 1;
+			}
 		}
 
 		if (opi & opArg2IF) {
 			assert(opstack_depth > 0);
 			opstack_depth--;
 			source_instruction_t *vp = value_provider[opstack_depth];
-
 			needed_reg[(vp->regR & 2)] -= 1;
 
-			if (vp->regR & 1) // static
+			if (vp->regR & 1) { // static
 				needed_reg[(vp->regR & 3)] -= 1;
+			}
 		}
 
 		if (opi & opRetIF) {
 			long int i;
+
 			value_provider[opstack_depth] = i_now;
 			opstack_depth++;
-
 			i = i_now->regR & 2;
 			needed_reg[i] += 1;
 
-			if (max_reg[i] < needed_reg[i])
+			if (max_reg[i] < needed_reg[i]) {
 				max_reg[i] = needed_reg[i];
+			}
 
 			i = i_now->regR & 3;
 
 			if (i & 1) {
 				needed_reg[i] += 1;
 
-				if (max_reg[i] < needed_reg[i])
+				if (max_reg[i] < needed_reg[i]) {
 					max_reg[i] = needed_reg[i];
+				}
 			}
 		}
 	}
@@ -842,11 +907,12 @@ static void VM_AnalyzeFunction(
 		// max_reg[1] - static gprs needed
 		long int max = max_reg[0] - gpr_volatile;
 
-		if (max_reg[1] > max)
+		if (max_reg[1] > max) {
 			max = max_reg[1];
+		}
 
 		if (max > gpr_vstart) {
-			/* error */
+			// error
 			DIE("Need more GPRs");
 		}
 
@@ -855,7 +921,7 @@ static void VM_AnalyzeFunction(
 		*prepareStack = 1;
 	}
 
- *gpr_start_pos = gpr_start;
+	*gpr_start_pos = gpr_start;
 
 	long int fpr_start = fpr_vstart;
 	const long int fpr_volatile = fpr_total - fpr_vstart;
@@ -865,11 +931,12 @@ static void VM_AnalyzeFunction(
 		// max_reg[3] - static fprs needed
 		long int max = max_reg[2] - fpr_volatile;
 
-		if (max_reg[3] > max)
+		if (max_reg[3] > max) {
 			max = max_reg[3];
+		}
 
 		if (max > fpr_vstart) {
-			/* error */
+			// error
 			DIE("Need more FPRs");
 		}
 
@@ -882,10 +949,13 @@ static void VM_AnalyzeFunction(
 }
 
 /*
- * translate opcodes to ppc instructions, 
- * it works on functions, not on whole code at once
- */
-static void VM_CompileFunction(source_instruction_t *const i_first) {
+=======================================================================================================================================
+VM_CompileFunction
+
+Translate opcodes to ppc instructions, it works on functions, not on whole code at once.
+=======================================================================================================================================
+*/
+static void VM_CompileFunction(source_instruction_t * const i_first) {
 	long int prepareStack = 0;
 	long int gpr_start_pos, fpr_start_pos;
 
@@ -898,12 +968,16 @@ static void VM_CompileFunction(source_instruction_t *const i_first) {
 	// how big the stack has to be
 	long int save_space = STACK_SAVE;
 	{
-		if (gpr_start_pos < gpr_vstart)
+		if (gpr_start_pos < gpr_vstart) {
 			save_space += (gpr_vstart - gpr_start_pos) * GPRLEN;
+		}
+
 		save_space = (save_space + 15) & ~0x0f;
 
-		if (fpr_start_pos < fpr_vstart)
+		if (fpr_start_pos < fpr_vstart) {
 			save_space += (fpr_vstart - fpr_start_pos) * FPRLEN;
+		}
+
 		save_space = (save_space + 15) & ~0x0f;
 	}
 
@@ -925,8 +999,9 @@ static void VM_CompileFunction(source_instruction_t *const i_first) {
 				in(iLWZ, r0, 0, r0);
 				break;
 			case OP_ENTER:
-				if (i_const)
+				if (i_const) {
 					DIE("Weird opcode order");
+				}
 				// don't prepare stack if not needed
 				if (prepareStack) {
 					long int i, save_pos = STACK_SAVE;
@@ -934,8 +1009,7 @@ static void VM_CompileFunction(source_instruction_t *const i_first) {
 					in(iMFLR, r0);
 					in(iSTLU, r1, -save_space, r1);
 					in(iSTL, r0, save_space + STACK_LR, r1);
-
-					/* save registers */
+					// save registers
 					for (i = gpr_start_pos; i < gpr_vstart; i++) {
 						in(iSTL, gpr_list[i], save_pos, r1);
 						save_pos += GPRLEN;
@@ -951,14 +1025,15 @@ static void VM_CompileFunction(source_instruction_t *const i_first) {
 					prepareStack = 2;
 				}
 
-				in(iADDI, rPSTACK, rPSTACK, - i_now->arg.si);
+				in(iADDI, rPSTACK, rPSTACK, -i_now->arg.si);
 				break;
 			case OP_LEAVE:
 				if (i_const) {
 					EMIT_FALSE_CONST();
 
-					if (i_const->regR & rTYPE_FLOAT)
+					if (i_const->regR & rTYPE_FLOAT) {
 						DIE("constant float in OP_LEAVE");
+					}
 
 					if (i_const->arg.si >= -0x8000 && i_const->arg.si < 0x8000) {
 						in(iLI, r3, i_const->arg.si);
@@ -968,18 +1043,20 @@ static void VM_CompileFunction(source_instruction_t *const i_first) {
 					} else {
 						in(iLIS, r3, i_const->arg.ss[0]);
 
-						if (i_const->arg.us[1] != 0)
+						if (i_const->arg.us[1] != 0) {
 							in(iORI, r3, r3, i_const->arg.us[1]);
+						}
 					}
 
 					gpr_pos--;
 				} else {
 					MAYBE_EMIT_CONST();
-
-					/* place return value in r3 */
+					// place return value in r3
 					if (ARG_INT) {
-						if (rFIRST != r3)
+						if (rFIRST != r3) {
 							in(iMR, r3, rFIRST);
+						}
+
 						gpr_pos--;
 					} else {
 						in(iSTFS, fFIRST, stack_temp, r1);
@@ -992,14 +1069,14 @@ static void VM_CompileFunction(source_instruction_t *const i_first) {
 					long int i, save_pos = STACK_SAVE;
 
 					in(iLL, r0, save_space + STACK_LR, r1);
-
-					/* restore registers */
+					// restore registers
 					for (i = gpr_start_pos; i < gpr_vstart; i++) {
 						in(iLL, gpr_list[i], save_pos, r1);
 						save_pos += GPRLEN;
 					}
 
 					save_pos = (save_pos + 15) & ~0x0f;
+
 					for (i = fpr_start_pos; i < fpr_vstart; i++) {
 						in(iLFD, fpr_list[i], save_pos, r1);
 						save_pos += FPRLEN;
@@ -1011,6 +1088,7 @@ static void VM_CompileFunction(source_instruction_t *const i_first) {
 
 				in(iADDI, rPSTACK, rPSTACK, i_now->arg.si);
 				in(iBLR);
+
 				assert(gpr_pos == gpr_start_pos);
 				assert(fpr_pos == fpr_start_pos);
 				break;
@@ -1019,85 +1097,86 @@ static void VM_CompileFunction(source_instruction_t *const i_first) {
 					EMIT_FALSE_CONST();
 
 					if (i_const->arg.si >= 0) {
-						emitJump(
-							i_const->arg.i, branchAlways, 0, branchExtLink
-					);
+						emitJump(i_const->arg.i, branchAlways, 0, branchExtLink);
 					} else {
-						/* syscall */
+						// syscall
 						in(iLL, r0, VM_Data_Offset(AsmCall), rVMDATA);
-
 						in(iLI, r3, i_const->arg.si); // negative value
 						in(iMR, r4, rPSTACK); // push PSTACK on argument list
-
 						in(iMTCTR, r0);
 						in(iBCTRL);
 					}
 
-					if (rFIRST != r3)
+					if (rFIRST != r3) {
 						in(iMR, rFIRST, r3);
+					}
 				} else {
 					MAYBE_EMIT_CONST();
 
 					in(iCMPWI, cr7, rFIRST, 0);
 					in(iBLTm, cr7, +4 * 5 /* syscall */); // XXX jump !
-					/* instruction call */
+					// instruction call
 
 					// get instruction address
 					in(iLL, r0, VM_Data_Offset(iPointers), rVMDATA);
 					in(iRLWINM, rFIRST, rFIRST, GPRLEN_SHIFT, 0, 31 - GPRLEN_SHIFT); // mul * GPRLEN
 					in(iLLX, r0, rFIRST, r0); // load pointer
-
-					in(iB, +4 *(3 + (rFIRST != r3 ? 1 : 0))); // XXX jump !
-
-					/* syscall */
+					in(iB, +4 * (3 + (rFIRST != r3 ? 1 : 0))); // XXX jump !
+					// syscall
 					in(iLL, r0, VM_Data_Offset(AsmCall), rVMDATA); // get asmCall pointer
-					/* rFIRST can be r3 or some static register */
-					if (rFIRST != r3)
+					// rFIRST can be r3 or some static register
+					if (rFIRST != r3) {
 						in(iMR, r3, rFIRST); // push OPSTACK top value on argument list
-					in(iMR, r4, rPSTACK); // push PSTACK on argument list
+					}
 
-					/* common code */
+					in(iMR, r4, rPSTACK); // push PSTACK on argument list
+					// common code
 					in(iMTCTR, r0);
 					in(iBCTRL);
 
-					if (rFIRST != r3)
+					if (rFIRST != r3) {
 						in(iMR, rFIRST, r3); // push return value on the top of the opstack
+					}
 				}
 
 				break;
 			case OP_PUSH:
 				MAYBE_EMIT_CONST();
 
-				if (RET_INT)
+				if (RET_INT) {
 					gpr_pos++;
-				else
+				} else {
 					fpr_pos++;
-				/* no instructions here */
+				}
+				// no instructions here
 				force_emit = 1;
 				break;
 			case OP_POP:
 				MAYBE_EMIT_CONST();
 
-				if (ARG_INT)
+				if (ARG_INT) {
 					gpr_pos--;
-				else
+				} else {
 					fpr_pos--;
-				/* no instructions here */
+				}
+				// no instructions here
 				force_emit = 1;
 				break;
 			case OP_CONST:
 				MAYBE_EMIT_CONST();
-				/* nothing here */
+				// nothing here
 				break;
 			case OP_LOCAL:
 				MAYBE_EMIT_CONST();
 				{
 					signed long int hi, lo;
+
 					hi = i_now->arg.ss[0];
 					lo = i_now->arg.ss[1];
 
-					if (lo < 0)
+					if (lo < 0) {
 						hi += 1;
+					}
 
 					gpr_pos++;
 
@@ -1106,8 +1185,9 @@ static void VM_CompileFunction(source_instruction_t *const i_first) {
 					} else {
 						in(iADDIS, rFIRST, rPSTACK, hi);
 
-						if (lo != 0)
+						if (lo != 0) {
 							in(iADDI, rFIRST, rFIRST, lo);
+						}
 					}
 				}
 
@@ -1116,9 +1196,7 @@ static void VM_CompileFunction(source_instruction_t *const i_first) {
 				if (i_const) {
 					EMIT_FALSE_CONST();
 
-					emitJump(
-						i_const->arg.i, branchAlways, 0, 0
-				);
+					emitJump(i_const->arg.i, branchAlways, 0, 0);
 				} else {
 					MAYBE_EMIT_CONST();
 
@@ -1136,18 +1214,17 @@ static void VM_CompileFunction(source_instruction_t *const i_first) {
 				if (i_const && i_const->arg.si >= -0x8000 && i_const->arg.si < 0x10000) {
 					EMIT_FALSE_CONST();
 
-					if (i_const->arg.si >= 0x8000)
+					if (i_const->arg.si >= 0x8000) {
 						in(iCMPLWI, cr7, rSECOND, i_const->arg.i);
-					else
+					} else {
 						in(iCMPWI, cr7, rSECOND, i_const->arg.si);
+					}
 				} else {
 					MAYBE_EMIT_CONST();
 					in(iCMPW, cr7, rSECOND, rFIRST);
 				}
 
-				emitJump(
-					i_now->arg.i, (i_now->op == OP_EQ ? branchTrue : branchFalse), 4 * cr7 + eq, 0
-			);
+				emitJump(i_now->arg.i, (i_now->op == OP_EQ ? branchTrue : branchFalse), 4 * cr7 + eq, 0);
 				gpr_pos -= 2;
 				break;
 			case OP_LTI:
@@ -1160,9 +1237,7 @@ static void VM_CompileFunction(source_instruction_t *const i_first) {
 					in(iCMPW, cr7, rSECOND, rFIRST);
 				}
 
-				emitJump(
-					i_now->arg.i, (i_now->op == OP_LTI ? branchTrue : branchFalse), 4 * cr7 + lt, 0
-			);
+				emitJump(i_now->arg.i, (i_now->op == OP_LTI ? branchTrue : branchFalse), 4 * cr7 + lt, 0);
 				gpr_pos -= 2;
 				break;
 			case OP_GTI:
@@ -1175,9 +1250,7 @@ static void VM_CompileFunction(source_instruction_t *const i_first) {
 					in(iCMPW, cr7, rSECOND, rFIRST);
 				}
 
-				emitJump(
-					i_now->arg.i, (i_now->op == OP_GTI ? branchTrue : branchFalse), 4 * cr7 + gt, 0
-			);
+				emitJump(i_now->arg.i, (i_now->op == OP_GTI ? branchTrue : branchFalse), 4 * cr7 + gt, 0);
 				gpr_pos -= 2;
 				break;
 			case OP_LTU:
@@ -1190,9 +1263,7 @@ static void VM_CompileFunction(source_instruction_t *const i_first) {
 					in(iCMPLW, cr7, rSECOND, rFIRST);
 				}
 
-				emitJump(
-					i_now->arg.i, (i_now->op == OP_LTU ? branchTrue : branchFalse), 4 * cr7 + lt, 0
-			);
+				emitJump(i_now->arg.i, (i_now->op == OP_LTU ? branchTrue : branchFalse), 4 * cr7 + lt, 0);
 				gpr_pos -= 2;
 				break;
 			case OP_GTU:
@@ -1205,36 +1276,28 @@ static void VM_CompileFunction(source_instruction_t *const i_first) {
 					in(iCMPLW, cr7, rSECOND, rFIRST);
 				}
 
-				emitJump(
-					i_now->arg.i, (i_now->op == OP_GTU ? branchTrue : branchFalse), 4 * cr7 + gt, 0
-			);
+				emitJump(i_now->arg.i, (i_now->op == OP_GTU ? branchTrue : branchFalse), 4 * cr7 + gt, 0);
 				gpr_pos -= 2;
 				break;
 			case OP_EQF:
 			case OP_NEF:
 				MAYBE_EMIT_CONST();
 				in(iFCMPU, cr7, fSECOND, fFIRST);
-				emitJump(
-					i_now->arg.i, (i_now->op == OP_EQF ? branchTrue : branchFalse), 4 * cr7 + eq, 0
-			);
+				emitJump(i_now->arg.i, (i_now->op == OP_EQF ? branchTrue : branchFalse), 4 * cr7 + eq, 0);
 				fpr_pos -= 2;
 				break;
 			case OP_LTF:
 			case OP_GEF:
 				MAYBE_EMIT_CONST();
 				in(iFCMPU, cr7, fSECOND, fFIRST);
-				emitJump(
-					i_now->arg.i, (i_now->op == OP_LTF ? branchTrue : branchFalse), 4 * cr7 + lt, 0
-			);
+				emitJump(i_now->arg.i, (i_now->op == OP_LTF ? branchTrue : branchFalse), 4 * cr7 + lt, 0);
 				fpr_pos -= 2;
 				break;
 			case OP_GTF:
 			case OP_LEF:
 				MAYBE_EMIT_CONST();
 				in(iFCMPU, cr7, fSECOND, fFIRST);
-				emitJump(
-					i_now->arg.i, (i_now->op == OP_GTF ? branchTrue : branchFalse), 4 * cr7 + gt, 0
-			);
+				emitJump(i_now->arg.i, (i_now->op == OP_GTF ? branchTrue : branchFalse), 4 * cr7 + gt, 0);
 				fpr_pos -= 2;
 				break;
 			case OP_LOAD1:
@@ -1323,6 +1386,7 @@ static void VM_CompileFunction(source_instruction_t *const i_first) {
 				break;
 			case OP_ARG:
 				MAYBE_EMIT_CONST();
+
 				in(iADDI, r0, rPSTACK, i_now->arg.b);
 
 				if (ARG_INT) {
@@ -1338,8 +1402,7 @@ static void VM_CompileFunction(source_instruction_t *const i_first) {
 				MAYBE_EMIT_CONST();
 #if OPTIMIZE_COPY
 				if (i_now->arg.i <= SL(16, 32)) {
-					/* block is very short so copy it in - place */
-
+					// block is very short so copy it in-place
 					unsigned int len = i_now->arg.i;
 					unsigned int copied = 0, left = len;
 
@@ -1348,15 +1411,18 @@ static void VM_CompileFunction(source_instruction_t *const i_first) {
 
 					if (len >= GPRLEN) {
 						long int i, words = len / GPRLEN;
+
 						in(iLL, r0, 0, rFIRST);
 
-						for (i = 1; i < words; i++)
+						for (i = 1; i < words; i++) {
 							in(iLL, rTEMP(i - 1), GPRLEN * i, rFIRST);
+						}
 
 						in(iSTL, r0, 0, rSECOND);
 
-						for (i = 1; i < words; i++)
+						for (i = 1; i < words; i++) {
 							in(iSTL, rTEMP(i - 1), GPRLEN * i, rSECOND);
+						}
 
 						copied += words * GPRLEN;
 						left -= copied;
@@ -1402,16 +1468,19 @@ static void VM_CompileFunction(source_instruction_t *const i_first) {
 
 					in(iLL, r0, VM_Data_Offset(BlockCopy), rVMDATA); // get blockCopy pointer
 
-					if (r5_ori)
+					if (r5_ori) {
 						in(iORI, r5, r5, r5_ori);
+					}
 
 					in(iMTCTR, r0);
 
-					if (rFIRST != r4)
+					if (rFIRST != r4) {
 						in(iMR, r4, rFIRST);
+					}
 
-					if (rSECOND != r3)
+					if (rSECOND != r3) {
 						in(iMR, r3, rSECOND);
+					}
 
 					in(iBCTRL);
 				}
@@ -1435,20 +1504,25 @@ static void VM_CompileFunction(source_instruction_t *const i_first) {
 					EMIT_FALSE_CONST();
 
 					signed short int hi, lo;
+
 					hi = i_const->arg.ss[0];
 					lo = i_const->arg.ss[1];
 
-					if (lo < 0)
+					if (lo < 0) {
 						hi += 1;
+					}
 
-					if (hi != 0)
+					if (hi != 0) {
 						in(iADDIS, rSECOND, rSECOND, hi);
+					}
 
-					if (lo != 0)
+					if (lo != 0) {
 						in(iADDI, rSECOND, rSECOND, lo);
+					}
 					// if both are zero no instruction will be written
-					if (hi == 0 && lo == 0)
+					if (hi == 0 && lo == 0) {
 						force_emit = 1;
+					}
 				} else {
 					MAYBE_EMIT_CONST();
 					in(iADD, rSECOND, rSECOND, rFIRST);
@@ -1579,10 +1653,11 @@ static void VM_CompileFunction(source_instruction_t *const i_first) {
 			emitEnd();
 		} else {
 			// mark in what register the value should be saved
-			if (RET_INT)
-				i_now->regPos =++gpr_pos;
+			if (RET_INT) {
+				i_now->regPos = ++gpr_pos;
 			} else {
-				i_now->regPos =++fpr_pos;
+				i_now->regPos = ++fpr_pos;
+			}
 #if OPTIMIZE_HOLE
 			i_const = i_now;
 #else
@@ -1591,8 +1666,9 @@ static void VM_CompileFunction(source_instruction_t *const i_first) {
 		}
 	}
 
-	if (i_const)
-		DIE("left(unused) OP_CONST");
+	if (i_const) {
+		DIE("left (unused) OP_CONST");
+	}
 
 	{
 		// free opcode information, don't free first dummy one
@@ -1607,23 +1683,27 @@ static void VM_CompileFunction(source_instruction_t *const i_first) {
 }
 
 /*
- * check which jumps are short enough to use signed 16bit immediate branch
- */
+=======================================================================================================================================
+PPC_ShrinkJumps
+
+Check which jumps are short enough to use signed 16bit immediate branch.
+=======================================================================================================================================
+*/
 static void PPC_ShrinkJumps(void) {
 	symbolic_jump_t *sj_now = sj_first;
 
 	while ((sj_now = sj_now->nextJump)) {
-		if (sj_now->bo == branchAlways)
-			// non - conditional branch has 26bit immediate
+		if (sj_now->bo == branchAlways) {
+			// non-conditional branch has 26bit immediate
 			sj_now->parent->length = 1;
-
-		else {
+		} else {
 			dest_instruction_t *di = di_pointers[sj_now->jump_to];
 			dest_instruction_t *ji = sj_now->parent;
 			long int jump_length = 0;
 
-			if (!di)
+			if (!di) {
 				DIE("No instruction to jump to");
+			}
 
 			if (ji->count > di->count) {
 				do {
@@ -1632,39 +1712,45 @@ static void PPC_ShrinkJumps(void) {
 			} else {
 				jump_length = 1;
 
-				while ((ji = ji->next) != di)
+				while ((ji = ji->next) != di) {
 					jump_length += ji->length;
+				}
 			}
 
-			if (jump_length < 0x2000)
+			if (jump_length < 0x2000) {
 				// jump is short, use normal instruction
 				sj_now->parent->length = 1;
+			}
 		}
 	}
 }
 
 /*
- * puts all the data in one place, it consists of many different tasks
- */
+=======================================================================================================================================
+PPC_ComputeCode
+
+Puts all the data in one place, it consists of many different tasks.
+=======================================================================================================================================
+*/
 static void PPC_ComputeCode(vm_t *vm) {
 	dest_instruction_t *di_now = di_first;
-
 	unsigned long int codeInstructions = 0;
 	// count total instruciton number
-	while ((di_now = di_now->next))
+	while ((di_now = di_now->next)) {
 		codeInstructions += di_now->length;
+	}
 
 	size_t codeLength = sizeof(vm_data_t) + sizeof(unsigned int) * data_acc + sizeof(ppc_instruction_t) * codeInstructions;
 	// get the memory for the generated code, smarter ppcs need the
-	// mem to be marked as executable(whill change later)
+	// mem to be marked as executable (whill change later)
 	unsigned char *dataAndCode = mmap(NULL, codeLength, PROT_READ|PROT_WRITE, MAP_SHARED|MAP_ANONYMOUS, -1, 0);
 
-	if (dataAndCode == MAP_FAILED)
+	if (dataAndCode == MAP_FAILED) {
 		DIE("Not enough memory");
+	}
 
 	ppc_instruction_t *codeNow, *codeBegin;
 	codeNow = codeBegin = (ppc_instruction_t *)(dataAndCode + VM_Data_Offset(data[data_acc]));
-
 	ppc_instruction_t nop = IN(iNOP);
 	// copy instructions to the destination
 	// fills the jump instructions with nops
@@ -1675,21 +1761,23 @@ static void PPC_ComputeCode(vm_t *vm) {
 		unsigned long int i_count = di_now->i_count;
 
 		if (i_count != FALSE_ICOUNT) {
-			if (!di_pointers[i_count])
+			if (!di_pointers[i_count]) {
 				di_pointers[i_count] = (void *)codeNow;
+			}
 		}
 
 		if (di_now->jump == NULL) {
-			memcpy(codeNow, & (di_now->code[0]), di_now->length * sizeof(ppc_instruction_t));
+			memcpy(codeNow, &(di_now->code[0]), di_now->length * sizeof(ppc_instruction_t));
 			codeNow += di_now->length;
 		} else {
 			long int i;
 			symbolic_jump_t *sj;
 
-			for (i = 0; i < di_now->length; i++)
+			for (i = 0; i < di_now->length; i++) {
 				codeNow[i] = nop;
-			codeNow += di_now->length;
+			}
 
+			codeNow += di_now->length;
 			sj = di_now->jump;
 			// save position of jumping instruction
 			sj->parent = (void *)(codeNow - 1);
@@ -1709,17 +1797,18 @@ static void PPC_ComputeCode(vm_t *vm) {
 			continue;
 		}
 		// jump isn't short so write it as two instructions
-		// 
-		// the letter one is a non - conditional branch instruction which
-		// accepts immediate values big enough(26 bits)
+
+		// the letter one is a non-conditional branch instruction which
+		// accepts immediate values big enough (26 bits)
 		*jumpFrom = IN((sj_now->ext & branchExtLink ? iBL : iB), jumpLength * 4);
 
-		if (sj_now->bo == branchAlways {
+		if (sj_now->bo == branchAlways) {
 			continue;
 		}
 		// there should have been additional space prepared for this case
-		if (jumpFrom[-1] != nop)
+		if (jumpFrom[-1] != nop) {
 			DIE("additional space for long jump not prepared");
+		}
 		// invert instruction condition
 		long int bo = 0;
 
@@ -1734,26 +1823,21 @@ static void PPC_ComputeCode(vm_t *vm) {
 				DIE("unrecognized branch type");
 				break;
 		}
-		// the former instruction is an inverted conditional branch which
-		// jumps over the non - conditional one
+		// the former instruction is an inverted conditional branch which jumps over the non-conditional one
 		jumpFrom[-1] = IN(iBC, bo, sj_now->bi, +2 * 4);
 	}
 
 	vm->codeBase = dataAndCode;
 	vm->codeLength = codeLength;
-
 	vm_data_t *data = (vm_data_t *)dataAndCode;
 #if ELF64
-	// prepare Official Procedure Descriptor for the generated code
-	// and retrieve real function pointer for helper functions
-
+	// prepare Official Procedure Descriptor for the generated code and retrieve real function pointer for helper functions
 	opd_t *ac = (void *)VM_AsmCall, *bc = (void *)VM_BlockCopy;
 	data->opd.function = codeBegin;
 	// trick it into using the same TOC
 	// this way we won't have to switch TOC before calling AsmCall or BlockCopy
 	data->opd.toc = ac->toc;
 	data->opd.env = ac->env;
-
 	data->AsmCall = ac->function;
 	data->BlockCopy = bc->function;
 #else
@@ -1765,8 +1849,7 @@ static void PPC_ComputeCode(vm_t *vm) {
 	data->dataLength = VM_Data_Offset(data[data_acc]);
 	data->codeLength = (codeNow - codeBegin) * sizeof(ppc_instruction_t);
 	data->floatBase = 0x59800004;
-
-	/* write dynamic data(float constants) */
+	// write dynamic data (float constants)
 	{
 		local_data_t *d_next, *d_now = data_first;
 		long int accumulated = 0;
@@ -1774,8 +1857,9 @@ static void PPC_ComputeCode(vm_t *vm) {
 		do {
 			long int i;
 
-			for (i = 0; i < d_now->count; i++)
+			for (i = 0; i < d_now->count; i++) {
 				data->data[accumulated + i] = d_now->data[i];
+			}
 
 			accumulated += d_now->count;
 			d_next = d_now->next;
@@ -1787,10 +1871,10 @@ static void PPC_ComputeCode(vm_t *vm) {
 
 			d_now = d_next;
 		} while (1);
+
 		data_first = NULL;
 	}
-
-	/* free most of the compilation memory */
+	// free most of the compilation memory
 	{
 		di_now = di_first->next;
 		PPC_Free(di_first);
@@ -1799,24 +1883,37 @@ static void PPC_ComputeCode(vm_t *vm) {
 		while (di_now) {
 			di_first = di_now->next;
 
-			if (di_now->jump)
+			if (di_now->jump) {
 				PPC_Free(di_now->jump);
+			}
+
 			PPC_Free(di_now);
 			di_now = di_first;
 		}
 	}
 }
 
+/*
+=======================================================================================================================================
+VM_Destroy_Compiled
+=======================================================================================================================================
+*/
 static void VM_Destroy_Compiled(vm_t *self) {
 
 	if (self->codeBase) {
-		if (munmap(self->codeBase, self->codeLength))
+		if (munmap(self->codeBase, self->codeLength)) {
 			Com_Printf(S_COLOR_RED "Memory unmap failed, possible memory leak\n");
+		}
 	}
 
 	self->codeBase = NULL;
 }
 
+/*
+=======================================================================================================================================
+VM_Compile
+=======================================================================================================================================
+*/
 void VM_Compile(vm_t *vm, vmHeader_t *header) {
 	long int pc = 0;
 	unsigned long int i_count;
@@ -1834,19 +1931,19 @@ void VM_Compile(vm_t *vm, vmHeader_t *header) {
 	i_first->next = NULL;
 	// realloc instructionPointers with correct size
 	// use Z_Malloc so vm.c will be able to free the memory
-	if (sizeof(void *)!= sizeof(int)) {
+	if (sizeof(void *) != sizeof(int)) {
 		Z_Free(vm->instructionPointers);
 		vm->instructionPointers = Z_Malloc(header->instructionCount * sizeof(void *));
 	}
 
 	di_pointers = (void *)vm->instructionPointers;
+
 	memset(di_pointers, 0, header->instructionCount * sizeof(void *));
 
 	PPC_CompileInit();
-
 	/*
- *read the input program
- *divide it into functions and send each function to compiler
+	 * read the input program
+	 * divide it into functions and send each function to compiler
 	 */
 	code = (char *)header + header->codeOffset;
 
@@ -1854,8 +1951,10 @@ void VM_Compile(vm_t *vm, vmHeader_t *header) {
 		unsigned char op = code[pc++];
 
 		if (op == OP_ENTER) {
-			if (i_first->next)
+			if (i_first->next) {
 				VM_CompileFunction(i_first);
+			}
+
 			i_first->next = NULL;
 			i_last = i_first;
 		}
@@ -1887,21 +1986,24 @@ void VM_Compile(vm_t *vm, vmHeader_t *header) {
 	}
 
 	VM_CompileFunction(i_first);
+
 	PPC_Free(i_first);
-
 	PPC_ShrinkJumps();
-	memset(di_pointers, 0, header->instructionCount * sizeof(void *));
-	PPC_ComputeCode(vm);
 
-	/* check for uninitialized pointers */
+	memset(di_pointers, 0, header->instructionCount * sizeof(void *));
+
+	PPC_ComputeCode(vm);
+	// check for uninitialized pointers
 #ifdef DEBUG_VM
 	long int i;
 
-	for (i = 0; i < header->instructionCount; i++)
-		if (di_pointers[i] == 0)
+	for (i = 0; i < header->instructionCount; i++) {
+		if (di_pointers[i] == 0) {
 			Com_Printf(S_COLOR_RED "Pointer %ld not initialized !\n", i);
+		}
+	}
 #endif
-	/* mark memory as executable and not writeable */
+	// mark memory as executable and not writeable
 	if (mprotect(vm->codeBase, vm->codeLength, PROT_READ|PROT_EXEC)) {
 		// it has failed, make sure memory is unmapped before throwing the error
 		VM_Destroy_Compiled(vm);
@@ -1914,22 +2016,27 @@ void VM_Compile(vm_t *vm, vmHeader_t *header) {
 	{
 		struct timeval tvdone = {0, 0};
 		struct timeval dur = {0, 0};
-		Com_Printf("VM file %s compiled to %i bytes of code(%p - %p)\n", vm->name, vm->codeLength, vm->codeBase, vm->codeBase + vm->codeLength);
+
+		Com_Printf("VM file %s compiled to %i bytes of code (%p - %p)\n", vm->name, vm->codeLength, vm->codeBase, vm->codeBase + vm->codeLength);
 
 		gettimeofday(&tvdone, NULL);
 		timersub(&tvdone, &tvstart, &dur);
+
 		Com_Printf("compilation took %lu.%06lu seconds\n", (long unsigned int)dur.tv_sec, (long unsigned int)dur.tv_usec);
 	}
 }
 
+/*
+=======================================================================================================================================
+VM_CallCompiled
+=======================================================================================================================================
+*/
 int VM_CallCompiled(vm_t *vm, int *args) {
 	int retVal;
 	int *argPointer;
-
 	vm_data_t *vm_dataAndCode = (void *)(vm->codeBase);
 	int programStack = vm->programStack;
 	int stackOnEntry = programStack;
-
 	byte *image = vm->dataBase;
 
 	currentVM = vm;
@@ -1938,7 +2045,9 @@ int VM_CallCompiled(vm_t *vm, int *args) {
 
 	programStack -= (8 + 4 * MAX_VMMAIN_ARGS);
 	argPointer = (int *)&image[programStack + 8];
+
 	memcpy(argPointer, args, 4 * MAX_VMMAIN_ARGS);
+
 	argPointer[-1] = 0;
 	argPointer[-2] = -1;
 #ifdef VM_TIMES
@@ -1948,11 +2057,11 @@ int VM_CallCompiled(vm_t *vm, int *args) {
 	times(&start_time);
 	time_outside_vm = 0;
 #endif
-	/* call generated code */
+	// call generated code
 	{
 		int (*entry)(void *, int, void *);
 #ifdef __PPC64__
-		entry = (void *)& (vm_dataAndCode->opd);
+		entry = (void *)&(vm_dataAndCode->opd);
 #else
 		entry = (void *)(vm->codeBase + vm_dataAndCode->dataLength);
 #endif

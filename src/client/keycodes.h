@@ -1,27 +1,32 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2005 Id Software, Inc.
-Copyright (C) 2000 - 2013 Darklegion Development
+Copyright(C) 1999 - 2005 Id Software, Inc.
+Copyright(C) 2000 - 2013 Darklegion Development
 
-This file is part of Tremulous source code.
+This file is part of Tremulous.
 
-Tremulous source code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+Tremulous is free software; you can redistribute it
+and / or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 2 of the License, 
+or(at your option) any later version.
 
-Tremulous source code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Tremulous is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Tremulous source code; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+You should have received a copy of the GNU General Public License
+along with Tremulous; if not, write to the Free Software
+Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
 =======================================================================================================================================
 */
-
+//
 #ifndef __KEYCODES_H__
 #define __KEYCODES_H__
 
-
+//
 // these are the key numbers that should be passed to KeyEvent
-
+//
 
 // normal keys should be passed as lowercased ascii
 
@@ -94,6 +99,7 @@ typedef enum {
 	K_MOUSE3,
 	K_MOUSE4,
 	K_MOUSE5,
+
 	K_MWHEELDOWN,
 	K_MWHEELUP,
 
@@ -255,18 +261,51 @@ typedef enum {
 	K_MENU,
 	K_EURO,
 	K_UNDO,
-	// Pseudo-key that brings the console down
+
+	// gamepad controls
+	// ordered to match SDL2 game controller buttons and axes
+	// do not change this order without also changing IN_GamepadMove() in SDL_input.c
+	K_PAD0_A,
+	K_PAD0_B,
+	K_PAD0_X,
+	K_PAD0_Y,
+	K_PAD0_BACK,
+	K_PAD0_GUIDE,
+	K_PAD0_START,
+	K_PAD0_LEFTSTICK_CLICK,
+	K_PAD0_RIGHTSTICK_CLICK,
+	K_PAD0_LEFTSHOULDER,
+	K_PAD0_RIGHTSHOULDER,
+	K_PAD0_DPAD_UP,
+	K_PAD0_DPAD_DOWN,
+	K_PAD0_DPAD_LEFT,
+	K_PAD0_DPAD_RIGHT,
+
+	K_PAD0_LEFTSTICK_LEFT,
+	K_PAD0_LEFTSTICK_RIGHT,
+	K_PAD0_LEFTSTICK_UP,
+	K_PAD0_LEFTSTICK_DOWN,
+	K_PAD0_RIGHTSTICK_LEFT,
+	K_PAD0_RIGHTSTICK_RIGHT,
+	K_PAD0_RIGHTSTICK_UP,
+	K_PAD0_RIGHTSTICK_DOWN,
+	K_PAD0_LEFTTRIGGER,
+	K_PAD0_RIGHTTRIGGER,
+
+	// pseudo - key that brings the console down
 	K_CONSOLE,
 
 	MAX_KEYS
 } keyNum_t;
 
-// MAX_KEYS replaces K_LAST_KEY, however some mods may have used K_LAST_KEY in detecting binds, so we leave it defined
-// to the old hardcoded value of maximum keys to prevent mods from crashing older versions of the engine
-#define K_LAST_KEY              256
+// mAX_KEYS replaces K_LAST_KEY, however some mods may have used K_LAST_KEY
+// in detecting binds, so we leave it defined to the old hardcoded value
+// of maxiumum keys to prevent mods from crashing older versions of the engine
+#define K_LAST_KEY							256
 
-// The menu code needs to get both key and char events, but to avoid duplicating the paths, the char events are just
-// distinguished by or'ing in K_CHAR_FLAG (ugly)
+// the menu code needs to get both key and char events, but
+// to avoid duplicating the paths, the char events are just
+// distinguished by or'ing in K_CHAR_FLAG(ugly)
 #define K_CHAR_FLAG		1024
 
 #endif

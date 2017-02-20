@@ -1,24 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2005 Id Software, Inc.
-Copyright (C) 2000 - 2013 Darklegion Development
-Copyright (C) 2005 Stuart Dalton(badcdev@gmail.com)
+Copyright(C) 1999 - 2005 Id Software, Inc.
+Copyright(C) 2000 - 2013 Darklegion Development
+Copyright(C) 2005 Stuart Dalton(badcdev@gmail.com)
 
 This file is part of Tremulous.
 
 Tremulous is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
+and / or modify it under the terms of the GNU General Public License as
 published by the Free Software Foundation; either version 2 of the License, 
-or (at your option) any later version.
+or(at your option) any later version.
 
 Tremulous is distributed in the hope that it will be
 useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with Tremulous; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
 =======================================================================================================================================
 */
 
@@ -38,21 +38,22 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../AL / al.h"
 #include "../AL / alc.h"
 #else
-#ifdef _MSC_VER
- // MSVC users must install the OpenAL SDK which doesn't use the AL/*.h scheme.
-  #include <al.h>
-  #include <alc.h>
+#if defined (_MSC_VER) || defined (__APPLE__)
+	// mSVC users must install the OpenAL SDK which doesn't use the AL/*.h scheme.
+	// oSX framework also needs this
+#include <al.h>
+#include <alc.h>
 #else
-  #include <AL / al.h>
-  #include <AL / alc.h>
+#include <AL / al.h>
+#include <AL / alc.h>
 #endif
 #endif
 
 /* Hack to enable compiling both on OpenAL SDK and OpenAL - soft. */
 #ifndef ALC_ENUMERATE_ALL_EXT
 #define ALC_ENUMERATE_ALL_EXT 1
-#define ALC_DEFAULT_ALL_DEVICES_SPECIFIER        0x1012
-#define ALC_ALL_DEVICES_SPECIFIER                0x1013
+#define ALC_DEFAULT_ALL_DEVICES_SPECIFIER				0x1012
+#define ALC_ALL_DEVICES_SPECIFIER								0x1013
 #endif
 
 #ifdef USE_OPENAL_DLOPEN
@@ -128,6 +129,7 @@ extern LPALGETBUFFERIV qalGetBufferiv;
 extern LPALDOPPLERFACTOR qalDopplerFactor;
 extern LPALSPEEDOFSOUND qalSpeedOfSound;
 extern LPALDISTANCEMODEL qalDistanceModel;
+
 extern LPALCCREATECONTEXT qalcCreateContext;
 extern LPALCMAKECONTEXTCURRENT qalcMakeContextCurrent;
 extern LPALCPROCESSCONTEXT qalcProcessContext;

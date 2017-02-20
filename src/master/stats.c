@@ -3,16 +3,16 @@ stats.c
 
 Statistics for tremmaster
 
-Copyright (C) 2009 Darklegion Development
+Copyright(C) 2009 Darklegion Development
 
-This program is free software; you can redistribute it and/or modify
+This program is free software; you can redistribute it and / or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful, 
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
@@ -30,11 +30,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111 - 1307  USA
 #include <string.h>
 #include <time.h>
 #include <tdb.h>
-
 #include "common.h"
 
 #define MAX_DATA_SIZE 1024
-#define CS_FILENAME   "clientStats.tdb"
+#define CS_FILENAME "clientStats.tdb"
 
 /*
 =======================================================================================================================================
@@ -42,90 +41,95 @@ RecordClientStat
 =======================================================================================================================================
 */
 void RecordClientStat(const char *address, const char *version, const char *renderer) {
-  TDB_CONTEXT *tctx = NULL;
-  TDB_DATA    key, data;
-  char ipText[22];
-  char dataText[MAX_DATA_SIZE] = {0};
-  char *p;
-  int i;
+	TDB_CONTEXT *tctx = NULL;
+	TDB_DATA key, data;
+	char ipText[22];
+	char dataText[MAX_DATA_SIZE] = {0};
+	char *p;
+	int i;
 
-  tctx = tdb_open(CS_FILENAME, 0, 0, O_RDWR|O_CREAT, S_IRUSR|S_IWUSR);
+	tctx = tdb_open(CS_FILENAME, 0, 0, O_RDWR|O_CREAT, S_IRUSR|S_IWUSR);
 
-  if (!tctx) {
+	if (!tctx) {
 		MsgPrint(MSG_DEBUG, "Couldn't open %s\n", CS_FILENAME);
-    return;
-}
+		return;
+	}
 
-  strncpy(ipText, address, 22);
-  if ((p = strrchr(ipText, ':'))) // Remove port
-    *p = '\0';
+	strncpy(ipText, address, 22);
 
-  key.dptr = ipText;
-  key.dsize = strlen(ipText);
+	if ((p = strrchr(ipText, ':'))) { // remove port
+		*p = '\0';
+	}
 
-  strncat(dataText, "\"", MAX_DATA_SIZE);
-  strncat(dataText, version, MAX_DATA_SIZE);
+	key.dptr = ipText;
+	key.dsize = strlen(ipText);
 
- // Remove last three tokens(the date)
-  for (i = 0; i < 3; i++) {
-    if ((p = strrchr(dataText, ' ')))
-      *p = '\0';
-}
-  strncat(dataText, "\"", MAX_DATA_SIZE);
+	strncat(dataText, "\"", MAX_DATA_SIZE);
+	strncat(dataText, version, MAX_DATA_SIZE);
+	// remove last three tokens(the date)
+	for (i = 0; i < 3; i++) {
+		if ((p = strrchr(dataText, ' '))) {
+			*p = '\0';
+		}
+	}
 
-  strncat(dataText, " \"", MAX_DATA_SIZE);
-  strncat(dataText, renderer, MAX_DATA_SIZE);
-  strncat(dataText, "\"", MAX_DATA_SIZE);
+	strncat(dataText, "\"", MAX_DATA_SIZE);
 
-  data.dptr = dataText;
-  data.dsize = strlen(dataText);
+	strncat(dataText, " \"", MAX_DATA_SIZE);
+	strncat(dataText, renderer, MAX_DATA_SIZE);
+	strncat(dataText, "\"", MAX_DATA_SIZE);
 
-  if (tdb_store(tctx, key, data, 0) < 0)
+	data.dptr = dataText;
+	data.dsize = strlen(dataText);
+
+	if (tdb_store(tctx, key, data, 0) < 0) {
 		MsgPrint(MSG_DEBUG, "tdb_store failed\n");
+	}
 
-  tdb_close(tctx);
+	tdb_close(tctx);
 	MsgPrint(MSG_DEBUG, "Recorded client stat for %s\n", address);
 }
 
-#define GS_FILENAME   "gameStats.tdb"
-
+#define GS_FILENAME "gameStats.tdb"
 /*
 =======================================================================================================================================
 RecordGameStat
 =======================================================================================================================================
 */
 void RecordGameStat(const char *address, const char *dataText) {
-  TDB_CONTEXT *tctx = NULL;
-  TDB_DATA    key, data;
-  char keyText[MAX_DATA_SIZE] = {0};
-  char *p;
-  time_t tm = time(NULL);
+	TDB_CONTEXT *tctx = NULL;
+	TDB_DATA key, data;
+	char keyText[MAX_DATA_SIZE] = {0};
+	char *p;
+	time_t tm = time(NULL);
 
-  tctx = tdb_open(GS_FILENAME, 0, 0, O_RDWR|O_CREAT, S_IRUSR|S_IWUSR);
+	tctx = tdb_open(GS_FILENAME, 0, 0, O_RDWR|O_CREAT, S_IRUSR|S_IWUSR);
 
-  if (!tctx) {
+	if (!tctx) {
 		MsgPrint(MSG_DEBUG, "Couldn't open %s\n", GS_FILENAME);
-    return;
-}
+		return;
+	}
 
-  strncpy(keyText, address, 22);
-  if ((p = strrchr(keyText, ':'))) // Remove port
-    *p = '\0';
+	strncpy(keyText, address, 22);
 
-  strncat(keyText, " ", MAX_DATA_SIZE);
-  strncat(keyText, asctime(gmtime(&tm)), MAX_DATA_SIZE);
+	if ((p = strrchr(keyText, ':'))) { // remove port
+		*p = '\0';
+	}
 
-  key.dptr = keyText;
-  key.dsize = strlen(keyText);
+	strncat(keyText, " ", MAX_DATA_SIZE);
+	strncat(keyText, asctime(gmtime(&tm)), MAX_DATA_SIZE);
 
-  data.dptr = (char *)dataText;
-  data.dsize = strlen(dataText);
+	key.dptr = keyText;
+	key.dsize = strlen(keyText);
 
-  if (tdb_store(tctx, key, data, 0) < 0)
+	data.dptr = (char *)dataText;
+	data.dsize = strlen(dataText);
+
+	if (tdb_store(tctx, key, data, 0) < 0) {
 		MsgPrint(MSG_DEBUG, "tdb_store failed\n");
+	}
 
-  tdb_close(tctx);
+	tdb_close(tctx);
 	MsgPrint(MSG_NORMAL, "Recorded game stat from %s\n", address);
 }
-
 #endif

@@ -1,35 +1,34 @@
 /*
-=======================================================================================================================================
+===========================================================================
 Copyright (C) 1999-2005 Id Software, Inc.
-Copyright (C) 2000 - 2013 Darklegion Development
-Copyright (C) 2005 Stuart Dalton(badcdev@gmail.com)
+Copyright (C) 2000-2013 Darklegion Development
+Copyright (C) 2005 Stuart Dalton (badcdev@gmail.com)
 
 This file is part of Tremulous.
 
 Tremulous is free software; you can redistribute it
 and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the License, 
+published by the Free Software Foundation; either version 2 of the License,
 or (at your option) any later version.
 
 Tremulous is distributed in the hope that it will be
 useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with Tremulous; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-=======================================================================================================================================
+===========================================================================
 */
 
-// Dynamically loads OpenAL
+/**************************************************************************************************************************************
+ Dynamically loads OpenAL.
+**************************************************************************************************************************************/
 
 #ifdef USE_OPENAL
-
 #include "qal.h"
-
 #ifdef USE_OPENAL_DLOPEN
-
 #include "../sys/sys_loadlib.h"
 
 LPALENABLE qalEnable;
@@ -86,7 +85,6 @@ LPALGETBUFFERI qalGetBufferi;
 LPALDOPPLERFACTOR qalDopplerFactor;
 LPALSPEEDOFSOUND qalSpeedOfSound;
 LPALDISTANCEMODEL qalDistanceModel;
-
 LPALCCREATECONTEXT qalcCreateContext;
 LPALCMAKECONTEXTCURRENT qalcMakeContextCurrent;
 LPALCPROCESSCONTEXT qalcProcessContext;
@@ -107,6 +105,7 @@ LPALCCAPTURECLOSEDEVICE qalcCaptureCloseDevice;
 LPALCCAPTURESTART qalcCaptureStart;
 LPALCCAPTURESTOP qalcCaptureStop;
 LPALCCAPTURESAMPLES qalcCaptureSamples;
+
 static void *OpenALLib = NULL;
 static qboolean alinit_fail = qfalse;
 
@@ -126,7 +125,7 @@ static void *GPA(char *str) {
 		return NULL;
 	} else {
 		Com_DPrintf(" Loaded symbol %s (%p)\n", str, rv);
-        return rv;
+		return rv;
 	}
 }
 
@@ -141,8 +140,9 @@ qboolean QAL_Init(const char *libname) {
 		return qtrue;
 	}
 
-	if (!(OpenALLib = Sys_LoadDll(libname, qtrue)))
+	if (!(OpenALLib = Sys_LoadDll(libname, qtrue))) {
 		return qfalse;
+	}
 
 	alinit_fail = qfalse;
 
@@ -200,7 +200,6 @@ qboolean QAL_Init(const char *libname) {
 	qalDopplerFactor = GPA("alDopplerFactor");
 	qalSpeedOfSound = GPA("alSpeedOfSound");
 	qalDistanceModel = GPA("alDistanceModel");
-
 	qalcCreateContext = GPA("alcCreateContext");
 	qalcMakeContextCurrent = GPA("alcMakeContextCurrent");
 	qalcProcessContext = GPA("alcProcessContext");
@@ -297,7 +296,6 @@ void QAL_Shutdown(void) {
 	qalDopplerFactor = NULL;
 	qalSpeedOfSound = NULL;
 	qalDistanceModel = NULL;
-
 	qalcCreateContext = NULL;
 	qalcMakeContextCurrent = NULL;
 	qalcProcessContext = NULL;
@@ -320,10 +318,22 @@ void QAL_Shutdown(void) {
 	qalcCaptureSamples = NULL;
 }
 #else
+/*
+=======================================================================================================================================
+QAL_Init
+=======================================================================================================================================
+*/
 qboolean QAL_Init(const char *libname) {
 	return qtrue;
 }
+
+/*
+=======================================================================================================================================
+QAL_Shutdown
+=======================================================================================================================================
+*/
 void QAL_Shutdown(void) {
+
 }
 #endif
 #endif

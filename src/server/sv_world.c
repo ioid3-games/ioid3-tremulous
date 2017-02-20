@@ -1,18 +1,23 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2005 Id Software, Inc.
-Copyright (C) 2000 - 2013 Darklegion Development
+Copyright(C) 1999 - 2005 Id Software, Inc.
+Copyright(C) 2000 - 2013 Darklegion Development
 
-This file is part of Tremulous source code.
+This file is part of Tremulous.
 
-Tremulous source code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+Tremulous is free software; you can redistribute it
+and / or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 2 of the License, 
+or(at your option) any later version.
 
-Tremulous source code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Tremulous is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Tremulous source code; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+You should have received a copy of the GNU General Public License
+along with Tremulous; if not, write to the Free Software
+Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
 =======================================================================================================================================
 */
 
@@ -58,7 +63,7 @@ clipHandle_t SV_ClipHandleForEntity(const sharedEntity_t *ent) {
 */
 
 typedef struct worldSector_s {
-	int axis; // - 1 = leaf node
+	int axis; // -1 = leaf node
 	float dist;
 	struct worldSector_s *children[2];
 	svEntity_t *entities;
@@ -82,7 +87,6 @@ void SV_SectorList_f(void) {
 
 	for (i = 0; i < AREA_NODES; i++) {
 		sec = &sv_worldSectors[i];
-
 		c = 0;
 
 		for (ent = sec->entities; ent; ent = ent->nextEntityInWorldSector) {
@@ -106,6 +110,7 @@ static worldSector_t *SV_CreateworldSector(int depth, vec3_t mins, vec3_t maxs) 
 	vec3_t mins1, maxs1, mins2, maxs2;
 
 	anode = &sv_worldSectors[sv_numworldSectors];
+
 	sv_numworldSectors++;
 
 	if (depth == AREA_DEPTH) {
@@ -123,10 +128,12 @@ static worldSector_t *SV_CreateworldSector(int depth, vec3_t mins, vec3_t maxs) 
 	}
 
 	anode->dist = 0.5 * (maxs[anode->axis] + mins[anode->axis]);
+
 	VectorCopy(mins, mins1);
 	VectorCopy(mins, mins2);
 	VectorCopy(maxs, maxs1);
 	VectorCopy(maxs, maxs2);
+
 	maxs1[anode->axis] = mins2[anode->axis] = anode->dist;
 
 	anode->children[0] = SV_CreateworldSector(depth + 1, mins2, maxs2);
@@ -165,9 +172,7 @@ void SV_UnlinkEntity(sharedEntity_t *gEnt) {
 	worldSector_t *ws;
 
 	ent = SV_SvEntityForGentity(gEnt);
-
 	gEnt->r.linked = qfalse;
-
 	ws = ent->worldSector;
 
 	if (!ws) {
@@ -346,7 +351,6 @@ void SV_LinkEntity(sharedEntity_t *gEnt) {
 	ent->worldSector = node;
 	ent->nextEntityInWorldSector = node->entities;
 	node->entities = ent;
-
 	gEnt->r.linked = qtrue;
 }
 
@@ -376,9 +380,8 @@ static void SV_AreaEntities_r(worldSector_t *node, areaParms_t *ap) {
 	svEntity_t *check, *next;
 	sharedEntity_t *gcheck;
 
-	for (check = node->entities ; check; check = next) {
+	for (check = node->entities; check; check = next) {
 		next = check->nextEntityInWorldSector;
-
 		gcheck = SV_GEntityForSvEntity(check);
 
 		if (gcheck->r.absmin[0] > ap->maxs[0] || gcheck->r.absmin[1] > ap->maxs[1] || gcheck->r.absmin[2] > ap->maxs[2] || gcheck->r.absmax[0] < ap->mins[0] || gcheck->r.absmax[1] < ap->mins[1] || gcheck->r.absmax[2] < ap->mins[2]) {
@@ -422,7 +425,6 @@ int SV_AreaEntities(const vec3_t mins, const vec3_t maxs, int *entityList, int m
 	ap.maxcount = maxcount;
 
 	SV_AreaEntities_r(sv_worldSectors, &ap);
-
 	return ap.count;
 }
 
@@ -458,7 +460,6 @@ void SV_ClipToEntity(trace_t *trace, const vec3_t start, const vec3_t mins, cons
 	}
 	// might intersect, so do an exact clip
 	clipHandle = SV_ClipHandleForEntity(touch);
-
 	origin = touch->r.currentOrigin;
 	angles = touch->r.currentAngles;
 
@@ -519,14 +520,12 @@ static void SV_ClipMoveToEntities(moveclip_t *clip) {
 				continue; // don't clip against other missiles from our owner
 			}
 		}
-		// if it doesn't have any brushes of a type we
-		// are looking for, ignore it
+		// if it doesn't have any brushes of a type we are looking for, ignore it
 		if (!(clip->contentmask & touch->r.contents)) {
 			continue;
 		}
 		// might intersect, so do an exact clip
 		clipHandle = SV_ClipHandleForEntity(touch);
-
 		origin = touch->r.currentOrigin;
 		angles = touch->r.currentAngles;
 
@@ -579,6 +578,7 @@ void SV_Trace(trace_t *results, const vec3_t start, vec3_t mins, vec3_t maxs, co
 	Com_Memset(&clip, 0, sizeof(moveclip_t));
 	// clip to world
 	CM_BoxTrace(&clip.trace, start, end, mins, maxs, 0, contentmask, type);
+
 	clip.trace.entityNum = clip.trace.fraction != 1.0 ? ENTITYNUM_WORLD : ENTITYNUM_NONE;
 
 	if (clip.trace.fraction == 0) {
@@ -588,8 +588,10 @@ void SV_Trace(trace_t *results, const vec3_t start, vec3_t mins, vec3_t maxs, co
 
 	clip.contentmask = contentmask;
 	clip.start = start;
-// 	VectorCopy(clip.trace.endpos, clip.end);
+
+//	VectorCopy(clip.trace.endpos, clip.end);
 	VectorCopy(end, clip.end);
+
 	clip.mins = mins;
 	clip.maxs = maxs;
 	clip.passEntityNum = passEntityNum;
@@ -645,7 +647,6 @@ int SV_PointContents(const vec3_t p, int passEntityNum) {
 		}
 
 		c2 = CM_TransformedPointContents(p, clipHandle, hit->r.currentOrigin, angles);
-
 		contents |= c2;
 	}
 

@@ -1,18 +1,23 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2005 Id Software, Inc.
-Copyright (C) 2000 - 2013 Darklegion Development
+Copyright(C) 1999 - 2005 Id Software, Inc.
+Copyright(C) 2000 - 2013 Darklegion Development
 
-This file is part of Tremulous source code.
+This file is part of Tremulous.
 
-Tremulous source code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+Tremulous is free software; you can redistribute it
+and / or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 2 of the License, 
+or(at your option) any later version.
 
-Tremulous source code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Tremulous is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Tremulous source code; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+You should have received a copy of the GNU General Public License
+along with Tremulous; if not, write to the Free Software
+Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
 =======================================================================================================================================
 */
 
@@ -22,13 +27,18 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
 #include "server.h"
 
-// these functions must be used instead of pointer arithmetic, because
-// the game allocates gentities with private information after the server shared part
+// these functions must be used instead of pointer arithmetic, because the game allocates gentities with private information after the
+// server shared part
+
+/*
+=======================================================================================================================================
+SV_NumForGentity
+=======================================================================================================================================
+*/
 int SV_NumForGentity(sharedEntity_t *ent) {
 	int num;
 
 	num = ((byte *)ent - (byte *)sv.gentities) / sv.gentitySize;
-
 	return num;
 }
 
@@ -40,8 +50,7 @@ SV_GentityNum
 sharedEntity_t *SV_GentityNum(int num) {
 	sharedEntity_t *ent;
 
-	ent = (sharedEntity_t *) ((byte *)sv.gentities + sv.gentitySize *(num));
-
+	ent = (sharedEntity_t *)((byte *)sv.gentities + sv.gentitySize * (num));
 	return ent;
 }
 
@@ -53,8 +62,7 @@ SV_GameClientNum
 playerState_t *SV_GameClientNum(int num) {
 	playerState_t *ps;
 
-	ps = (playerState_t *) ((byte *)sv.gameClients + sv.gameClientSize *(num));
-
+	ps = (playerState_t *)((byte *)sv.gameClients + sv.gameClientSize * (num));
 	return ps;
 }
 
@@ -121,7 +129,13 @@ void SV_GameDropClient(int clientNum, const char *reason) {
 }
 
 /*
-=======================================================================================================================================(sharedEntity_t *ent, const char *name) {
+=======================================================================================================================================
+SV_SetBrushModel
+
+Sets mins and maxs for inline bmodels.
+=======================================================================================================================================
+*/
+void SV_SetBrushModel(sharedEntity_t *ent, const char *name) {
 	clipHandle_t h;
 	vec3_t mins, maxs;
 
@@ -136,14 +150,16 @@ void SV_GameDropClient(int clientNum, const char *reason) {
 	ent->s.modelindex = atoi(name + 1);
 
 	h = CM_InlineModel(ent->s.modelindex);
+
 	CM_ModelBounds(h, mins, maxs);
+
 	VectorCopy(mins, ent->r.mins);
 	VectorCopy(maxs, ent->r.maxs);
+
 	ent->r.bmodel = qtrue;
+	ent->r.contents = -1; // we don't know exactly what is in the brushes
 
-	ent->r.contents = -1;		// we don't know exactly what is in the brushes
-
-	SV_LinkEntity(ent);		// FIXME: remove
+	SV_LinkEntity(ent); // FIXME: remove
 }
 
 /*
@@ -162,6 +178,7 @@ qboolean SV_inPVS(const vec3_t p1, const vec3_t p2) {
 	leafnum = CM_PointLeafnum(p1);
 	cluster = CM_LeafCluster(leafnum);
 	area1 = CM_LeafArea(leafnum);
+
 	mask = CM_ClusterPVS(cluster);
 
 	leafnum = CM_PointLeafnum(p2);
@@ -193,6 +210,7 @@ qboolean SV_inPVSIgnorePortals(const vec3_t p1, const vec3_t p2) {
 
 	leafnum = CM_PointLeafnum(p1);
 	cluster = CM_LeafCluster(leafnum);
+
 	mask = CM_ClusterPVS(cluster);
 
 	leafnum = CM_PointLeafnum(p2);
@@ -235,8 +253,8 @@ qboolean SV_EntityContact(vec3_t mins, vec3_t maxs, const sharedEntity_t *gEnt, 
 	// check for exact collision
 	origin = gEnt->r.currentOrigin;
 	angles = gEnt->r.currentAngles;
-
 	ch = SV_ClipHandleForEntity(gEnt);
+
 	CM_TransformedBoxTrace(&trace, vec3_origin, vec3_origin, mins, maxs, ch, -1, origin, angles, type);
 
 	return trace.startsolid;
@@ -349,6 +367,8 @@ intptr_t SV_GameSystemCalls(intptr_t *args) {
 			return 0;
 		case G_FS_GETFILELIST:
 			return FS_GetFileList(VMA(1), VMA(2), VMA(3), args[4]);
+		case G_FS_GETFILTEREDFILES:
+			return FS_GetFilteredFiles(VMA(1), VMA(2), VMA(3), VMA(4), args[5]);
 		case G_FS_SEEK:
 			return FS_Seek(args[1], args[2], args[3]);
 		case G_LOCATE_GAME_DATA:
@@ -414,18 +434,18 @@ intptr_t SV_GameSystemCalls(intptr_t *args) {
 			SV_GetUsercmd(args[1], VMA(2));
 			return 0;
 		case G_GET_ENTITY_TOKEN:
-			{
-				const char *s;
+		{
+			const char *s;
 
-				s = COM_Parse(&sv.entityParsePoint);
-				Q_strncpyz(VMA(1), s, args[2]);
+			s = COM_Parse(&sv.entityParsePoint);
+			Q_strncpyz(VMA(1), s, args[2]);
 
-				if (!sv.entityParsePoint && !s[0]) {
-					return qfalse;
-				} else {
-					return qtrue;
-				}
+			if (!sv.entityParsePoint && !s[0]) {
+				return qfalse;
+			} else {
+				return qtrue;
 			}
+		}
 
 		case G_REAL_TIME:
 			return Com_RealTime(VMA(1));
@@ -503,6 +523,7 @@ void SV_ShutdownGameProgs(void) {
 
 	VM_Call(gvm, GAME_SHUTDOWN, qfalse);
 	VM_Free(gvm);
+
 	gvm = NULL;
 }
 

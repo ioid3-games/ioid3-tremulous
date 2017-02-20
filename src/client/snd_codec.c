@@ -1,24 +1,23 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2005 Id Software, Inc.
-Copyright (C) 2000 - 2013 Darklegion Development
-Copyright (C) 2005 Stuart Dalton(badcdev@gmail.com)
+Copyright(C) 1999 - 2005 Id Software, Inc.
+Copyright(C) 2000 - 2013 Darklegion Development
 
 This file is part of Tremulous.
 
 Tremulous is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
+and / or modify it under the terms of the GNU General Public License as
 published by the Free Software Foundation; either version 2 of the License, 
-or (at your option) any later version.
+or(at your option) any later version.
 
 Tremulous is distributed in the hope that it will be
 useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with Tremulous; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
 =======================================================================================================================================
 */
 
@@ -52,18 +51,19 @@ static void *S_CodecGetSound(const char *filename, snd_info_t *info) {
 		for (codec = codecs; codec; codec = codec->next) {
 			if (!Q_stricmp(ext, codec->ext)) {
 				// Load
-				if (info)
+				if (info) {
 					rtn = codec->load(localName, info);
-				else
+				} else {
 					rtn = codec->open(localName);
+				}
+
 				break;
 			}
 		}
 		// A loader was found
 		if (codec) {
 			if (!rtn) {
-				// Loader failed, most likely because the file isn't there;
-				// try again without the extension
+				// Loader failed, most likely because the file isn't there; try again without the extension
 				orgNameFailed = qtrue;
 				orgCodec = codec;
 				COM_StripExtension(filename, localName, MAX_QPATH);
@@ -73,8 +73,7 @@ static void *S_CodecGetSound(const char *filename, snd_info_t *info) {
 			}
 		}
 	}
-	// Try and find a suitable match using all
-	// the sound codecs supported
+	// Try and find a suitable match using all the sound codecs supported
 	for (codec = codecs; codec; codec = codec->next) {
 		if (codec == orgCodec) {
 			continue;
@@ -82,10 +81,11 @@ static void *S_CodecGetSound(const char *filename, snd_info_t *info) {
 
 		Com_sprintf(altName, sizeof(altName), "%s.%s", localName, codec->ext);
 		// Load
-		if (info)
+		if (info) {
 			rtn = codec->load(altName, info);
 		} else {
 			rtn = codec->open(altName);
+		}
 
 		if (rtn) {
 			if (orgNameFailed) {
@@ -107,16 +107,15 @@ S_CodecInit
 =======================================================================================================================================
 */
 void S_CodecInit() {
+
 	codecs = NULL;
 #ifdef USE_CODEC_OPUS
 	S_CodecRegister(&opus_codec);
 #endif
-
 #ifdef USE_CODEC_VORBIS
 	S_CodecRegister(&ogg_codec);
 #endif
-
-// Register wav codec last so that it is always tried first when a file extension was not found
+	// Register wav codec last so that it is always tried first when a file extension was not found
 	S_CodecRegister(&wav_codec);
 }
 
@@ -157,16 +156,31 @@ snd_stream_t *S_CodecOpenStream(const char *filename) {
 	return S_CodecGetSound(filename, NULL);
 }
 
+/*
+=======================================================================================================================================
+S_CodecCloseStream
+=======================================================================================================================================
+*/
 void S_CodecCloseStream(snd_stream_t *stream) {
 	stream->codec->close(stream);
 }
 
+/*
+=======================================================================================================================================
+S_CodecReadStream
+=======================================================================================================================================
+*/
 int S_CodecReadStream(snd_stream_t *stream, int bytes, void *buffer) {
 	return stream->codec->read(stream, bytes, buffer);
 }
 
-// ======================================================================= 
-// Util functions(used by codecs)
+/*
+=======================================================================================================================================
+
+	Util functions (used by codecs)
+
+=======================================================================================================================================
+*/
 
 /*
 =======================================================================================================================================
@@ -177,6 +191,7 @@ snd_stream_t *S_CodecUtilOpen(const char *filename, snd_codec_t *codec) {
 	snd_stream_t *stream;
 	fileHandle_t hnd;
 	int length;
+
 	// Try to open the file
 	length = FS_FOpenFileRead(filename, &hnd, qtrue);
 
@@ -204,7 +219,8 @@ S_CodecUtilClose
 =======================================================================================================================================
 */
 void S_CodecUtilClose(snd_stream_t **stream) {
+
 	FS_FCloseFile((*stream)->file);
 	Z_Free(*stream);
- *stream = NULL;
+	*stream = NULL;
 }

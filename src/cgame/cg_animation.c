@@ -1,18 +1,23 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2005 Id Software, Inc.
-Copyright (C) 2000 - 2013 Darklegion Development
+Copyright(C) 1999 - 2005 Id Software, Inc.
+Copyright(C) 2000 - 2013 Darklegion Development
 
-This file is part of Tremulous source code.
+This file is part of Tremulous.
 
-Tremulous source code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+Tremulous is free software; you can redistribute it
+and / or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 2 of the License, 
+or(at your option) any later version.
 
-Tremulous source code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Tremulous is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Tremulous source code; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+You should have received a copy of the GNU General Public License
+along with Tremulous; if not, write to the Free Software
+Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
 =======================================================================================================================================
 */
 
@@ -22,7 +27,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 =======================================================================================================================================
 CG_RunLerpFrame
 
-Sets cg.snap, cg.oldFrame, and cg.backlerp, cg.time should be between oldFrameTime and frameTime after exit.
+Sets cg.snap, cg.oldFrame, and cg.backlerp. cg.time should be between oldFrameTime and frameTime after exit.
 =======================================================================================================================================
 */
 void CG_RunLerpFrame(lerpFrame_t *lf, float scale) {
@@ -43,7 +48,6 @@ void CG_RunLerpFrame(lerpFrame_t *lf, float scale) {
 
 		if (!anim->frameLerp) {
 			return; // shouldn't happen
-		}
 
 		if (cg.time < lf->animationTime) {
 			lf->frameTime = lf->animationTime; // initial lerp
@@ -61,8 +65,9 @@ void CG_RunLerpFrame(lerpFrame_t *lf, float scale) {
 
 		if (f >= numFrames) {
 			f -= numFrames;
+
 			if (anim->loopFrames) {
-				f %= anim->loopFrames;
+				f % = anim->loopFrames;
 				f += anim->numFrames - anim->loopFrames;
 			} else {
 				f = numFrames - 1;
@@ -99,6 +104,6 @@ void CG_RunLerpFrame(lerpFrame_t *lf, float scale) {
 	if (lf->frameTime == lf->oldFrameTime) {
 		lf->backlerp = 0;
 	} else {
-		lf->backlerp = 1.0 - (float) (cg.time - lf->oldFrameTime) / (lf->frameTime - lf->oldFrameTime);
+		lf->backlerp = 1.0 - (float)(cg.time - lf->oldFrameTime) / (lf->frameTime - lf->oldFrameTime);
 	}
 }

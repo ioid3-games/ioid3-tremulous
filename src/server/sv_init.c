@@ -1,23 +1,27 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2005 Id Software, Inc.
-Copyright (C) 2000 - 2013 Darklegion Development
+Copyright(C) 1999 - 2005 Id Software, Inc.
+Copyright(C) 2000 - 2013 Darklegion Development
 
-This file is part of Tremulous source code.
+This file is part of Tremulous.
 
-Tremulous source code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+Tremulous is free software; you can redistribute it
+and / or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 2 of the License, 
+or(at your option) any later version.
 
-Tremulous source code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Tremulous is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Tremulous source code; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+You should have received a copy of the GNU General Public License
+along with Tremulous; if not, write to the Free Software
+Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
 =======================================================================================================================================
 */
 
 #include "server.h"
-
 
 /*
 =======================================================================================================================================
@@ -30,9 +34,8 @@ static void SV_SendConfigstring(client_t *client, int index) {
 	int maxChunkSize = MAX_STRING_CHARS - 24;
 	int len;
 
-	if (sv.configstrings[index].restricted && Com_ClientListContains(
-		&sv.configstrings[index].clientList, client - svs.clients)) {
-		// Send a blank config string for this client if it's listed
+	if (sv.configstrings[index].restricted && Com_ClientListContains( &sv.configstrings[index].clientList, client - svs.clients)) {
+		// send a blank config string for this client if it's listed
 		SV_SendServerCommand(client, "cs %i \"\"\n", index);
 		return;
 	}
@@ -80,7 +83,7 @@ void SV_UpdateConfigstrings(client_t *client) {
 
 	for (index = 0; index < MAX_CONFIGSTRINGS; index++) {
 		// if the CS hasn't changed since we went to CS_PRIMED, ignore
-		if (!client->csUpdated[index] {
+		if (!client->csUpdated[index]) {
 			continue;
 		}
 		// do not always send server info to all clients
@@ -89,6 +92,7 @@ void SV_UpdateConfigstrings(client_t *client) {
 		}
 
 		SV_SendConfigstring(client, index);
+
 		client->csUpdated[index] = qfalse;
 	}
 }
@@ -115,6 +119,7 @@ void SV_SetConfigstring(int index, const char *val) {
 	}
 	// change the string in sv
 	Z_Free(sv.configstrings[index].s);
+
 	sv.configstrings[index].s = CopyString(val);
 	// send it to all the clients if we aren't spawning a new server
 	if (sv.state == SS_GAME || sv.restarting) {
@@ -167,7 +172,6 @@ SV_SetConfigstringRestrictions
 */
 void SV_SetConfigstringRestrictions(int index, const clientList_t *clientList) {
 	int i;
-
 	clientList_t oldClientList = sv.configstrings[index].clientList;
 
 	sv.configstrings[index].clientList = *clientList;
@@ -175,8 +179,9 @@ void SV_SetConfigstringRestrictions(int index, const clientList_t *clientList) {
 
 	for (i = 0; i < sv_maxclients->integer; i++) {
 		if (svs.clients[i].state >= CS_CONNECTED) {
-			if (Com_ClientListContains(&oldClientList, i) != Com_ClientListContains(clientList, i)) {
-				// A client has left or joined the restricted list, so update
+			if (Com_ClientListContains(&oldClientList, i) != 
+				Com_ClientListContains(clientList, i)) {
+				// a client has left or joined the restricted list, so update
 				SV_SendConfigstring(&svs.clients[i], index);
 			}
 		}
@@ -412,6 +417,7 @@ void SV_SpawnServer(char *server, qboolean killBots) {
 	int checksum;
 	char systemInfo[16384];
 	const char *p;
+
 	// shut down the existing game if it is running
 	SV_ShutdownGameProgs();
 
@@ -426,7 +432,7 @@ void SV_SpawnServer(char *server, qboolean killBots) {
 	Hunk_Clear();
 	// clear collision map data
 	CM_ClearMap();
-	// init client structures and svs.numSnapshotEntities 
+	// init client structures and svs.numSnapshotEntities
 	if (!Cvar_VariableValue("sv_running")) {
 		SV_Startup();
 	} else {
@@ -461,6 +467,7 @@ void SV_SpawnServer(char *server, qboolean killBots) {
 	Cvar_Set("cl_paused", "0");
 	// get a new checksum feed and restart the file system
 	sv.checksumFeed = (((int)rand() << 16) ^ rand()) ^ Com_Milliseconds();
+
 	FS_Restart(sv.checksumFeed);
 
 	CM_LoadMap(va("maps/%s.bsp", server), qfalse, &checksum);
@@ -471,6 +478,7 @@ void SV_SpawnServer(char *server, qboolean killBots) {
 	sv.serverId = com_frameTime;
 	sv.restartedServerId = sv.serverId; // I suppose the init here is just to be safe
 	sv.checksumFeedServerId = sv.serverId;
+
 	Cvar_Set("sv_serverid", va("%i", sv.serverId));
 	// clear physics interaction links
 	SV_ClearWorld();
@@ -481,6 +489,7 @@ void SV_SpawnServer(char *server, qboolean killBots) {
 	// run a few frames to allow everything to settle
 	for (i = 0; i < 3; i++) {
 		VM_Call(gvm, GAME_RUN_FRAME, sv.time);
+
 		sv.time += 100;
 		svs.time += 100;
 	}
@@ -492,7 +501,8 @@ void SV_SpawnServer(char *server, qboolean killBots) {
 		if (svs.clients[i].state >= CS_CONNECTED) {
 			char *denied;
 			// connect the client again
-			denied = VM_ExplicitArgPtr(gvm, VM_Call(gvm, GAME_CLIENT_CONNECT, i, qfalse));	// firstTime = qfalse
+			denied = VM_ExplicitArgPtr(gvm, VM_Call(gvm, GAME_CLIENT_CONNECT, i, qfalse)); // firstTime = qfalse
+
 			if (denied) {
 				// this generally shouldn't happen, because the client was connected before the level change
 				SV_DropClient(&svs.clients[i], denied);
@@ -504,6 +514,7 @@ void SV_SpawnServer(char *server, qboolean killBots) {
 	}
 	// run another frame to allow things to look at all the players
 	VM_Call(gvm, GAME_RUN_FRAME, sv.time);
+
 	sv.time += 100;
 	svs.time += 100;
 
@@ -530,14 +541,16 @@ void SV_SpawnServer(char *server, qboolean killBots) {
 	// the server sends these to the clients so they can figure out which pk3s should be auto-downloaded
 	p = FS_ReferencedPakChecksums();
 	Cvar_Set("sv_referencedPaks", p);
+
 	p = FS_ReferencedPakNames();
 	Cvar_Set("sv_referencedPakNames", p);
 	// save systeminfo and serverinfo strings
 	Q_strncpyz(systemInfo, Cvar_InfoString_Big(CVAR_SYSTEMINFO), sizeof(systemInfo));
 	cvar_modifiedFlags &= ~CVAR_SYSTEMINFO;
-	SV_SetConfigstring(CS_SYSTEMINFO, systemInfo);
 
+	SV_SetConfigstring(CS_SYSTEMINFO, systemInfo);
 	SV_SetConfigstring(CS_SERVERINFO, Cvar_InfoString(CVAR_SERVERINFO));
+
 	cvar_modifiedFlags &= ~CVAR_SERVERINFO;
 	// any media configstring setting now should issue a warning and any configstring changes should be reliably transmitted
 	// to all clients
@@ -622,7 +635,7 @@ Used by SV_Shutdown to send a final message to all connected clients before the 
 not just stuck on the outgoing message list, because the server is going to totally exit after returning from this function.
 =======================================================================================================================================
 */
-void SV_FinalMessage(char *message) {
+void SV_FinalMessage(const char *message) {
 	int i, j;
 	client_t *cl;
 
@@ -650,7 +663,7 @@ SV_Shutdown
 Called when each game quits, before Sys_Quit or Sys_Error.
 =======================================================================================================================================
 */
-void SV_Shutdown(char *finalmsg) {
+void SV_Shutdown(const char *finalmsg) {
 
 	if (!com_sv_running || !com_sv_running->integer) {
 		return;

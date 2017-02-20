@@ -1,11 +1,11 @@
-//Microsoft Developer Studio generated resource script.
+// microsoft Developer Studio generated resource script.
 //
 #include "win_resource.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
 //
-// Generated from the TEXTINCLUDE 2 resource.
+// generated from the TEXTINCLUDE 2 resource.
 //
 #include <winresrc.h>
 
@@ -13,59 +13,60 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// English (U.S.) resources
+// english(U.S.) resources
 
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#if !defined (AFX_RESOURCE_DLL) || defined (AFX_TARG_ENU)
 #ifdef _WIN32
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
-#endif //_WIN32
+#endif // _WIN32
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
 //
-// TEXTINCLUDE
+// tEXTINCLUDE
 //
 
 1 TEXTINCLUDE DISCARDABLE 
 BEGIN
-    "resource.h\0"
+		"resource.h\0"
 END
 
 2 TEXTINCLUDE DISCARDABLE 
 BEGIN
-    "#include ""winres.h""\r\n"
-    "\0"
+		"#include ""winres.h""\r\n"
+		"\0"
 END
 
 3 TEXTINCLUDE DISCARDABLE 
 BEGIN
-    "\0"
+		"\0"
 END
 
-#endif    // APSTUDIO_INVOKED
+#endif		// aPSTUDIO_INVOKED
 
 
 /////////////////////////////////////////////////////////////////////////////
 //
-// Icon
+// icon
 //
 
-// Icon with lowest ID value placed first to ensure application icon
+// icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_ICON1               ICON    DISCARDABLE     "misc/tremulous.ico"
+IDI_ICON1							ICON		DISCARDABLE		"misc / tremulous.ico"
 
 
 /////////////////////////////////////////////////////////////////////////////
 //
-// String Table
+// string Table
 //
 
 STRINGTABLE DISCARDABLE 
 BEGIN
-    IDS_STRING1             "Tremulous"
+		IDS_STRING1						"Tremulous"
 END
 
-#endif    // English (U.S.) resources
+#endif		// english(U.S.) resources
 /////////////////////////////////////////////////////////////////////////////
+
 

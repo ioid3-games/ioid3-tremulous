@@ -1,18 +1,23 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2005 Id Software, Inc.
-Copyright (C) 2000 - 2013 Darklegion Development
+Copyright(C) 1999 - 2005 Id Software, Inc.
+Copyright(C) 2000 - 2013 Darklegion Development
 
-This file is part of Tremulous source code.
+This file is part of Tremulous.
 
-Tremulous source code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+Tremulous is free software; you can redistribute it
+and / or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 2 of the License, 
+or(at your option) any later version.
 
-Tremulous source code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Tremulous is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Tremulous source code; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+You should have received a copy of the GNU General Public License
+along with Tremulous; if not, write to the Free Software
+Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
 =======================================================================================================================================
 */
 
@@ -135,7 +140,7 @@ static void CG_Creep(centity_t *cent) {
 =======================================================================================================================================
 CG_ParseBuildableAnimationFile
 
-Read a configuration file containing animation counts and rates: models/buildables/ hivemind / animation.cfg, etc.
+Read a configuration file containing animation counts and rates models/buildables/hivemind/animation.cfg, etc.
 =======================================================================================================================================
 */
 static qboolean CG_ParseBuildableAnimationFile(const char *filename, buildable_t buildable) {
@@ -176,6 +181,7 @@ static qboolean CG_ParseBuildableAnimationFile(const char *filename, buildable_t
 		}
 
 		animations[i].firstFrame = atoi(token);
+
 		token = COM_Parse(&text_p);
 
 		if (!*token) {
@@ -198,6 +204,7 @@ static qboolean CG_ParseBuildableAnimationFile(const char *filename, buildable_t
 		}
 
 		animations[i].loopFrames = atoi(token);
+
 		token = COM_Parse(&text_p);
 
 		if (!*token) {
@@ -226,7 +233,7 @@ static qboolean CG_ParseBuildableAnimationFile(const char *filename, buildable_t
 =======================================================================================================================================
 CG_ParseBuildableSoundFile
 
-Read a configuration file containing sound properties: sound/buildables/ hivemind / sound.cfg, etc.
+Read a configuration file containing sound properties sound/buildables/hivemind/sound.cfg, etc.
 =======================================================================================================================================
 */
 static qboolean CG_ParseBuildableSoundFile(const char *filename, buildable_t buildable) {
@@ -273,6 +280,7 @@ static qboolean CG_ParseBuildableSoundFile(const char *filename, buildable_t bui
 		}
 
 		sounds[i].looped = atoi(token);
+
 	}
 
 	if (i != MAX_BUILDABLE_ANIMATIONS) {
@@ -282,6 +290,7 @@ static qboolean CG_ParseBuildableSoundFile(const char *filename, buildable_t bui
 
 	return qtrue;
 }
+
 /*
 =======================================================================================================================================
 CG_InitBuildables
@@ -303,10 +312,10 @@ void CG_InitBuildables(void) {
 	for (j = BANIM_NONE + 1; j < MAX_BUILDABLE_ANIMATIONS; j++) {
 		strcpy(soundfile, cg_buildableSoundNames[j - 1]);
 
-		Com_sprintf(filename, sizeof(filename), "sound/buildables/ alien / %s", soundfile);
+		Com_sprintf(filename, sizeof(filename), "sound/buildables/alien/%s", soundfile);
 		defaultAlienSounds[j] = trap_S_RegisterSound(filename, qfalse);
 
-		Com_sprintf(filename, sizeof(filename), "sound/buildables/ human / %s", soundfile);
+		Com_sprintf(filename, sizeof(filename), "sound/buildables/human/%s", soundfile);
 		defaultHumanSounds[j] = trap_S_RegisterSound(filename, qfalse);
 	}
 
@@ -356,10 +365,8 @@ void CG_InitBuildables(void) {
 			}
 		}
 
-		cg.buildablesFraction = (float)i / (float) (BA_NUM_BUILDABLES - 1);
-
+		cg.buildablesFraction = (float)i / (float)(BA_NUM_BUILDABLES - 1);
 		trap_UpdateScreen();
-
 	}
 
 	cgs.media.teslaZapTS = CG_RegisterTrailSystem("models/buildables/tesla/zap");
@@ -378,21 +385,20 @@ static void CG_SetBuildableLerpFrameAnimation(buildable_t buildable, lerpFrame_t
 	lf->animationNumber = newAnimation;
 
 	if (newAnimation < 0 || newAnimation >= MAX_BUILDABLE_ANIMATIONS) {
-		CG_Error("Bad animation number: %i", newAnimation);
+		CG_Error("Bad animation number : %i", newAnimation);
 	}
 
 	anim = &cg_buildables[buildable].animations[newAnimation];
-
 	// this item has just spawned so lf->frameTime will be zero
 	if (!lf->animation) {
-		lf->frameTime = cg.time + 1000;	// 1 sec delay before starting the spawn anim
+		lf->frameTime = cg.time + 1000; // 1 sec delay before starting the spawn anim
 	}
 
 	lf->animation = anim;
 	lf->animationTime = lf->frameTime + anim->initialLerp;
 
 	if (cg_debugAnim.integer) {
-		CG_Printf("Anim: %i\n", newAnimation);
+		CG_Printf("Anim : %i\n", newAnimation);
 	}
 }
 
@@ -400,18 +406,18 @@ static void CG_SetBuildableLerpFrameAnimation(buildable_t buildable, lerpFrame_t
 =======================================================================================================================================
 CG_RunBuildableLerpFrame
 
-Sets cg.snap, cg.oldFrame, and cg.backlerp, cg.time should be between oldFrameTime and frameTime after exit.
+Sets cg.snap, cg.oldFrame, and cg.backlerp. cg.time should be between oldFrameTime and frameTime after exit.
 =======================================================================================================================================
 */
 static void CG_RunBuildableLerpFrame(centity_t *cent) {
 	buildable_t buildable = cent->currentState.modelindex;
 	lerpFrame_t *lf = &cent->lerpFrame;
-	buildableAnimNumber_t newAnimation = cent->buildableAnim & ~(ANIM_TOGGLEBIT|ANIM_FORCEBIT);
 
+	buildableAnimNumber_t newAnimation = cent->buildableAnim & ~(ANIM_TOGGLEBIT|ANIM_FORCEBIT);
 	// see if the animation sequence is switching
 	if (newAnimation != lf->animationNumber || !lf->animation) {
 		if (cg_debugRandom.integer) {
-			CG_Printf("newAnimation: %d lf->animationNumber: %d lf->animation: 0x%p\n", newAnimation, lf->animationNumber, lf->animation);
+			CG_Printf("newAnimation : %d lf->animationNumber : %d lf->animation : 0x%p\n", newAnimation, lf->animationNumber, lf->animation);
 		}
 
 		CG_SetBuildableLerpFrameAnimation(buildable, lf, newAnimation);
@@ -515,19 +521,19 @@ static void CG_PositionAndOrientateBuildable(const vec3_t angles, const vec3_t i
 
 	VectorMA(inOrigin, -TRACE_DEPTH, normal, end);
 	VectorMA(inOrigin, 1.0f, normal, start);
-	// Take both capsule and box traces. If the capsule trace does not differ significantly from the box trace use it. This may cause
+	// take both capsule and box traces. If the capsule trace does not differ significantly from the box trace use it. This may cause
 	// buildables to be positioned *inside * the surface on which it is placed. This is intentional
 	CG_CapTrace(&tr, start, mins, maxs, end, skipNumber, CONTENTS_SOLID|CONTENTS_PLAYERCLIP);
 	CG_Trace(&box_tr, start, mins, maxs, end, skipNumber, CONTENTS_SOLID|CONTENTS_PLAYERCLIP);
 
 	mag = Distance(tr.endpos, box_tr.endpos);
-
 	fraction = tr.fraction;
 	// this is either too far off of the bbox to be useful for gameplay purposes or the model is positioned in thin air anyways.
-	if (mag > 15.0f || tr.fraction == 1.0f)
-		fraction = box_tr.fraction; 
+	if (mag > 15.0f || tr.fraction == 1.0f) {
+		fraction = box_tr.fraction;
+	}
 
-	VectorMA(inOrigin, fraction * - TRACE_DEPTH, normal, outOrigin);
+	VectorMA(inOrigin, fraction * -TRACE_DEPTH, normal, outOrigin);
 }
 
 /*
@@ -553,6 +559,7 @@ void CG_GhostBuildable(buildable_t buildable) {
 	CG_PositionAndOrientateBuildable(ps->viewangles, entity_origin, tr.plane.normal, ps->clientNum, mins, maxs, ent.axis, ent.origin);
 	// offset on the Z axis if required
 	VectorMA(ent.origin, BG_BuildableConfig(buildable)->zOffset, tr.plane.normal, ent.origin);
+
 	VectorCopy(ent.origin, ent.lightingOrigin);
 	VectorCopy(ent.origin, ent.oldorigin); // don't positionally lerp at all
 
@@ -588,7 +595,7 @@ static void CG_BuildableParticleEffects(centity_t *cent) {
 	entityState_t *es = &cent->currentState;
 	team_t team = BG_Buildable(es->modelindex)->team;
 	int health = es->generic1;
-	float healthFrac = (float)health/BG_Buildable(es->modelindex)->health;
+	float healthFrac = (float)health / BG_Buildable(es->modelindex)->health;
 
 	if (!(es->eFlags & EF_B_SPAWNED)) {
 		return;
@@ -640,7 +647,7 @@ void CG_BuildableStatusParse(const char *filename, buildStat_t *bs) {
 	}
 
 	while (1) {
-		if (!trap_Parse_ReadToken(handle, &token))
+		if (!trap_Parse_ReadToken(handle, &token)) {
 			break;
 		}
 
@@ -669,43 +676,43 @@ void CG_BuildableStatusParse(const char *filename, buildStat_t *bs) {
 
 			continue;
 		} else if (!Q_stricmp(token.string, "healthSevereColor")) {
-			if (PC_Color_Parse(handle, &c))
+			if (PC_Color_Parse(handle, &c)) {
 				Vector4Copy(c, bs->healthSevereColor);
 			}
 
 			continue;
 		} else if (!Q_stricmp(token.string, "healthHighColor")) {
-			if (PC_Color_Parse(handle, &c))
+			if (PC_Color_Parse(handle, &c)) {
 				Vector4Copy(c, bs->healthHighColor);
 			}
 
 			continue;
 		} else if (!Q_stricmp(token.string, "healthElevatedColor")) {
-			if (PC_Color_Parse(handle, &c))
+			if (PC_Color_Parse(handle, &c)) {
 				Vector4Copy(c, bs->healthElevatedColor);
 			}
 
 			continue;
 		} else if (!Q_stricmp(token.string, "healthGuardedColor")) {
-			if (PC_Color_Parse(handle, &c))
+			if (PC_Color_Parse(handle, &c)) {
 				Vector4Copy(c, bs->healthGuardedColor);
 			}
 
 			continue;
 		} else if (!Q_stricmp(token.string, "healthLowColor")) {
-			if (PC_Color_Parse(handle, &c))
+			if (PC_Color_Parse(handle, &c)) {
 				Vector4Copy(c, bs->healthLowColor);
 			}
 
 			continue;
 		} else if (!Q_stricmp(token.string, "foreColor")) {
-			if (PC_Color_Parse(handle, &c))
+			if (PC_Color_Parse(handle, &c)) {
 				Vector4Copy(c, bs->foreColor);
 			}
 
 			continue;
 		} else if (!Q_stricmp(token.string, "backColor")) {
-			if (PC_Color_Parse(handle, &c))
+			if (PC_Color_Parse(handle, &c)) {
 				Vector4Copy(c, bs->backColor);
 			}
 
@@ -753,7 +760,7 @@ void CG_BuildableStatusParse(const char *filename, buildStat_t *bs) {
 
 			continue;
 		} else {
-			Com_Printf("CG_BuildableStatusParse: unknown token %s in %s\n", token.string, filename);
+			Com_Printf("CG_BuildableStatusParse : unknown token %s in %s\n", token.string, filename);
 			bs->loaded = qfalse;
 			trap_Parse_FreeSource(handle);
 			return;
@@ -827,7 +834,6 @@ static void CG_BuildableStatusDisplay(centity_t *cent) {
 	// if first try fails, step left, step right
 	for (j = 0; j < 3; j++) {
 		VectorCopy(cg.refdef.vieworg, trOrigin);
-
 		switch (j) {
 			case 1:
 				// step right
@@ -842,7 +848,7 @@ static void CG_BuildableStatusDisplay(centity_t *cent) {
 			default:
 				break;
 		}
-		// look through up to 3 players and / or transparent buildables
+		// look through up to 3 players and/or transparent buildables
 		for (i = 0; i < 3; i++) {
 			CG_Trace(&tr, trOrigin, NULL, NULL, origin, entNum, MASK_SHOT);
 
@@ -879,24 +885,23 @@ static void CG_BuildableStatusDisplay(centity_t *cent) {
 		cent->buildableStatus.visible = qtrue;
 		cent->buildableStatus.lastTime = cg.time;
 	}
-
-	// Fade up
+	// fade up
 	if (cent->buildableStatus.visible) {
 		if (cent->buildableStatus.lastTime + STATUS_FADE_TIME > cg.time) {
-			color[3] = (float) (cg.time - cent->buildableStatus.lastTime) / STATUS_FADE_TIME;
+			color[3] = (float)(cg.time - cent->buildableStatus.lastTime) / STATUS_FADE_TIME;
 		}
 	}
-	// Fade down
+	// fade down
 	if (!cent->buildableStatus.visible) {
 		if (cent->buildableStatus.lastTime + STATUS_FADE_TIME > cg.time) {
-			color[3] = 1.0f - (float) (cg.time - cent->buildableStatus.lastTime) / STATUS_FADE_TIME;
+			color[3] = 1.0f - (float)(cg.time - cent->buildableStatus.lastTime) / STATUS_FADE_TIME;
 		} else {
 			return;
 		}
 	}
 
 	health = es->generic1;
-	healthScale = (float)health/BG_Buildable(es->modelindex)->health;
+	healthScale = (float)health / BG_Buildable(es->modelindex)->health;
 
 	if (health > 0 && healthScale < 0.01f) {
 		healthScale = 0.01f;
@@ -915,9 +920,9 @@ static void CG_BuildableStatusDisplay(centity_t *cent) {
 		float subH, subY;
 		float clipX, clipY, clipW, clipH;
 		vec4_t frameColor;
-
-		// this is fudged to get the width / height in the cfg to be more realistic
+		// this is fudged to get the width/height in the cfg to be more realistic
 		scale = (picH / d) * 3;
+
 		powered = es->eFlags & EF_B_POWERED;
 		marked = es->eFlags & EF_B_MARKED;
 
@@ -925,7 +930,7 @@ static void CG_BuildableStatusDisplay(centity_t *cent) {
 		picW *= scale;
 		picX -= (picW * 0.5f);
 		picY -= (picH * 0.5f);
-		// sub - elements such as icons and number
+		// sub-elements such as icons and number
 		subH = picH - (picH * bs->verticalMargin);
 		subY = picY + (picH * 0.5f) - (subH * 0.5f);
 
@@ -933,7 +938,6 @@ static void CG_BuildableStatusDisplay(centity_t *cent) {
 		clipH = (480.0f * cg_viewsize.integer) / 100.0f;
 		clipX = 320.0f - (clipW * 0.5f);
 		clipY = 240.0f - (clipH * 0.5f);
-
 		CG_SetClipRegion(clipX, clipY, clipW, clipH);
 
 		if (bs->frameShader) {
@@ -1003,6 +1007,7 @@ static void CG_BuildableStatusDisplay(centity_t *cent) {
 			mX = picX + picW - (subH * bs->horizontalMargin) - subH;
 			CG_DrawPic(mX, subY, subH, subH, bs->markedShader);
 		}
+
 		{
 			float nX;
 			int healthMax;
@@ -1031,9 +1036,7 @@ static void CG_BuildableStatusDisplay(centity_t *cent) {
 		}
 
 		trap_R_SetColor(NULL);
-
 		CG_ClearClipRegion();
-
 	}
 }
 
@@ -1046,16 +1049,18 @@ static int CG_SortDistance(const void *a, const void *b) {
 	centity_t *aent, *bent;
 	float adist, bdist;
 
-	aent = &cg_entities[* (int *)a];
-	bent = &cg_entities[* (int *)b];
+	aent = &cg_entities[*(int *)a];
+	bent = &cg_entities[*(int *)b];
 	adist = Distance(cg.refdef.vieworg, aent->lerpOrigin);
 	bdist = Distance(cg.refdef.vieworg, bent->lerpOrigin);
-	if (adist > bdist)
+
+	if (adist > bdist) {
 		return -1;
-	else if (adist < bdist)
+	} else if (adist < bdist) {
 		return 1;
-	else
+	} else {
 		return 0;
+	}
 }
 
 /*
@@ -1064,15 +1069,15 @@ CG_PlayerIsBuilder
 =======================================================================================================================================
 */
 static qboolean CG_PlayerIsBuilder(buildable_t buildable) {
+
 	switch (cg.predictedPlayerState.weapon) {
 		case WP_ABUILD:
 		case WP_ABUILD2:
 		case WP_HBUILD:
 			return BG_Buildable(buildable)->team == BG_Weapon(cg.predictedPlayerState.weapon)->team;
-
 		default:
 			return qfalse;
-}
+	}
 }
 
 /*
@@ -1084,13 +1089,15 @@ static qboolean CG_BuildableRemovalPending(int entityNum) {
 	int i;
 	playerState_t *ps = &cg.snap->ps;
 
-	if (!(ps->stats[STAT_BUILDABLE] & SB_VALID_TOGGLEBIT))
+	if (!(ps->stats[STAT_BUILDABLE] & SB_VALID_TOGGLEBIT)) {
 		return qfalse;
+	}
 
 	for (i = 0; i < MAX_MISC; i++) {
-		if (ps->misc[i] == entityNum)
+		if (ps->misc[i] == entityNum) {
 			return qtrue;
-}
+		}
+	}
 
 	return qfalse;
 }
@@ -1111,16 +1118,19 @@ void CG_DrawBuildableStatus(void) {
 		cent = &cg_entities[cg.snap->entities[i].number];
 		es = &cent->currentState;
 
-		if (es->eType == ET_BUILDABLE && CG_PlayerIsBuilder(es->modelindex))
+		if (es->eType == ET_BUILDABLE && CG_PlayerIsBuilder(es->modelindex)) {
 			buildableList[buildables++] = cg.snap->entities[i].number;
-}
+		}
+	}
 
 	qsort(buildableList, buildables, sizeof(int), CG_SortDistance);
-	for (i = 0; i < buildables; i++)
+
+	for (i = 0; i < buildables; i++) {
 		CG_BuildableStatusDisplay(&cg_entities[buildableList[i]]);
+	}
 }
 
-#define BUILDABLE_SOUND_PERIOD	500
+#define BUILDABLE_SOUND_PERIOD  500
 
 /*
 =======================================================================================================================================
@@ -1137,42 +1147,38 @@ void CG_Buildable(centity_t *cent) {
 	team_t team = BG_Buildable(es->modelindex)->team;
 	float scale;
 	int health;
-
 	// must be before EF_NODRAW check
-	if (team == TEAM_ALIENS)
+	if (team == TEAM_ALIENS) {
 		CG_Creep(cent);
-
+	}
 	// if set to invisible, skip
 	if (es->eFlags & EF_NODRAW) {
-		if (CG_IsParticleSystemValid(&cent->buildablePS))
+		if (CG_IsParticleSystemValid(&cent->buildablePS)) {
 			CG_DestroyParticleSystem(&cent->buildablePS);
+		}
 
 		return;
-}
+	}
 
 	memset(&ent, 0, sizeof(ent));
 
 	VectorCopy(cent->lerpOrigin, ent.origin);
 	VectorCopy(cent->lerpOrigin, ent.oldorigin);
 	VectorCopy(cent->lerpOrigin, ent.lightingOrigin);
-
 	VectorCopy(es->origin2, surfNormal);
-
 	VectorCopy(es->angles, angles);
+
 	BG_BuildableBoundingBox(es->modelindex, mins, maxs);
 
 	if (es->pos.trType == TR_STATIONARY) {
-		// Positioning a buildable involves potentially up to two traces, and
-		// seeing as buildables rarely move, we cache the results and recalculate
-		// only if the buildable moves or changes orientation
+		// positioning a buildable involves potentially up to two traces, and seeing as buildables rarely move, we cache the results
+		// and recalculate only if the buildable moves or changes orientation
 		if (VectorCompare(cent->buildableCache.cachedOrigin, cent->lerpOrigin) && VectorCompare(cent->buildableCache.cachedNormal, surfNormal)) {
 			VectorCopy(cent->buildableCache.axis[0], ent.axis[0]);
 			VectorCopy(cent->buildableCache.axis[1], ent.axis[1]);
 			VectorCopy(cent->buildableCache.axis[2], ent.axis[2]);
 			VectorCopy(cent->buildableCache.origin, ent.origin);
-	}
-		else
-		{
+		} else {
 			CG_PositionAndOrientateBuildable(angles, ent.origin, surfNormal, es->number, mins, maxs, ent.axis, ent.origin);
 			VectorCopy(ent.axis[0], cent->buildableCache.axis[0]);
 			VectorCopy(ent.axis[1], cent->buildableCache.axis[1]);
@@ -1180,13 +1186,12 @@ void CG_Buildable(centity_t *cent) {
 			VectorCopy(ent.origin, cent->buildableCache.origin);
 			VectorCopy(cent->lerpOrigin, cent->buildableCache.cachedOrigin);
 			VectorCopy(surfNormal, cent->buildableCache.cachedNormal);
+		}
 	}
-}
-
 	// offset on the Z axis if required
 	VectorMA(ent.origin, BG_BuildableConfig(es->modelindex)->zOffset, surfNormal, ent.origin);
 
-	VectorCopy(ent.origin, ent.oldorigin);	// don't positionally lerp at all
+	VectorCopy(ent.origin, ent.oldorigin); // don't positionally lerp at all
 	VectorCopy(ent.origin, ent.lightingOrigin);
 
 	ent.hModel = cg_buildables[es->modelindex].models[0];
@@ -1197,15 +1202,14 @@ void CG_Buildable(centity_t *cent) {
 		if (team == TEAM_HUMANS) {
 			ent.customShader = cgs.media.humanSpawningShader;
 			prebuildSound = cgs.media.humanBuildablePrebuild;
-	}
-		else if (team == TEAM_ALIENS)
+		} else if (team == TEAM_ALIENS) {
 			prebuildSound = cgs.media.alienBuildablePrebuild;
+		}
 
 		trap_S_AddLoopingSound(es->number, cent->lerpOrigin, vec3_origin, prebuildSound);
-}
+	}
 
 	CG_BuildableAnimation(cent, &ent.oldframe, &ent.frame, &ent.backlerp);
-
 	// rescale the model
 	scale = BG_BuildableConfig(es->modelindex)->modelScale;
 
@@ -1215,19 +1219,19 @@ void CG_Buildable(centity_t *cent) {
 		VectorScale(ent.axis[2], scale, ent.axis[2]);
 
 		ent.nonNormalizedAxes = qtrue;
-} else
+	} else {
 		ent.nonNormalizedAxes = qfalse;
+	}
 
-	if (CG_PlayerIsBuilder(es->modelindex) && CG_BuildableRemovalPending(es->number))
+	if (CG_PlayerIsBuilder(es->modelindex) && CG_BuildableRemovalPending(es->number)) {
 		ent.customShader = cgs.media.redBuildShader;
-
+	}
 	// add to refresh list
 	trap_R_AddRefEntityToScene(&ent);
 
 	CrossProduct(surfNormal, refNormal, xNormal);
 	VectorNormalize(xNormal);
 	rotAngle = RAD2DEG(acos(DotProduct(surfNormal, refNormal)));
-
 	// turret barrel bit
 	if (cg_buildables[es->modelindex].models[1]) {
 		refEntity_t turretBarrel;
@@ -1248,7 +1252,6 @@ void CG_Buildable(centity_t *cent) {
 		turretBarrel.oldframe = ent.oldframe;
 		turretBarrel.frame = ent.frame;
 		turretBarrel.backlerp = ent.backlerp;
-
 		turretBarrel.customShader = ent.customShader;
 
 		if (scale != 1.0f) {
@@ -1257,16 +1260,16 @@ void CG_Buildable(centity_t *cent) {
 			VectorScale(turretBarrel.axis[2], scale, turretBarrel.axis[2]);
 
 			turretBarrel.nonNormalizedAxes = qtrue;
-	}
-		else
+		} else {
 			turretBarrel.nonNormalizedAxes = qfalse;
+		}
 
-		if (CG_PlayerIsBuilder(es->modelindex) && CG_BuildableRemovalPending(es->number))
+		if (CG_PlayerIsBuilder(es->modelindex) && CG_BuildableRemovalPending(es->number)) {
 			turretBarrel.customShader = cgs.media.redBuildShader;
+		}
 
 		trap_R_AddRefEntityToScene(&turretBarrel);
-}
-
+	}
 	// turret barrel bit
 	if (cg_buildables[es->modelindex].models[2]) {
 		refEntity_t turretTop;
@@ -1291,7 +1294,6 @@ void CG_Buildable(centity_t *cent) {
 		turretTop.oldframe = ent.oldframe;
 		turretTop.frame = ent.frame;
 		turretTop.backlerp = ent.backlerp;
-
 		turretTop.customShader = ent.customShader;
 
 		if (scale != 1.0f) {
@@ -1300,16 +1302,16 @@ void CG_Buildable(centity_t *cent) {
 			VectorScale(turretTop.axis[2], scale, turretTop.axis[2]);
 
 			turretTop.nonNormalizedAxes = qtrue;
-	}
-		else
+		} else {
 			turretTop.nonNormalizedAxes = qfalse;
+		}
 
-		if (CG_PlayerIsBuilder(es->modelindex) && CG_BuildableRemovalPending(es->number))
+		if (CG_PlayerIsBuilder(es->modelindex) && CG_BuildableRemovalPending(es->number)) {
 			turretTop.customShader = cgs.media.redBuildShader;
+		}
 
 		trap_R_AddRefEntityToScene(&turretTop);
-}
-
+	}
 	// weapon effects for turrets
 	if (es->eFlags & EF_FIRING) {
 		weaponInfo_t *weapon = &cg_weapons[es->weapon];
@@ -1317,15 +1319,15 @@ void CG_Buildable(centity_t *cent) {
 		if (cg.time - cent->muzzleFlashTime > MUZZLE_FLASH_TIME || BG_Buildable(es->modelindex)->turretProjType == WP_TESLAGEN) {
 			if (weapon->wim[WPM_PRIMARY].flashDlightColor[0] || weapon->wim[WPM_PRIMARY].flashDlightColor[1] || weapon->wim[WPM_PRIMARY].flashDlightColor[2]) {
 				trap_R_AddLightToScene(cent->lerpOrigin, 300 + (rand() & 31), weapon->wim[WPM_PRIMARY].flashDlightColor[0], weapon->wim[WPM_PRIMARY].flashDlightColor[1], weapon->wim[WPM_PRIMARY].flashDlightColor[2]);
+			}
 		}
-	}
 
 		if (weapon->wim[WPM_PRIMARY].firingSound) {
 			trap_S_AddLoopingSound(es->number, cent->lerpOrigin, vec3_origin, weapon->wim[WPM_PRIMARY].firingSound);
-	}
-		else if (weapon->readySound)
+		} else if (weapon->readySound) {
 			trap_S_AddLoopingSound(es->number, cent->lerpOrigin, vec3_origin, weapon->readySound);
-}
+		}
+	}
 
 	health = es->generic1;
 
@@ -1334,16 +1336,15 @@ void CG_Buildable(centity_t *cent) {
 			if (team == TEAM_HUMANS) {
 				int i = rand() % 4;
 				trap_S_StartSound(NULL, es->number, CHAN_BODY, cgs.media.humanBuildableDamage[i]);
-		}
-			else if (team == TEAM_ALIENS)
+			} else if (team == TEAM_ALIENS) {
 				trap_S_StartSound(NULL, es->number, CHAN_BODY, cgs.media.alienBuildableDamage);
+			}
 
 			cent->lastBuildableDamageSoundTime = cg.time;
+		}
 	}
-}
 
 	cent->lastBuildableHealth = health;
-
 	// smoke etc for damaged buildables
 	CG_BuildableParticleEffects(cent);
 }

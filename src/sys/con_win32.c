@@ -1,19 +1,24 @@
 /*
-=======================================================================================================================================
+===========================================================================
 Copyright (C) 1999-2005 Id Software, Inc.
-Copyright (C) 2000 - 2013 Darklegion Development
+Copyright (C) 2000-2013 Darklegion Development
 
-This file is part of Tremulous source code.
+This file is part of Tremulous.
 
-Tremulous source code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+Tremulous is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 2 of the License,
+or (at your option) any later version.
 
-Tremulous source code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Tremulous is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Tremulous source code; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
-=======================================================================================================================================
+You should have received a copy of the GNU General Public License
+along with Tremulous; if not, write to the Free Software
+Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+===========================================================================
 */
 
 #include "../qcommon/q_shared.h"
@@ -25,22 +30,20 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
 static WORD qconsole_attrib;
 static WORD qconsole_backgroundAttrib;
-
 // saved console status
 static DWORD qconsole_orig_mode;
 static CONSOLE_CURSOR_INFO qconsole_orig_cursorinfo;
-
 // cmd history
 static char qconsole_history[QCONSOLE_HISTORY][MAX_EDIT_LINE];
 static int qconsole_history_pos = -1;
 static int qconsole_history_lines = 0;
 static int qconsole_history_oldest = 0;
-
 // current edit buffer
 static char qconsole_line[MAX_EDIT_LINE];
 static int qconsole_linelen = 0;
 static qboolean qconsole_drawinput = qtrue;
 static int qconsole_cursor;
+
 static HANDLE qconsole_hout;
 static HANDLE qconsole_hin;
 
@@ -60,10 +63,7 @@ static WORD CON_ColorCharToAttrib(char color) {
 	} else {
 		float *rgba = g_color_table[ColorIndex(color)];
 		// set foreground color
-		attrib = (rgba[0] >= 0.5 ? FOREGROUND_RED		: 0) |
-				(rgba[1] >= 0.5 ? FOREGROUND_GREEN		: 0) |
-				(rgba[2] >= 0.5 ? FOREGROUND_BLUE		: 0) |
-				(rgba[3] >= 0.5 ? FOREGROUND_INTENSITY	: 0);
+		attrib = (rgba[0] >= 0.5 ? FOREGROUND_RED : 0)|(rgba[1] >= 0.5 ? FOREGROUND_GREEN : 0)|(rgba[2] >= 0.5 ? FOREGROUND_BLUE : 0)|(rgba[3] >= 0.5 ? FOREGROUND_INTENSITY : 0);
 		// use console's background color
 		attrib |= qconsole_backgroundAttrib;
 	}
@@ -81,6 +81,7 @@ so calling Sys_SigHandler() with those numbers should be safe for generating uni
 =======================================================================================================================================
 */
 static BOOL WINAPI CON_CtrlHandler(DWORD sig) {
+
 	Sys_SigHandler(sig);
 	return TRUE;
 }
@@ -91,15 +92,18 @@ CON_HistAdd
 =======================================================================================================================================
 */
 static void CON_HistAdd(void) {
+
 	Q_strncpyz(qconsole_history[qconsole_history_oldest], qconsole_line, sizeof(qconsole_history[qconsole_history_oldest]));
 
-	if (qconsole_history_lines < QCONSOLE_HISTORY)
+	if (qconsole_history_lines < QCONSOLE_HISTORY) {
 		qconsole_history_lines++;
+	}
 
-	if (qconsole_history_oldest >= QCONSOLE_HISTORY - 1)
+	if (qconsole_history_oldest >= QCONSOLE_HISTORY - 1) {
 		qconsole_history_oldest = 0;
 	} else {
 		qconsole_history_oldest++;
+	}
 
 	qconsole_history_pos = qconsole_history_oldest;
 }
@@ -112,16 +116,16 @@ CON_HistPrev
 static void CON_HistPrev(void) {
 	int pos;
 
-	pos = (qconsole_history_pos < 1) ?
-		(QCONSOLE_HISTORY - 1) : (qconsole_history_pos - 1);
+	pos = (qconsole_history_pos < 1) ? (QCONSOLE_HISTORY - 1) : (qconsole_history_pos - 1);
 	// don' t allow looping through history
 	if (pos == qconsole_history_oldest || pos >= qconsole_history_lines) {
 		return;
 	}
 
 	qconsole_history_pos = pos;
-	Q_strncpyz(qconsole_line, qconsole_history[qconsole_history_pos], 
-		sizeof(qconsole_line));
+
+	Q_strncpyz(qconsole_line, qconsole_history[qconsole_history_pos], sizeof(qconsole_line));
+
 	qconsole_linelen = strlen(qconsole_line);
 	qconsole_cursor = qconsole_linelen;
 }
@@ -133,13 +137,13 @@ CON_HistNext
 */
 static void CON_HistNext(void) {
 	int pos;
+
 	// don' t allow looping through history
 	if (qconsole_history_pos == qconsole_history_oldest) {
 		return;
 	}
 
 	pos = (qconsole_history_pos >= QCONSOLE_HISTORY - 1) ? 0 : (qconsole_history_pos + 1);
-
 	// clear the edit buffer if they try to advance to a future command
 	if (pos == qconsole_history_oldest) {
 		qconsole_history_pos = pos;
@@ -150,7 +154,9 @@ static void CON_HistNext(void) {
 	}
 
 	qconsole_history_pos = pos;
+
 	Q_strncpyz(qconsole_line, qconsole_history[qconsole_history_pos], sizeof(qconsole_line));
+
 	qconsole_linelen = strlen(qconsole_line);
 	qconsole_cursor = qconsole_linelen;
 }
@@ -185,29 +191,26 @@ static void CON_Show(void) {
 	// build a space-padded CHAR_INFO array
 	for (i = 0; i < MAX_EDIT_LINE; i++) {
 		if (i < qconsole_linelen) {
-			if (i + 1 < qconsole_linelen && Q_IsColorString(qconsole_line + i))
+			if (i + 1 < qconsole_linelen && Q_IsColorString(qconsole_line + i)) {
 				attrib = CON_ColorCharToAttrib(*(qconsole_line + i + 1));
+			}
 
 			line[i].Char.AsciiChar = qconsole_line[i];
 		} else {
 			line[i].Char.AsciiChar = ' ';
+		}
 
 		line[i].Attributes = attrib;
 	}
 
 	if (qconsole_linelen > binfo.srWindow.Right) {
-		WriteConsoleOutput(qconsole_hout, 
-			line + (qconsole_linelen - binfo.srWindow.Right), writeSize, writePos, &writeArea);
+		WriteConsoleOutput(qconsole_hout, line + (qconsole_linelen - binfo.srWindow.Right), writeSize, writePos, &writeArea);
 	} else {
 		WriteConsoleOutput(qconsole_hout, line, writeSize, writePos, &writeArea);
 	}
 	// set curor position
 	cursorPos.Y = binfo.dwCursorPosition.Y;
-	cursorPos.X = qconsole_cursor < qconsole_linelen
-					? qconsole_cursor
-					: qconsole_linelen > binfo.srWindow.Right
-						? binfo.srWindow.Right
-						: qconsole_linelen;
+	cursorPos.X = qconsole_cursor < qconsole_linelen ? qconsole_cursor : qconsole_linelen > binfo.srWindow.Right ? binfo.srWindow.Right : qconsole_linelen;
 
 	SetConsoleCursorPosition(qconsole_hout, cursorPos);
 }
@@ -223,6 +226,7 @@ static void CON_Hide(void) {
 	realLen = qconsole_linelen;
 	// remove input line from console output buffer
 	qconsole_linelen = 0;
+
 	CON_Show();
 
 	qconsole_linelen = realLen;
@@ -234,10 +238,13 @@ CON_Shutdown
 =======================================================================================================================================
 */
 void CON_Shutdown(void) {
+
 	CON_Hide();
+
 	SetConsoleMode(qconsole_hin, qconsole_orig_mode);
 	SetConsoleCursorInfo(qconsole_hout, &qconsole_orig_cursorinfo);
 	SetConsoleTextAttribute(qconsole_hout, qconsole_attrib);
+
 	CloseHandle(qconsole_hout);
 	CloseHandle(qconsole_hin);
 }
@@ -273,13 +280,15 @@ void CON_Init(void) {
 	FlushConsoleInputBuffer(qconsole_hin);
 
 	GetConsoleScreenBufferInfo(qconsole_hout, &info);
+
 	qconsole_attrib = info.wAttributes;
-	qconsole_backgroundAttrib = qconsole_attrib & (BACKGROUND_BLUE|BACKGROUND_GREEN|BACKGROUND_RED|BACKGROUND_INTENSITY);
+	qconsole_backgroundAttrib = qconsole_attrib &(BACKGROUND_BLUE|BACKGROUND_GREEN|BACKGROUND_RED|BACKGROUND_INTENSITY);
 
 	SetConsoleTitle("Tremulous Dedicated Server Console");
 	// initialize history
-	for (i = 0; i < QCONSOLE_HISTORY; i++)
+	for (i = 0; i < QCONSOLE_HISTORY; i++) {
 		qconsole_history[i][0] = '\0';
+	}
 	// set text color to white
 	SetConsoleTextAttribute(qconsole_hout, CON_ColorCharToAttrib(COLOR_WHITE));
 }
@@ -296,20 +305,22 @@ char *CON_Input(void) {
 	int i;
 	int newlinepos = -1;
 
-	if (!GetNumberOfConsoleInputEvents(qconsole_hin, &events))
+	if (!GetNumberOfConsoleInputEvents(qconsole_hin, &events)) {
 		return NULL;
+	}
 
-	if (events < 1)
+	if (events < 1) {
 		return NULL;
-  
+	}
 	// if we have overflowed, start dropping oldest input events
 	if (events >= MAX_EDIT_LINE) {
 		ReadConsoleInput(qconsole_hin, buff, 1, &events);
 		return NULL;
 	}
 
-	if (!ReadConsoleInput(qconsole_hin, buff, events, &count))
+	if (!ReadConsoleInput(qconsole_hin, buff, events, &count)) {
 		return NULL;
+	}
 
 	FlushConsoleInputBuffer(qconsole_hin);
 
@@ -318,8 +329,9 @@ char *CON_Input(void) {
 			continue;
 		}
 
-		if (!buff[i].Event.KeyEvent.bKeyDown) 
+		if (!buff[i].Event.KeyEvent.bKeyDown) {
 			continue;
+		}
 
 		key = buff[i].Event.KeyEvent.wVirtualKeyCode;
 
@@ -387,7 +399,6 @@ char *CON_Input(void) {
 				}
 
 				qconsole_line[qconsole_cursor++] = c;
-
 				qconsole_linelen++;
 				qconsole_line[qconsole_linelen] = '\0';
 			}
@@ -406,8 +417,8 @@ char *CON_Input(void) {
 	}
 
 	qconsole_linelen = 0;
-	CON_Show();
 
+	CON_Show();
 	CON_HistAdd();
 	Com_Printf("%s\n", qconsole_line);
 
@@ -469,9 +480,8 @@ CON_Print
 =======================================================================================================================================
 */
 void CON_Print(const char *msg) {
+
 	CON_Hide();
-
 	CON_WindowsColorPrint(msg);
-
 	CON_Show();
 }

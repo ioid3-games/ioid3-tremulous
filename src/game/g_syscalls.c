@@ -1,18 +1,23 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2005 Id Software, Inc.
-Copyright (C) 2000 - 2013 Darklegion Development
+Copyright(C) 1999 - 2005 Id Software, Inc.
+Copyright(C) 2000 - 2013 Darklegion Development
 
-This file is part of Tremulous source code.
+This file is part of Tremulous.
 
-Tremulous source code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+Tremulous is free software; you can redistribute it
+and / or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 2 of the License, 
+or(at your option) any later version.
 
-Tremulous source code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Tremulous is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Tremulous source code; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+You should have received a copy of the GNU General Public License
+along with Tremulous; if not, write to the Free Software
+Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
 =======================================================================================================================================
 */
 
@@ -30,8 +35,8 @@ Q_EXPORT void dllEntry(intptr_t(QDECL *syscallptr)(intptr_t arg, ...)) {
 
 int PASSFLOAT(float x) {
 	float floatTemp;
-  floatTemp = x;
-  return * (int *)&floatTemp;
+	floatTemp = x;
+	return * (int *)&floatTemp;
 }
 
 void trap_Print(const char *fmt) {
@@ -40,7 +45,7 @@ void trap_Print(const char *fmt) {
 
 void trap_Error(const char *fmt) {
 	syscall(G_ERROR, fmt);
- // shut up GCC warning about returning functions, because we know better
+	// shut up GCC warning about returning functions, because we know better
   exit(1);
 }
 
@@ -100,8 +105,7 @@ void trap_Cvar_VariableStringBuffer(const char *var_name, char *buffer, int bufs
 }
 
 
-void trap_LocateGameData(gentity_t *gEnts, int numGEntities, int sizeofGEntity_t, 
-                          playerState_t *clients, int sizeofGClient) {
+void trap_LocateGameData(gentity_t *gEnts, int numGEntities, int sizeofGEntity_t, playerState_t *clients, int sizeofGClient) {
 	syscall(G_LOCATE_GAME_DATA, gEnts, numGEntities, sizeofGEntity_t, clients, sizeofGClient);
 }
 
@@ -141,8 +145,7 @@ void trap_SetBrushModel(gentity_t *ent, const char *name) {
 	syscall(G_SET_BRUSH_MODEL, ent, name);
 }
 
-void trap_Trace(trace_t *results, const vec3_t start, const vec3_t mins, 
-                 const vec3_t maxs, const vec3_t end, int passEntityNum, int contentmask) {
+void trap_Trace(trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentmask) {
 	syscall(G_TRACE, results, start, mins, maxs, end, passEntityNum, contentmask);
 }
 
@@ -238,5 +241,9 @@ void trap_AddCommand(const char *cmdName) {
 
 void trap_RemoveCommand(const char *cmdName) {
 	syscall(G_REMOVECOMMAND, cmdName);
+}
+
+int trap_FS_GetFilteredFiles(const char *path, const char *extension, const char *filter, char *listbuf, int bufsize) {
+	return syscall(G_FS_GETFILTEREDFILES, path, extension, filter, listbuf, bufsize);
 }
 

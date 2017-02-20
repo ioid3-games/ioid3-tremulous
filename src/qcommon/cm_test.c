@@ -1,22 +1,27 @@
 /*
-=======================================================================================================================================
+===========================================================================
 Copyright (C) 1999-2005 Id Software, Inc.
-Copyright (C) 2000 - 2013 Darklegion Development
+Copyright (C) 2000-2013 Darklegion Development
 
-This file is part of Tremulous source code.
+This file is part of Tremulous.
 
-Tremulous source code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+Tremulous is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 2 of the License,
+or (at your option) any later version.
 
-Tremulous source code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Tremulous is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Tremulous source code; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
-=======================================================================================================================================
+You should have received a copy of the GNU General Public License
+along with Tremulous; if not, write to the Free Software
+Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+===========================================================================
 */
-#include "cm_local.h"
 
+#include "cm_local.h"
 
 /*
 =======================================================================================================================================
@@ -32,18 +37,20 @@ int CM_PointLeafnum_r(const vec3_t p, int num) {
 		node = cm.nodes + num;
 		plane = node->plane;
 
-		if (plane->type < 3)
+		if (plane->type < 3) {
 			d = p[plane->type] - plane->dist;
 		} else {
 			d = DotProduct(plane->normal, p) - plane->dist;
+		}
 
-		if (d < 0)
+		if (d < 0) {
 			num = node->children[1];
 		} else {
 			num = node->children[0];
+		}
 	}
 
-	c_pointcontents++;		// optimize counter
+	c_pointcontents++; // optimize counter
 
 	return -1 - num;
 }
@@ -55,7 +62,7 @@ CM_PointLeafnum
 */
 int CM_PointLeafnum(const vec3_t p) {
 
-	if (!cm.numNodes) {	// map not loaded
+	if (!cm.numNodes) { // map not loaded
 		return 0;
 	}
 
@@ -105,7 +112,6 @@ void CM_StoreBrushes(leafList_t *ll, int nodenum) {
 	cbrush_t *b;
 
 	leafnum = -1 - nodenum;
-
 	leaf = &cm.leafs[leafnum];
 
 	for (k = 0; k < leaf->numLeafBrushes; k++) {
@@ -113,7 +119,7 @@ void CM_StoreBrushes(leafList_t *ll, int nodenum) {
 		b = &cm.brushes[brushnum];
 
 		if (b->checkcount == cm.checkcount) {
-			continue;	// already checked this brush in another leaf
+			continue; // already checked this brush in another leaf
 		}
 
 		b->checkcount = cm.checkcount;
@@ -193,6 +199,7 @@ int CM_BoxLeafnums(const vec3_t mins, const vec3_t maxs, int *list, int listsize
 
 	VectorCopy(mins, ll.bounds[0]);
 	VectorCopy(maxs, ll.bounds[1]);
+
 	ll.count = 0;
 	ll.maxcount = listsize;
 	ll.list = list;
@@ -202,7 +209,7 @@ int CM_BoxLeafnums(const vec3_t mins, const vec3_t maxs, int *list, int listsize
 
 	CM_BoxLeafnums_r(&ll, 0);
 
- *lastLeaf = ll.lastLeaf;
+	*lastLeaf = ll.lastLeaf;
 	return ll.count;
 }
 
@@ -218,6 +225,7 @@ int CM_BoxBrushes(const vec3_t mins, const vec3_t maxs, cbrush_t **list, int lis
 
 	VectorCopy(mins, ll.bounds[0]);
 	VectorCopy(maxs, ll.bounds[1]);
+
 	ll.count = 0;
 	ll.maxcount = listsize;
 	ll.list = (void *)list;
@@ -229,10 +237,6 @@ int CM_BoxBrushes(const vec3_t mins, const vec3_t maxs, cbrush_t **list, int lis
 
 	return ll.count;
 }
-
-
-// ==================================================================== 
-
 
 /*
 =======================================================================================================================================
@@ -249,7 +253,7 @@ int CM_PointContents(const vec3_t p, clipHandle_t model) {
 	float d;
 	cmodel_t *clipm;
 
-	if (!cm.numNodes) {	// map not loaded
+	if (!cm.numNodes) { // map not loaded
 		return 0;
 	}
 
@@ -261,8 +265,9 @@ int CM_PointContents(const vec3_t p, clipHandle_t model) {
 		leaf = &cm.leafs[leafnum];
 	}
 
-	if (leaf->area == -1)
+	if (leaf->area == -1) {
 		return CONTENTS_SOLID;
+	}
 
 	contents = 0;
 
@@ -277,7 +282,7 @@ int CM_PointContents(const vec3_t p, clipHandle_t model) {
 		for (i = 0; i < b->numsides; i++) {
 			d = DotProduct(p, b->sides[i].plane->normal);
 // FIXME test for Cash
-// 			if (d >= b->sides[i].plane->dist) {
+//			if (d >= b->sides[i].plane->dist) {
 			if (d > b->sides[i].plane->dist) {
 				break;
 			}
@@ -302,13 +307,14 @@ int CM_TransformedPointContents(const vec3_t p, clipHandle_t model, const vec3_t
 	vec3_t p_l;
 	vec3_t temp;
 	vec3_t forward, right, up;
+
 	// subtract origin offset
 	VectorSubtract(p, origin, p_l);
 	// rotate start and end into the models frame of reference
 	if (model != BOX_MODEL_HANDLE && (angles[0] || angles[1] || angles[2])) {
 		AngleVectors(angles, forward, right, up);
-
 		VectorCopy(p_l, temp);
+
 		p_l[0] = DotProduct(temp, forward);
 		p_l[1] = -DotProduct(temp, right);
 		p_l[2] = DotProduct(temp, up);
@@ -387,6 +393,7 @@ void CM_FloodAreaConnections(void) {
 	int i;
 	cArea_t *area;
 	int floodnum;
+
 	// all current floods are now invalid
 	cm.floodvalid++;
 	floodnum = 0;
@@ -395,10 +402,11 @@ void CM_FloodAreaConnections(void) {
 		area = &cm.areas[i];
 
 		if (area->floodvalid == cm.floodvalid) {
-			continue;		// already flooded into
+			continue; // already flooded into
 		}
 
 		floodnum++;
+
 		CM_FloodArea_r(i, floodnum);
 	}
 }
@@ -480,14 +488,15 @@ int CM_WriteAreaBits(byte *buffer, int area) {
 #else
 	if (area == -1)
 #endif
-	{	// for debugging, send everything
+	{ // for debugging, send everything
 		Com_Memset(buffer, 255, bytes);
 	} else {
 		floodnum = cm.areas[area].floodnum;
 
 		for (i = 0; i < cm.numAreas; i++) {
-			if (cm.areas[i].floodnum == floodnum || area == -1)
+			if (cm.areas[i].floodnum == floodnum || area == -1) {
 				buffer[i >> 3] |= 1 << (i&7);
+			}
 		}
 	}
 

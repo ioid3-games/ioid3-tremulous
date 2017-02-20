@@ -1,18 +1,23 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2005 Id Software, Inc.
-Copyright (C) 2000 - 2013 Darklegion Development
+Copyright(C) 1999 - 2005 Id Software, Inc.
+Copyright(C) 2000 - 2013 Darklegion Development
 
-This file is part of Tremulous source code.
+This file is part of Tremulous.
 
-Tremulous source code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+Tremulous is free software; you can redistribute it
+and / or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 2 of the License, 
+or(at your option) any later version.
 
-Tremulous source code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Tremulous is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Tremulous source code; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+You should have received a copy of the GNU General Public License
+along with Tremulous; if not, write to the Free Software
+Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
 =======================================================================================================================================
 */
 
@@ -22,7 +27,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
 /*
 =======================================================================================================================================
-SV_Netchan_FreeQueue
+SV_Netchan_Encode
+
+First four bytes of the data are always:
+  long reliableAcknowledge;
 =======================================================================================================================================
 */
 void SV_Netchan_FreeQueue(client_t *client) {
@@ -70,7 +78,6 @@ Transmit the next fragment and the next queued packet.
 Return number of ms until next message can be sent based on throughput given by client rate, -1 if no packet was sent.
 =======================================================================================================================================
 */
-
 int SV_Netchan_TransmitNextFragment(client_t *client) {
 
 	if (client->netchan.unsentFragments) {
@@ -94,10 +101,12 @@ instance) then buffer them and make sure they get sent in correct order.
 =======================================================================================================================================
 */
 void SV_Netchan_Transmit(client_t *client, msg_t *msg) {
+
 	MSG_WriteByte(msg, svc_EOF);
 
 	if (client->netchan.unsentFragments || client->netchan_start_queue) {
 		netchan_buffer_t *netbuf;
+
 		Com_DPrintf("#462 SV_Netchan_Transmit: unsent fragments, stacked\n");
 		netbuf = (netchan_buffer_t *)Z_Malloc(sizeof(netchan_buffer_t));
 		// store the msg, we can't store it encoded, as the encoding depends on stuff we still have to finish sending
@@ -105,7 +114,7 @@ void SV_Netchan_Transmit(client_t *client, msg_t *msg) {
 		netbuf->next = NULL;
 		// insert it in the queue, the message will be encoded and sent later
 		*client->netchan_end_queue = netbuf;
-		client->netchan_end_queue = & (*client->netchan_end_queue)->next;
+		client->netchan_end_queue = &(*client->netchan_end_queue)->next;
 	} else {
 		Netchan_Transmit(&client->netchan, msg->cursize, msg->data);
 	}
@@ -118,6 +127,7 @@ SV_Netchan_Process
 */
 qboolean SV_Netchan_Process(client_t *client, msg_t *msg) {
 	int ret;
+
 	ret = Netchan_Process(&client->netchan, msg);
 
 	if (!ret) {

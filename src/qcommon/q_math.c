@@ -1,27 +1,31 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2005 Id Software, Inc.
-Copyright (C) 2000 - 2013 Darklegion Development
+Copyright(C) 1999 - 2005 Id Software, Inc.
+Copyright(C) 2000 - 2013 Darklegion Development
 
-This file is part of Tremulous source code.
+This file is part of Tremulous.
 
-Tremulous source code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+Tremulous is free software; you can redistribute it
+and / or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 2 of the License, 
+or(at your option) any later version.
 
-Tremulous source code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Tremulous is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Tremulous source code; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+You should have received a copy of the GNU General Public License
+along with Tremulous; if not, write to the Free Software
+Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
 =======================================================================================================================================
 */
+//
+// q_math.c--stateless support routines that are included in each code module
 
-/**************************************************************************************************************************************
- Stateless support routines that are included in each code module.
-**************************************************************************************************************************************/
-
-// Some of the vector functions are static inline in q_shared.h. q3asm doesn't understand static functions though, so we only want them
-// in one file. That's what this is about.
+// some of the vector functions are static inline in q_shared.h. q3asm
+// doesn't understand static functions though, so we only want them in
+// one file. That's what this is about.
 #ifdef Q3_VM
 #define __Q3_VM_MATH
 #endif
@@ -29,8 +33,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 #include "q_shared.h"
 
 vec3_t vec3_origin = {0, 0, 0};
-vec3_t axisDefault[3] = {{1, 0, 0}, {0, 1, 0}, {0, 0, 1}};
-
+vec3_t axisDefault[3] = {{1, 0, 0},{0, 1, 0},{0, 0, 1}};
 
 vec4_t colorBlack = {0, 0, 0, 1};
 vec4_t colorRed = {1, 0, 0, 1};
@@ -45,91 +48,98 @@ vec4_t colorMdGrey = {0.5, 0.5, 0.5, 1};
 vec4_t colorDkGrey = {0.25, 0.25, 0.25, 1};
 
 vec4_t g_color_table[8] = {
-	{0.2, 0.2, 0.2, 1.0}, {1.0, 0.0, 0.0, 1.0}, {0.0, 1.0, 0.0, 1.0}, {1.0, 1.0, 0.0, 1.0}, {0.0, 0.0, 1.0, 1.0}, {0.0, 1.0, 1.0, 1.0}, {1.0, 0.0, 1.0, 1.0}, {1.0, 1.0, 1.0, 1.0},};
+	{0.2, 0.2, 0.2, 1.0},
+	{1.0, 0.0, 0.0, 1.0},
+	{0.0, 1.0, 0.0, 1.0},
+	{1.0, 1.0, 0.0, 1.0},
+	{0.0, 0.0, 1.0, 1.0},
+	{0.0, 1.0, 1.0, 1.0},
+	{1.0, 0.0, 1.0, 1.0},
+	{1.0, 1.0, 1.0, 1.0},
+};
 
-
-vec3_t bytedirs[NUMVERTEXNORMALS] = {
-{-0.525731f, 0.000000f, 0.850651f}, {-0.442863f, 0.238856f, 0.864188f},
-	{-0.295242f, 0.000000f, 0.955423f}, {-0.309017f, 0.500000f, 0.809017f},
-	{-0.162460f, 0.262866f, 0.951056f}, {0.000000f, 0.000000f, 1.000000f},
-	{0.000000f, 0.850651f, 0.525731f}, {-0.147621f, 0.716567f, 0.681718f},
-	{0.147621f, 0.716567f, 0.681718f}, {0.000000f, 0.525731f, 0.850651f},
-	{0.309017f, 0.500000f, 0.809017f}, {0.525731f, 0.000000f, 0.850651f},
-	{0.295242f, 0.000000f, 0.955423f}, {0.442863f, 0.238856f, 0.864188f},
-	{0.162460f, 0.262866f, 0.951056f}, {-0.681718f, 0.147621f, 0.716567f},
-	{-0.809017f, 0.309017f, 0.500000f}, {-0.587785f, 0.425325f, 0.688191f},
-	{-0.850651f, 0.525731f, 0.000000f}, {-0.864188f, 0.442863f, 0.238856f},
-	{-0.716567f, 0.681718f, 0.147621f}, {-0.688191f, 0.587785f, 0.425325f},
-	{-0.500000f, 0.809017f, 0.309017f}, {-0.238856f, 0.864188f, 0.442863f},
-	{-0.425325f, 0.688191f, 0.587785f}, {-0.716567f, 0.681718f, -0.147621f},
-	{-0.500000f, 0.809017f, -0.309017f}, {-0.525731f, 0.850651f, 0.000000f},
-	{0.000000f, 0.850651f, -0.525731f}, {-0.238856f, 0.864188f, -0.442863f},
-	{0.000000f, 0.955423f, -0.295242f}, {-0.262866f, 0.951056f, -0.162460f},
-	{0.000000f, 1.000000f, 0.000000f}, {0.000000f, 0.955423f, 0.295242f},
-	{-0.262866f, 0.951056f, 0.162460f}, {0.238856f, 0.864188f, 0.442863f},
-	{0.262866f, 0.951056f, 0.162460f}, {0.500000f, 0.809017f, 0.309017f},
-	{0.238856f, 0.864188f, -0.442863f}, {0.262866f, 0.951056f, -0.162460f},
-	{0.500000f, 0.809017f, -0.309017f}, {0.850651f, 0.525731f, 0.000000f},
-	{0.716567f, 0.681718f, 0.147621f}, {0.716567f, 0.681718f, -0.147621f},
-	{0.525731f, 0.850651f, 0.000000f}, {0.425325f, 0.688191f, 0.587785f},
-	{0.864188f, 0.442863f, 0.238856f}, {0.688191f, 0.587785f, 0.425325f},
-	{0.809017f, 0.309017f, 0.500000f}, {0.681718f, 0.147621f, 0.716567f},
-	{0.587785f, 0.425325f, 0.688191f}, {0.955423f, 0.295242f, 0.000000f},
-	{1.000000f, 0.000000f, 0.000000f}, {0.951056f, 0.162460f, 0.262866f},
-	{0.850651f, -0.525731f, 0.000000f}, {0.955423f, -0.295242f, 0.000000f},
-	{0.864188f, -0.442863f, 0.238856f}, {0.951056f, -0.162460f, 0.262866f},
-	{0.809017f, -0.309017f, 0.500000f}, {0.681718f, -0.147621f, 0.716567f},
-	{0.850651f, 0.000000f, 0.525731f}, {0.864188f, 0.442863f, -0.238856f},
-	{0.809017f, 0.309017f, -0.500000f}, {0.951056f, 0.162460f, -0.262866f},
-	{0.525731f, 0.000000f, -0.850651f}, {0.681718f, 0.147621f, -0.716567f},
-	{0.681718f, -0.147621f, -0.716567f}, {0.850651f, 0.000000f, -0.525731f},
-	{0.809017f, -0.309017f, -0.500000f}, {0.864188f, -0.442863f, -0.238856f},
-	{0.951056f, -0.162460f, -0.262866f}, {0.147621f, 0.716567f, -0.681718f},
-	{0.309017f, 0.500000f, -0.809017f}, {0.425325f, 0.688191f, -0.587785f},
-	{0.442863f, 0.238856f, -0.864188f}, {0.587785f, 0.425325f, -0.688191f},
-	{0.688191f, 0.587785f, -0.425325f}, {-0.147621f, 0.716567f, -0.681718f},
-	{-0.309017f, 0.500000f, -0.809017f}, {0.000000f, 0.525731f, -0.850651f},
-	{-0.525731f, 0.000000f, -0.850651f}, {-0.442863f, 0.238856f, -0.864188f},
-	{-0.295242f, 0.000000f, -0.955423f}, {-0.162460f, 0.262866f, -0.951056f},
-	{0.000000f, 0.000000f, -1.000000f}, {0.295242f, 0.000000f, -0.955423f},
-	{0.162460f, 0.262866f, -0.951056f}, {-0.442863f, -0.238856f, -0.864188f},
-	{-0.309017f, -0.500000f, -0.809017f}, {-0.162460f, -0.262866f, -0.951056f},
-	{0.000000f, -0.850651f, -0.525731f}, {-0.147621f, -0.716567f, -0.681718f},
-	{0.147621f, -0.716567f, -0.681718f}, {0.000000f, -0.525731f, -0.850651f},
-	{0.309017f, -0.500000f, -0.809017f}, {0.442863f, -0.238856f, -0.864188f},
-	{0.162460f, -0.262866f, -0.951056f}, {0.238856f, -0.864188f, -0.442863f},
-	{0.500000f, -0.809017f, -0.309017f}, {0.425325f, -0.688191f, -0.587785f},
-	{0.716567f, -0.681718f, -0.147621f}, {0.688191f, -0.587785f, -0.425325f},
-	{0.587785f, -0.425325f, -0.688191f}, {0.000000f, -0.955423f, -0.295242f},
-	{0.000000f, -1.000000f, 0.000000f}, {0.262866f, -0.951056f, -0.162460f},
-	{0.000000f, -0.850651f, 0.525731f}, {0.000000f, -0.955423f, 0.295242f},
-	{0.238856f, -0.864188f, 0.442863f}, {0.262866f, -0.951056f, 0.162460f},
-	{0.500000f, -0.809017f, 0.309017f}, {0.716567f, -0.681718f, 0.147621f},
-	{0.525731f, -0.850651f, 0.000000f}, {-0.238856f, -0.864188f, -0.442863f},
-	{-0.500000f, -0.809017f, -0.309017f}, {-0.262866f, -0.951056f, -0.162460f},
-	{-0.850651f, -0.525731f, 0.000000f}, {-0.716567f, -0.681718f, -0.147621f},
-	{-0.716567f, -0.681718f, 0.147621f}, {-0.525731f, -0.850651f, 0.000000f},
-	{-0.500000f, -0.809017f, 0.309017f}, {-0.238856f, -0.864188f, 0.442863f},
-	{-0.262866f, -0.951056f, 0.162460f}, {-0.864188f, -0.442863f, 0.238856f},
-	{-0.809017f, -0.309017f, 0.500000f}, {-0.688191f, -0.587785f, 0.425325f},
-	{-0.681718f, -0.147621f, 0.716567f}, {-0.442863f, -0.238856f, 0.864188f},
-	{-0.587785f, -0.425325f, 0.688191f}, {-0.309017f, -0.500000f, 0.809017f},
-	{-0.147621f, -0.716567f, 0.681718f}, {-0.425325f, -0.688191f, 0.587785f},
-	{-0.162460f, -0.262866f, 0.951056f}, {0.442863f, -0.238856f, 0.864188f},
-	{0.162460f, -0.262866f, 0.951056f}, {0.309017f, -0.500000f, 0.809017f},
-	{0.147621f, -0.716567f, 0.681718f}, {0.000000f, -0.525731f, 0.850651f},
-	{0.425325f, -0.688191f, 0.587785f}, {0.587785f, -0.425325f, 0.688191f},
-	{0.688191f, -0.587785f, 0.425325f}, {-0.955423f, 0.295242f, 0.000000f},
-	{-0.951056f, 0.162460f, 0.262866f}, {-1.000000f, 0.000000f, 0.000000f},
-	{-0.850651f, 0.000000f, 0.525731f}, {-0.955423f, -0.295242f, 0.000000f},
-	{-0.951056f, -0.162460f, 0.262866f}, {-0.864188f, 0.442863f, -0.238856f},
-	{-0.951056f, 0.162460f, -0.262866f}, {-0.809017f, 0.309017f, -0.500000f},
-	{-0.864188f, -0.442863f, -0.238856f}, {-0.951056f, -0.162460f, -0.262866f},
-	{-0.809017f, -0.309017f, -0.500000f}, {-0.681718f, 0.147621f, -0.716567f},
-	{-0.681718f, -0.147621f, -0.716567f}, {-0.850651f, 0.000000f, -0.525731f},
-	{-0.688191f, 0.587785f, -0.425325f}, {-0.587785f, 0.425325f, -0.688191f},
-	{-0.425325f, 0.688191f, -0.587785f}, {-0.425325f, -0.688191f, -0.587785f},
-	{-0.587785f, -0.425325f, -0.688191f}, {-0.688191f, -0.587785f, -0.425325f}
+vec3_t bytedirs[NUMVERTEXNORMALS] = {{- 0.525731f, 0.000000f, 0.850651f},
+	{- 0.442863f, 0.238856f, 0.864188f}, {- 0.295242f, 0.000000f, 0.955423f},
+	{- 0.309017f, 0.500000f, 0.809017f}, {- 0.162460f, 0.262866f, 0.951056f},
+	{0.000000f, 0.000000f, 1.000000f}, {0.000000f, 0.850651f, 0.525731f},
+	{- 0.147621f, 0.716567f, 0.681718f}, {0.147621f, 0.716567f, 0.681718f},
+	{0.000000f, 0.525731f, 0.850651f}, {0.309017f, 0.500000f, 0.809017f},
+	{0.525731f, 0.000000f, 0.850651f}, {0.295242f, 0.000000f, 0.955423f},
+	{0.442863f, 0.238856f, 0.864188f}, {0.162460f, 0.262866f, 0.951056f},
+	{- 0.681718f, 0.147621f, 0.716567f}, {- 0.809017f, 0.309017f, 0.500000f},
+	{- 0.587785f, 0.425325f, 0.688191f}, {- 0.850651f, 0.525731f, 0.000000f},
+	{- 0.864188f, 0.442863f, 0.238856f}, {- 0.716567f, 0.681718f, 0.147621f},
+	{- 0.688191f, 0.587785f, 0.425325f}, {- 0.500000f, 0.809017f, 0.309017f},
+	{- 0.238856f, 0.864188f, 0.442863f}, {- 0.425325f, 0.688191f, 0.587785f},
+	{- 0.716567f, 0.681718f, -0.147621f}, {- 0.500000f, 0.809017f, -0.309017f},
+	{- 0.525731f, 0.850651f, 0.000000f}, {0.000000f, 0.850651f, -0.525731f},
+	{- 0.238856f, 0.864188f, -0.442863f}, {0.000000f, 0.955423f, -0.295242f},
+	{- 0.262866f, 0.951056f, -0.162460f}, {0.000000f, 1.000000f, 0.000000f},
+	{0.000000f, 0.955423f, 0.295242f}, {- 0.262866f, 0.951056f, 0.162460f},
+	{0.238856f, 0.864188f, 0.442863f}, {0.262866f, 0.951056f, 0.162460f},
+	{0.500000f, 0.809017f, 0.309017f}, {0.238856f, 0.864188f, -0.442863f},
+	{0.262866f, 0.951056f, -0.162460f}, {0.500000f, 0.809017f, -0.309017f},
+	{0.850651f, 0.525731f, 0.000000f}, {0.716567f, 0.681718f, 0.147621f},
+	{0.716567f, 0.681718f, -0.147621f}, {0.525731f, 0.850651f, 0.000000f},
+	{0.425325f, 0.688191f, 0.587785f}, {0.864188f, 0.442863f, 0.238856f},
+	{0.688191f, 0.587785f, 0.425325f}, {0.809017f, 0.309017f, 0.500000f},
+	{0.681718f, 0.147621f, 0.716567f}, {0.587785f, 0.425325f, 0.688191f},
+	{0.955423f, 0.295242f, 0.000000f}, {1.000000f, 0.000000f, 0.000000f},
+	{0.951056f, 0.162460f, 0.262866f}, {0.850651f, -0.525731f, 0.000000f},
+	{0.955423f, -0.295242f, 0.000000f}, {0.864188f, -0.442863f, 0.238856f},
+	{0.951056f, -0.162460f, 0.262866f}, {0.809017f, -0.309017f, 0.500000f},
+	{0.681718f, -0.147621f, 0.716567f}, {0.850651f, 0.000000f, 0.525731f},
+	{0.864188f, 0.442863f, -0.238856f}, {0.809017f, 0.309017f, -0.500000f},
+	{0.951056f, 0.162460f, -0.262866f}, {0.525731f, 0.000000f, -0.850651f},
+	{0.681718f, 0.147621f, -0.716567f}, {0.681718f, -0.147621f, -0.716567f},
+	{0.850651f, 0.000000f, -0.525731f}, {0.809017f, -0.309017f, -0.500000f},
+	{0.864188f, -0.442863f, -0.238856f}, {0.951056f, -0.162460f, -0.262866f},
+	{0.147621f, 0.716567f, -0.681718f}, {0.309017f, 0.500000f, -0.809017f},
+	{0.425325f, 0.688191f, -0.587785f}, {0.442863f, 0.238856f, -0.864188f},
+	{0.587785f, 0.425325f, -0.688191f}, {0.688191f, 0.587785f, -0.425325f},
+	{- 0.147621f, 0.716567f, -0.681718f}, {- 0.309017f, 0.500000f, -0.809017f},
+	{0.000000f, 0.525731f, -0.850651f}, {- 0.525731f, 0.000000f, -0.850651f},
+	{- 0.442863f, 0.238856f, -0.864188f}, {- 0.295242f, 0.000000f, -0.955423f},
+	{- 0.162460f, 0.262866f, -0.951056f}, {0.000000f, 0.000000f, -1.000000f},
+	{0.295242f, 0.000000f, -0.955423f}, {0.162460f, 0.262866f, -0.951056f},
+	{- 0.442863f, -0.238856f, -0.864188f}, {- 0.309017f, -0.500000f, -0.809017f},
+	{- 0.162460f, -0.262866f, -0.951056f}, {0.000000f, -0.850651f, -0.525731f},
+	{- 0.147621f, -0.716567f, -0.681718f}, {0.147621f, -0.716567f, -0.681718f},
+	{0.000000f, -0.525731f, -0.850651f}, {0.309017f, -0.500000f, -0.809017f},
+	{0.442863f, -0.238856f, -0.864188f}, {0.162460f, -0.262866f, -0.951056f},
+	{0.238856f, -0.864188f, -0.442863f}, {0.500000f, -0.809017f, -0.309017f},
+	{0.425325f, -0.688191f, -0.587785f}, {0.716567f, -0.681718f, -0.147621f},
+	{0.688191f, -0.587785f, -0.425325f}, {0.587785f, -0.425325f, -0.688191f},
+	{0.000000f, -0.955423f, -0.295242f}, {0.000000f, -1.000000f, 0.000000f},
+	{0.262866f, -0.951056f, -0.162460f}, {0.000000f, -0.850651f, 0.525731f},
+	{0.000000f, -0.955423f, 0.295242f}, {0.238856f, -0.864188f, 0.442863f},
+	{0.262866f, -0.951056f, 0.162460f}, {0.500000f, -0.809017f, 0.309017f},
+	{0.716567f, -0.681718f, 0.147621f}, {0.525731f, -0.850651f, 0.000000f},
+	{- 0.238856f, -0.864188f, -0.442863f}, {- 0.500000f, -0.809017f, -0.309017f},
+	{- 0.262866f, -0.951056f, -0.162460f}, {- 0.850651f, -0.525731f, 0.000000f},
+	{- 0.716567f, -0.681718f, -0.147621f}, {- 0.716567f, -0.681718f, 0.147621f},
+	{- 0.525731f, -0.850651f, 0.000000f}, {- 0.500000f, -0.809017f, 0.309017f},
+	{- 0.238856f, -0.864188f, 0.442863f}, {- 0.262866f, -0.951056f, 0.162460f},
+	{- 0.864188f, -0.442863f, 0.238856f}, {- 0.809017f, -0.309017f, 0.500000f},
+	{- 0.688191f, -0.587785f, 0.425325f}, {- 0.681718f, -0.147621f, 0.716567f},
+	{- 0.442863f, -0.238856f, 0.864188f}, {- 0.587785f, -0.425325f, 0.688191f},
+	{- 0.309017f, -0.500000f, 0.809017f}, {- 0.147621f, -0.716567f, 0.681718f},
+	{- 0.425325f, -0.688191f, 0.587785f}, {- 0.162460f, -0.262866f, 0.951056f},
+	{0.442863f, -0.238856f, 0.864188f}, {0.162460f, -0.262866f, 0.951056f},
+	{0.309017f, -0.500000f, 0.809017f}, {0.147621f, -0.716567f, 0.681718f},
+	{0.000000f, -0.525731f, 0.850651f}, {0.425325f, -0.688191f, 0.587785f},
+	{0.587785f, -0.425325f, 0.688191f}, {0.688191f, -0.587785f, 0.425325f},
+	{- 0.955423f, 0.295242f, 0.000000f}, {- 0.951056f, 0.162460f, 0.262866f},
+	{- 1.000000f, 0.000000f, 0.000000f}, {- 0.850651f, 0.000000f, 0.525731f},
+	{- 0.955423f, -0.295242f, 0.000000f}, {- 0.951056f, -0.162460f, 0.262866f},
+	{- 0.864188f, 0.442863f, -0.238856f}, {- 0.951056f, 0.162460f, -0.262866f},
+	{- 0.809017f, 0.309017f, -0.500000f}, {- 0.864188f, -0.442863f, -0.238856f},
+	{- 0.951056f, -0.162460f, -0.262866f}, {- 0.809017f, -0.309017f, -0.500000f},
+	{- 0.681718f, 0.147621f, -0.716567f}, {- 0.681718f, -0.147621f, -0.716567f},
+	{- 0.850651f, 0.000000f, -0.525731f}, {- 0.688191f, 0.587785f, -0.425325f},
+	{- 0.587785f, 0.425325f, -0.688191f}, {- 0.425325f, 0.688191f, -0.587785f},
+	{- 0.425325f, -0.688191f, -0.587785f}, {- 0.587785f, -0.425325f, -0.688191f},
+	{- 0.688191f, -0.587785f, -0.425325f}
 };
 
 /*
@@ -138,7 +148,7 @@ Q_rand
 =======================================================================================================================================
 */
 int Q_rand(int *seed) {
- *seed = (69069 * *seed + 1);
+	*seed = (69069 * *seed + 1);
 	return *seed;
 }
 
@@ -305,7 +315,8 @@ float NormalizeColor(const vec3_t in, vec3_t out) {
 =======================================================================================================================================
 PlaneFromPoints
 
-Returns false if the triangle is degenerate. The normal will point out of the clock for clockwise ordered points.
+Returns false if the triangle is degenrate.
+The normal will point out of the clock for clockwise ordered points.
 =======================================================================================================================================
 */
 qboolean PlaneFromPoints(vec4_t plane, const vec3_t a, const vec3_t b, const vec3_t c) {
@@ -446,8 +457,7 @@ void vectoangles(const vec3_t value1, vec3_t angles) {
 =======================================================================================================================================
 AxisToAngles
 
-Takes an axis(forward + right + up)
-and returns angles -- including a roll
+Takes an axis(forward + right + up) and returns angles--including a roll.
 =======================================================================================================================================
 */
 void AxisToAngles(vec3_t axis[3], vec3_t angles) {
@@ -501,6 +511,7 @@ AnglesToAxis
 */
 void AnglesToAxis(const vec3_t angles, vec3_t axis[3]) {
 	vec3_t right;
+
 	// angle vectors returns "right" instead of "y axis"
 	AngleVectors(angles, axis[0], right, axis[2]);
 	VectorSubtract(vec3_origin, right, axis[1]);
@@ -570,6 +581,7 @@ Given a normalized forward vector, create two other perpendicular vectors.
 */
 void MakeNormalVectors(const vec3_t forward, vec3_t right, vec3_t up) {
 	float d;
+
 	// this rotate and negate guarantees a vector not colinear with the original
 	right[1] = -forward[0];
 	right[2] = forward[1];
@@ -596,7 +608,7 @@ void VectorRotate(vec3_t in, vec3_t matrix[3], vec3_t out) {
 =======================================================================================================================================
 Q_rsqrt
 
-float q_rsqrt(float number)
+float q_rsqrt(float number).
 =======================================================================================================================================
 */
 float Q_rsqrt(float number) {
@@ -606,10 +618,10 @@ float Q_rsqrt(float number) {
 
 	x2 = number * 0.5F;
 	t.f = number;
-	t.i = 0x5f3759df - (t.i >> 1);              // what the fuck?
+	t.i = 0x5f3759df - (t.i >> 1); // what the fuck?
 	y = t.f;
-	y = y * (threehalfs - (x2 * y * y));  // 1st iteration
-// 	y = y * (threehalfs - (x2 * y * y));  // 2nd iteration, this can be removed
+	y = y * (threehalfs - (x2 * y * y)); // 1st iteration
+//	y = y * (threehalfs - (x2 * y * y)); // 2nd iteration, this can be removed
 
 	return y;
 }
@@ -623,7 +635,7 @@ float Q_fabs(float f) {
 	floatint_t fi;
 
 	fi.f = f;
-	fi.i &= 0x7FFFFFFF;
+	fi.i & = 0x7FFFFFFF;
 	return fi.f;
 }
 #endif
@@ -652,7 +664,7 @@ float LerpAngle(float from, float to, float frac) {
 =======================================================================================================================================
 AngleSubtract
 
-Always returns a value from -180 to 180.
+Always returns a value from - 180 to 180.
 =======================================================================================================================================
 */
 float AngleSubtract(float a1, float a2) {
@@ -688,7 +700,7 @@ AngleMod
 =======================================================================================================================================
 */
 float AngleMod(float a) {
-	a = (360.0 / 65536) * ((int)(a *(65536 / 360.0)) & 65535);
+	a = (360.0 / 65536) * ((int)(a * (65536 / 360.0)) & 65535);
 	return a;
 }
 
@@ -707,7 +719,7 @@ float AngleNormalize360(float angle) {
 =======================================================================================================================================
 AngleNormalize180
 
-Returns angle normalized to the range [-180 < angle <= 180].
+Returns angle normalized to the range [- 180 < angle <= 180].
 =======================================================================================================================================
 */
 float AngleNormalize180(float angle) {
@@ -738,12 +750,13 @@ SetPlaneSignbits
 */
 void SetPlaneSignbits(cplane_t *out) {
 	int bits, j;
+
 	// for fast box on planeside test
 	bits = 0;
 
 	for (j = 0; j < 3; j++) {
 		if (out->normal[j] < 0) {
-			bits |= 1 << j;
+			bits|= 1 << j;
 		}
 	}
 
@@ -760,6 +773,7 @@ Returns 1, 2, or 1 + 2.
 int BoxOnPlaneSide(vec3_t emins, vec3_t emaxs, struct cplane_s *p) {
 	float dist[2];
 	int sides, b, i;
+
 	// fast axial cases
 	if (p->type < 3) {
 		if (p->dist <= emins[p->type]) {
@@ -775,7 +789,7 @@ int BoxOnPlaneSide(vec3_t emins, vec3_t emaxs, struct cplane_s *p) {
 	// general case
 	dist[0] = dist[1] = 0;
 
-	if (p->signbits < 8) // >= 8: default case is original code(dist[0] = dist[1] = 0) {
+	if (p->signbits < 8) // >= 8 : default case is original code(dist[0] = dist[1] = 0) {
 		for (i = 0; i < 3; i++) {
 			b = (p->signbits >> i) & 1;
 			dist[b] += p->normal[i] * emaxs[i];
@@ -785,11 +799,13 @@ int BoxOnPlaneSide(vec3_t emins, vec3_t emaxs, struct cplane_s *p) {
 
 	sides = 0;
 
-	if (dist[0] >= p->dist)
+	if (dist[0] >= p->dist) {
 		sides = 1;
+	}
 
-	if (dist[1] < p->dist)
-		sides |= 2;
+	if (dist[1] < p->dist) {
+		sides|= 2;
+	}
 
 	return sides;
 }
@@ -876,12 +892,7 @@ BoundsIntersectSphere
 */
 qboolean BoundsIntersectSphere(const vec3_t mins, const vec3_t maxs, const vec3_t origin, vec_t radius) {
 
-	if (origin[0] - radius > maxs[0] ||
-		origin[0] + radius < mins[0] ||
-		origin[1] - radius > maxs[1] ||
-		origin[1] + radius < mins[1] ||
-		origin[2] - radius > maxs[2] ||
-		origin[2] + radius < mins[2]) {
+	if (origin[0] - radius > maxs[0] || origin[0] + radius < mins[0] || origin[1] - radius > maxs[1] || origin[1] + radius < mins[1] || origin[2] - radius > maxs[2] || origin[2] + radius < mins[2]) {
 		return qfalse;
 	}
 
@@ -895,12 +906,7 @@ BoundsIntersectPoint
 */
 qboolean BoundsIntersectPoint(const vec3_t mins, const vec3_t maxs, const vec3_t origin) {
 
-	if (origin[0] > maxs[0] ||
-		origin[0] < mins[0] ||
-		origin[1] > maxs[1] ||
-		origin[1] < mins[1] ||
-		origin[2] > maxs[2] ||
-		origin[2] < mins[2]) {
+	if (origin[0] > maxs[0] || origin[0] < mins[0] || origin[1] > maxs[1] || origin[1] < mins[1] || origin[2] > maxs[2] || origin[2] < mins[2]) {
 		return qfalse;
 	}
 
@@ -919,7 +925,7 @@ vec_t VectorNormalize(vec3_t v) {
 
 	if (length) {
 		// writing it this way allows gcc to recognize that rsqrt can be used
-		ilength = 1 /  (float)sqrt(length);
+		ilength = 1 / (float)sqrt(length);
 		// sqrt(length) = length * (1 / sqrt(length))
 		length *= ilength;
 		v[0] *= ilength;
@@ -942,7 +948,7 @@ vec_t VectorNormalize2(const vec3_t v, vec3_t out) {
 
 	if (length) {
 		// writing it this way allows gcc to recognize that rsqrt can be used
-		ilength = 1 /  (float)sqrt(length);
+		ilength = 1 / (float)sqrt(length);
 		// sqrt(length) = length * (1 / sqrt(length))
 		length *= ilength;
 		out[0] = v[0] * ilength;
@@ -957,7 +963,7 @@ vec_t VectorNormalize2(const vec3_t v, vec3_t out) {
 
 /*
 =======================================================================================================================================
-VectorMA
+_VectorMA
 =======================================================================================================================================
 */
 void _VectorMA(const vec3_t veca, float scale, const vec3_t vecb, vec3_t vecc) {
@@ -968,7 +974,7 @@ void _VectorMA(const vec3_t veca, float scale, const vec3_t vecb, vec3_t vecc) {
 
 /*
 =======================================================================================================================================
-DotProduct
+_DotProduct
 =======================================================================================================================================
 */
 vec_t _DotProduct(const vec3_t v1, const vec3_t v2) {
@@ -977,7 +983,7 @@ vec_t _DotProduct(const vec3_t v1, const vec3_t v2) {
 
 /*
 =======================================================================================================================================
-VectorSubtract
+_VectorSubtract
 =======================================================================================================================================
 */
 void _VectorSubtract(const vec3_t veca, const vec3_t vecb, vec3_t out) {
@@ -988,7 +994,7 @@ void _VectorSubtract(const vec3_t veca, const vec3_t vecb, vec3_t out) {
 
 /*
 =======================================================================================================================================
-VectorAdd
+_VectorAdd
 =======================================================================================================================================
 */
 void _VectorAdd(const vec3_t veca, const vec3_t vecb, vec3_t out) {
@@ -999,7 +1005,7 @@ void _VectorAdd(const vec3_t veca, const vec3_t vecb, vec3_t out) {
 
 /*
 =======================================================================================================================================
-VectorCopy
+_VectorCopy
 =======================================================================================================================================
 */
 void _VectorCopy(const vec3_t in, vec3_t out) {
@@ -1010,7 +1016,7 @@ void _VectorCopy(const vec3_t in, vec3_t out) {
 
 /*
 =======================================================================================================================================
-VectorScale
+_VectorScale
 =======================================================================================================================================
 */
 void _VectorScale(const vec3_t in, vec_t scale, vec3_t out) {
@@ -1056,20 +1062,21 @@ PlaneTypeForNormal
 /*
 int PlaneTypeForNormal(vec3_t normal) {
 
-	if (normal[0] == 1.0)
+	if (normal[0] == 1.0) {
 		return PLANE_X;
+	}
 
-	if (normal[1] == 1.0)
+	if (normal[1] == 1.0) {
 		return PLANE_Y;
+	}
 
-	if (normal[2] == 1.0)
+	if (normal[2] == 1.0) {
 		return PLANE_Z;
+	}
 
 	return PLANE_NON_AXIAL;
 }
 */
-
-
 /*
 =======================================================================================================================================
 MatrixMultiply
@@ -1106,8 +1113,8 @@ AngleVectors
 void AngleVectors(const vec3_t angles, vec3_t forward, vec3_t right, vec3_t up) {
 	float angle;
 	static float sr, sp, sy, cr, cp, cy;
-	// static to help MS compiler fp bugs
 
+	// static to help MS compiler fp bugs
 	angle = angles[YAW] * (M_PI * 2 / 360);
 	sy = sin(angle);
 	cy = cos(angle);
@@ -1120,21 +1127,19 @@ void AngleVectors(const vec3_t angles, vec3_t forward, vec3_t right, vec3_t up) 
 
 	if (forward) {
 		forward[0] = cp * cy;
-
 		forward[1] = cp * sy;
-
 		forward[2] = -sp;
 	}
 
 	if (right) {
-		right[0] = (-1 * sr * sp * cy + - 1 * cr * - sy);
-		right[1] = (-1 * sr * sp * sy + - 1 * cr * cy);
+		right[0] = (-1 * sr * sp * cy + -1 * cr * -sy);
+		right[1] = (-1 * sr * sp * sy + -1 * cr * cy);
 		right[2] = -1 * sr * cp;
 	}
 
 	if (up) {
-		up[0] = (cr * sp * cy + - sr * - sy);
-		up[1] = (cr * sp * sy + - sr * cy);
+		up[0] = (cr * sp * cy + -sr * -sy);
+		up[1] = (cr * sp * sy + -sr * cy);
 		up[2] = cr * cp;
 	}
 }
@@ -1152,9 +1157,7 @@ void PerpendicularVector(vec3_t dst, const vec3_t src) {
 	float minelem = 1.0F;
 	vec3_t tempvec;
 
-	/*
-	 **find the smallest magnitude axially aligned vector
- */
+	// find the smallest magnitude axially aligned vector
 	for (pos = 0, i = 0; i < 3; i++) {
 		if (fabs(src[i]) < minelem) {
 			pos = i;
@@ -1164,15 +1167,9 @@ void PerpendicularVector(vec3_t dst, const vec3_t src) {
 
 	tempvec[0] = tempvec[1] = tempvec[2] = 0.0F;
 	tempvec[pos] = 1.0F;
-
-	/*
-	 **project the point onto the plane defined by src
- */
+	// project the point onto the plane defined by src
 	ProjectPointOnPlane(dst, tempvec, src);
-
-	/*
-	 **normalize the result
- */
+	// normalize the result
 	VectorNormalize(dst);
 }
 
@@ -1180,7 +1177,7 @@ void PerpendicularVector(vec3_t dst, const vec3_t src) {
 =======================================================================================================================================
 pointToLineDistance
 
-Distance from a point to some line
+Distance from a point to some line.
 =======================================================================================================================================
 */
 float pointToLineDistance(const vec3_t p0, const vec3_t p1, const vec3_t p2) {
@@ -1194,17 +1191,18 @@ float pointToLineDistance(const vec3_t p0, const vec3_t p1, const vec3_t p2) {
 	c1 = VectorLength(y);
 	c2 = VectorLength(v);
 
-	if (c2 == 0.0f)
+	if (c2 == 0.0f) {
 		return 0.0f;
 	} else {
 		return c1 / c2;
+	}
 }
 
 /*
 =======================================================================================================================================
 GetPerpendicularViewVector
 
-Used to find an "up" vector for drawing a sprite so that it always faces the view as best as possible
+Used to find an "up" vector for drawing a sprite so that it always faces the view as best as possible.
 =======================================================================================================================================
 */
 void GetPerpendicularViewVector(const vec3_t point, const vec3_t p1, const vec3_t p2, vec3_t up) {
@@ -1239,17 +1237,19 @@ void ProjectPointOntoVector(vec3_t point, vec3_t vStart, vec3_t vEnd, vec3_t vPr
 =======================================================================================================================================
 VectorMaxComponent
 
-Return the biggest component of some vector
+Return the biggest component of some vector.
 =======================================================================================================================================
 */
 float VectorMaxComponent(vec3_t v) {
 	float biggest = v[0];
 
-	if (v[1] > biggest)
+	if (v[1] > biggest) {
 		biggest = v[1];
+	}
 
-	if (v[2] > biggest)
+	if (v[2] > biggest) {
 		biggest = v[2];
+	}
 
 	return biggest;
 }
@@ -1258,132 +1258,118 @@ float VectorMaxComponent(vec3_t v) {
 =======================================================================================================================================
 VectorMinComponent
 
-Return the smallest component of some vector
+Return the smallest component of some vector.
 =======================================================================================================================================
 */
 float VectorMinComponent(vec3_t v) {
 	float smallest = v[0];
 
-	if (v[1] < smallest)
+	if (v[1] < smallest) {
 		smallest = v[1];
+	}
 
-	if (v[2] < smallest)
+	if (v[2] < smallest) {
 		smallest = v[2];
+	}
 
 	return smallest;
 }
-
-
 #define LINE_DISTANCE_EPSILON 1e - 05f
-
 /*
 =======================================================================================================================================
 DistanceBetweenLineSegmentsSquared
 
-Return the smallest distance between two line segments, squared
+Return the smallest distance between two line segments, squared.
 =======================================================================================================================================
 */
-vec_t DistanceBetweenLineSegmentsSquared(
-    const vec3_t sP0, const vec3_t sP1, const vec3_t tP0, const vec3_t tP1, 
-    float *s, float *t) {
-  vec3_t sMag, tMag, diff;
-  float a, b, c, d, e;
-  float D;
-  float sN, sD;
-  float tN, tD;
-  vec3_t separation;
+vec_t DistanceBetweenLineSegmentsSquared(const vec3_t sP0, const vec3_t sP1, const vec3_t tP0, const vec3_t tP1, float *s, float *t) {
+	vec3_t sMag, tMag, diff;
+	float a, b, c, d, e;
+	float D;
+	float sN, sD;
+	float tN, tD;
+	vec3_t separation;
 
-  VectorSubtract(sP1, sP0, sMag);
-  VectorSubtract(tP1, tP0, tMag);
-  VectorSubtract(sP0, tP0, diff);
-  a = DotProduct(sMag, sMag);
-  b = DotProduct(sMag, tMag);
-  c = DotProduct(tMag, tMag);
-  d = DotProduct(sMag, diff);
-  e = DotProduct(tMag, diff);
-  sD = tD = D = a * c - b * b;
+	VectorSubtract(sP1, sP0, sMag);
+	VectorSubtract(tP1, tP0, tMag);
+	VectorSubtract(sP0, tP0, diff);
+	a = DotProduct(sMag, sMag);
+	b = DotProduct(sMag, tMag);
+	c = DotProduct(tMag, tMag);
+	d = DotProduct(sMag, diff);
+	e = DotProduct(tMag, diff);
+	sD = tD = D = a * c - b * b;
 
-  if (D < LINE_DISTANCE_EPSILON) {
-   // the lines are almost parallel
-    sN = 0.0;  // force using point P0 on segment S1
-    sD = 1.0;  // to prevent possible division by 0.0 later
-    tN = e;
-    tD = c;
-} else {
-   // get the closest points on the infinite lines
-    sN = (b * e - c * d);
-    tN = (a * e - b * d);
+	if (D < LINE_DISTANCE_EPSILON) {
+		// the lines are almost parallel
+		sN = 0.0; // force using point P0 on segment S1
+		sD = 1.0; // to prevent possible division by 0.0 later
+		tN = e;
+		tD = c;
+	} else {
+		// get the closest points on the infinite lines
+		sN = (b * e - c * d);
+		tN = (a * e - b * d);
 
-    if (sN < 0.0) {
-     // sN < 0 = > the s = 0 edge is visible
-      sN = 0.0;
-      tN = e;
-      tD = c;
- }
-    else if (sN > sD) {
-     // sN > sD = > the s = 1 edge is visible
-      sN = sD;
-      tN = e + b;
-      tD = c;
- }
-}
+		if (sN < 0.0) {
+			// sN < 0 = > the s = 0 edge is visible
+			sN = 0.0;
+			tN = e;
+			tD = c;
+		} else if (sN > sD) {
+			// sN > sD = > the s = 1 edge is visible
+			sN = sD;
+			tN = e + b;
+			tD = c;
+		}
+	}
 
-  if (tN < 0.0) {
-   // tN < 0 = > the t = 0 edge is visible
-    tN = 0.0;
+	if (tN < 0.0) {
+		// tN < 0 = > the t = 0 edge is visible
+		tN = 0.0;
+		// recompute sN for this edge
+		if (-d < 0.0) {
+			sN = 0.0;
+		} else if (-d > a) {
+			sN = sD;
+		} else {
+			sN = -d;
+			sD = a;
+		}
+	} else if (tN > tD) {
+		// tN > tD = > the t = 1 edge is visible
+		tN = tD;
+		// recompute sN for this edge
+		if ((-d + b) < 0.0) {
+			sN = 0;
+		} else if ((-d + b) > a) {
+			sN = sD;
+		} else {
+			sN = (-d + b);
+			sD = a;
+		}
+	}
+	// finally do the division to get *s and *t
+	*s = (fabs(sN) < LINE_DISTANCE_EPSILON ? 0.0 : sN / sD);
+	*t = (fabs(tN) < LINE_DISTANCE_EPSILON ? 0.0 : tN / tD);
+	// get the difference of the two closest points
+	VectorScale(sMag, *s, sMag);
+	VectorScale(tMag, *t, tMag);
+	VectorAdd(diff, sMag, separation);
+	VectorSubtract(separation, tMag, separation);
 
-   // recompute sN for this edge
-    if (-d < 0.0)
-      sN = 0.0;
-    else if (-d > a)
-      sN = sD;
-    else
-    {
-      sN = -d;
-      sD = a;
- }
-}
-  else if (tN > tD) {
-   // tN > tD = > the t = 1 edge is visible
-    tN = tD;
-
-   // recompute sN for this edge
-    if ((-d + b) < 0.0)
-      sN = 0;
-    else if ((-d + b) > a)
-      sN = sD;
-    else
-    {
-      sN = (-d + b);
-      sD = a;
- }
-}
-
- // finally do the division to get *s and *t
-  *s = (fabs(sN) < LINE_DISTANCE_EPSILON ? 0.0 : sN / sD);
-  *t = (fabs(tN) < LINE_DISTANCE_EPSILON ? 0.0 : tN / tD);
-
- // get the difference of the two closest points
-  VectorScale(sMag, *s, sMag);
-  VectorScale(tMag, *t, tMag);
-  VectorAdd(diff, sMag, separation);
-  VectorSubtract(separation, tMag, separation);
-
-  return VectorLengthSquared(separation);
+	return VectorLengthSquared(separation);
 }
 
 /*
 =======================================================================================================================================
 DistanceBetweenLineSegments
 
-Return the smallest distance between two line segments
+Return the smallest distance between two line segments.
 =======================================================================================================================================
 */
-vec_t DistanceBetweenLineSegments(
-    const vec3_t sP0, const vec3_t sP1, const vec3_t tP0, const vec3_t tP1, 
-    float *s, float *t) {
-	return (vec_t)sqrt(DistanceBetweenLineSegmentsSquared(
-        sP0, sP1, tP0, tP1, s, t));
+vec_t DistanceBetweenLineSegments(const vec3_t sP0, const vec3_t sP1, const vec3_t tP0, const vec3_t tP1, float *s, float *t) {
+	return (vec_t)sqrt(DistanceBetweenLineSegmentsSquared(sP0, sP1, tP0, tP1, s, t));
 }
 
 /*
@@ -1397,23 +1383,20 @@ int Q_isnan(float x) {
 	floatint_t fi;
 
 	fi.f = x;
-	fi.ui &= 0x7FFFFFFF;
+	fi.ui & = 0x7FFFFFFF;
 	fi.ui = 0x7F800000 - fi.ui;
-
 	return (int)((unsigned int)fi.ui >> 31);
 }
-//------------------------------------------------------------------------
-
 #ifndef Q3_VM
 /*
 =======================================================================================================================================
 Q_acos
 
-The msvc acos doesn't always return a value between -PI and PI:
+The msvc acos doesn't always return a value between - PI and PI:
 
 int i;
 i = 1065353246;
-acos(*(float *)&i) == -1.#IND0
+acos(*(float *) &i) == -1.#IND0
 =======================================================================================================================================
 */
 float Q_acos(float c) {

@@ -1,18 +1,23 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2005 Id Software, Inc.
-Copyright (C) 2000 - 2013 Darklegion Development
+Copyright(C) 1999 - 2005 Id Software, Inc.
+Copyright(C) 2000 - 2013 Darklegion Development
 
-This file is part of Tremulous source code.
+This file is part of Tremulous.
 
-Tremulous source code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+Tremulous is free software; you can redistribute it
+and / or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 2 of the License, 
+or(at your option) any later version.
 
-Tremulous source code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Tremulous is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Tremulous source code; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+You should have received a copy of the GNU General Public License
+along with Tremulous; if not, write to the Free Software
+Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
 =======================================================================================================================================
 */
 
@@ -20,14 +25,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 #include "qcommon.h"
 #include "cm_polylib.h"
 
-#define MAX_SUBMODELS			256
-#define BOX_MODEL_HANDLE		255
-#define CAPSULE_MODEL_HANDLE	254
-
+#define MAX_SUBMODELS 256
+#define BOX_MODEL_HANDLE 255
+#define CAPSULE_MODEL_HANDLE 254
 
 typedef struct {
 	cplane_t *plane;
-	int children[2];		// negative numbers are leafs
+	int children[2]; // negative numbers are leafs
 } cNode_t;
 
 typedef struct {
@@ -41,7 +45,7 @@ typedef struct {
 
 typedef struct cmodel_s {
 	vec3_t mins, maxs;
-	cLeaf_t leaf;			// submodels don't reference the main tree
+	cLeaf_t leaf; // submodels don't reference the main tree
 } cmodel_t;
 
 typedef struct cbrushedge_s {
@@ -58,25 +62,23 @@ typedef struct {
 } cbrushside_t;
 
 typedef struct {
-	int shaderNum;		// the shader that determined the contents
+	int shaderNum;	// the shader that determined the contents
 	int contents;
 	vec3_t bounds[2];
 	int numsides;
 	cbrushside_t *sides;
-	int checkcount;		// to avoid repeated testings
+	int checkcount;	// to avoid repeated testings
 	qboolean collided; // marker for optimisation
 	cbrushedge_t *edges;
 	int numEdges;
 } cbrush_t;
 
-
 typedef struct {
-	int checkcount;				// to avoid repeated testings
+	int checkcount; // to avoid repeated testings
 	int surfaceFlags;
 	int contents;
 	struct patchCollide_s *pc;
 } cPatch_t;
-
 
 typedef struct {
 	int floodnum;
@@ -111,17 +113,14 @@ typedef struct {
 	char *entityString;
 	int numAreas;
 	cArea_t *areas;
-	int *areaPortals;	// [numAreas * numAreas] reference counts
+	int *areaPortals;		// [numAreas * numAreas] reference counts
 	int numSurfaces;
-	cPatch_t **surfaces;			// non - patches will be NULL
+	cPatch_t **surfaces;	// non-patches will be NULL
 	int floodvalid;
-	int checkcount;					// incremented on each trace
+	int checkcount;			// incremented on each trace
 } clipMap_t;
-
-
-// keep 1 / 8 unit away to keep the position valid before network snapping
-// and to avoid various numeric issues
-#define SURFACE_CLIP_EPSILON	(0.125)
+// keep 1/8 unit away to keep the position valid before network snapping and to avoid various numeric issues
+#define SURFACE_CLIP_EPSILON (0.125)
 
 extern clipMap_t cm;
 extern int c_pointcontents;
@@ -129,14 +128,12 @@ extern int c_traces, c_brush_traces, c_patch_traces;
 extern cvar_t *cm_noAreas;
 extern cvar_t *cm_noCurves;
 extern cvar_t *cm_playerCurveClip;
-
 // cm_test.c
 
 typedef struct {
 	float startRadius;
 	float endRadius;
 } biSphere_t;
-
 // Used for oriented capsule collision detection
 typedef struct {
 	float radius;
@@ -148,16 +145,16 @@ typedef struct {
 	traceType_t type;
 	vec3_t start;
 	vec3_t end;
-	vec3_t size[2];	// size of the box being swept through the model
+	vec3_t size[2];		// size of the box being swept through the model
 	vec3_t offsets[8];	// [signbits][x] = either size[0][x] or size[1][x]
 	float maxOffset;	// longest corner length from origin
-	vec3_t extents;	// greatest of abs(size[0]) and abs(size[1])
+	vec3_t extents;		// greatest of abs(size[0]) and abs(size[1])
 	vec3_t bounds[2];	// enclosing box of start and end surrounding by size
-	vec3_t modelOrigin; // origin of the model tracing through
-	int contents;	// ored contents of the model tracing through
+	vec3_t modelOrigin;	// origin of the model tracing through
+	int contents;		// ored contents of the model tracing through
 	qboolean isPoint;	// optimized case
 	trace_t trace;		// returned from trace call
-	sphere_t sphere;		// sphere for oriendted capsule collision
+	sphere_t sphere;	// sphere for oriendted capsule collision
 	biSphere_t biSphere;
 	qboolean testLateralCollision; // whether or not to test for lateral collision
 } traceWork_t;
@@ -168,24 +165,18 @@ typedef struct leafList_s {
 	qboolean overflowed;
 	int *list;
 	vec3_t bounds[2];
-	int lastLeaf;		// for overflows where each leaf can't be stored individually
-	void (*storeLeafs) (struct leafList_s *ll, int nodenum);
+	int lastLeaf;	// for overflows where each leaf can't be stored individually
+	void (*storeLeafs)(struct leafList_s *ll, int nodenum);
 } leafList_t;
 
-
 int CM_BoxBrushes(const vec3_t mins, const vec3_t maxs, cbrush_t **list, int listsize);
-
 void CM_StoreLeafs(leafList_t *ll, int nodenum);
 void CM_StoreBrushes(leafList_t *ll, int nodenum);
-
 void CM_BoxLeafnums_r(leafList_t *ll, int nodenum);
-
 cmodel_t *CM_ClipHandleToModel(clipHandle_t handle);
 qboolean CM_BoundsIntersect(const vec3_t mins, const vec3_t maxs, const vec3_t mins2, const vec3_t maxs2);
 qboolean CM_BoundsIntersectPoint(const vec3_t mins, const vec3_t maxs, const vec3_t point);
-
 // cm_patch.c
-
 struct patchCollide_s *CM_GeneratePatchCollide(int width, int height, vec3_t *points);
 void CM_TraceThroughPatchCollide(traceWork_t *tw, const struct patchCollide_s *pc);
 qboolean CM_PositionTestInPatchCollide(traceWork_t *tw, const struct patchCollide_s *pc);

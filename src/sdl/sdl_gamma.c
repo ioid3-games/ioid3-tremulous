@@ -1,19 +1,24 @@
 /*
-=======================================================================================================================================
+===========================================================================
 Copyright (C) 1999-2005 Id Software, Inc.
-Copyright (C) 2000 - 2013 Darklegion Development
+Copyright (C) 2000-2013 Darklegion Development
 
-This file is part of Tremulous source code.
+This file is part of Tremulous.
 
-Tremulous source code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+Tremulous is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 2 of the License,
+or (at your option) any later version.
 
-Tremulous source code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Tremulous is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Tremulous source code; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
-=======================================================================================================================================
+You should have received a copy of the GNU General Public License
+along with Tremulous; if not, write to the Free Software
+Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+===========================================================================
 */
 
 #ifdef USE_LOCAL_HEADERS
@@ -21,7 +26,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 #else
 #include <SDL.h>
 #endif
-
 #include "../renderercommon/tr_common.h"
 #include "../qcommon/qcommon.h"
 
@@ -41,16 +45,15 @@ void GLimp_SetGamma(unsigned char red[256], unsigned char green[256], unsigned c
 	}
 
 	for (i = 0; i < 256; i++) {
-		table[0][i] = (((Uint16) red[i]) << 8)|red[i];
-		table[1][i] = (((Uint16) green[i]) << 8)|green[i];
-		table[2][i] = (((Uint16) blue[i]) << 8)|blue[i];
+		table[0][i] = (((Uint16)red[i]) << 8)|red[i];
+		table[1][i] = (((Uint16)green[i]) << 8)|green[i];
+		table[2][i] = (((Uint16)blue[i]) << 8)|blue[i];
 	}
 #ifdef _WIN32
 #include <windows.h>
-
 	// Win2K and newer put this odd restriction on gamma ramps...
 	{
-		OSVERSIONINFO	vinfo;
+		OSVERSIONINFO vinfo;
 
 		vinfo.dwOSVersionInfoSize = sizeof(vinfo);
 		GetVersionEx(&vinfo);
@@ -60,12 +63,14 @@ void GLimp_SetGamma(unsigned char red[256], unsigned char green[256], unsigned c
 
 			for (j = 0; j < 3; j++) {
 				for (i = 0; i < 128; i++) {
-					if (table[j] [i] > ((128 + i) << 8))
+					if (table[j][i] > ((128 + i) << 8)) {
 						table[j][i] = (128 + i) << 8;
+					}
 				}
 
-				if (table[j] [127] > 254 << 8)
+				if (table[j][127] > 254 << 8) {
 					table[j][127] = 254 << 8;
+				}
 			}
 		}
 	}
@@ -73,8 +78,9 @@ void GLimp_SetGamma(unsigned char red[256], unsigned char green[256], unsigned c
 	// enforce constantly increasing
 	for (j = 0; j < 3; j++) {
 		for (i = 1; i < 256; i++) {
-			if (table[j][i] < table[j][i - 1])
+			if (table[j][i] < table[j][i - 1]) {
 				table[j][i] = table[j][i - 1];
+			}
 		}
 	}
 
@@ -82,4 +88,3 @@ void GLimp_SetGamma(unsigned char red[256], unsigned char green[256], unsigned c
 		ri.Printf(PRINT_DEVELOPER, "SDL_SetWindowGammaRamp() failed: %s\n", SDL_GetError());
 	}
 }
-

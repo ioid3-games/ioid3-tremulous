@@ -1,28 +1,26 @@
 /*
 =======================================================================================================================================
-Copyright (C) 2000 - 2013 Darklegion Development
+Copyright(C) 2000 - 2013 Darklegion Development
 
 This file is part of Tremulous.
 
 Tremulous is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
+and / or modify it under the terms of the GNU General Public License as
 published by the Free Software Foundation; either version 2 of the License, 
-or (at your option) any later version.
+or(at your option) any later version.
 
 Tremulous is distributed in the hope that it will be
 useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with Tremulous; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA	02110-1301	USA
+Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
 =======================================================================================================================================
 */
 
-/**************************************************************************************************************************************
- An abstract attachment system.
-**************************************************************************************************************************************/
+// cg_attachment.c--an abstract attachment system
 
 #include "cg_local.h"
 
@@ -96,6 +94,7 @@ qboolean CG_AttachmentPoint(attachment_t *a, vec3_t v) {
 	}
 
 	VectorCopy(v, a->lastValidAttachmentPoint);
+
 	return qtrue;
 }
 
@@ -121,7 +120,6 @@ qboolean CG_AttachmentDir(attachment_t *a, vec3_t v) {
 		case AT_TAG:
 			if (!a->tagValid) {
 				return qfalse;
-	
 			}
 
 			VectorCopy(a->re.axis[0], v);
@@ -318,7 +316,6 @@ Attach to a particle.
 =======================================================================================================================================
 */
 void CG_AttachToParticle(attachment_t *a) {
-
 	if (!a || !a->particleValid) {
 		return;
 	}
@@ -333,7 +330,6 @@ CG_SetAttachmentPoint
 =======================================================================================================================================
 */
 void CG_SetAttachmentPoint(attachment_t *a, vec3_t v) {
-
 	if (!a) {
 		return;
 	}
@@ -348,7 +344,6 @@ CG_SetAttachmentCent
 =======================================================================================================================================
 */
 void CG_SetAttachmentCent(attachment_t *a, centity_t *cent) {
-
 	if (!a || !cent) {
 		return;
 	}
@@ -363,7 +358,6 @@ CG_SetAttachmentTag
 =======================================================================================================================================
 */
 void CG_SetAttachmentTag(attachment_t *a, refEntity_t parent, qhandle_t model, char *tagName) {
-
 	if (!a) {
 		return;
 	}
@@ -380,7 +374,6 @@ CG_SetAttachmentParticle
 =======================================================================================================================================
 */
 void CG_SetAttachmentParticle(attachment_t *a, particle_t *p) {
-
 	if (!a) {
 		return;
 	}
@@ -395,7 +388,6 @@ CG_SetAttachmentOffset
 =======================================================================================================================================
 */
 void CG_SetAttachmentOffset(attachment_t *a, vec3_t v) {
-
 	if (!a) {
 		return;
 	}

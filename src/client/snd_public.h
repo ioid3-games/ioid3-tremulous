@@ -1,21 +1,28 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2005 Id Software, Inc.
-Copyright (C) 2000 - 2013 Darklegion Development
+Copyright(C) 1999 - 2005 Id Software, Inc.
+Copyright(C) 2000 - 2013 Darklegion Development
 
-This file is part of Tremulous source code.
+This file is part of Tremulous.
 
-Tremulous source code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+Tremulous is free software; you can redistribute it
+and / or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 2 of the License, 
+or(at your option) any later version.
 
-Tremulous source code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Tremulous is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Tremulous source code; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+You should have received a copy of the GNU General Public License
+along with Tremulous; if not, write to the Free Software
+Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
 =======================================================================================================================================
 */
 
+#ifndef _SND_PUBLIC_H_
+#define _SND_PUBLIC_H_
 
 void S_Init(void);
 void S_Shutdown(void);
@@ -53,10 +60,11 @@ void S_DisableSounds(void);
 
 void S_BeginRegistration(void);
 
-// RegisterSound will allways return a valid sample, even if it
-// has to create a placeholder. This prevents continuous filesystem
+// registerSound will allways return a valid sample, even if it
+// has to create a placeholder.  This prevents continuous filesystem
 // checks for missing files
 sfxHandle_t S_RegisterSound(const char *sample, qboolean compressed);
+
 int S_SoundDuration(sfxHandle_t handle);
 
 void S_DisplayFreeMemory(void);
@@ -75,4 +83,4 @@ void S_Capture(int samples, byte *data);
 void S_StopCapture(void);
 void S_MasterGain(float gain);
 #endif
-
+#endif

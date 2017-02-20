@@ -1,13 +1,13 @@
 /* GIMP RGBA C - Source image dump(sdl_icon.h) */
 
 static const struct {
-  unsigned int width;
-  unsigned int height;
-  unsigned int bytes_per_pixel; /* 3:RGB, 4:RGBA */ 
+  unsigned int  width;
+  unsigned int  height;
+  unsigned int  bytes_per_pixel; /* 3:RGB, 4:RGBA */
   unsigned char pixel_data[32 * 32 * 4 + 1];
 } CLIENT_WINDOW_ICON = {
-  32, 32, 4, 
-  "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+  32, 32, 4,
+	"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
   "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\17\17\17\34\17\17"
   "\17U\17\17\17""9\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
   "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"

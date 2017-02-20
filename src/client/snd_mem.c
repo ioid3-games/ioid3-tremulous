@@ -1,24 +1,34 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2005 Id Software, Inc.
-Copyright (C) 2000 - 2013 Darklegion Development
+Copyright(C) 1999 - 2005 Id Software, Inc.
+Copyright(C) 2000 - 2013 Darklegion Development
 
-This file is part of Tremulous source code.
+This file is part of Tremulous.
 
-Tremulous source code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+Tremulous is free software; you can redistribute it
+and / or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 2 of the License, 
+or(at your option) any later version.
 
-Tremulous source code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Tremulous is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Tremulous source code; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+You should have received a copy of the GNU General Public License
+along with Tremulous; if not, write to the Free Software
+Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
 =======================================================================================================================================
 */
 
-/**************************************************************************************************************************************
- Sound caching.
-**************************************************************************************************************************************/
+/****** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** * * 
+ * name:		snd_mem.c
+ *
+ * desc:		sound caching
+ *
+ * $Archive : / MissionPack / code/client/snd_mem.c $
+ *
+ *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** * */
 
 #include "snd_local.h"
 #include "snd_codec.h"
@@ -28,13 +38,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 /*
 =======================================================================================================================================
 
-	Memory management
-
+memory management
 =======================================================================================================================================
 */
 
 static sndBuffer *buffer = NULL;
-static sndBuffer	*freelist = NULL;
+static sndBuffer *freelist = NULL;
 static int inUse = 0;
 static int totalInUse = 0;
 
@@ -42,23 +51,13 @@ short *sfxScratchBuffer = NULL;
 sfx_t *sfxScratchPointer = NULL;
 int sfxScratchIndex = 0;
 
-/*
-=======================================================================================================================================
-SND_free
-=======================================================================================================================================
-*/
 void SND_free(sndBuffer *v) {
- *(sndBuffer **)v = freelist;
+	*(sndBuffer * *)v = freelist;
 	freelist = (sndBuffer *)v;
 	inUse += sizeof(sndBuffer);
 }
 
-/*
-=======================================================================================================================================
-SND_malloc
-=======================================================================================================================================
-*/
-sndBuffer *SND_malloc(void) {
+sndBuffer * 	SND_malloc(void) {
 	sndBuffer *v;
 redo:
 	if (freelist == NULL) {
@@ -70,16 +69,11 @@ redo:
 	totalInUse += sizeof(sndBuffer);
 
 	v = freelist;
-	freelist = *(sndBuffer **)freelist;
+	freelist = * (sndBuffer * *)freelist;
 	v->next = NULL;
 	return v;
 }
 
-/*
-=======================================================================================================================================
-SND_setup
-=======================================================================================================================================
-*/
 void SND_setup(void) {
 	sndBuffer *p, *q;
 	cvar_t *cv;
@@ -91,27 +85,22 @@ void SND_setup(void) {
 
 	buffer = malloc(scs * sizeof(sndBuffer));
 	// allocate the stack based hunk allocator
-	sfxScratchBuffer = malloc(SND_CHUNK_SIZE * sizeof(short) * 4);	// Hunk_Alloc(SND_CHUNK_SIZE * sizeof(short) * 4);
+	sfxScratchBuffer = malloc(SND_CHUNK_SIZE * sizeof(short) * 4); // hunk_Alloc(SND_CHUNK_SIZE * sizeof(short) * 4);
 	sfxScratchPointer = NULL;
 
 	inUse = scs * sizeof(sndBuffer);
 	p = buffer;
 	q = p + scs;
 
-	while (--q > p)
-	 *(sndBuffer **)q = q - 1;
+	while (-- q > p)
+		*(sndBuffer * *)q = q - 1;
 
- *(sndBuffer **)q = NULL;
+	*(sndBuffer * *)q = NULL;
 	freelist = p + scs - 1;
 
 	Com_Printf("Sound memory manager started\n");
 }
 
-/*
-=======================================================================================================================================
-SND_shutdown
-=======================================================================================================================================
-*/
 void SND_shutdown(void) {
 		free(sfxScratchBuffer);
 		free(buffer);
@@ -121,7 +110,7 @@ void SND_shutdown(void) {
 =======================================================================================================================================
 ResampleSfx
 
-Resample / decimate to the current source rate.
+resample / decimate to the current source rate.
 =======================================================================================================================================
 */
 static int ResampleSfx(sfx_t *sfx, int channels, int inrate, int inwidth, int samples, byte *data, qboolean compressed) {
@@ -133,7 +122,7 @@ static int ResampleSfx(sfx_t *sfx, int channels, int inrate, int inwidth, int sa
 	int part;
 	sndBuffer *chunk;
 
-	stepscale = (float)inrate / dma.speed;	// this is usually 0.5, 1, or 2
+	stepscale = (float)inrate / dma.speed; // this is usually 0.5, 1, or 2
 
 	outcount = samples / stepscale;
 
@@ -149,10 +138,10 @@ static int ResampleSfx(sfx_t *sfx, int channels, int inrate, int inwidth, int sa
 			if (inwidth == 2) {
 				sample = (((short *)data)[srcsample + j]);
 			} else {
-				sample = (int)((unsigned char) (data[srcsample + j]) - 128) << 8;
+				sample = (int)((unsigned char)(data[srcsample + j]) - 128) << 8;
 			}
 
-			part = (i * channels + j)& (SND_CHUNK_SIZE - 1);
+			part = (i * channels + j)&(SND_CHUNK_SIZE - 1);
 
 			if (part == 0) {
 				sndBuffer *newchunk;
@@ -176,9 +165,9 @@ static int ResampleSfx(sfx_t *sfx, int channels, int inrate, int inwidth, int sa
 
 /*
 =======================================================================================================================================
-ResampleSfxRaw
+ResampleSfx
 
-Resample / decimate to the current source rate.
+resample / decimate to the current source rate.
 =======================================================================================================================================
 */
 static int ResampleSfxRaw(short *sfx, int channels, int inrate, int inwidth, int samples, byte *data) {
@@ -188,7 +177,7 @@ static int ResampleSfxRaw(short *sfx, int channels, int inrate, int inwidth, int
 	int i, j;
 	int sample, samplefrac, fracstep;
 
-	stepscale = (float)inrate / dma.speed;	// this is usually 0.5, 1, or 2
+	stepscale = (float)inrate / dma.speed; // this is usually 0.5, 1, or 2
 
 	outcount = samples / stepscale;
 
@@ -203,7 +192,7 @@ static int ResampleSfxRaw(short *sfx, int channels, int inrate, int inwidth, int
 			if (inwidth == 2) {
 				sample = LittleShort(((short *)data)[srcsample + j]);
 			} else {
-				sample = (int)((unsigned char) (data[srcsample + j]) - 128) << 8;
+				sample = (int)((unsigned char)(data[srcsample + j]) - 128) << 8;
 			}
 
 			sfx[i * channels + j] = sample;
@@ -220,7 +209,7 @@ static int ResampleSfxRaw(short *sfx, int channels, int inrate, int inwidth, int
 S_LoadSound
 
 The filename may be different than sfx->name in the case
-of a forced fallback of a player specific sound
+of a forced fallback of a player specific sound.
 =======================================================================================================================================
 */
 qboolean S_LoadSound(sfx_t *sfx) {
@@ -231,9 +220,8 @@ qboolean S_LoadSound(sfx_t *sfx) {
 	// load it in
 	data = S_CodecLoad(sfx->soundName, &info);
 
-	if (!data) {
+	if (!data)
 		return qfalse;
-	}
 
 	size_per_sec = info.rate * info.channels * info.width;
 
@@ -251,8 +239,11 @@ qboolean S_LoadSound(sfx_t *sfx) {
 	samples = Hunk_AllocateTempMemory(info.channels * info.samples * sizeof(short) * 2);
 
 	sfx->lastTimeUsed = Com_Milliseconds() + 1;
-	// each of these compression schemes works just fine but the 16bit quality is much nicer and with a local install assured
-	// we can rely upon the sound memory manager to do the right thing for us and page sound in as needed
+	// each of these compression schemes works just fine
+	// but the 16bit quality is much nicer and with a local
+	// install assured we can rely upon the sound memory
+	// manager to do the right thing for us and page
+	// sound in as needed
 
 	if (info.channels == 1 && sfx->soundCompressed == qtrue) {
 		sfx->soundCompressionMethod = 1;
@@ -285,11 +276,6 @@ qboolean S_LoadSound(sfx_t *sfx) {
 	return qtrue;
 }
 
-/*
-=======================================================================================================================================
-S_DisplayFreeMemory
-=======================================================================================================================================
-*/
 void S_DisplayFreeMemory(void) {
 	Com_Printf("%d bytes free sound buffer memory, %d total used\n", inUse, totalInUse);
 }
