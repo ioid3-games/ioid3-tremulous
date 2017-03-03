@@ -21,7 +21,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
 =======================================================================================================================================
 */
 
-// cg_drawtools.c--helper functions called by cg_draw, cg_scoreboard, cg_info, etc
+/**************************************************************************************************************************************
+ Helper functions called by cg_draw, cg_scoreboard, cg_info, etc.
+**************************************************************************************************************************************/
 
 #include "cg_local.h"
 
@@ -104,11 +106,12 @@ Coordinates are 640 * 480 virtual values.
 =======================================================================================================================================
 */
 void CG_FillRect(float x, float y, float width, float height, const float *color) {
+
 	trap_R_SetColor(color);
 
 	CG_AdjustFrom640(&x, &y, &width, &height);
-	trap_R_DrawStretchPic(x, y, width, height, 0, 0, 0, 0, cgs.media.whiteShader);
 
+	trap_R_DrawStretchPic(x, y, width, height, 0, 0, 0, 0, cgs.media.whiteShader);
 	trap_R_SetColor(NULL);
 }
 
@@ -130,9 +133,19 @@ void CG_DrawSides(float x, float y, float w, float h, float size) {
 	trap_R_DrawStretchPic(x + w - size, y + sizeY, size, h - (sizeY * 2.0f), 0, 0, 0, 0, cgs.media.whiteShader);
 }
 
+/*
+=======================================================================================================================================
+CG_DrawTopBottom
+
+Coordinates are 640 * 480 virtual values.
+=======================================================================================================================================
+*/
 void CG_DrawTopBottom(float x, float y, float w, float h, float size) {
+
 	CG_AdjustFrom640(&x, &y, &w, &h);
+
 	size *= cgs.screenYScale;
+
 	trap_R_DrawStretchPic(x, y, w, size, 0, 0, 0, 0, cgs.media.whiteShader);
 	trap_R_DrawStretchPic(x, y + h - size, w, size, 0, 0, 0, 0, cgs.media.whiteShader);
 }
@@ -145,6 +158,7 @@ Coordinates are 640 * 480 virtual values.
 =======================================================================================================================================
 */
 void CG_DrawRect(float x, float y, float width, float height, float size, const float *color) {
+
 	trap_R_SetColor(color);
 
 	CG_DrawTopBottom(x, y, width, height, size);
@@ -161,7 +175,9 @@ Coordinates are 640 * 480 virtual values.
 =======================================================================================================================================
 */
 void CG_DrawPic(float x, float y, float width, float height, qhandle_t hShader) {
+
 	CG_AdjustFrom640(&x, &y, &width, &height);
+
 	trap_R_DrawStretchPic(x, y, width, height, 0, 0, 1, 1, hShader);
 }
 
@@ -229,9 +245,9 @@ int CG_DrawStrlen(const char *str) {
 	int count = 0;
 
 	while (*s) {
-		if (Q_IsColorString(s))
+		if (Q_IsColorString(s)) {
 			s += 2;
-		else {
+		} else {
 			count++;
 			s++;
 		}
@@ -315,7 +331,6 @@ float *CG_FadeColor(int startMsec, int totalMsec) {
 	}
 
 	color[0] = color[1] = color[2] = 1;
-
 	return color;
 }
 

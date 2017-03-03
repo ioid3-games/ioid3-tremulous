@@ -29,8 +29,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
 
   SESSION DATA
 
-Session data is the only data that stays persistant across level loads
-and tournament restarts.
+Session data is the only data that stays persistant across level loads and tournament restarts.
 =======================================================================================================================================
 */
 
@@ -45,9 +44,7 @@ void G_WriteClientSessionData(gclient_t *client) {
 	const char *s;
 	const char *var;
 
-	s = va("%i %i %i %i %s", client->sess.spectatorTime, client->sess.spectatorState, client->sess.spectatorClient, client->sess.restartTeam, Com_ClientListString(&client->sess.ignoreList)
-  );
-
+	s = va("%i %i %i %i %s", client->sess.spectatorTime, client->sess.spectatorState, client->sess.spectatorClient, client->sess.restartTeam, Com_ClientListString(&client->sess.ignoreList));
 	var = va("session%i", (int)(client - level.clients));
 
 	trap_Cvar_Set(var, s);
@@ -70,11 +67,11 @@ void G_ReadSessionData(gclient_t *client) {
 	var = va("session%i", (int)(client - level.clients));
 	trap_Cvar_VariableStringBuffer(var, s, sizeof(s));
 
-	sscanf(s, "%i %i %i %i %16s", &client->sess.spectatorTime, &spectatorState, &client->sess.spectatorClient, &restartTeam, ignorelist
-  );
+	sscanf(s, "%i %i %i %i %16s", &client->sess.spectatorTime, &spectatorState, &client->sess.spectatorClient, &restartTeam, ignorelist);
 
 	client->sess.spectatorState = (spectatorState_t)spectatorState;
 	client->sess.restartTeam = (team_t)restartTeam;
+
 	Com_ClientListParse(&client->sess.ignoreList, ignorelist);
 }
 
@@ -89,7 +86,7 @@ void G_InitSessionData(gclient_t *client, char *userinfo) {
 	clientSession_t *sess;
 	const char *value;
 
-  sess = &client->sess;
+	sess = &client->sess;
 	// initial team determination
 	value = Info_ValueForKey(userinfo, "team");
 
@@ -97,16 +94,18 @@ void G_InitSessionData(gclient_t *client, char *userinfo) {
 		// a willing spectator, not a waiting - in - line
 		sess->spectatorState = SPECTATOR_FREE;
 	} else {
-		if (g_maxGameClients.integer > 0 && level.numNonSpectatorClients >= g_maxGameClients.integer)
+		if (g_maxGameClients.integer > 0 && level.numNonSpectatorClients >= g_maxGameClients.integer) {
 			sess->spectatorState = SPECTATOR_FREE;
 		} else {
 			sess->spectatorState = SPECTATOR_NOT;
+		}
 	}
 
-  sess->restartTeam = TEAM_NONE;
-  sess->spectatorState = SPECTATOR_FREE;
-  sess->spectatorTime = level.time;
-  sess->spectatorClient = -1;
+	sess->restartTeam = TEAM_NONE;
+	sess->spectatorState = SPECTATOR_FREE;
+	sess->spectatorTime = level.time;
+	sess->spectatorClient = -1;
+
 	memset(&sess->ignoreList, 0, sizeof(sess->ignoreList));
 
 	G_WriteClientSessionData(client);
@@ -119,11 +118,13 @@ G_WriteSessionData
 */
 void G_WriteSessionData(void) {
 	int i;
+
 	// FIXME: What's this for?
 	trap_Cvar_Set("session", va("%i", 0));
 
 	for (i = 0; i < level.maxclients; i++) {
-		if (level.clients[i].pers.connected == CON_CONNECTED)
+		if (level.clients[i].pers.connected == CON_CONNECTED) {
 			G_WriteClientSessionData(&level.clients[i]);
+		}
 	}
 }

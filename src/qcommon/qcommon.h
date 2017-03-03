@@ -36,8 +36,8 @@ extern "C" {
 // msg.c
 typedef struct {
 	qboolean allowoverflow;	// if false, do a Com_Error
-	qboolean overflowed;	// set to true if the buffer size failed(with allowoverflow set)
-	qboolean oob; 			// set to true if the buffer size failed(with allowoverflow set)
+	qboolean overflowed;	// set to true if the buffer size failed (with allowoverflow set)
+	qboolean oob; 			// set to true if the buffer size failed (with allowoverflow set)
 	byte *data;
 	int maxsize;
 	int cursize;
@@ -51,8 +51,7 @@ void MSG_Clear(msg_t *buf);
 void MSG_WriteData(msg_t *buf, const void *data, int length);
 void MSG_Bitstream(msg_t *buf);
 // TTimo
-// copy a msg_t in case we need to store it as is for a bit
-// (as I needed this to keep an msg_t from a static var for later use)
+// copy a msg_t in case we need to store it as is for a bit (as I needed this to keep an msg_t from a static var for later use)
 // sets data buffer as MSG_Init does prior to do the copy
 void MSG_Copy(msg_t *buf, byte *data, int length, msg_t *src);
 struct usercmd_s;
@@ -126,13 +125,13 @@ typedef enum {
 	NS_SERVER
 } netsrc_t;
 
-#define NET_ADDRSTRMAXLEN 48	// maximum length of an IPv6 address string including trailing '\0'
+#define NET_ADDRSTRMAXLEN 48 // maximum length of an IPv6 address string including trailing '\0'
 typedef struct {
 	netadrtype_t type;
 	byte ip[4];
 	byte ip6[16];
 	unsigned short port;
-	unsigned long scope_id; // needed for IPv6 link - local addresses
+	unsigned long scope_id; // needed for IPv6 link-local addresses
 } netadr_t;
 
 void NET_Init(void);
@@ -143,7 +142,6 @@ void NET_FlushPacketQueue(void);
 void NET_SendPacket(netsrc_t sock, int length, const void *data, netadr_t to);
 void QDECL NET_OutOfBandPrint(netsrc_t net_socket, netadr_t adr, const char *format, ...) __attribute__((format(printf, 3, 4)));
 void QDECL NET_OutOfBandData(netsrc_t sock, netadr_t adr, byte *format, int len);
-
 qboolean NET_CompareAdr(netadr_t a, netadr_t b);
 qboolean NET_CompareBaseAdrMask(netadr_t a, netadr_t b, int netmask);
 qboolean NET_CompareBaseAdr(netadr_t a, netadr_t b);
@@ -193,7 +191,6 @@ void Netchan_Init(int qport);
 void Netchan_Setup(netsrc_t sock, netchan_t *chan, netadr_t adr, int qport, int challenge);
 void Netchan_Transmit(netchan_t *chan, int length, const byte *data);
 void Netchan_TransmitNextFragment(netchan_t *chan);
-
 qboolean Netchan_Process(netchan_t *chan, msg_t *msg);
 
 /*
@@ -210,7 +207,7 @@ qboolean Netchan_Process(netchan_t *chan, msg_t *msg);
 extern int demo_protocols[];
 // override on command line, config files etc.
 #ifndef MASTER_SERVER_NAME
-#define MASTER_SERVER_NAME	"master.tremulous.net"
+#define MASTER_SERVER_NAME "master.tremulous.net"
 #endif
 #define PORT_MASTER			30700
 #define PORT_SERVER			30720
@@ -284,47 +281,43 @@ typedef enum {
 
 void VM_Init(void);
 vm_t *VM_Create(const char *module, intptr_t(*systemCalls)(intptr_t *), vmInterpret_t interpret);
-// module should be bare : "cgame", not "cgame.dll" or "vm / cgame.qvm"
-
+// module should be bare: "cgame", not "cgame.dll" or "vm/cgame.qvm"
 void VM_Free(vm_t *vm);
 void VM_Clear(void);
 void VM_Forced_Unload_Start(void);
 void VM_Forced_Unload_Done(void);
 vm_t *VM_Restart(vm_t *vm, qboolean unpure);
-
 intptr_t QDECL VM_Call(vm_t *vm, int callNum, ...);
-
 void VM_Debug(int level);
-
 void *VM_ArgPtr(intptr_t intValue);
 void *VM_ExplicitArgPtr(vm_t *vm, intptr_t intValue);
 
 #define VMA(x) VM_ArgPtr(args[x])
 static ID_INLINE float _vmf(intptr_t x) {
 	floatint_t fi;
-	fi.i = (int) x;
+
+	fi.i = (int)x;
 	return fi.f;
 }
-#define VMF(x)_vmf(args[x])
 
+#define VMF(x) _vmf(args[x])
 
 /*
 =======================================================================================================================================
 
 	CMD
 
-	Command text buffering and command execution.
+	Command text buffering and command execution
 
 =======================================================================================================================================
 */
 
-/*
 
-Any number of commands can be added in a frame, from several different sources.
-Most commands come from either keybindings or console line input, but entire text
-files can be execed.
+/**************************************************************************************************************************************
+	Any number of commands can be added in a frame, from several different sources.
+	Most commands come from either keybindings or console line input, but entire text files can be execed.
+**************************************************************************************************************************************/
 
-*/
 void Cbuf_Init(void);
 // allocates an initial text buffer that will grow as needed
 void Cbuf_AddText(const char *text);
@@ -336,21 +329,18 @@ void Cbuf_Execute(void);
 // them through Cmd_ExecuteString.  Stops when the buffer is empty.
 // normally called once per frame, but may be explicitly invoked.
 // do not call inside a command function, or current args will be destroyed.
-/*
-Command execution takes a null terminated string, breaks it into tokens, 
-then searches for a command or variable that matches the first token.
-*/
+
+/**************************************************************************************************************************************
+	Command execution takes a null terminated string, breaks it into tokens, then searches for a command or variable that matches the
+	first token.
+**************************************************************************************************************************************/
+
 typedef void (*xcommand_t)(void);
-
 void Cmd_Init(void);
-
 void Cmd_AddCommand(const char *cmd_name, xcommand_t function);
-// called by the init functions of other parts of the program to
-// register commands and functions to call for them.
-// the cmd_name is referenced later, so it should not be in temp memory
-// if function is NULL, the command will be forwarded to the server
-// as a clc_clientCommand instead of executed locally
-
+// called by the init functions of other parts of the program to register commands and functions to call for them.
+// The cmd_name is referenced later, so it should not be in temp memory
+// if function is NULL, the command will be forwarded to the server as a clc_clientCommand instead of executed locally
 void Cmd_RemoveCommand(const char *cmd_name);
 typedef void (*completionFunc_t)(char *args, int argNum);
 // don't allow VMs to remove system commands
@@ -385,12 +375,12 @@ void Cmd_RestoreCmdContext(void);
 /*
 =======================================================================================================================================
 
-CVAR
+	CVARS
+
 =======================================================================================================================================
 */
 
-/*
-
+/**************************************************************************************************************************************
 cvar_t variables are used to hold scalar or string variables that can be changed
 or displayed at the console or prog code as well as accessed directly
 in C code.
@@ -400,13 +390,10 @@ r_draworder			prints the current value
 r_draworder 0		sets the current value to 0
 set r_draworder 0	as above, but creates the cvar if not present
 
-Cvars are restricted from having the same names as commands to keep this
-interface from being ambiguous.
+Cvars are restricted from having the same names as commands to keep this interface from being ambiguous.
 
-The are also occasionally used to communicated information between different
-modules of the program.
-
-*/
+The are also occasionally used to communicated information between different modules of the program.
+**************************************************************************************************************************************/
 
 cvar_t *Cvar_Get(const char *var_name, const char *value, int flags);
 // creates the variable if it doesn't exist, or returns the existing one
@@ -474,11 +461,10 @@ extern int cvar_modifiedFlags;
 /*
 =======================================================================================================================================
 
-FILESYSTEM
+	FILESYSTEM
 
-No stdio calls should be used by any part of the game, because
-we need to deal with all sorts of directory and seperator char
-issues.
+	No stdio calls should be used by any part of the game, because we need to deal with all sorts of directory and separator char issues.
+
 =======================================================================================================================================
 */
 
@@ -509,14 +495,13 @@ char **FS_ListFiles(const char *directory, const char *extension, int *numfiles)
 void FS_FreeFileList(char **list);
 qboolean FS_FileExists(const char *file);
 int FS_CreatePath(const char *OSPath);
-int FS_FindVM(void * * startSearch, char *found, int foundlen, const char *name, int enableDll);
+int FS_FindVM(void **startSearch, char *found, int foundlen, const char *name, int enableDll);
 char *FS_BuildOSPath(const char *base, const char *game, const char *qpath);
 qboolean FS_CompareZipChecksum(const char *zipfile);
 int FS_LoadStack(void);
 int FS_GetFileList(const char *path, const char *extension, char *listbuf, int bufsize);
 int FS_GetFilteredFiles(const char *path, const char *extension, char *filter, char *listbuf, int bufsize);
 int FS_GetModList(char *listbuf, int bufsize);
-
 fileHandle_t FS_FOpenFileWrite(const char *qpath);
 fileHandle_t FS_FOpenFileAppend(const char *filename);
 fileHandle_t FS_FCreateOpenPipeFile(const char *filename);
@@ -564,7 +549,6 @@ int FS_FOpenFileByMode(const char *qpath, fileHandle_t *f, fsMode_t mode);
 int FS_Seek(fileHandle_t f, long offset, int origin);
 // seek on a file
 qboolean FS_FilenameCompare(const char *s1, const char *s2);
-
 const char *FS_LoadedPakNames(void);
 const char *FS_LoadedPakChecksums(void);
 const char *FS_LoadedPakPureChecksums(void);
@@ -596,12 +580,13 @@ qboolean FS_Which(const char *filename, void *searchPath);
 /*
 =======================================================================================================================================
 
-Edit fields and command line history / completion
+	Edit fields and command line history/completion
 
 =======================================================================================================================================
 */
 
 #define MAX_EDIT_LINE 256
+
 typedef struct {
 	int cursor;
 	int scroll;
@@ -619,7 +604,7 @@ void Field_CompletePlayerName(const char **names, int count);
 /*
 =======================================================================================================================================
 
-MISC
+	MISC
 
 =======================================================================================================================================
 */
@@ -641,7 +626,7 @@ enum {
 	CF_SSE2 = 1 << 6,
 	CF_ALTIVEC = 1 << 7
 };
-// centralized and cleaned, that's the max string you can send to a Com_Printf / Com_DPrintf(above gets truncated)
+// centralized and cleaned, that's the max string you can send to a Com_Printf / Com_DPrintf (above gets truncated)
 #define MAXPRINTMSG	4096
 
 typedef enum {
@@ -650,8 +635,8 @@ typedef enum {
 	SE_KEY, // evValue is a key code, evValue2 is the down flag
 	SE_CHAR, // evValue is an ascii char
 	SE_MOUSE, // evValue and evValue2 are relative signed x / y moves
-	SE_JOYSTICK_AXIS, // evValue is an axis number and evValue2 is the current state(-127 to 127)
-	SE_CONSOLE		// evPtr is a char *
+	SE_JOYSTICK_AXIS, // evValue is an axis number and evValue2 is the current state (-127 to 127)
+	SE_CONSOLE		// evPtr is a char*
 } sysEventType_t;
 
 typedef struct {
@@ -665,13 +650,10 @@ typedef struct {
 void Com_QueueEvent(int time, sysEventType_t type, int value, int value2, int ptrLength, void *ptr);
 int Com_EventLoop(void);
 sysEvent_t Com_GetSystemEvent(void);
-
 char *CopyString(const char *in);
 void Info_Print(const char *s);
-
 void Com_BeginRedirect(char *buffer, int buffersize, void (*flush)(char *));
 void Com_EndRedirect(void);
-
 // #ifndef __Q_SHARED_H
 void QDECL Com_Printf(const char *fmt, ...) __attribute__((format(printf, 1, 2)));
 void QDECL Com_Error(int code, const char *fmt, ...) __attribute__((noreturn, format(printf, 2, 3)));
@@ -689,10 +671,8 @@ qboolean Com_SafeMode(void);
 void Com_RunAndTimeServerPacket(netadr_t *evFrom, msg_t *buf);
 qboolean Com_IsVoipTarget(uint8_t *voipTargets, int voipTargetsSize, int clientNum);
 void Com_StartupVariable(const char *match);
-// checks for and removes command line " + set var arg" constructs
-// if match is NULL, all set commands will be executed, otherwise
-// only a set with the exact name.  Only used during startup.
-
+// checks for and removes command line "+set var arg" constructs
+// if match is NULL, all set commands will be executed, otherwise only a set with the exact name.  Only used during startup.
 qboolean Com_PlayerNameToFieldString(char *str, int length, const char *name);
 qboolean Com_FieldStringToPlayerName(char *name, int length, const char *rawname);
 int QDECL Com_strCompare(const void *a, const void *b);
@@ -781,7 +761,6 @@ void Z_Free(void *ptr);
 void Z_FreeTags(int tag);
 int Z_AvailableMemory(void);
 void Z_LogHeap(void);
-
 void Hunk_Clear(void);
 void Hunk_ClearToMark(void);
 void Hunk_SetMark(void);
@@ -791,9 +770,7 @@ void *Hunk_AllocateTempMemory(int size);
 void Hunk_FreeTempMemory(void *buf);
 int Hunk_MemoryRemaining(void);
 void Hunk_Log(void);
-
 void Com_TouchMemory(void);
-
 // commandLine should not include the executable name(argv[0])
 void Com_Init(char *commandLine);
 void Com_Frame(void);
@@ -802,7 +779,8 @@ void Com_Shutdown(void);
 /*
 =======================================================================================================================================
 
-CLIENT / SERVER SYSTEMS
+	CLIENT / SERVER SYSTEMS
+
 =======================================================================================================================================
 */
 
@@ -867,15 +845,13 @@ qboolean UI_GameCommand(void);
 /*
 =======================================================================================================================================
 
-NON - PORTABLE SYSTEM SERVICES
+	NON-PORTABLE SYSTEM SERVICES
 
 =======================================================================================================================================
 */
 
 #define MAX_JOYSTICK_AXIS 16
-
 void Sys_Init(void);
-
 // general development dll loading for virtual machine testing
 void * QDECL Sys_LoadGameDll(const char *name, intptr_t(QDECL * * entryPoint)(int, ...), intptr_t(QDECL *systemcalls)(intptr_t, ...));
 void Sys_UnloadDll(void *dllHandle);
@@ -977,6 +953,7 @@ int Parse_SourceFileAndLine(int handle, char *filename, int *line);
 
 #define SV_ENCODE_START		4
 #define SV_DECODE_START		12
+
 #define CL_ENCODE_START		12
 #define CL_DECODE_START		4
 // flags for sv_allowDownload and cl_allowDownload

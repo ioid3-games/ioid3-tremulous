@@ -21,7 +21,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
 =======================================================================================================================================
 */
 
-// cg_marks.c--wall marks
+/**************************************************************************************************************************************
+ Impact marks.
+**************************************************************************************************************************************/
 
 #include "cg_local.h"
 
@@ -42,7 +44,7 @@ static int markTotal;
 =======================================================================================================================================
 CG_InitMarkPolys
 
-This is called at startup and for tournement restarts.
+This is called at startup and for tournament restarts.
 =======================================================================================================================================
 */
 void CG_InitMarkPolys(void) {
@@ -61,7 +63,7 @@ void CG_InitMarkPolys(void) {
 
 /*
 =======================================================================================================================================
-CG_FreeMarkPoly.
+CG_FreeMarkPoly
 =======================================================================================================================================
 */
 void CG_FreeMarkPoly(markPoly_t *le) {
@@ -74,6 +76,7 @@ void CG_FreeMarkPoly(markPoly_t *le) {
 	le->nextMark->prevMark = le->prevMark;
 	// the free list is only singly linked
 	le->nextMark = cg_freeMarkPolys;
+
 	cg_freeMarkPolys = le;
 }
 
@@ -81,7 +84,7 @@ void CG_FreeMarkPoly(markPoly_t *le) {
 =======================================================================================================================================
 CG_AllocMark
 
-Will allways succeed, even if it requires freeing an old active mark.
+Will always succeed, even if it requires freeing an old active mark.
 =======================================================================================================================================
 */
 markPoly_t *CG_AllocMark(void) {
@@ -99,28 +102,30 @@ markPoly_t *CG_AllocMark(void) {
 	}
 
 	le = cg_freeMarkPolys;
+
 	cg_freeMarkPolys = cg_freeMarkPolys->nextMark;
 
 	memset(le, 0, sizeof(*le));
 	// link into the active list
 	le->nextMark = cg_activeMarkPolys.nextMark;
 	le->prevMark = &cg_activeMarkPolys;
+
 	cg_activeMarkPolys.nextMark->prevMark = le;
 	cg_activeMarkPolys.nextMark = le;
 	return le;
 }
 
-#define MAX_MARK_FRAGMENTS 128
-#define MAX_MARK_POINTS 384
-
 /*
 =======================================================================================================================================
 CG_ImpactMark
 
-Origin should be a point within a unit of the plane dir should be the plane normal.
+'origin' should be a point within a unit of the plane. 'dir' should be the plane normal.
 Temporary marks will not be stored or randomly oriented, but immediately passed to the renderer.
 =======================================================================================================================================
 */
+#define MAX_MARK_FRAGMENTS 128
+#define MAX_MARK_POINTS 384
+
 void CG_ImpactMark(qhandle_t markShader, const vec3_t origin, const vec3_t dir, float orientation, float red, float green, float blue, float alpha, qboolean alphaFade, float radius, qboolean temporary) {
 	vec3_t axis[3];
 	float texCoordScale;
@@ -139,9 +144,10 @@ void CG_ImpactMark(qhandle_t markShader, const vec3_t origin, const vec3_t dir, 
 	if (radius <= 0) {
 		CG_Error("CG_ImpactMark called with <= 0 radius");
 	}
-	// if (markTotal >= MAX_MARK_POLYS) {
-	// 	return;
-	// }
+
+	//if (markTotal >= MAX_MARK_POLYS) {
+	//	return;
+	//}
 	// create the texture axis
 	VectorNormalize2(dir, axis[0]);
 	PerpendicularVector(axis[1], axis[0]);
@@ -158,7 +164,6 @@ void CG_ImpactMark(qhandle_t markShader, const vec3_t origin, const vec3_t dir, 
 	}
 	// get the fragments
 	VectorScale(dir, -20, projection);
-
 	numFragments = trap_CM_MarkFragments(4, (void *)originalPoints, projection, MAX_MARK_POINTS, markPoints[0], MAX_MARK_FRAGMENTS, markFragments);
 
 	colors[0] = red * 255;
@@ -179,13 +184,13 @@ void CG_ImpactMark(qhandle_t markShader, const vec3_t origin, const vec3_t dir, 
 			vec3_t delta;
 
 			VectorCopy(markPoints[mf->firstPoint + j], v->xyz);
-			VectorSubtract(v->xyz, origin, delta);
 
+			VectorSubtract(v->xyz, origin, delta);
 			v->st[0] = 0.5 + DotProduct(delta, axis[1]) * texCoordScale;
 			v->st[1] = 0.5 + DotProduct(delta, axis[2]) * texCoordScale;
-			*(int *)v->modulate = * (int *)colors;
+			*(int *)v->modulate = *(int *)colors;
 		}
-		// if it is a temporary(shadow) mark, add it immediately and forget about it
+		// if it is a temporary (shadow) mark, add it immediately and forget about it
 		if (temporary) {
 			trap_R_AddPolyToScene(markShader, mf->numPoints, verts);
 			continue;
@@ -200,19 +205,21 @@ void CG_ImpactMark(qhandle_t markShader, const vec3_t origin, const vec3_t dir, 
 		mark->color[1] = green;
 		mark->color[2] = blue;
 		mark->color[3] = alpha;
+
 		memcpy(mark->verts, verts, mf->numPoints * sizeof(verts[0]));
+
 		markTotal++;
 	}
 }
-
-#define MARK_TOTAL_TIME 10000
-#define MARK_FADE_TIME 1000
 
 /*
 =======================================================================================================================================
 CG_AddMarks
 =======================================================================================================================================
 */
+#define MARK_TOTAL_TIME 10000
+#define MARK_FADE_TIME 1000
+
 void CG_AddMarks(void) {
 	int j;
 	markPoly_t *mp, *next;

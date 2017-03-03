@@ -21,66 +21,56 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
 =======================================================================================================================================
 */
 
-
 #include "../qcommon/q_shared.h"
 #include "../renderercommon/tr_types.h"
 #include "../game/bg_public.h"
 #include "cg_public.h"
 #include "../ui/ui_shared.h"
 
-// the entire cgame module is unloaded and reloaded on each level change, 
-// so there is NO persistant data between levels on the client side.
-// if you absolutely need something stored, it can either be kept
-// by the server in the server stored userinfos, or stashed in a cvar.
+/**************************************************************************************************************************************
 
-#define CG_FONT_THRESHOLD 0.1
+	The entire cgame module is unloaded and reloaded on each level change, so there is NO persistant data between levels on the client
+	side. If you absolutely need something stored, it can either be kept by the server in the server stored userinfos, or stashed in a
+	cvar.
 
-#define POWERUP_BLINKS			5
+**************************************************************************************************************************************/
 
-#define POWERUP_BLINK_TIME  1000
-#define FADE_TIME					200
-#define PULSE_TIME					200
+#define POWERUP_BLINKS 5
+#define POWERUP_BLINK_TIME 1000
+#define FADE_TIME 200
+#define PULSE_TIME 200
 #define DAMAGE_DEFLECT_TIME 100
-#define DAMAGE_RETURN_TIME  400
-#define DAMAGE_TIME				500
-#define LAND_DEFLECT_TIME   150
-#define LAND_RETURN_TIME		300
-#define DUCK_TIME					100
-#define PAIN_TWITCH_TIME		200
-#define WEAPON_SELECT_TIME  1400
-#define ITEM_SCALEUP_TIME   1000
-#define ZOOM_TIME					150
-#define ITEM_BLOB_TIME			200
-#define MUZZLE_FLASH_TIME   20
-#define SINK_TIME					1000		// time for fragments to sink into ground before going away
-#define ATTACKER_HEAD_TIME  10000
-#define REWARD_TIME				3000
-
-#define PULSE_SCALE				1.5		// amount to scale up the icons when activating
-
-#define MAX_STEP_CHANGE		32
-
-#define MAX_VERTS_ON_POLY   10
-#define MAX_MARK_POLYS			256
-
-#define STAT_MINUS					10	// num frame for '-' stats digit
-
-#define ICON_SIZE					48
-#define CHAR_WIDTH					32
-#define CHAR_HEIGHT				48
-#define TEXT_ICON_SPACE		4
-
-#define TEAMCHAT_WIDTH		80
-#define TEAMCHAT_HEIGHT		8
-
+#define DAMAGE_RETURN_TIME 400
+#define DAMAGE_TIME 500
+#define LAND_DEFLECT_TIME 150
+#define LAND_RETURN_TIME 300
+#define DUCK_TIME 100
+#define PAIN_TWITCH_TIME 200
+#define WEAPON_SELECT_TIME 1400
+#define ITEM_SCALEUP_TIME 1000
+#define ZOOM_TIME 150
+#define ITEM_BLOB_TIME 200
+#define MUZZLE_FLASH_TIME 20
+#define SINK_TIME 1000 // time for fragments to sink into ground before going away
+#define ATTACKER_HEAD_TIME 10000
+#define REWARD_TIME 3000
+#define PULSE_SCALE 1.5 // amount to scale up the icons when activating
+#define MAX_STEP_CHANGE 32
+#define MAX_VERTS_ON_POLY 10
+#define MAX_MARK_POLYS 256
+#define STAT_MINUS 10 // num frame for '-' stats digit
+#define ICON_SIZE 48
+#define CHAR_WIDTH 32
+#define CHAR_HEIGHT 48
+#define TEXT_ICON_SPACE 4
+#define TEAMCHAT_WIDTH 80
+#define TEAMCHAT_HEIGHT 8
 // very large characters
-#define GIANT_WIDTH				32
-#define GIANT_HEIGHT				48
-
-#define NUM_CROSSHAIRS			10
-
-#define TEAM_OVERLAY_MAXNAME_WIDTH  12
-#define TEAM_OVERLAY_MAXLOCATION_WIDTH  16
+#define GIANT_WIDTH 32
+#define GIANT_HEIGHT 48
+#define NUM_CROSSHAIRS 10
+#define TEAM_OVERLAY_MAXNAME_WIDTH 12
+#define TEAM_OVERLAY_MAXLOCATION_WIDTH 16
 
 typedef enum {
 	FOOTSTEP_NORMAL,
@@ -104,21 +94,27 @@ typedef enum {
 	JPS_HOVERING,
 	JPS_ASCENDING
 } jetPackState_t;
-// when changing animation, set animationTime to frameTime + lerping time
-// the current lerp will finish out, then it will lerp to the new animation
+
+/**************************************************************************************************************************************
+
+	When changing animation, set animationTime to frameTime + lerping time.
+	The current lerp will finish out, then it will lerp to the new animation.
+
+**************************************************************************************************************************************/
+
 typedef struct {
 	int oldFrame;
-	int oldFrameTime; // time when->oldFrame was exactly on
+	int oldFrameTime;		// time when ->oldFrame was exactly on
 	int frame;
-	int frameTime; 				// time when->frame will be exactly on
+	int frameTime;			// time when ->frame will be exactly on
 	float backlerp;
 	float yawAngle;
 	qboolean yawing;
 	float pitchAngle;
 	qboolean pitching;
-	int animationNumber; // may include ANIM_TOGGLEBIT
+	int animationNumber;	// may include ANIM_TOGGLEBIT
 	animation_t *animation;
-	int animationTime; // time when the first frame of the animation will be exact
+	int animationTime;		// time when the first frame of the animation will be exact
 } lerpFrame_t;
 // attachment system
 typedef enum {
@@ -476,24 +472,24 @@ typedef struct buildableCache_s {
 // centity_t have a direct corespondence with gentity_t in the game, but
 // only the entityState_t is directly communicated to the cgame
 typedef struct centity_s {
-	entityState_t currentState; // from cg.frame
-	entityState_t nextState; 				// from cg.nextFrame, if available
-	qboolean interpolate; 			// true if next is valid to interpolate to
-	qboolean currentValid; // true if cg.frame holds this entity
-	int muzzleFlashTime; // move to playerEntity?
-	int muzzleFlashTime2; // move to playerEntity?
-	int muzzleFlashTime3; // move to playerEntity?
+	entityState_t currentState;	// from cg.frame
+	entityState_t nextState;	// from cg.nextFrame, if available
+	qboolean interpolate;		// true if next is valid to interpolate to
+	qboolean currentValid;		// true if cg.frame holds this entity
+	int muzzleFlashTime;		// move to playerEntity?
+	int muzzleFlashTime2;		// move to playerEntity?
+	int muzzleFlashTime3;		// move to playerEntity?
 	int previousEvent;
 	int teleportFlag;
 	int trailTime; 				// so missile trails can handle dropped initial packets
 	int dustTrailTime;
 	int miscTime;
-	int snapShotTime; // last time this entity was found in a snapshot
+	int snapShotTime;			// last time this entity was found in a snapshot
 	playerEntity_t pe;
-	int errorTime; 				// decay the error from this time
+	int errorTime;				// decay the error from this time
 	vec3_t errorOrigin;
 	vec3_t errorAngles;
-	qboolean extrapolated; // false if origin / angles is an interpolation
+	qboolean extrapolated;		// false if origin / angles is an interpolation
 	vec3_t rawOrigin;
 	vec3_t rawAngles;
 	vec3_t beamEnd;
@@ -550,41 +546,45 @@ typedef struct {
   upgrade_t upgrade;
 } score_t;
 
-// each client has an associated clientInfo_t
-// that contains media references necessary to present the
-// client model and other color coded effects
-// this is regenerated each time a client's configstring changes, 
-// usually as a result of a userinfo(name, model, etc) change
+/**************************************************************************************************************************************
+
+	Each client has an associated clientInfo_t that contains media references necessary to present the client model and other color
+	coded effects. This is regenerated each time a client's configstring changes, usually as a result of a userinfo (name, model, etc.)
+	change.
+
+**************************************************************************************************************************************/
+
 #define MAX_CUSTOM_SOUNDS 32
+
 typedef struct {
 	qboolean infoValid;
 	char name[MAX_NAME_LENGTH];
 	team_t team;
-	int score; 											// updated by score servercmds
-	int location; 									// location index for team mode
-	int health; 										// you only get this info about your teammates
+	int score;				// updated by score servercmds
+	int location;			// location index for team mode
+	int health;				// you only get this info about your teammates
 	int upgrade;
-	int curWeaponClass; 						// sends current weapon for H, current class for A
+	int curWeaponClass;		// sends current weapon for H, current class for A
 	// when clientinfo is changed, the loading of models/skins / sounds
 	// can be deferred until you are dead, to prevent hitches in
 	// gameplay
 	char modelName[MAX_QPATH];
 	char skinName[MAX_QPATH];
-	qboolean newAnims; 									// true if using the new mission pack animations
-	qboolean fixedlegs; 									// true if legs yaw is always the same as torso yaw
-	qboolean fixedtorso; 								// true if torso never changes yaw
-	qboolean nonsegmented; 							// true if model is Q2 style nonsegmented
-	vec3_t headOffset; 								// move head in icon views
+	qboolean newAnims;		// true if using the new mission pack animations
+	qboolean fixedlegs;		// true if legs yaw is always the same as torso yaw
+	qboolean fixedtorso;	// true if torso never changes yaw
+	qboolean nonsegmented;	// true if model is Q2 style nonsegmented
+	vec3_t headOffset;		// move head in icon views
 	footstep_t footsteps;
-	gender_t gender; 										// from model
+	gender_t gender;		// from model
 	qhandle_t legsModel;
 	qhandle_t legsSkin;
 	qhandle_t torsoModel;
 	qhandle_t torsoSkin;
 	qhandle_t headModel;
 	qhandle_t headSkin;
-	qhandle_t nonSegModel; 								// non - segmented model system
-	qhandle_t nonSegSkin; 								// non - segmented model system
+	qhandle_t nonSegModel;	// non-segmented model system
+	qhandle_t nonSegSkin;	// non-segmented model system
 	qhandle_t modelIcon;
 	animation_t animations[MAX_PLAYER_TOTALANIMATIONS];
 	sfxHandle_t sounds[MAX_CUSTOM_SOUNDS];
@@ -625,13 +625,17 @@ typedef struct weaponInfoMode_s {
 	sfxHandle_t impactSound[4]; // random impact sound
 	sfxHandle_t impactFleshSound[4]; // random impact sound
 } weaponInfoMode_t;
-// each WP_ * weapon enum has an associated weaponInfo_t
-// that contains media references necessary to present the
-// weapon and its effects
+
+/**************************************************************************************************************************************
+
+	Each WP_* weapon enum has an associated weaponInfo_t that contains media references necessary to present the weapon and its effects.
+
+**************************************************************************************************************************************/
+
 typedef struct weaponInfo_s {
 	qboolean registered;
 	char *humanName;
-	qhandle_t handsModel; 			// the hands don't actually draw, they just position the weapon
+	qhandle_t handsModel;		// the hands don't actually draw, they just position the weapon
 	qhandle_t weaponModel;
 	qhandle_t barrelModel;
 	qhandle_t flashModel;

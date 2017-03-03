@@ -32,17 +32,14 @@ int old_com_frameTime;
 
 KEY BUTTONS
 
-Continuous button event tracking is complicated by the fact that two different
-input sources(say, mouse button 1 and the control key) can both press the
-same button, but the button should only be released when both of the
-pressing key have been released.
+Continuous button event tracking is complicated by the fact that two different input sources (say, mouse button 1 and the control key)
+can both press the same button, but the button should only be released when both of the pressing key have been released.
 
-When a key event issues a button command(+ forward, + attack, etc), it appends
-its key number as argv(1) so it can be matched up with the release.
+When a key event issues a button command(+ forward, + attack, etc), it appends its key number as argv(1) so it can be matched up with
+the release.
 
-argv(2) will be set to the time the event happened, which allows exact
-control even at low framerates when the down and up events may both get qued
-at the same time.
+argv(2) will be set to the time the event happened, which allows exact control even at low framerates when the down and up events may
+both get qued at the same time.
 =======================================================================================================================================
 */
 
@@ -114,8 +111,8 @@ void IN_KeyDown(kbutton_t *b) {
 	}
 	// save timestamp for partial frame summing
 	c = Cmd_Argv(2);
-	b->downtime = atoi(c);
 
+	b->downtime = atoi(c);
 	b->active = qtrue;
 	b->wasPressed = qtrue;
 }
@@ -196,7 +193,6 @@ float CL_KeyState(kbutton_t *key) {
 		Com_Printf("%i ", msec);
 	}
 #endif
-
 	val = (float)msec / frame_msec;
 
 	if (val < 0) {
@@ -1189,8 +1185,7 @@ void CL_WritePacket(void) {
 	// write the current serverId so the server
 	// can tell if this is from the current gameState
 	MSG_WriteLong(&buf, cl.serverId);
-	// write the last message we received, which can
-	// be used for delta compression, and is also used
+	// write the last message we received, which can be used for delta compression, and is also used
 	// to tell if we dropped a gamestate
 	MSG_WriteLong(&buf, clc.serverMessageSequence);
 	// write the last reliable message we received

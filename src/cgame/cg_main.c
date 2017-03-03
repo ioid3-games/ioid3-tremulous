@@ -21,7 +21,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
 =======================================================================================================================================
 */
 
-// cg_main.c--initialization and primary entry point for cgame
+/**************************************************************************************************************************************
+ Initialization and primary entry point for cgame.
+**************************************************************************************************************************************/
 
 #include "cg_local.h"
 #include "../ui/ui_shared.h"
@@ -36,8 +38,7 @@ static char *CG_VoIPString(void);
 =======================================================================================================================================
 vmMain
 
-This is the only way control passes into the module.
-This must be the very first function compiled into the .q3vm file.
+This is the only way control passes into the module. This must be the very first function compiled into the .q3vm file.
 =======================================================================================================================================
 */
 Q_EXPORT intptr_t vmMain(int command, int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7, int arg8, int arg9, int arg10, int arg11) {
@@ -382,7 +383,7 @@ static void CG_SetUIVars(void) {
 
 /*
 =======================================================================================================================================
-G_UpdateCvars
+CG_UpdateCvars
 =======================================================================================================================================
 */
 void CG_UpdateCvars(void) {
@@ -577,7 +578,7 @@ qboolean CG_FileExists(const char *filename) {
 =======================================================================================================================================
 CG_RegisterSounds
 
-called during a precache command.
+Called during a precache command.
 =======================================================================================================================================
 */
 static void CG_RegisterSounds(void) {
@@ -761,8 +762,7 @@ static void CG_RegisterGraphics(void) {
 		vec3_t mins, maxs;
 		int j;
 
-		Com_sprintf(name, sizeof(name), " * %i", i);
-
+		Com_sprintf(name, sizeof(name), "*%i", i);
 		cgs.inlineDrawModel[i] = trap_R_RegisterModel(name);
 		trap_R_ModelBounds(cgs.inlineDrawModel[i], mins, maxs);
 
@@ -871,23 +871,19 @@ static void CG_RegisterClients(void) {
 	CG_BuildSpectatorString();
 }
 
-// =========================================================================== 
-
 /*
 =======================================================================================================================================
-CG_ConfigString.
+CG_ConfigString
 =======================================================================================================================================
 */
 const char *CG_ConfigString(int index) {
 
 	if (index < 0 || index >= MAX_CONFIGSTRINGS) {
-		CG_Error("CG_ConfigString: bad index : %i", index);
+		CG_Error("CG_ConfigString: bad index: %i", index);
 	}
 
 	return cgs.gameState.stringData + cgs.gameState.stringOffsets[index];
 }
-
-// ================================================================== 
 
 /*
 =======================================================================================================================================
@@ -900,7 +896,6 @@ void CG_StartMusic(void) {
 
 	// start the background music
 	s = (char *)CG_ConfigString(CS_MUSIC);
-
 	Q_strncpyz(parm1, COM_Parse(&s), sizeof(parm1));
 	Q_strncpyz(parm2, COM_Parse(&s), sizeof(parm2));
 
@@ -925,12 +920,11 @@ int CG_PlayerCount(void) {
 
 	return count;
 }
-
-//
-// ============================== 
-// new hud stuff(mission pack)
-// ============================== 
-//
+/*
+=======================================================================================================================================
+CG_GetMenuBuffer
+=======================================================================================================================================
+*/
 char *CG_GetMenuBuffer(const char *filename) {
 	int len;
 	fileHandle_t f;
@@ -955,6 +949,14 @@ char *CG_GetMenuBuffer(const char *filename) {
 
 	return buf;
 }
+
+/*
+=======================================================================================================================================
+
+	New hud stuff (mission pack)
+
+=======================================================================================================================================
+*/
 
 /*
 =======================================================================================================================================
@@ -1003,7 +1005,7 @@ qboolean CG_Asset_Parse(int handle) {
 			cgDC.registerFont(tempStr, pointSize, &cgDC.Assets.smallFont);
 			continue;
 		}
-		// font
+		// bigFont
 		if (Q_stricmp(token.string, "bigfont") == 0) {
 			int pointSize;
 
@@ -1146,7 +1148,7 @@ void CG_ParseMenu(const char *menuFile) {
 			break;
 		}
 		// if (Q_stricmp(token, "{")) {
-		// 	Com_Printf("Missing {in menu file\n");
+		// 	Com_Printf("Missing { in menu file\n");
 		// break;
 		// }
 		// if (menuCount == MAX_MENUS) {
@@ -1222,11 +1224,11 @@ void CG_LoadMenus(const char *menuFile) {
 	len = trap_FS_FOpenFile(menuFile, &f, FS_READ);
 
 	if (!f) {
-		trap_Error(va(S_COLOR_YELLOW "menu file not found : %s, using default\n", menuFile));
+		trap_Error(va(S_COLOR_YELLOW "menu file not found: %s, using default\n", menuFile));
 		len = trap_FS_FOpenFile("ui/hud.txt", &f, FS_READ);
 
 		if (!f) {
-			trap_Error(va(S_COLOR_RED "default menu file not found : ui/hud.txt, unable to continue!\n"));
+			trap_Error(va(S_COLOR_RED "default menu file not found: ui/hud.txt, unable to continue!\n"));
 		}
 	}
 
@@ -1508,6 +1510,7 @@ static float CG_Cvar_Get(const char *cvar) {
 	char buff[128];
 
 	memset(buff, 0, sizeof(buff));
+
 	trap_Cvar_VariableStringBuffer(cvar, buff, sizeof(buff));
 	return atof(buff);
 }
@@ -1692,8 +1695,7 @@ void CG_AssetCache(void) {
 =======================================================================================================================================
 CG_Init
 
-Called after every level change or subsystem restart.
-Will perform callbacks to make the loading info screen update.
+Called after every level change or subsystem restart. Will perform callbacks to make the loading info screen update.
 =======================================================================================================================================
 */
 void CG_Init(int serverMessageNum, int serverCommandSequence, int clientNum) {
@@ -1705,6 +1707,7 @@ void CG_Init(int serverMessageNum, int serverCommandSequence, int clientNum) {
 	memset(cg_entities, 0, sizeof(cg_entities));
 
 	cg.clientNum = clientNum;
+
 	cgs.processedSnapshotNum = serverMessageNum;
 	cgs.serverCommandSequence = serverCommandSequence;
 	// get the rendering configuration from the client system
@@ -1743,7 +1746,7 @@ void CG_Init(int serverMessageNum, int serverCommandSequence, int clientNum) {
 	s = CG_ConfigString(CS_GAME_VERSION);
 
 	if (strcmp(s, GAME_VERSION)) {
-		CG_Error("Client/Server game mismatch: %s / %s", GAME_VERSION, s);
+		CG_Error("Client/Server game mismatch: %s/%s", GAME_VERSION, s);
 	}
 
 	s = CG_ConfigString(CS_LEVEL_START_TIME);
@@ -1779,7 +1782,7 @@ void CG_Init(int serverMessageNum, int serverCommandSequence, int clientNum) {
 	CG_InitMarkPolys();
 	// remove the last loading update
 	cg.infoScreenText[0] = 0;
-	// make sure we have update values(scores)
+	// make sure we have update values (scores)
 	CG_SetConfigValues();
 	CG_StartMusic();
 	CG_ShaderStateChanged();
@@ -1844,4 +1847,3 @@ static char *CG_VoIPString(void) {
 
 	return voipString;
 }
-

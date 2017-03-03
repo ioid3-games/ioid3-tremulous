@@ -94,8 +94,8 @@ Coordinates are 640 * 480 virtual values.
 =======================================================================================================================================
 */
 void SCR_FillRect(float x, float y, float width, float height, const float *color) {
-	re.SetColor(color);
 
+	re.SetColor(color);
 	SCR_AdjustFrom640(&x, &y, &width, &height);
 	re.DrawStretchPic(x, y, width, height, 0, 0, 0, 0, cls.whiteShader);
 	re.SetColor(NULL);
@@ -109,6 +109,7 @@ Coordinates are 640 * 480 virtual values.
 =======================================================================================================================================
 */
 void SCR_DrawPic(float x, float y, float width, float height, qhandle_t hShader) {
+
 	SCR_AdjustFrom640(&x, &y, &width, &height);
 	re.DrawStretchPic(x, y, width, height, 0, 0, 1, 1, hShader);
 }
@@ -143,11 +144,9 @@ static void SCR_DrawChar(int x, int y, float size, int ch) {
 
 	row = ch >> 4;
 	col = ch&15;
-
 	frow = row * 0.0625;
 	fcol = col * 0.0625;
 	size = 0.0625;
-
 	re.DrawStretchPic(ax, ay, aw, ah, fcol, frow, fcol + size, frow + size, cls.charSetShader);
 }
 
@@ -175,11 +174,9 @@ void SCR_DrawSmallChar(int x, int y, int ch) {
 
 	row = ch >> 4;
 	col = ch&15;
-
 	frow = row * 0.0625;
 	fcol = col * 0.0625;
 	size = 0.0625;
-
 	re.DrawStretchPic(x, y, SMALLCHAR_WIDTH, SMALLCHAR_HEIGHT, fcol, frow, fcol + size, frow + size, cls.charSetShader);
 }
 
@@ -526,7 +523,7 @@ void SCR_UpdateScreen(void) {
 	static int recursive;
 
 	if (!scr_initialized) {
-		return; 				// not initialized yet
+		return; // not initialized yet
 	}
 
 	if (++recursive > 2) {
@@ -536,7 +533,7 @@ void SCR_UpdateScreen(void) {
 	recursive = 1;
 	// if there is no VM, there are also no rendering commands issued. Stop the renderer in that case.
 	if (uivm || com_dedicated->integer) {
-		// xXX
+		// XXX
 		int in_anaglyphMode = Cvar_VariableIntegerValue("r_anaglyphMode");
 		// if running in stereo, we need to draw the frame twice
 		if (cls.glconfig.stereoEnabled || in_anaglyphMode) {
@@ -555,4 +552,3 @@ void SCR_UpdateScreen(void) {
 
 	recursive = 0;
 }
-

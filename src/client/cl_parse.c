@@ -329,7 +329,7 @@ void CL_SystemInfoChanged(void) {
 	systemInfo = cl.gameState.stringData + cl.gameState.stringOffsets[CS_SYSTEMINFO];
 	// NOTE TTimo:
 	// when the serverId changes, any further messages we send to the server will use this new serverId
-	// https:// zerowing.idsoftware.com / bugzilla / show_bug.cgi?id = 475
+	// https:// zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=475
 	// in some cases, outdated cp commands might get sent with this news serverId
 	cl.serverId = atoi(Info_ValueForKey(systemInfo, "sv_serverid"));
 #ifdef USE_VOIP
@@ -489,8 +489,9 @@ void CL_ParseGamestate(msg_t *msg) {
 	// parse serverId and other cvars
 	CL_SystemInfoChanged();
 	// stop recording now so the demo won't have an unnecessary level load at the end.
-	if (cl_autoRecordDemo->integer && clc.demorecording)
+	if (cl_autoRecordDemo->integer && clc.demorecording) {
 		CL_StopRecord_f();
+	}
 	// reinitialize the filesystem if the game directory has changed
 	if (!cl_oldGameSet && (Cvar_Flags("fs_game") & CVAR_MODIFIED)) {
 		cl_oldGameSet = qtrue;
@@ -876,5 +877,3 @@ void CL_ParseServerMessage(msg_t *msg) {
 		}
 	}
 }
-
-

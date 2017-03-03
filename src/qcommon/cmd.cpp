@@ -193,7 +193,7 @@ void Cbuf_ExecuteText(int exec_when, const char *text) {
 
 /*
 =======================================================================================================================================
-Cbuf_Execute.
+Cbuf_Execute
 =======================================================================================================================================
 */
 void Cbuf_Execute(void) {
@@ -256,7 +256,7 @@ void Cbuf_Execute(void) {
 
 		line[i] = 0;
 		// delete the text from the command buffer and move remaining commands down
-		// this is necessary because commands(exec) can insert data at the beginning of the text buffer
+		// this is necessary because commands (exec) can insert data at the beginning of the text buffer
 		if (i == cmd_text.cursize) {
 			cmd_text.cursize = 0;
 		} else {

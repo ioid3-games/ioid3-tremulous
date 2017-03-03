@@ -2,97 +2,118 @@
 // restclient wrapper abusively modified to be a one - off donwloader.
 // - wtfbbqhax
 //
-// tODO Verify sha256 of file if exists
+// TODO Verify sha256 of file if exists
 
 #include "cl_rest.h"
-
 #include <iostream>
 #include <fstream>
 #include <vector>
-
 #include <unistd.h>
 #include <errno.h>
 #include <string.h>
-
 #include "restclient.h"
 
 extern "C" int FS_CreatePath(const char *);
 
+/*
+=======================================================================================================================================
+is_good
+=======================================================================================================================================
+*/
 static bool is_good(std::string filename, int permissions = (R_OK|W_OK)) {
-		int ret = access(filename.c_str(), permissions);
+	int ret = access(filename.c_str(), permissions);
 
-		if (ret)
-				std::cerr << filename << " : " << strerror(errno) << std::endl;
+	if (ret) {
+		std::cerr << filename << " : " << strerror(errno) << std::endl;
+	}
 
-		return !ret;
+	return !ret;
 }
 
+/*
+=======================================================================================================================================
+MakeDir
+=======================================================================================================================================
+*/
 static bool MakeDir(std::string destdir, std::string basegame) {
-		std::string destpath(destdir);
-		destpath += '/';
-		destpath += basegame;
-		destpath += '/'; // xXX FS_CreatePath requires a trailing slash. 
-						// maybe the assumption is that a file listing might be included?
-		FS_CreatePath(destpath.c_str());
-		return true;
+	std::string destpath(destdir);
+	destpath += '/';
+	destpath += basegame;
+	destpath += '/'; // xXX FS_CreatePath requires a trailing slash. 
+					// maybe the assumption is that a file listing might be included?
+	FS_CreatePath(destpath.c_str());
+	return true;
 }
 
 #include "../qcommon/dialog.h"
+/*
+=======================================================================================================================================
+PromptDownloadPk3s
+=======================================================================================================================================
+*/
 static bool PromptDownloadPk3s(std::string basegame, const std::vector < std::string > & missing) {
-		std::string msg;
-		
-		msg = "The following files must be downloaded to complete the installation.\n\n";
+	std::string msg;
 
-		for (auto f : missing)
-				msg += "\t" + basegame + "/" + f + "\n";
+	msg = "The following files must be downloaded to complete the installation.\n\n";
 
-		msg += "\n";
-		msg += "Yes to continue, No to quit the game.";
+	for (auto f : missing) {
+		msg += "\t" + basegame + "/" + f + "\n";
+	}
 
-		if (Sys_Dialog(DT_YES_NO, msg.c_str(), "You're almost ready!") == DR_YES)
-				return true;
+	msg += "\n";
+	msg += "Yes to continue, No to quit the game.";
 
-		return false;
+	if (Sys_Dialog(DT_YES_NO, msg.c_str(), "You're almost ready!") == DR_YES) {
+		return true;
+	}
+
+	return false;
 }
 
+/*
+=======================================================================================================================================
+GetTremulousPk3s
+=======================================================================================================================================
+*/
 bool GetTremulousPk3s(const char *destdir, const char *basegame) {
-		std::string baseuri = "https:// github.com / wtfbbqhax / tremulous - data / raw / master / ";
-		std::vector < std::string > files = {
-				"data - gpp1.pk3", "data - 1.1.0.pk3", "map - atcs - 1.1.0.pk3", "map - karith - 1.1.0.pk3", "map - nexus6 - 1.1.0.pk3", "map - niveus - 1.1.0.pk3", "map - transit - 1.1.0.pk3", "map - tremor - 1.1.0.pk3", "map - uncreation - 1.1.0.pk3"
-		};
+	std::string baseuri = "https:// github.com/wtfbbqhax/tremulous - data/raw/master/";
+	std::vector < std::string > files = {
+		"data - gpp1.pk3", "data - 1.1.0.pk3", "map - atcs - 1.1.0.pk3", "map - karith - 1.1.0.pk3", "map - nexus6 - 1.1.0.pk3", "map - niveus - 1.1.0.pk3", "map - transit - 1.1.0.pk3", "map - tremor - 1.1.0.pk3", "map - uncreation - 1.1.0.pk3"
+	};
 
-		RestClient::init();
+	RestClient::init();
 
-		MakeDir(destdir, basegame);
+	MakeDir(destdir, basegame);
 
-		if (!PromptDownloadPk3s(basegame, files))
-				return false;
+	if (!PromptDownloadPk3s(basegame, files)) {
+		return false;
+	}
 
-		for (auto f : files) {
-				std::string destpath(destdir);
-				destpath += "/";
-				destpath += basegame;
-				destpath += "/";
-				destpath += f;
+	for (auto f : files) {
+		std::string destpath(destdir);
+		destpath += "/";
+		destpath += basegame;
+		destpath += "/";
+		destpath += f;
 
-				if (is_good(destpath)) {
-						return false;
-				}
-
-				std::cout << "Downloading " << baseuri << f << std::endl;
-				std::ofstream dl(destpath);
-				// dl.open(destpath);
-
-				if (dl.fail()) {
-						std::cerr << "Error " << strerror(errno) << "\n";
-						continue;
-				}
-
-				RestClient::Response resp = RestClient::get(baseuri + f);
-
-				dl << resp.body;
-				dl.close();
+		if (is_good(destpath)) {
+			return false;
 		}
 
-		return true;
+		std::cout << "Downloading " << baseuri << f << std::endl;
+		std::ofstream dl(destpath);
+		// dl.open(destpath);
+
+		if (dl.fail()) {
+			std::cerr << "Error " << strerror(errno) << "\n";
+			continue;
+		}
+
+		RestClient::Response resp = RestClient::get(baseuri + f);
+
+		dl << resp.body;
+		dl.close();
+	}
+
+	return true;
 }

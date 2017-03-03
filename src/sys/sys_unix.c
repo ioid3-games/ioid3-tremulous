@@ -24,7 +24,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
 #include "sys_local.h"
-
 #include <signal.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -41,13 +40,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
 #include <sys/wait.h>
 
 qboolean stdinIsATTY;
-
-// used to determine where to store user - specific files
+// used to determine where to store user-specific files
 static char homePath[MAX_OSPATH] = {0};
 
 /*
 =======================================================================================================================================
-Sys_DefaultHomePath.
+Sys_DefaultHomePath
 =======================================================================================================================================
 */
 char *Sys_DefaultHomePath(void) {
@@ -57,17 +55,19 @@ char *Sys_DefaultHomePath(void) {
 		if ((p = getenv("HOME")) != NULL) {
 			Com_sprintf(homePath, sizeof(homePath), "%s%c", p, PATH_SEP);
 #ifdef __APPLE__
-			Q_strcat(homePath, sizeof(homePath), "Library / Application Support / ");
+			Q_strcat(homePath, sizeof(homePath), "Library/Application Support/");
 
-			if (com_homepath->string[0])
+			if (com_homepath->string[0]) {
 				Q_strcat(homePath, sizeof(homePath), com_homepath->string);
-			else
+			} else {
 				Q_strcat(homePath, sizeof(homePath), HOMEPATH_NAME_MACOSX);
+			}
 #else
-			if (com_homepath->string[0])
+			if (com_homepath->string[0]) {
 				Q_strcat(homePath, sizeof(homePath), com_homepath->string);
-			else
+			} else {
 				Q_strcat(homePath, sizeof(homePath), HOMEPATH_NAME_UNIX);
+			}
 #endif
 		}
 	}
@@ -77,19 +77,23 @@ char *Sys_DefaultHomePath(void) {
 
 /*
 =======================================================================================================================================
-Sys_Milliseconds.
+Sys_Milliseconds
 =======================================================================================================================================
 */
-/* base time in seconds, that's our origin
-   timeval:tv_sec is an int:
-   assuming this wraps every 0x7fffffff - ~68 years since the Epoch(1970) - we're safe till 2038 */
+/*
+ base time in seconds, that's our origin
+ timeval:tv_sec is an int:
+ assuming this wraps every 0x7fffffff - ~68 years since the Epoch (1970) - we're safe till 2038
+*/
 unsigned long sys_timeBase = 0;
 /* current time in ms, using sys_timeBase as origin
-   NOTE: sys_timeBase * 1000 + curtime->ms since the Epoch
-		0x7fffffff ms - ~24 days
-   although timeval:tv_usec is an int, I'm not sure wether it is actually used as an unsigned int
-(which would affect the wrap period) */
+ NOTE: sys_timeBase * 1000 + curtime -> ms since the Epoch
+ 0x7fffffff ms - ~24 days
+ although timeval:tv_usec is an int, I'm not sure whether it is actually used as an unsigned int
+ (which would affect the wrap period)
+*/
 int curtime;
+
 int Sys_Milliseconds(void) {
 	struct timeval tp;
 
@@ -107,18 +111,18 @@ int Sys_Milliseconds(void) {
 
 /*
 =======================================================================================================================================
-Sys_RandomBytes.
+Sys_RandomBytes
 =======================================================================================================================================
 */
 qboolean Sys_RandomBytes(byte *string, int len) {
 	FILE *fp;
 
-	fp = fopen("/dev / urandom", "r");
+	fp = fopen("/dev/urandom", "r");
 
 	if (!fp)
 		return qfalse;
 
-	setvbuf(fp, NULL, _IONBF, 0); // don't buffer reads from / dev / urandom
+	setvbuf(fp, NULL, _IONBF, 0); // don't buffer reads from /dev/urandom
 
 	if (fread(string, sizeof(byte), len, fp) != len) {
 		fclose(fp);
@@ -131,7 +135,7 @@ qboolean Sys_RandomBytes(byte *string, int len) {
 
 /*
 =======================================================================================================================================
-Sys_GetCurrentUser.
+Sys_GetCurrentUser
 =======================================================================================================================================
 */
 char *Sys_GetCurrentUser(void) {
@@ -150,7 +154,7 @@ char *Sys_GetCurrentUser(void) {
 =======================================================================================================================================
 Sys_LowPhysicalMemory
 
-TODO.
+TODO
 =======================================================================================================================================
 */
 qboolean Sys_LowPhysicalMemory(void) {
@@ -159,7 +163,7 @@ qboolean Sys_LowPhysicalMemory(void) {
 
 /*
 =======================================================================================================================================
-Sys_Basename.
+Sys_Basename
 =======================================================================================================================================
 */
 const char *Sys_Basename(char *path) {
@@ -168,7 +172,7 @@ const char *Sys_Basename(char *path) {
 
 /*
 =======================================================================================================================================
-Sys_Dirname.
+Sys_Dirname
 =======================================================================================================================================
 */
 const char *Sys_Dirname(char *path) {
@@ -177,11 +181,12 @@ const char *Sys_Dirname(char *path) {
 
 /*
 =======================================================================================================================================
-Sys_FOpen.
+Sys_FOpen
 =======================================================================================================================================
 */
 FILE *Sys_FOpen(const char *ospath, const char *mode) {
 	struct stat buf;
+
 	// check if path exists and is a directory
 	if (!stat(ospath, &buf) && S_ISDIR(buf.st_mode))
 		return NULL;
@@ -191,7 +196,7 @@ FILE *Sys_FOpen(const char *ospath, const char *mode) {
 
 /*
 =======================================================================================================================================
-Sys_Mkdir.
+Sys_Mkdir
 =======================================================================================================================================
 */
 qboolean Sys_Mkdir(const char *path) {
@@ -205,14 +210,15 @@ qboolean Sys_Mkdir(const char *path) {
 
 /*
 =======================================================================================================================================
-Sys_Mkfifo.
+Sys_Mkfifo
 =======================================================================================================================================
 */
 FILE *Sys_Mkfifo(const char *ospath) {
 	FILE *fifo;
 	int result;
 	int fn;
-	struct	stat buf;
+	struct stat buf;
+
 	// if file already exists AND is a pipefile, remove it
 	if (!stat(ospath, &buf) && S_ISFIFO(buf.st_mode))
 		FS_Remove(ospath);
@@ -222,7 +228,7 @@ FILE *Sys_Mkfifo(const char *ospath) {
 	if (result != 0)
 		return NULL;
 
-	fifo = fopen(ospath, "w + ");
+	fifo = fopen(ospath, "w+");
 
 	if (fifo) {
 		fn = fileno(fifo);
@@ -234,7 +240,7 @@ FILE *Sys_Mkfifo(const char *ospath) {
 
 /*
 =======================================================================================================================================
-Sys_Cwd.
+Sys_Cwd
 =======================================================================================================================================
 */
 char *Sys_Cwd(void) {
@@ -254,6 +260,7 @@ char *Sys_Cwd(void) {
 =======================================================================================================================================
 
 DIRECTORY SCANNING
+
 =======================================================================================================================================
 */
 
@@ -261,22 +268,22 @@ DIRECTORY SCANNING
 
 /*
 =======================================================================================================================================
-Sys_ListFilteredFiles.
+Sys_ListFilteredFiles
 =======================================================================================================================================
 */
 void Sys_ListFilteredFiles(const char *basedir, char *subdirs, char *filter, char **list, int *numfiles) {
 	char search[MAX_OSPATH], newsubdirs[MAX_OSPATH];
 	char filename[MAX_OSPATH];
-	DIR					*fdir;
+	DIR *fdir;
 	struct dirent *d;
-	struct stat   st;
+	struct stat st;
 
 	if (*numfiles >= MAX_FOUND_FILES - 1) {
 		return;
 	}
 
 	if (strlen(subdirs)) {
-		Com_sprintf(search, sizeof(search), "%s / %s", basedir, subdirs);
+		Com_sprintf(search, sizeof(search), "%s/%s", basedir, subdirs);
 	} else {
 		Com_sprintf(search, sizeof(search), "%s", basedir);
 	}
@@ -286,7 +293,7 @@ void Sys_ListFilteredFiles(const char *basedir, char *subdirs, char *filter, cha
 	}
 
 	while ((d = readdir(fdir)) != NULL) {
-		Com_sprintf(filename, sizeof(filename), "%s / %s", search, d->d_name);
+		Com_sprintf(filename, sizeof(filename), "%s/%s", search, d->d_name);
 
 		if (stat(filename, &st) == -1)
 			continue;
@@ -294,7 +301,7 @@ void Sys_ListFilteredFiles(const char *basedir, char *subdirs, char *filter, cha
 		if (st.st_mode & S_IFDIR) {
 			if (Q_stricmp(d->d_name, ".") && Q_stricmp(d->d_name, "..")) {
 				if (strlen(subdirs)) {
-					Com_sprintf(newsubdirs, sizeof(newsubdirs), "%s / %s", subdirs, d->d_name);
+					Com_sprintf(newsubdirs, sizeof(newsubdirs), "%s/%s", subdirs, d->d_name);
 				} else {
 					Com_sprintf(newsubdirs, sizeof(newsubdirs), "%s", d->d_name);
 				}
@@ -307,7 +314,7 @@ void Sys_ListFilteredFiles(const char *basedir, char *subdirs, char *filter, cha
 			break;
 		}
 
-		Com_sprintf(filename, sizeof(filename), "%s / %s", subdirs, d->d_name);
+		Com_sprintf(filename, sizeof(filename), "%s/%s", subdirs, d->d_name);
 
 		if (!Com_FilterPath(filter, filename, qfalse))
 			continue;
@@ -320,24 +327,24 @@ void Sys_ListFilteredFiles(const char *basedir, char *subdirs, char *filter, cha
 
 /*
 =======================================================================================================================================
-Sys_ListFiles.
+Sys_ListFiles
 =======================================================================================================================================
 */
 char **Sys_ListFiles(const char *directory, const char *extension, char *filter, int *numfiles, qboolean wantsubs) {
 	struct dirent *d;
-	DIR					*fdir;
+	DIR *fdir;
 	qboolean dironly = wantsubs;
 	char search[MAX_OSPATH];
 	int nfiles;
 	char **listCopy;
 	char *list[MAX_FOUND_FILES];
 	int i;
-	struct stat   st;
+	struct stat st;
 	int extLen;
 
 	if (filter) {
-
 		nfiles = 0;
+
 		Sys_ListFilteredFiles(directory, "", filter, list, &nfiles);
 
 		list[nfiles] = NULL;
@@ -375,7 +382,7 @@ char **Sys_ListFiles(const char *directory, const char *extension, char *filter,
 	}
 
 	while ((d = readdir(fdir)) != NULL) {
-		Com_sprintf(search, sizeof(search), "%s / %s", directory, d->d_name);
+		Com_sprintf(search, sizeof(search), "%s/%s", directory, d->d_name);
 
 		if (stat(search, &st) == -1)
 			continue;
@@ -421,7 +428,7 @@ char **Sys_ListFiles(const char *directory, const char *extension, char *filter,
 
 /*
 =======================================================================================================================================
-Sys_FreeFileList.
+Sys_FreeFileList
 =======================================================================================================================================
 */
 void Sys_FreeFileList(char **list) {
@@ -461,7 +468,7 @@ void Sys_Sleep(int msec) {
 			struct timeval timeout;
 
 			timeout.tv_sec = msec / 1000;
-			timeout.tv_usec = (msec%1000) * 1000;
+			timeout.tv_usec = (msec % 1000) * 1000;
 			select(STDIN_FILENO + 1, &fdset, NULL, NULL, &timeout);
 		}
 	} else {
@@ -491,13 +498,10 @@ void Sys_ErrorDialog(const char *error) {
 	char *ospath = FS_BuildOSPath(homepath, gamedir, fileName);
 
 	Sys_Print(va("%s\n", error));
-
 #ifndef DEDICATED
 	Sys_Dialog(DT_ERROR, va("%s. See \"%s\" for details.", error, ospath), "Error");
 #endif
-
 	// make sure the write path for the crashlog exists...
-
 	if (!Sys_Mkdir(homepath)) {
 		Com_Printf("ERROR: couldn't create path '%s' for crash log.\n", homepath);
 		return;
@@ -526,7 +530,6 @@ void Sys_ErrorDialog(const char *error) {
 
 	close(f);
 }
-
 #ifndef __APPLE__
 static char execBuffer[1024];
 static char *execBufferPointer;
@@ -535,18 +538,21 @@ static int execArgc;
 
 /*
 =======================================================================================================================================
-Sys_ClearExecBuffer.
+Sys_ClearExecBuffer
 =======================================================================================================================================
 */
 static void Sys_ClearExecBuffer(void) {
+
 	execBufferPointer = execBuffer;
+
 	Com_Memset(execArgv, 0, sizeof(execArgv));
+
 	execArgc = 0;
 }
 
 /*
 =======================================================================================================================================
-Sys_AppendToExecBuffer.
+Sys_AppendToExecBuffer
 =======================================================================================================================================
 */
 static void Sys_AppendToExecBuffer(const char *text) {
@@ -557,14 +563,14 @@ static void Sys_AppendToExecBuffer(const char *text) {
 		return;
 
 	Q_strncpyz(execBufferPointer, text, size);
-	execArgv[execArgc++] = execBufferPointer;
 
+	execArgv[execArgc++] = execBufferPointer;
 	execBufferPointer += length;
 }
 
 /*
 =======================================================================================================================================
-Sys_Exec.
+Sys_Exec
 =======================================================================================================================================
 */
 static int Sys_Exec(void) {
@@ -592,10 +598,11 @@ static int Sys_Exec(void) {
 
 /*
 =======================================================================================================================================
-Sys_ZenityCommand.
+Sys_ZenityCommand
 =======================================================================================================================================
 */
 static void Sys_ZenityCommand(dialogType_t type, const char *message, const char *title) {
+
 	Sys_ClearExecBuffer();
 	Sys_AppendToExecBuffer("zenity");
 

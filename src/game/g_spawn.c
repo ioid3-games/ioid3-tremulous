@@ -23,6 +23,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
 
 #include "g_local.h"
 
+/*
+=======================================================================================================================================
+G_SpawnString
+=======================================================================================================================================
+*/
 qboolean G_SpawnString(const char *key, const char *defaultString, char **out) {
 	int i;
 
@@ -43,6 +48,11 @@ qboolean G_SpawnString(const char *key, const char *defaultString, char **out) {
 	return qfalse;
 }
 
+/*
+=======================================================================================================================================
+G_SpawnFloat
+=======================================================================================================================================
+*/
 qboolean G_SpawnFloat(const char *key, const char *defaultString, float *out) {
 	char *s;
 	qboolean present;
@@ -52,6 +62,11 @@ qboolean G_SpawnFloat(const char *key, const char *defaultString, float *out) {
 	return present;
 }
 
+/*
+=======================================================================================================================================
+G_SpawnInt
+=======================================================================================================================================
+*/
 qboolean G_SpawnInt(const char *key, const char *defaultString, int *out) {
 	char *s;
 	qboolean present;
@@ -60,6 +75,12 @@ qboolean G_SpawnInt(const char *key, const char *defaultString, int *out) {
 	*out = atoi(s);
 	return present;
 }
+
+/*
+=======================================================================================================================================
+G_SpawnVector
+=======================================================================================================================================
+*/
 
 qboolean G_SpawnVector(const char *key, const char *defaultString, float *out) {
 	char *s;
@@ -70,6 +91,11 @@ qboolean G_SpawnVector(const char *key, const char *defaultString, float *out) {
 	return present;
 }
 
+/*
+=======================================================================================================================================
+G_SpawnVector4
+=======================================================================================================================================
+*/
 qboolean G_SpawnVector4(const char *key, const char *defaultString, float *out) {
 	char *s;
 	qboolean present;
@@ -83,17 +109,17 @@ qboolean G_SpawnVector4(const char *key, const char *defaultString, float *out) 
 // fields are needed for spawning from the entity string
 //
 typedef enum {
-  F_INT,
+	F_INT,
 	F_FLOAT,
 	F_LSTRING, // string on disk, pointer in memory, TAG_LEVEL
-  F_GSTRING, // string on disk, pointer in memory, TAG_GAME
-  F_VECTOR,
+	F_GSTRING, // string on disk, pointer in memory, TAG_GAME
+	F_VECTOR,
 	F_VECTOR4,
 	F_ANGLEHACK,
 	F_ENTITY, // index on disk, pointer in memory
-  F_ITEM, // index on disk, pointer in memory
-  F_CLIENT, // index on disk, pointer in memory
-  F_IGNORE
+	F_ITEM, // index on disk, pointer in memory
+	F_CLIENT, // index on disk, pointer in memory
+	F_IGNORE
 } fieldtype_t;
 
 typedef struct {
@@ -274,8 +300,7 @@ spawn_t spawns[] = {
 =======================================================================================================================================
 G_CallSpawn
 
-Finds the spawn function for the entity and calls it, 
-returning qfalse if not found.
+Finds the spawn function for the entity and calls it, returning qfalse if not found.
 =======================================================================================================================================
 */
 qboolean G_CallSpawn(gentity_t *ent) {
@@ -291,8 +316,9 @@ qboolean G_CallSpawn(gentity_t *ent) {
 
 	if (buildable != BA_NONE) {
 		// don't spawn built - in buildings if we are using a custom layout
-		if (level.layout[0] && Q_stricmp(level.layout, " * BUILTIN * "))
+		if (level.layout[0] && Q_stricmp(level.layout, " * BUILTIN * ")) {
 			return qfalse;
+		}
 
 		if (buildable == BA_A_SPAWN || buildable == BA_H_SPAWN) {
 			ent->s.angles[YAW] += 180.0f;
@@ -319,8 +345,7 @@ qboolean G_CallSpawn(gentity_t *ent) {
 =======================================================================================================================================
 G_NewString
 
-Builds a copy of the string, translating \n to real linefeeds
-so message texts can be multi - line.
+Builds a copy of the string, translating \n to real linefeeds so message texts can be multi - line.
 =======================================================================================================================================
 */
 char *G_NewString(const char *string) {
@@ -328,21 +353,21 @@ char *G_NewString(const char *string) {
 	int i, l;
 
 	l = strlen(string) + 1;
-
 	newb = BG_Alloc(l);
-
 	new_p = newb;
 	// turn \n into a real linefeed
 	for (i = 0; i < l; i++) {
 		if (string[i] == '\\' && i < l - 1) {
 			i++;
 
-			if (string[i] == 'n')
+			if (string[i] == 'n') {
 				*new_p+ += '\n';
-			else
+			} else {
 				*new_p+ += '\\';
-		} else
+			}
+		} else {
 			*new_p+ += string[i];
+		}
 	}
 
 	return newb;
@@ -352,8 +377,7 @@ char *G_NewString(const char *string) {
 =======================================================================================================================================
 G_ParseField
 
-Takes a key / value pair and sets the binary values
-in a gentity.
+Takes a key/value pair and sets the binary values in a gentity.
 =======================================================================================================================================
 */
 void G_ParseField(const char *key, const char *value, gentity_t *ent) {
@@ -365,8 +389,10 @@ void G_ParseField(const char *key, const char *value, gentity_t *ent) {
 
 	f = bsearch(key, fields, ARRAY_LEN(fields), sizeof(field_t), cmdcmp);
 
-	if (!f)
+	if (!f) {
 		return;
+	}
+
 	b = (byte *)ent;
 
 	switch (f->type) {
@@ -376,17 +402,17 @@ void G_ParseField(const char *key, const char *value, gentity_t *ent) {
 		case F_VECTOR:
 			sscanf(value, "%f %f %f", &vec[0], &vec[1], &vec[2]);
 
-((float *)(b + f->ofs))[0] = vec[0];
-((float *)(b + f->ofs))[1] = vec[1];
-((float *)(b + f->ofs))[2] = vec[2];
+			((float *)(b + f->ofs))[0] = vec[0];
+			((float *)(b + f->ofs))[1] = vec[1];
+			((float *)(b + f->ofs))[2] = vec[2];
 			break;
 		case F_VECTOR4:
 			sscanf(value, "%f %f %f %f", &vec4[0], &vec4[1], &vec4[2], &vec4[3]);
 
-((float *)(b + f->ofs))[0] = vec4[0];
-((float *)(b + f->ofs))[1] = vec4[1];
-((float *)(b + f->ofs))[2] = vec4[2];
-((float *)(b + f->ofs))[3] = vec4[3];
+			((float *)(b + f->ofs))[0] = vec4[0];
+			((float *)(b + f->ofs))[1] = vec4[1];
+			((float *)(b + f->ofs))[2] = vec4[2];
+			((float *)(b + f->ofs))[3] = vec4[3];
 			break;
 		case F_INT:
 			*(int *)(b + f->ofs) = atoi(value);
@@ -396,11 +422,10 @@ void G_ParseField(const char *key, const char *value, gentity_t *ent) {
 			break;
 		case F_ANGLEHACK:
 			v = atof(value);
-((float *)(b + f->ofs))[0] = 0;
-((float *)(b + f->ofs))[1] = v;
-((float *)(b + f->ofs))[2] = 0;
+			((float *)(b + f->ofs))[0] = 0;
+			((float *)(b + f->ofs))[1] = v;
+			((float *)(b + f->ofs))[2] = 0;
 			break;
-
 		default:
 		case F_IGNORE:
 			break;
@@ -411,18 +436,19 @@ void G_ParseField(const char *key, const char *value, gentity_t *ent) {
 =======================================================================================================================================
 G_SpawnGEntityFromSpawnVars
 
-Spawn an entity and fill in all of the level fields from
-level.spawnVars[], then call the class specfic spawn function.
+Spawn an entity and fill in all of the level fields from level.spawnVars[], then call the class specfic spawn function.
 =======================================================================================================================================
 */
 void G_SpawnGEntityFromSpawnVars(void) {
 	int i;
 	gentity_t *ent;
+
 	// get the next free entity
 	ent = G_Spawn();
 
-	for (i = 0; i < level.numSpawnVars; i++)
+	for (i = 0; i < level.numSpawnVars; i++) {
 		G_ParseField(level.spawnVars[i][0], level.spawnVars[i][1], ent);
+	}
 
 	G_SpawnInt("notq3a", "0", &i);
 
@@ -434,13 +460,14 @@ void G_SpawnGEntityFromSpawnVars(void) {
 	VectorCopy(ent->s.origin, ent->s.pos.trBase);
 	VectorCopy(ent->s.origin, ent->r.currentOrigin);
 	// if we didn't get a classname, don't bother spawning anything
-	if (!G_CallSpawn(ent))
+	if (!G_CallSpawn(ent)) {
 		G_FreeEntity(ent);
+	}
 }
 
 /*
 =======================================================================================================================================
-G_AddSpawnVarToken.
+G_AddSpawnVarToken
 =======================================================================================================================================
 */
 char *G_AddSpawnVarToken(const char *string) {
@@ -449,11 +476,13 @@ char *G_AddSpawnVarToken(const char *string) {
 
 	l = strlen(string);
 
-	if (level.numSpawnVarChars + l + 1 > MAX_SPAWN_VARS_CHARS)
+	if (level.numSpawnVarChars + l + 1 > MAX_SPAWN_VARS_CHARS) {
 		G_Error("G_AddSpawnVarToken : MAX_SPAWN_CHARS");
+	}
 
 	dest = level.spawnVarChars + level.numSpawnVarChars;
-  memcpy(dest, string, l + 1);
+
+	memcpy(dest, string, l + 1);
 
 	level.numSpawnVarChars += l + 1;
 
@@ -464,9 +493,7 @@ char *G_AddSpawnVarToken(const char *string) {
 =======================================================================================================================================
 G_ParseSpawnVars
 
-Parses a brace bounded set of key / value pairs out of the
-level's entity strings into level.spawnVars[]
-
+Parses a brace bounded set of key / value pairs out of the level's entity strings into level.spawnVars[].
 This does not actually spawn an entity.
 =======================================================================================================================================
 */
@@ -482,25 +509,31 @@ qboolean G_ParseSpawnVars(void) {
 		return qfalse;
 	}
 
-	if (com_token[0] != '{')
+	if (com_token[0] != '{') {
 		G_Error("G_ParseSpawnVars : found %s when expecting {", com_token);
+	}
 	// go through all the key / value pairs
 	while (1) {
 		// parse key
-		if (!trap_GetEntityToken(keyname, sizeof(keyname)))
+		if (!trap_GetEntityToken(keyname, sizeof(keyname))) {
 			G_Error("G_ParseSpawnVars : EOF without closing brace");
+		}
 
-		if (keyname[0] == '}')
+		if (keyname[0] == '}') {
 			break;
+		}
 		// parse value
-		if (!trap_GetEntityToken(com_token, sizeof(com_token)))
+		if (!trap_GetEntityToken(com_token, sizeof(com_token))) {
 			G_Error("G_ParseSpawnVars : EOF without closing brace");
+		}
 
-		if (com_token[0] == '}')
+		if (com_token[0] == '}') {
 			G_Error("G_ParseSpawnVars : closing brace without data");
+		}
 
-		if (level.numSpawnVars == MAX_SPAWN_VARS)
+		if (level.numSpawnVars == MAX_SPAWN_VARS) {
 			G_Error("G_ParseSpawnVars : MAX_SPAWN_VARS");
+		}
 
 		level.spawnVars[level.numSpawnVars][0] = G_AddSpawnVarToken(keyname);
 		level.spawnVars[level.numSpawnVars][1] = G_AddSpawnVarToken(com_token);
@@ -522,8 +555,9 @@ void SP_worldspawn(void) {
 
 	G_SpawnString("classname", "", &s);
 
-	if (Q_stricmp(s, "worldspawn"))
+	if (Q_stricmp(s, "worldspawn")) {
 		G_Error("SP_worldspawn : The first entity isn't 'worldspawn'");
+	}
 	// make some data visible to connecting client
 	trap_SetConfigstring(CS_GAME_VERSION, GAME_VERSION);
 
@@ -533,18 +567,21 @@ void SP_worldspawn(void) {
 	trap_SetConfigstring(CS_MUSIC, s);
 
 	G_SpawnString("message", "", &s);
-	trap_SetConfigstring(CS_MESSAGE, s); 				// map specific message
+	trap_SetConfigstring(CS_MESSAGE, s); // map specific message
 
 	trap_SetConfigstring(CS_MOTD, g_motd.string); // message of the day
 
-	if (G_SpawnString("gravity", "", &s))
+	if (G_SpawnString("gravity", "", &s)) {
 		trap_Cvar_Set("g_gravity", s);
+	}
 
-	if (G_SpawnString("humanMaxStage", "", &s))
+	if (G_SpawnString("humanMaxStage", "", &s)) {
 		trap_Cvar_Set("g_humanMaxStage", s);
+	}
 
-	if (G_SpawnString("alienMaxStage", "", &s))
+	if (G_SpawnString("alienMaxStage", "", &s)) {
 		trap_Cvar_Set("g_alienMaxStage", s);
+	}
 
 	G_SpawnString("disabledEquipment", "", &s);
 	trap_Cvar_Set("g_disabledEquipment", s);
@@ -555,11 +592,12 @@ void SP_worldspawn(void) {
 	G_SpawnString("disabledBuildables", "", &s);
 	trap_Cvar_Set("g_disabledBuildables", s);
 
-  g_entities[ENTITYNUM_WORLD].s.number = ENTITYNUM_WORLD;
-  g_entities[ENTITYNUM_WORLD].classname = "worldspawn";
+	g_entities[ENTITYNUM_WORLD].s.number = ENTITYNUM_WORLD;
+	g_entities[ENTITYNUM_WORLD].classname = "worldspawn";
 
-	if (g_restarted.integer)
+	if (g_restarted.integer) {
 		trap_Cvar_Set("g_restarted", "0");
+	}
 	// see if we want a warmup time
 	trap_SetConfigstring(CS_WARMUP, " - 1");
 
@@ -578,16 +616,18 @@ Parses textual entity definitions out of an entstring and spawns gentities.
 =======================================================================================================================================
 */
 void G_SpawnEntitiesFromString(void) {
-	level.numSpawnVars = 0;
-	// the worldspawn is not an actual entity, but it still
-	// has a "spawn" function to perform any global setup
-	// needed by a level(setting configstrings or cvars, etc)
-	if (!G_ParseSpawnVars())
-		G_Error("SpawnEntities : no entities");
 
-  SP_worldspawn();
+	level.numSpawnVars = 0;
+	// the worldspawn is not an actual entity, but it still has a "spawn" function to perform any global setup
+	// needed by a level (setting configstrings or cvars, etc.)
+	if (!G_ParseSpawnVars()) {
+		G_Error("SpawnEntities : no entities");
+	}
+
+	SP_worldspawn();
 	// parse ents
-	while (G_ParseSpawnVars())
+	while (G_ParseSpawnVars()) {
 		G_SpawnGEntityFromSpawnVars();
+	}
 }
 

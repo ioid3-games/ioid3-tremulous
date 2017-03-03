@@ -19,7 +19,9 @@ You should have received a copy of the GNU General Public License
 along with Tremulous; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
+*/
 
+/*
  * File includes code from GNU binutils, exactly:
  * - include/opcode/ppc.h - licensed under GPL v1 or later
  * - opcodes/ppc-opc.c - licensed under GPL v2 or later
@@ -37,7 +39,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *   Written by Ian Lance Taylor, Cygnus Support
  *
  *   This file is part of GDB, GAS, and the GNU binutils.
- *
  */
 
 #include "vm_local.h"

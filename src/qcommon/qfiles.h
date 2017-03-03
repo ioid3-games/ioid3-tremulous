@@ -20,42 +20,40 @@ along with Tremulous; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
 =======================================================================================================================================
 */
+
+/**************************************************************************************************************************************
+ Quake file formats. This file must be identical in the quake and utils directories.
+**************************************************************************************************************************************/
+
 #ifndef __QFILES_H__
 #define __QFILES_H__
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-//
 // qfiles.h : quake file formats
 // this file must be identical in the quake and utils directories
-//
 
-// ignore __attribute__ on non - gcc platforms
+// Ignore __attribute__ on non-gcc platforms
 #ifndef __GNUC__
 #ifndef __attribute__
 #define __attribute__(x)
 #endif
 #endif
-
 // surface geometry should not exceed these limits
-#define SHADER_MAX_VERTEXES	1000
-#define SHADER_MAX_INDEXES	(6 * SHADER_MAX_VERTEXES)
-
-
+#define SHADER_MAX_VERTEXES 1000
+#define SHADER_MAX_INDEXES (6 * SHADER_MAX_VERTEXES)
 // the maximum size of game relative pathnames
-#define MAX_QPATH		64
+#define MAX_QPATH 64
 
 /*
 =======================================================================================================================================
 
-QVM files
+	QVM files
 =======================================================================================================================================
 */
 
-#define VM_MAGIC			0x12721444
-#define VM_MAGIC_VER2	0x12721445
+#define VM_MAGIC 0x12721444
+#define VM_MAGIC_VER2 0x12721445
 typedef struct {
 	int vmMagic;
 	int instructionCount;
@@ -63,34 +61,32 @@ typedef struct {
 	int codeLength;
 	int dataOffset;
 	int dataLength;
-	int litLength; 			// (dataLength - litLength) should be byteswapped on load
-	int bssLength; 			// zero filled memory appended to datalength
-
+	int litLength; // (dataLength - litLength) should be byteswapped on load
+	int bssLength; // zero filled memory appended to datalength
 	// !!! below here is VM_MAGIC_VER2 !!!
-	int jtrgLength; 			// number of jump table targets
+	int jtrgLength; // number of jump table targets
 } vmHeader_t;
 
 /*
 =======================================================================================================================================
 
-.MD3 triangle model file format
+	.MD3 triangle model file format
+
 =======================================================================================================================================
 */
 
-#define MD3_IDENT			(('3' << 24) + ('P' << 16) + ('D' << 8) + 'I')
-#define MD3_VERSION			15
-
+#define MD3_IDENT (('3' << 24) + ('P' << 16) + ('D' << 8) + 'I')
+#define MD3_VERSION 15
 // limits
-#define MD3_MAX_LODS		3
-#define MD3_MAX_TRIANGLES	8192	// per surface
-#define MD3_MAX_VERTS		4096	// per surface
-#define MD3_MAX_SHADERS		256		// per surface
-#define MD3_MAX_FRAMES		1024	// per model
-#define MD3_MAX_SURFACES	32		// per model
-#define MD3_MAX_TAGS		16		// per frame
-
+#define MD3_MAX_LODS 3
+#define MD3_MAX_TRIANGLES 8192 // per surface
+#define MD3_MAX_VERTS 4096 // per surface
+#define MD3_MAX_SHADERS 256 // per surface
+#define MD3_MAX_FRAMES 1024 // per model
+#define MD3_MAX_SURFACES 32 // per model
+#define MD3_MAX_TAGS 16 // per frame
 // vertex scales
-#define MD3_XYZ_SCALE		(1.0 / 64)
+#define MD3_XYZ_SCALE (1.0 / 64)
 
 typedef struct md3Frame_s {
 	vec3_t bounds[2];
@@ -104,39 +100,34 @@ typedef struct md3Tag_s {
 	vec3_t origin;
 	vec3_t axis[3];
 } md3Tag_t;
-
 /*
- * * md3Surface_t
- * *
- * * CHUNK			SIZE
- * * header			sizeof(md3Surface_t)
- * * shaders			sizeof(md3Shader_t) * numShaders
- * * triangles[0]		sizeof(md3Triangle_t) * numTriangles
- * * st				sizeof(md3St_t) * numVerts
- * * XyzNormals		sizeof(md3XyzNormal_t) * numVerts * numFrames
+** md3Surface_t
+**
+** CHUNK			SIZE
+** header			sizeof(md3Surface_t)
+** shaders			sizeof(md3Shader_t) * numShaders
+** triangles[0]		sizeof(md3Triangle_t) * numTriangles
+** st				sizeof(md3St_t) * numVerts
+** XyzNormals		sizeof(md3XyzNormal_t) * numVerts * numFrames
 */
 typedef struct {
-	int ident; 				//
-
-	char name[MAX_QPATH]; // polyset name
-
+	int ident;
+	char name[MAX_QPATH];	// polyset name
 	int flags;
-	int numFrames; 			// all surfaces in a model should have the same
-
-	int numShaders; 			// all surfaces in a model should have the same
+	int numFrames;			// all surfaces in a model should have the same
+	int numShaders;			// all surfaces in a model should have the same
 	int numVerts;
 	int numTriangles;
 	int ofsTriangles;
-	int ofsShaders; 			// offset from start of md3Surface_t
-	int ofsSt; 				// texture coords are common for all frames
-	int ofsXyzNormals; // numVerts * numFrames
-
-	int ofsEnd; 				// next surface follows
+	int ofsShaders;			// offset from start of md3Surface_t
+	int ofsSt;				// texture coords are common for all frames
+	int ofsXyzNormals;		// numVerts * numFrames
+	int ofsEnd;				// next surface follows
 } md3Surface_t;
 
 typedef struct {
 	char name[MAX_QPATH];
-	int shaderIndex; // for in - game use
+	int shaderIndex; // for in-game use
 } md3Shader_t;
 
 typedef struct {
@@ -155,25 +146,24 @@ typedef struct {
 typedef struct {
 	int ident;
 	int version;
-
-	char name[MAX_QPATH]; // model name
-
+	char name[MAX_QPATH];	// model name
 	int flags;
 	int numFrames;
 	int numTags;
 	int numSurfaces;
 	int numSkins;
-	int ofsFrames; 			// offset for first frame
-	int ofsTags; 			// numFrames * numTags
-	int ofsSurfaces; // first surface, others follow
-
-	int ofsEnd; 				// end of file
+	int ofsFrames;			// offset for first frame
+	int ofsTags;			// numFrames * numTags
+	int ofsSurfaces;		// first surface, others follow
+	int ofsEnd;				// end of file
 } md3Header_t;
 
 /*
 =======================================================================================================================================
 
-MDR file format
+	MDR file format
+´
+
 =======================================================================================================================================
 */
 
@@ -181,7 +171,7 @@ MDR file format
  * Here are the definitions for Ravensoft's model format of md4. Raven stores their
  * playermodels in .mdr files, in some games, which are pretty much like the md4
  * format implemented by ID soft. It seems like ID's original md4 stuff is not used at all.
- * MDR is being used in EliteForce, JediKnight2 and Soldiers of Fortune2(I think).
+ * MDR is being used in EliteForce, JediKnight2 and Soldiers of Fortune2 (I think).
  * So this comes in handy for anyone who wants to make it possible to load player
  * models from these games.
  * This format has bone tags, which is similar to the thing you have in md3 I suppose.
@@ -189,16 +179,16 @@ MDR file format
  * to this codebase. Thanks to Steven Howes aka Skinner for helping with example
  * source code.
  *
- * -Thilo Schulz(arny@ats.s.bawue.de)
+ * - Thilo Schulz (arny@ats.s.bawue.de)
  */
 
-#define MDR_IDENT	(('5' << 24) + ('M' << 16) + ('D' << 8) + 'R')
-#define MDR_VERSION	2
-#define MDR_MAX_BONES	128
+#define MDR_IDENT (('5' << 24) + ('M' << 16) + ('D' << 8) + 'R')
+#define MDR_VERSION 2
+#define MDR_MAX_BONES 128
 
 typedef struct {
-	int boneIndex; // these are indexes into the boneReferences,
-	float  boneWeight; // not the global per - frame bone list
+	int boneIndex;		// these are indexes into the boneReferences,
+	float boneWeight;	// not the global per-frame bone list
 	vec3_t offset;
 } mdrWeight_t;
 
@@ -215,13 +205,10 @@ typedef struct {
 
 typedef struct {
 	int ident;
-
-	char name[MAX_QPATH]; // polyset name
+	char name[MAX_QPATH];	// polyset name
 	char shader[MAX_QPATH];
-	int shaderIndex; // for in - game use
-
-	int ofsHeader; // this will be a negative number
-
+	int shaderIndex;		// for in-game use
+	int ofsHeader;			// this will be a negative number
 	int numVerts;
 	int ofsVerts;
 	int numTriangles;

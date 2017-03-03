@@ -484,8 +484,9 @@ static int LAN_CompareServers(int source, int sortKey, int sortDir, int s1, int 
 				int i;
 
 				for (p = server1->hostName, i = 0; *p != '\0'; p++) {
-					if (Q_isalpha(*p))
+					if (Q_isalpha(*p)) {
 						hostName1[i++] = *p;
+					}
 				}
 
 				hostName1[i] = '\0';
@@ -1029,6 +1030,7 @@ CL_ShutdownUI
 =======================================================================================================================================
 */
 void CL_ShutdownUI(void) {
+
 	Key_SetCatcher(Key_GetCatcher() & ~KEYCATCH_UI);
 	cls.uiStarted = qfalse;
 
@@ -1050,6 +1052,7 @@ CL_InitUI
 
 void CL_InitUI(void) {
 	int v;
+
 	vmInterpret_t i = Cvar_VariableValue("vm_ui");
 
 	if (cl_connectedToPureServer) {

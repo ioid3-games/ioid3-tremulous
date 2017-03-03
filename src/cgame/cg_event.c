@@ -21,8 +21,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
 =======================================================================================================================================
 */
 
-// cg_event.c--handle entity events at snapshot or playerstate transitions
-
+/**************************************************************************************************************************************
+ Handle entity events at snapshot or playerstate transitions.
+**************************************************************************************************************************************/
 
 #include "cg_local.h"
 
@@ -76,16 +77,16 @@ void CG_AddToKillMsg(const char *killername, const char *victimname, int icon) {
 //			cgs.killMsgMsgTimes[index] = cg.time;
 			k = cgs.killMsgKillers[index];
 			*k = 0;
-			*k+ += Q_COLOR_ESCAPE;
-			*k+ += lastcolor;
+			*k++ = Q_COLOR_ESCAPE;
+			*k++ = lastcolor;
 			klen = 0;
 			kls = NULL;
 		}
 
 		if (Q_IsColorString(killername)) {
-			*k+ += *killername++;
+			*k++ = *killername++;
 			lastcolor = *killername;
-			*k+ += *killername++;
+			*k++ = *killername++;
 			continue;
 		}
 
@@ -93,7 +94,7 @@ void CG_AddToKillMsg(const char *killername, const char *victimname, int icon) {
 			kls = k;
 		}
 
-		*k+ += *killername++;
+		*k++ = *killername++;
 		klen++;
 	}
 	// victims name
@@ -109,16 +110,16 @@ void CG_AddToKillMsg(const char *killername, const char *victimname, int icon) {
 				*v = 0;
 				v = cgs.killMsgVictims[index];
 				*v = 0;
-				*v+ += Q_COLOR_ESCAPE;
-				*v+ += lastcolor;
+				*v++ = Q_COLOR_ESCAPE;
+				*v++ = lastcolor;
 				vlen = 0;
 				vls = NULL;
 			}
 
 			if (Q_IsColorString(victimname)) {
-				*v+ += *victimname++;
+				*v++ = *victimname++;
 				lastcolor = *victimname;
-				*v+ += *victimname++;
+				*v++ = *victimname++;
 				continue;
 			}
 
@@ -126,7 +127,7 @@ void CG_AddToKillMsg(const char *killername, const char *victimname, int icon) {
 				vls = v;
 			}
 
-			*v+ += *victimname++;
+			*v++ = *victimname++;
 			vlen++;
 		}
 	}
@@ -141,7 +142,7 @@ void CG_AddToKillMsg(const char *killername, const char *victimname, int icon) {
 
 /*
 =======================================================================================================================================
-CG_Obituary.
+CG_Obituary
 =======================================================================================================================================
 */
 static void CG_Obituary(entityState_t *ent) {
@@ -164,7 +165,7 @@ static void CG_Obituary(entityState_t *ent) {
 	mod = ent->eventParm;
 
 	if (target < 0 || target >= MAX_CLIENTS) {
-		CG_Error("CG_Obituary : target out of range");
+		CG_Error("CG_Obituary: target out of range");
 	}
 
 	ci = &cgs.clientinfo[target];
@@ -919,7 +920,7 @@ void CG_EntityEvent(centity_t *cent, vec3_t position) {
 
 			break;
 		case EV_PAIN:
-			// local player sounds are triggered in CG_CheckLocalSounds, // so ignore events on the player
+			// local player sounds are triggered in CG_CheckLocalSounds, so ignore events on the player
 			if (cent->currentState.number != cg.snap->ps.clientNum) {
 				CG_PainEvent(cent, es->eventParm);
 			}
@@ -1053,7 +1054,7 @@ void CG_CheckEvents(centity_t *cent) {
 	entity_event_t event;
 	entity_event_t oldEvent = EV_NONE;
 
-	// check for event - only entities
+	// check for event-only entities
 	if (cent->currentState.eType > ET_EVENTS) {
 		event = cent->currentState.eType - ET_EVENTS;
 

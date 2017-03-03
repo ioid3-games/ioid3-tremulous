@@ -21,10 +21,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
 =======================================================================================================================================
 */
 
-// cl_cgame.c--client system interaction with client game
+/**************************************************************************************************************************************
+ Client system interaction with client game.
+**************************************************************************************************************************************/
 
 #include "client.h"
-
 #ifdef USE_MUMBLE
 #include "libmumblelink.h"
 #endif
@@ -98,7 +99,7 @@ qboolean CL_GetParseEntityState(int parseEntityNumber, entityState_t *state) {
 		return qfalse;
 	}
 
-	*state = cl.parseEntities[parseEntityNumber &(MAX_PARSE_ENTITIES - 1)];
+	*state = cl.parseEntities[parseEntityNumber & (MAX_PARSE_ENTITIES - 1)];
 	return qtrue;
 }
 
@@ -143,7 +144,9 @@ qboolean CL_GetSnapshot(int snapshotNumber, snapshot_t *snapshot) {
 	snapshot->serverCommandSequence = clSnap->serverCommandNum;
 	snapshot->ping = clSnap->ping;
 	snapshot->serverTime = clSnap->serverTime;
+
 	Com_Memcpy(snapshot->areamask, clSnap->areamask, sizeof(snapshot->areamask));
+
 	snapshot->ps = clSnap->ps;
 	count = clSnap->numEntities;
 
@@ -155,10 +158,9 @@ qboolean CL_GetSnapshot(int snapshotNumber, snapshot_t *snapshot) {
 	snapshot->numEntities = count;
 
 	for (i = 0; i < count; i++) {
-		snapshot->entities[i] = cl.parseEntities[(clSnap->parseEntitiesNum + i) &(MAX_PARSE_ENTITIES - 1)];
+		snapshot->entities[i] = cl.parseEntities[(clSnap->parseEntitiesNum + i) & (MAX_PARSE_ENTITIES - 1)];
 	}
 	// FIXME: configstring changes and server commands!!!
-
 	return qtrue;
 }
 
@@ -230,7 +232,9 @@ void CL_ConfigstringModified(void) {
 		}
 		// append it to the gameState string buffer
 		cl.gameState.stringOffsets[i] = cl.gameState.dataCount;
+
 		Com_Memcpy(cl.gameState.stringData + cl.gameState.dataCount, dup, len + 1);
+
 		cl.gameState.dataCount += len + 1;
 	}
 
@@ -244,7 +248,7 @@ void CL_ConfigstringModified(void) {
 =======================================================================================================================================
 CL_GetServerCommand
 
-Set up argc / argv for the given command.
+Set up argc/argv for the given command.
 =======================================================================================================================================
 */
 qboolean CL_GetServerCommand(int serverCommandNumber) {
@@ -255,8 +259,8 @@ qboolean CL_GetServerCommand(int serverCommandNumber) {
 
 	// if we have irretrievably lost a reliable command, drop the connection
 	if (serverCommandNumber <= clc.serverCommandSequence - MAX_RELIABLE_COMMANDS) {
-		// when a demo record was started after the client got a whole bunch of
-		// reliable commands then the client never got those first reliable commands
+		// when a demo record was started after the client got a whole bunch of reliable commands then the client never got those first
+		// reliable commands
 		if (clc.demoplaying) {
 			return qfalse;
 		}
@@ -270,7 +274,7 @@ qboolean CL_GetServerCommand(int serverCommandNumber) {
 		return qfalse;
 	}
 
-	s = clc.serverCommands[serverCommandNumber &(MAX_RELIABLE_COMMANDS - 1)];
+	s = clc.serverCommands[serverCommandNumber & (MAX_RELIABLE_COMMANDS - 1)];
 	clc.lastExecutedServerCommand = serverCommandNumber;
 
 	Com_DPrintf("serverCommand: %i : %s\n", serverCommandNumber, s);
@@ -281,7 +285,7 @@ rescan:
 	argc = Cmd_Argc();
 
 	if (!strcmp(cmd, "disconnect")) {
-		// https:// zerowing.idsoftware.com / bugzilla / show_bug.cgi?id = 552
+		// https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=552
 		// allow server to indicate why they were disconnected
 		if (argc >= 2) {
 			Com_Error(ERR_SERVERDISCONNECT, "Server disconnected - %s", Cmd_Argv(1));
@@ -327,22 +331,18 @@ rescan:
 	}
 
 	if (!strcmp(cmd, "map_restart")) {
-		// clear notify lines and outgoing commands before passing
-		// the restart to the cgame
+		// clear notify lines and outgoing commands before passing the restart to the cgame
 		Con_ClearNotify();
 		// reparse the string, because Con_ClearNotify() may have done another Cmd_TokenizeString()
 		Cmd_TokenizeString(s);
 		Com_Memset(cl.cmds, 0, sizeof(cl.cmds));
 		return qtrue;
 	}
-	// the clientLevelShot command is used during development
-	// to generate 128 * 128 screenshots from the intermission
+	// the clientLevelShot command is used during development to generate 128 * 128 screenshots from the intermission
 	// point of levels for the menu system to use
-	// we pass it along to the cgame to make apropriate adjustments,
-	// but we also clear the console and notify lines here
+	// we pass it along to the cgame to make appropriate adjustments, but we also clear the console and notify lines here
 	if (!strcmp(cmd, "clientLevelShot")) {
-		// don't do it if we aren't running the server locally, // otherwise malicious remote servers could overwrite
-		// the existing thumbnails
+		// don't do it if we aren't running the server locally, otherwise malicious remote servers could overwrite the existing thumbnails
 		if (!com_sv_running->integer) {
 			return qfalse;
 		}
@@ -373,10 +373,11 @@ void CL_CM_LoadMap(const char *mapname) {
 
 /*
 =======================================================================================================================================
-CL_ShutdonwCGame
+CL_ShutdownCGame
 =======================================================================================================================================
 */
 void CL_ShutdownCGame(void) {
+
 	Key_SetCatcher(Key_GetCatcher() & ~KEYCATCH_CGAME);
 	cls.cgameStarted = qfalse;
 
@@ -471,10 +472,9 @@ intptr_t CL_CgameSystemCalls(intptr_t *args) {
 			return 0;
 		case CG_UPDATESCREEN:
 			// this is used during lengthy level loading, so pump message loop
-// 			Com_EventLoop(); // FIXME: if a server restarts here, BAD THINGS HAPPEN!
-// we can't call Com_EventLoop here, a restart will crash and this _does_ happen
-// if there is a map change while we are downloading at pk3.
-// ZOID
+			// Com_EventLoop(); // FIXME: if a server restarts here, BAD THINGS HAPPEN!
+			// we can't call Com_EventLoop here, a restart will crash and this _does_ happen
+			// if there is a map change while we are downloading at pk3.
 			SCR_UpdateScreen();
 			return 0;
 		case CG_CM_LOADMAP:
@@ -718,7 +718,7 @@ intptr_t CL_CgameSystemCalls(intptr_t *args) {
 			return re.inPVS(VMA(1), VMA(2));
 		default:
 			assert(0);
-			Com_Error(ERR_DROP, "Bad cgame system trap: %ld", (long int) args[0]);
+			Com_Error(ERR_DROP, "Bad cgame system trap: %ld", (long int)args[0]);
 	}
 
 	return 0;
@@ -760,8 +760,7 @@ void CL_InitCGame(void) {
 
 	clc.state = CA_LOADING;
 	// init for this gamestate
-	// use the lastExecutedServerCommand instead of the serverCommandSequence
-	// otherwise server commands sent just before a gamestate are dropped
+	// use the lastExecutedServerCommand instead of the serverCommandSequence otherwise server commands sent just before a gamestate are dropped
 	VM_Call(cgvm, CG_INIT, clc.serverMessageSequence, clc.lastExecutedServerCommand, clc.clientNum);
 	// reset any CVAR_CHEAT cvars registered by cgame
 	if (!clc.demoplaying && !cl_connectedToCheatServer) {
@@ -838,8 +837,7 @@ Adjustments are only made when a new snapshot arrives with a rational latency, w
 and prevents massive overadjustment during times of significant packet loss or bursted delayed packets.
 =======================================================================================================================================
 */
-
-#define RESET_TIME	500
+#define RESET_TIME 500
 
 void CL_AdjustTimeDelta(void) {
 	int newDelta;
@@ -860,21 +858,20 @@ void CL_AdjustTimeDelta(void) {
 		cl.serverTime = cl.snap.serverTime;
 
 		if (cl_showTimeDelta->integer) {
-			Com_Printf("<RESET>");
+			Com_Printf("<RESET> ");
 		}
 	} else if (deltaDelta > 100) {
 		// fast adjust, cut the difference in half
 		if (cl_showTimeDelta->integer) {
-			Com_Printf("<FAST>");
+			Com_Printf("<FAST> ");
 		}
 
 		cl.serverTimeDelta = (cl.serverTimeDelta + newDelta) >> 1;
 	} else {
 		// slow drift adjust, only move 1 or 2 msec
 
-		// if any of the frames between this and the previous snapshot
-		// had to be extrapolated, nudge our sense of time back a little
-		// the granularity of + 1 / - 2 is too high for timescale modified frametimes
+		// if any of the frames between this and the previous snapshot had to be extrapolated, nudge our sense of time back a little
+		// the granularity of +1 / -2 is too high for timescale modified frametimes
 		if (com_timescale->value == 0 || com_timescale->value == 1) {
 			if (cl.extrapolatedSnapshot) {
 				cl.extrapolatedSnapshot = qfalse;
@@ -897,6 +894,7 @@ CL_FirstSnapshot
 =======================================================================================================================================
 */
 void CL_FirstSnapshot(void) {
+
 	// ignore snapshots that don't have entities
 	if (cl.snap.snapFlags & SNAPFLAG_NOT_ACTIVE) {
 		return;
@@ -908,8 +906,8 @@ void CL_FirstSnapshot(void) {
 	cl.oldServerTime = cl.snap.serverTime;
 
 	clc.timeDemoBaseTime = cl.snap.serverTime;
-	// if this is the first frame of active play, execute the contents of activeAction now
-	// this is to allow scripting a timedemo to start right after loading
+	// if this is the first frame of active play, execute the contents of activeAction now this is to allow scripting a timedemo to
+	// start right after loading
 	if (cl_activeAction->string[0]) {
 		Cbuf_AddText(cl_activeAction->string);
 		Cvar_Set("activeAction", "");
@@ -917,7 +915,7 @@ void CL_FirstSnapshot(void) {
 #ifdef USE_MUMBLE
 	if ((cl_useMumble->integer) && !mumble_islinked()) {
 		int ret = mumble_link(CLIENT_WINDOW_TITLE);
-		Com_Printf("Mumble: Linking to Mumble application %s\n", ret == 0?"ok":"failed");
+		Com_Printf("Mumble: Linking to Mumble application %s\n", ret == 0 ? "ok" : "failed");
 	}
 #endif
 #ifdef USE_VOIP
@@ -928,7 +926,7 @@ void CL_FirstSnapshot(void) {
 		clc.opusEncoder = opus_encoder_create(48000, 1, OPUS_APPLICATION_VOIP, &error);
 
 		if (error) {
-			Com_DPrintf("VoIP : Error opus_encoder_create %d\n", error);
+			Com_DPrintf("VoIP: Error opus_encoder_create %d\n", error);
 			return;
 		}
 
@@ -946,6 +944,7 @@ void CL_FirstSnapshot(void) {
 
 		clc.voipCodecInitialized = qtrue;
 		clc.voipMuteAll = qfalse;
+
 		Cmd_AddCommand("voip", CL_Voip_f);
 		Cvar_Set("cl_voipSendTarget", "spatial");
 		Com_Memset(clc.voipTargets, ~0, sizeof(clc.voipTargets));
@@ -967,8 +966,7 @@ void CL_SetCGameTime(void) {
 		}
 
 		if (clc.demoplaying) {
-			// we shouldn't get the first snapshot on the same frame
-			// as the gamestate, because it causes a bad time skip
+			// we shouldn't get the first snapshot on the same frame as the gamestate, because it causes a bad time skip
 			if (!clc.firstDemoFrameSkipped) {
 				clc.firstDemoFrameSkipped = qtrue;
 				return;
@@ -1004,10 +1002,8 @@ void CL_SetCGameTime(void) {
 	// get our current view of time
 	if (clc.demoplaying && cl_freezeDemo->integer) {
 		// cl_freezeDemo is used to lock a demo in place for single frame advances
-
 	} else {
-		// cl_timeNudge is a user adjustable cvar that allows more
-		// or less latency to be added in the interest of better 
+		// cl_timeNudge is a user adjustable cvar that allows more or less latency to be added in the interest of better
 		// smoothness or better responsiveness.
 		int tn;
 
@@ -1040,14 +1036,11 @@ void CL_SetCGameTime(void) {
 	if (!clc.demoplaying) {
 		return;
 	}
-	// if we are playing a demo back, we can just keep reading
-	// messages from the demo file until the cgame definately
+	// if we are playing a demo back, we can just keep reading messages from the demo file until the cgame definitely
 	// has valid snapshots to interpolate between
 
-	// a timedemo will always use a deterministic set of time samples
-	// no matter what speed machine it is run on,
-	// while a normal demo may have different time samples
-	// each time it is played back
+	// a timedemo will always use a deterministic set of time samples no matter what speed machine it is run on,
+	// while a normal demo may have different time samples each time it is played back
 	if (cl_timedemo->integer) {
 		int now = Sys_Milliseconds();
 		int frameDuration;
@@ -1074,7 +1067,7 @@ void CL_SetCGameTime(void) {
 				frameDuration = UCHAR_MAX;
 			}
 
-			clc.timeDemoDurations[(clc.timeDemoFrames - 1) %MAX_TIMEDEMO_DURATIONS] = frameDuration;
+			clc.timeDemoDurations[(clc.timeDemoFrames - 1) % MAX_TIMEDEMO_DURATIONS] = frameDuration;
 		}
 
 		clc.timeDemoFrames++;
@@ -1082,8 +1075,7 @@ void CL_SetCGameTime(void) {
 	}
 
 	while (cl.serverTime >= cl.snap.serverTime) {
-		// feed another messag, which should change
-		// the contents of cl.snap
+		// feed another message, which should change the contents of cl.snap
 		CL_ReadDemoMessage();
 
 		if (clc.state != CA_ACTIVE) {
@@ -1091,6 +1083,4 @@ void CL_SetCGameTime(void) {
 		}
 	}
 }
-
-
 

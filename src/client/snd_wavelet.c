@@ -28,13 +28,20 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
 #define C2 0.2241438680420134
 #define C3 - 0.1294095225512604
 
+/*
+=======================================================================================================================================
+daub4
+=======================================================================================================================================
+*/
 void daub4(float b[], unsigned long n, int isign) {
 	float wksp[4097] = {0.0f};
-	float *a = b - 1; 						// numerical recipies so a[1] = b[0]
+	float *a = b - 1; // numerical recipies so a[1] = b[0]
 
 	unsigned long nh, nh1, i, j;
 
-	if (n < 4) return;
+	if (n < 4) {
+		return;
+	}
 
 	nh1 = (nh = n >> 1) + 1;
 
@@ -61,11 +68,18 @@ void daub4(float b[], unsigned long n, int isign) {
 	}
 }
 
+/*
+=======================================================================================================================================
+wt1
+=======================================================================================================================================
+*/
 void wt1(float a[], unsigned long n, int isign) {
 	unsigned long nn;
 	int inverseStartLength = n / 4;
 
-	if (n < inverseStartLength) return;
+	if (n < inverseStartLength) {
+		return;
+	}
 
 	if (isign >= 0) {
 		for (nn = n; nn >= inverseStartLength; nn >>= 1) daub4(a, nn, isign);
@@ -76,7 +90,7 @@ void wt1(float a[], unsigned long n, int isign) {
 
 /* The number of bits required by each value */
 static unsigned char numBits[] = {
-   0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+	0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
 	 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
 	 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
 	 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
@@ -86,32 +100,48 @@ static unsigned char numBits[] = {
 	 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
 };
 
+/*
+=======================================================================================================================================
+MuLawEncode
+=======================================================================================================================================
+*/
 byte MuLawEncode(short s) {
 	unsigned long adjusted;
 	byte sign, exponent, mantissa;
 
-	sign = (s < 0)?0:0x80;
+	sign = (s < 0) ? 0 : 0x80;
 
-	if (s < 0) s = -s;
+	if (s < 0) {
+		s = -s;
+	}
+
 	adjusted = (long)s << (16 - sizeof(short) * 8);
 	adjusted += 128L + 4L;
 
-	if (adjusted > 32767) adjusted = 32767;
-	exponent = numBits[(adjusted >> 7)&0xff] - 1;
-	mantissa = (adjusted >> (exponent + 3))&0xf;
+	if (adjusted > 32767) {
+		adjusted = 32767;
+	}
+
+	exponent = numBits[(adjusted >> 7) & 0xff] - 1;
+	mantissa = (adjusted >> (exponent + 3)) & 0xf;
 	return ~(sign|(exponent << 4)|mantissa);
 }
 
+/*
+=======================================================================================================================================
+MuLawDecode
+=======================================================================================================================================
+*/
 short MuLawDecode(byte uLaw) {
 	signed long adjusted;
 	byte exponent, mantissa;
 
 	uLaw = ~uLaw;
 	exponent = (uLaw >> 4) & 0x7;
-	mantissa = (uLaw&0xf) + 16;
+	mantissa = (uLaw & 0xf) + 16;
 	adjusted = (mantissa << (exponent + 3)) - 128 - 4;
 
-	return (uLaw & 0x80)? adjusted : - adjusted;
+	return (uLaw & 0x80) ? adjusted : - adjusted;
 }
 
 short mulawToShort[256];
@@ -119,11 +149,20 @@ static qboolean madeTable = qfalse;
 
 static int NXStreamCount;
 
+/*
+=======================================================================================================================================
+NXPutc
+=======================================================================================================================================
+*/
 void NXPutc(NXStream *stream, char out) {
 	stream[NXStreamCount++] = out;
 }
 
-
+/*
+=======================================================================================================================================
+encodeWavelet
+=======================================================================================================================================
+*/
 void encodeWavelet(sfx_t *sfx, short *packets) {
 	float wksp[4097] = {0},temp;
 	int i, samples, size;
@@ -139,7 +178,6 @@ void encodeWavelet(sfx_t *sfx, short *packets) {
 	}
 
 	chunk = NULL;
-
 	samples = sfx->soundLength;
 
 	while (samples > 0) {
@@ -174,7 +212,12 @@ void encodeWavelet(sfx_t *sfx, short *packets) {
 		for (i = 0; i < size; i++) {
 			temp = wksp[i];
 
-			if (temp > 32767) temp = 32767; else if (temp < -32768) temp = -32768;
+			if (temp > 32767) {
+				temp = 32767;
+			} else if (temp < -32768) {
+				temp = -32768;
+			}
+
 			out[i] = MuLawEncode((short)temp);
 		}
 
@@ -183,6 +226,11 @@ void encodeWavelet(sfx_t *sfx, short *packets) {
 	}
 }
 
+/*
+=======================================================================================================================================
+decodeWavelet
+=======================================================================================================================================
+*/
 void decodeWavelet(sndBuffer *chunk, short *to) {
 	float wksp[4097] = {0};
 	int i;
@@ -197,14 +245,20 @@ void decodeWavelet(sndBuffer *chunk, short *to) {
 
 	wt1(wksp, size, -1);
 
-	if (!to) return;
+	if (!to) {
+		return;
+	}
 
 	for (i = 0; i < size; i++) {
 		to[i] = wksp[i];
 	}
 }
 
-
+/*
+=======================================================================================================================================
+encodeMuLaw
+=======================================================================================================================================
+*/
 void encodeMuLaw(sfx_t *sfx, short *packets) {
 	int i, samples, size, grade, poop;
 	sndBuffer *newchunk, *chunk;
@@ -259,6 +313,11 @@ void encodeMuLaw(sfx_t *sfx, short *packets) {
 	}
 }
 
+/*
+=======================================================================================================================================
+decodeMuLaw
+=======================================================================================================================================
+*/
 void decodeMuLaw(sndBuffer *chunk, short *to) {
 	int i;
 	byte *out;
@@ -270,5 +329,3 @@ void decodeMuLaw(sndBuffer *chunk, short *to) {
 		to[i] = mulawToShort[out[i]];
 	}
 }
-
-

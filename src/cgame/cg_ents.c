@@ -21,8 +21,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
 =======================================================================================================================================
 */
 
-// cg_ents.c--present snapshot entities, happens every single frame
-
+/**************************************************************************************************************************************
+ Present snapshot entities, happens every single frame.
+**************************************************************************************************************************************/
 
 #include "cg_local.h"
 
@@ -139,8 +140,7 @@ void CG_PositionEntityOnTag(refEntity_t *entity, const refEntity_t *parent, qhan
 =======================================================================================================================================
 CG_PositionRotatedEntityOnTag
 
-Modifies the entities position and axis by the given
-tag location.
+Modifies the entities position and axis by the given tag location.
 =======================================================================================================================================
 */
 void CG_PositionRotatedEntityOnTag(refEntity_t *entity, const refEntity_t *parent, qhandle_t parentModel, char *tagName) {
@@ -148,7 +148,7 @@ void CG_PositionRotatedEntityOnTag(refEntity_t *entity, const refEntity_t *paren
 	orientation_t lerped;
 	vec3_t tempAxis[3];
 
-	// axisClear(entity->axis);
+	//AxisClear(entity->axis);
 	// lerp the tag
 	trap_R_LerpTag(&lerped, parentModel, parent->oldframe, parent->frame, 1.0 - parent->backlerp, tagName);
 	// FIXME: allow origin offsets along tag?
@@ -244,7 +244,7 @@ static void CG_EntityEffects(centity_t *cent) {
 
 /*
 =======================================================================================================================================
-CG_General.
+CG_General
 =======================================================================================================================================
 */
 static void CG_General(centity_t *cent) {
@@ -269,7 +269,7 @@ static void CG_General(centity_t *cent) {
 	ent.hModel = cgs.gameModels[s1->modelindex];
 	// player model
 	if (s1->number == cg.snap->ps.clientNum) {
-		ent.renderfx|= RF_THIRD_PERSON; // only draw from mirrors
+		ent.renderfx |= RF_THIRD_PERSON; // only draw from mirrors
 	}
 	// convert angles to axis
 	AnglesToAxis(cent->lerpAngles, ent.axis);
@@ -349,7 +349,7 @@ static void CG_WeaponDrop(centity_t *cent) {
 	VectorScale(ent.axis[2], 1.5, ent.axis[2]);
 	ent.nonNormalizedAxes = qtrue;
 #ifdef MISSIONPACK
-	trap_S_AddLoopingSound(cent->currentState.number, cent->lerpOrigin, vec3_origin, cgs.media.weaponHoverSound);
+		trap_S_AddLoopingSound(cent->currentState.number, cent->lerpOrigin, vec3_origin, cgs.media.weaponHoverSound);
 #endif
 	// add to refresh list
 	trap_R_AddRefEntityToScene(&ent);
@@ -609,8 +609,7 @@ static void CG_Portal(centity_t *cent) {
 	VectorCopy(s1->origin2, ent.oldorigin);
 	ByteToDir(s1->eventParm, ent.axis[0]);
 	PerpendicularVector(ent.axis[1], ent.axis[0]);
-	// negating this tends to get the directions like they want
-	// we really should have a camera roll value
+	// negating this tends to get the directions like they want we really should have a camera roll value
 	VectorSubtract(vec3_origin, ent.axis[1], ent.axis[1]);
 	CrossProduct(ent.axis[0], ent.axis[1], ent.axis[2]);
 
@@ -866,7 +865,7 @@ void CG_AdjustPositionForMover(const vec3_t in, int moverNum, int fromTime, int 
 
 /*
 =======================================================================================================================================
-CG_InterpolateEntityPosition.
+CG_InterpolateEntityPosition
 =======================================================================================================================================
 */
 static void CG_InterpolateEntityPosition(centity_t *cent) {
@@ -875,7 +874,7 @@ static void CG_InterpolateEntityPosition(centity_t *cent) {
 
 	// it would be an internal error to find an entity that interpolates without a snapshot ahead of the current one
 	if (cg.nextSnap == NULL) {
-		CG_Error("CG_InterpoateEntityPosition : cg.nextSnap == NULL");
+		CG_Error("CG_InterpoateEntityPosition: cg.nextSnap == NULL");
 	}
 
 	f = cg.frameInterpolation;
@@ -893,7 +892,6 @@ static void CG_InterpolateEntityPosition(centity_t *cent) {
 	cent->lerpAngles[0] = LerpAngle(current[0], next[0], f);
 	cent->lerpAngles[1] = LerpAngle(current[1], next[1], f);
 	cent->lerpAngles[2] = LerpAngle(current[2], next[2], f);
-
 }
 
 /*
@@ -902,9 +900,9 @@ CG_CalcEntityLerpPositions
 =======================================================================================================================================
 */
 static void CG_CalcEntityLerpPositions(centity_t *cent) {
-
 	// this will be set to how far forward projectiles will be extrapolated
 	int timeshift = 0;
+
 	// if this player does not want to see extrapolated players
 	if (!cg_smoothClients.integer) {
 		// make sure the clients use TR_INTERPOLATE
@@ -918,8 +916,7 @@ static void CG_CalcEntityLerpPositions(centity_t *cent) {
 		CG_InterpolateEntityPosition(cent);
 		return;
 	}
-	// first see if we can interpolate between two snaps for
-	// linear extrapolated clients
+	// first see if we can interpolate between two snaps for linear extrapolated clients
 	if (cent->interpolate && cent->currentState.pos.trType == TR_LINEAR_STOP && cent->currentState.number < MAX_CLIENTS) {
 		CG_InterpolateEntityPosition(cent);
 		return;
@@ -1015,7 +1012,7 @@ CG_AddCEntity
 */
 static void CG_AddCEntity(centity_t *cent) {
 
-	// event - only entities will have been dealt with already
+	// event-only entities will have been dealt with already
 	if (cent->currentState.eType >= ET_EVENTS) {
 		return;
 	}
@@ -1026,7 +1023,7 @@ static void CG_AddCEntity(centity_t *cent) {
 
 	switch (cent->currentState.eType) {
 		default:
-			CG_Error("Bad entity type : %i\n", cent->currentState.eType);
+			CG_Error("Bad entity type: %i\n", cent->currentState.eType);
 			break;
 		case ET_INVISIBLE:
 		case ET_PUSH_TRIGGER:
@@ -1105,7 +1102,7 @@ void CG_AddPacketEntities(void) {
 	} else {
 		cg.frameInterpolation = 0; // actually, it should never be used, because no entities should be marked as interpolating
 	}
-	// the auto - rotating items will all have the same axis
+	// the auto-rotating items will all have the same axis
 	cg.autoAngles[0] = 0;
 	cg.autoAngles[1] = (cg.time & 2047) * 360 / 2048.0;
 	cg.autoAngles[2] = 0;
@@ -1118,10 +1115,11 @@ void CG_AddPacketEntities(void) {
 	AnglesToAxis(cg.autoAnglesFast, cg.autoAxisFast);
 	// generate and add the entity from the playerstate
 	ps = &cg.predictedPlayerState;
+
 	BG_PlayerStateToEntityState(ps, &cg.predictedPlayerEntity.currentState, qfalse);
 	cg.predictedPlayerEntity.valid = qtrue;
 	CG_AddCEntity(&cg.predictedPlayerEntity);
-	// lerp the non - predicted value for lightning gun origins
+	// lerp the non-predicted value for lightning gun origins
 	CG_CalcEntityLerpPositions(&cg_entities[cg.snap->ps.clientNum]);
 	// scanner
 	CG_UpdateEntityPositions();

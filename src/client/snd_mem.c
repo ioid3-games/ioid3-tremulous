@@ -39,6 +39,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
 =======================================================================================================================================
 
 memory management
+
 =======================================================================================================================================
 */
 
@@ -46,18 +47,28 @@ static sndBuffer *buffer = NULL;
 static sndBuffer *freelist = NULL;
 static int inUse = 0;
 static int totalInUse = 0;
-
 short *sfxScratchBuffer = NULL;
 sfx_t *sfxScratchPointer = NULL;
 int sfxScratchIndex = 0;
 
+/*
+=======================================================================================================================================
+SND_free
+=======================================================================================================================================
+*/
 void SND_free(sndBuffer *v) {
+
 	*(sndBuffer * *)v = freelist;
 	freelist = (sndBuffer *)v;
 	inUse += sizeof(sndBuffer);
 }
 
-sndBuffer * 	SND_malloc(void) {
+/*
+=======================================================================================================================================
+SND_malloc
+=======================================================================================================================================
+*/
+sndBuffer *SND_malloc(void) {
 	sndBuffer *v;
 redo:
 	if (freelist == NULL) {
@@ -74,6 +85,11 @@ redo:
 	return v;
 }
 
+/*
+=======================================================================================================================================
+SND_setup
+=======================================================================================================================================
+*/
 void SND_setup(void) {
 	sndBuffer *p, *q;
 	cvar_t *cv;
@@ -82,7 +98,6 @@ void SND_setup(void) {
 	cv = Cvar_Get("com_soundMegs", DEF_COMSOUNDMEGS, CVAR_LATCH|CVAR_ARCHIVE);
 
 	scs = (cv->integer * 1536);
-
 	buffer = malloc(scs * sizeof(sndBuffer));
 	// allocate the stack based hunk allocator
 	sfxScratchBuffer = malloc(SND_CHUNK_SIZE * sizeof(short) * 4); // hunk_Alloc(SND_CHUNK_SIZE * sizeof(short) * 4);
@@ -92,8 +107,9 @@ void SND_setup(void) {
 	p = buffer;
 	q = p + scs;
 
-	while (-- q > p)
+	while (-- q > p) {
 		*(sndBuffer * *)q = q - 1;
+	}
 
 	*(sndBuffer * *)q = NULL;
 	freelist = p + scs - 1;
@@ -101,16 +117,22 @@ void SND_setup(void) {
 	Com_Printf("Sound memory manager started\n");
 }
 
+/*
+=======================================================================================================================================
+SND_shutdown
+=======================================================================================================================================
+*/
 void SND_shutdown(void) {
-		free(sfxScratchBuffer);
-		free(buffer);
+
+	free(sfxScratchBuffer);
+	free(buffer);
 }
 
 /*
 =======================================================================================================================================
 ResampleSfx
 
-resample / decimate to the current source rate.
+Resample/decimate to the current source rate.
 =======================================================================================================================================
 */
 static int ResampleSfx(sfx_t *sfx, int channels, int inrate, int inwidth, int samples, byte *data, qboolean compressed) {
@@ -123,9 +145,7 @@ static int ResampleSfx(sfx_t *sfx, int channels, int inrate, int inwidth, int sa
 	sndBuffer *chunk;
 
 	stepscale = (float)inrate / dma.speed; // this is usually 0.5, 1, or 2
-
 	outcount = samples / stepscale;
-
 	samplefrac = 0;
 	fracstep = stepscale * 256 * channels;
 	chunk = sfx->soundData;
@@ -167,7 +187,7 @@ static int ResampleSfx(sfx_t *sfx, int channels, int inrate, int inwidth, int sa
 =======================================================================================================================================
 ResampleSfx
 
-resample / decimate to the current source rate.
+Resample/decimate to the current source rate.
 =======================================================================================================================================
 */
 static int ResampleSfxRaw(short *sfx, int channels, int inrate, int inwidth, int samples, byte *data) {
@@ -178,9 +198,7 @@ static int ResampleSfxRaw(short *sfx, int channels, int inrate, int inwidth, int
 	int sample, samplefrac, fracstep;
 
 	stepscale = (float)inrate / dma.speed; // this is usually 0.5, 1, or 2
-
 	outcount = samples / stepscale;
-
 	samplefrac = 0;
 	fracstep = stepscale * 256 * channels;
 
@@ -202,14 +220,11 @@ static int ResampleSfxRaw(short *sfx, int channels, int inrate, int inwidth, int
 	return outcount;
 }
 
-// ============================================================================= 
-
 /*
 =======================================================================================================================================
 S_LoadSound
 
-The filename may be different than sfx->name in the case
-of a forced fallback of a player specific sound.
+The filename may be different than sfx->name in the case of a forced fallback of a player specific sound.
 =======================================================================================================================================
 */
 qboolean S_LoadSound(sfx_t *sfx) {
@@ -220,13 +235,15 @@ qboolean S_LoadSound(sfx_t *sfx) {
 	// load it in
 	data = S_CodecLoad(sfx->soundName, &info);
 
-	if (!data)
+	if (!data) {
 		return qfalse;
+	}
 
 	size_per_sec = info.rate * info.channels * info.width;
 
-	if (size_per_sec > 0)
+	if (size_per_sec > 0) {
 		sfx->duration = (int)(1000.0f * ((double)info.size / size_per_sec));
+	}
 
 	if (info.width == 1) {
 		Com_DPrintf(S_COLOR_YELLOW "WARNING: %s is a 8 bit audio file\n", sfx->soundName);
@@ -244,7 +261,6 @@ qboolean S_LoadSound(sfx_t *sfx) {
 	// install assured we can rely upon the sound memory
 	// manager to do the right thing for us and page
 	// sound in as needed
-
 	if (info.channels == 1 && sfx->soundCompressed == qtrue) {
 		sfx->soundCompressionMethod = 1;
 		sfx->soundData = NULL;
@@ -276,6 +292,11 @@ qboolean S_LoadSound(sfx_t *sfx) {
 	return qtrue;
 }
 
+/*
+=======================================================================================================================================
+S_DisplayFreeMemory
+=======================================================================================================================================
+*/
 void S_DisplayFreeMemory(void) {
 	Com_Printf("%d bytes free sound buffer memory, %d total used\n", inUse, totalInUse);
 }

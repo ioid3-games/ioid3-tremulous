@@ -316,6 +316,7 @@ Attach to a particle.
 =======================================================================================================================================
 */
 void CG_AttachToParticle(attachment_t *a) {
+
 	if (!a || !a->particleValid) {
 		return;
 	}
@@ -330,6 +331,7 @@ CG_SetAttachmentPoint
 =======================================================================================================================================
 */
 void CG_SetAttachmentPoint(attachment_t *a, vec3_t v) {
+
 	if (!a) {
 		return;
 	}
@@ -344,6 +346,7 @@ CG_SetAttachmentCent
 =======================================================================================================================================
 */
 void CG_SetAttachmentCent(attachment_t *a, centity_t *cent) {
+
 	if (!a || !cent) {
 		return;
 	}
@@ -358,6 +361,7 @@ CG_SetAttachmentTag
 =======================================================================================================================================
 */
 void CG_SetAttachmentTag(attachment_t *a, refEntity_t parent, qhandle_t model, char *tagName) {
+
 	if (!a) {
 		return;
 	}
@@ -374,6 +378,7 @@ CG_SetAttachmentParticle
 =======================================================================================================================================
 */
 void CG_SetAttachmentParticle(attachment_t *a, particle_t *p) {
+
 	if (!a) {
 		return;
 	}
@@ -388,6 +393,7 @@ CG_SetAttachmentOffset
 =======================================================================================================================================
 */
 void CG_SetAttachmentOffset(attachment_t *a, vec3_t v) {
+
 	if (!a) {
 		return;
 	}

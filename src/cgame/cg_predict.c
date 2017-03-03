@@ -21,16 +21,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
 =======================================================================================================================================
 */
 
-// cg_predict.c--this file generates cg.predictedPlayerState by either
-// interpolating between snapshots from the server or locally predicting
-// ahead the client's movement.
-// it also handles local physics interaction, like fragments bouncing off walls
-
+/**************************************************************************************************************************************
+ This file generates cg.predictedPlayerState by either interpolating between snapshots from the server or locally predicting ahead the
+ client's movement. It also handles local physics interaction, like fragments bouncing off walls.
+**************************************************************************************************************************************/
 
 #include "cg_local.h"
 
 static pmove_t cg_pmove;
-
 static int cg_numSolidEntities;
 static centity_t *cg_solidEntities[MAX_ENTITIES_IN_SNAPSHOT];
 static int cg_numTriggerEntities;
@@ -232,21 +230,23 @@ int CG_PointContents(const vec3_t point, int passEntityNum) {
 
 	for (i = 0; i < cg_numSolidEntities; i++) {
 		cent = cg_solidEntities[i];
-
 		ent = &cent->currentState;
 
-		if (ent->number == passEntityNum)
+		if (ent->number == passEntityNum) {
 			continue;
+		}
 
-		if (ent->solid != SOLID_BMODEL) // special value for bmodel
+		if (ent->solid != SOLID_BMODEL) { // special value for bmodel
 			continue;
+		}
 
 		cmodel = trap_CM_InlineModel(ent->modelindex);
 
-		if (!cmodel)
+		if (!cmodel) {
 			continue;
+		}
 
-		contents|= trap_CM_TransformedPointContents(point, cmodel, ent->origin, ent->angles);
+		contents |= trap_CM_TransformedPointContents(point, cmodel, ent->origin, ent->angles);
 	}
 
 	return contents;
@@ -360,6 +360,11 @@ static void CG_TouchTriggerPrediction(void) {
 	}
 }
 
+/*
+=======================================================================================================================================
+CG_IsUnacceptableError
+=======================================================================================================================================
+*/
 static int CG_IsUnacceptableError(playerState_t *ps, playerState_t *pps) {
 	vec3_t delta;
 	int i;
@@ -462,23 +467,16 @@ CG_PredictPlayerState
 Generates cg.predictedPlayerState for the current cg.time
 cg.predictedPlayerState is guaranteed to be valid after exiting.
 
-For demo playback, this will be an interpolation between two valid
-playerState_t.
+For demo playback, this will be an interpolation between two valid playerState_t.
+For normal gameplay, it will be the result of predicted usercmd_t on top of the most recent playerState_t received from the server.
 
-For normal gameplay, it will be the result of predicted usercmd_t on
-top of the most recent playerState_t received from the server.
+Each new snapshot will usually have one or more new usercmd over the last, but we simulate all unacknowledged commands each time, not
+just the new ones. This means that on an internet connection, quite a few pmoves may be issued each frame.
 
-Each new snapshot will usually have one or more new usercmd over the last, 
-but we simulate all unacknowledged commands each time, not just the new ones.
-This means that on an internet connection, quite a few pmoves may be issued
-each frame.
+OPTIMIZE: don't re-simulate unless the newly arrived snapshot playerState_t differs from the predicted one. Would require saving all
+intermediate playerState_t during prediction.
 
-OPTIMIZE : don't re - simulate unless the newly arrived snapshot playerState_t
-differs from the predicted one.  Would require saving all intermediate
-playerState_t during prediction.
-
-We detect prediction errors and allow them to be decayed off over several frames
-to ease the jerk.
+We detect prediction errors and allow them to be decayed off over several frames to ease the jerk.
 =======================================================================================================================================
 */
 void CG_PredictPlayerState(void) {
@@ -500,7 +498,7 @@ void CG_PredictPlayerState(void) {
 		CG_InterpolatePlayerState(qfalse);
 		return;
 	}
-	// non - predicting local movement will grab the latest angles
+	// non-predicting local movement will grab the latest angles
 	if (cg_nopredict.integer || cg_synchronousClients.integer) {
 		CG_InterpolatePlayerState(qtrue);
 		return;
@@ -525,10 +523,9 @@ void CG_PredictPlayerState(void) {
 	cg_pmove.noFootsteps = 0;
 	// save the state before the pmove so we can detect transitions
 	oldPlayerState = cg.predictedPlayerState;
-
 	current = trap_GetCurrentCmdNumber();
-	// if we don't have the commands right after the snapshot, we can't accurately predict a current position, so just freeze at the last
-	// good position we had
+	// if we don't have the commands right after the snapshot, we can't accurately predict a current position, so just freeze at
+	// the last good position we had
 	cmdNum = current - CMD_BACKUP + 1;
 
 	trap_GetUserCmd(cmdNum, &oldestCmd);
@@ -651,10 +648,8 @@ void CG_PredictPlayerState(void) {
 			continue;
 		}
 		// check for a prediction error from last frame
-		// on a lan, this will often be the exact value
-		// from the snapshot, but on a wan we will have
-		// to predict several commands to get to the point
-		// we want to compare
+		// on a lan, this will often be the exact value from the snapshot, but on a wan we will have to predict several commands
+		// to get to the point we want to compare
 		if (cg.predictedPlayerState.commandTime == oldPlayerState.commandTime) {
 			vec3_t delta;
 			float len;
@@ -683,7 +678,7 @@ void CG_PredictPlayerState(void) {
 
 				if (len > 0.1) {
 					if (cg_showmiss.integer) {
-						CG_Printf("Prediction miss : %f\n", len);
+						CG_Printf("Prediction miss: %f\n", len);
 					}
 
 					if (cg_errorDecay.integer) {
@@ -698,7 +693,7 @@ void CG_PredictPlayerState(void) {
 						}
 
 						if (f > 0 && cg_showmiss.integer) {
-							CG_Printf("Double prediction decay : %f\n", f);
+							CG_Printf("Double prediction decay: %f\n", f);
 						}
 
 						VectorScale(cg.predictedError, f, cg.predictedError);

@@ -21,12 +21,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
 =======================================================================================================================================
 */
 
-// cg_draw.c--draw all of the graphical elements during active (after loading) gameplay
-
+/**************************************************************************************************************************************
+ Draw all of the graphical elements during active (after loading) gameplay.
+**************************************************************************************************************************************/
 
 #include "cg_local.h"
 #include "../ui/ui_shared.h"
-
 menuDef_t *menuScoreboard = NULL;
 
 /*
@@ -212,6 +212,7 @@ void CG_DrawField(float x, float y, int width, float cw, float ch, int value) {
 	}
 
 	Com_sprintf(num, sizeof(num), "%d", value);
+
 	l = strlen(num);
 
 	if (l > width) {

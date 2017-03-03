@@ -21,7 +21,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
 =======================================================================================================================================
 */
 
-// cg_players.c--handle the media and animation for player entities
+/**************************************************************************************************************************************
+ Handle the media and animation for player entities.
+**************************************************************************************************************************************/
 
 #include "cg_local.h"
 
@@ -82,7 +84,7 @@ sfxHandle_t CG_CustomSound(int clientNum, const char *soundName) {
 =======================================================================================================================================
 CG_ParseAnimationFile
 
-Read a configuration file containing animation coutns and rates models/players/visor/animation.cfg, etc.
+Read a configuration file containing animation counts and rates, models/players/visor/animation.cfg, etc.
 =======================================================================================================================================
 */
 static qboolean CG_ParseAnimationFile(const char *filename, clientInfo_t *ci) {
@@ -148,7 +150,7 @@ static qboolean CG_ParseAnimationFile(const char *filename, clientInfo_t *ci) {
 			} else if (!Q_stricmp(token, "custom")) {
 				ci->footsteps = FOOTSTEP_CUSTOM;
 			} else {
-				CG_Printf("Bad footsteps parm in %s : %s\n", filename, token);
+				CG_Printf("Bad footsteps parm in %s: %s\n", filename, token);
 			}
 
 			continue;
@@ -363,7 +365,7 @@ static qboolean CG_ParseAnimationFile(const char *filename, clientInfo_t *ci) {
 
 /*
 =======================================================================================================================================
-CG_RegisterClientSkin.
+CG_RegisterClientSkin
 =======================================================================================================================================
 */
 static qboolean CG_RegisterClientSkin(clientInfo_t *ci, const char *modelName, const char *skinName) {
@@ -412,11 +414,12 @@ static qboolean CG_RegisterClientSkin(clientInfo_t *ci, const char *modelName, c
 
 /*
 =======================================================================================================================================
-CG_RegisterClientModelname.
+CG_RegisterClientModelname
 =======================================================================================================================================
 */
 static qboolean CG_RegisterClientModelname(clientInfo_t *ci, const char *modelName, const char *skinName) {
 	char filename[MAX_QPATH * 2];
+
 	// do this first so the nonsegmented property is set
 	// load the animations
 	Com_sprintf(filename, sizeof(filename), "models/players/%s/animation.cfg", modelName);
@@ -550,9 +553,9 @@ CG_CopyClientInfoModel
 static void CG_CopyClientInfoModel(clientInfo_t *from, clientInfo_t *to) {
 
 	VectorCopy(from->headOffset, to->headOffset);
+
 	to->footsteps = from->footsteps;
 	to->gender = from->gender;
-
 	to->legsModel = from->legsModel;
 	to->legsSkin = from->legsSkin;
 	to->torsoModel = from->torsoModel;
@@ -628,7 +631,7 @@ static qboolean CG_ScanForExistingClientInfo(clientInfo_t *ci) {
 
 /*
 =======================================================================================================================================
-CG_PrecacheClientInfo.
+CG_PrecacheClientInfo
 =======================================================================================================================================
 */
 void CG_PrecacheClientInfo(class_t class, char *model, char *skin) {
@@ -683,7 +686,7 @@ static void CG_StatusMessages(clientInfo_t *new, clientInfo_t *old) {
 
 /*
 =======================================================================================================================================
-CG_NewClientInfo.
+CG_NewClientInfo
 =======================================================================================================================================
 */
 void CG_NewClientInfo(int clientNum) {
@@ -694,7 +697,6 @@ void CG_NewClientInfo(int clientNum) {
 	char *slash;
 
 	ci = &cgs.clientinfo[clientNum];
-
 	configstring = CG_ConfigString(clientNum + CS_PLAYERS);
 
 	if (!configstring[0]) {
@@ -767,19 +769,18 @@ void CG_NewClientInfo(int clientNum) {
 =======================================================================================================================================
 */
 
-
 /*
 =======================================================================================================================================
 CG_SetLerpFrameAnimation
 
-may include ANIM_TOGGLEBIT.
+May include ANIM_TOGGLEBIT.
 =======================================================================================================================================
 */
 static void CG_SetLerpFrameAnimation(clientInfo_t *ci, lerpFrame_t *lf, int newAnimation) {
 	animation_t *anim;
 
 	lf->animationNumber = newAnimation;
-	newAnimation & = ~ANIM_TOGGLEBIT;
+	newAnimation &= ~ANIM_TOGGLEBIT;
 
 	if (newAnimation < 0 || newAnimation >= MAX_PLAYER_TOTALANIMATIONS) {
 		CG_Error("Bad animation number: %i", newAnimation);
@@ -799,7 +800,8 @@ static void CG_SetLerpFrameAnimation(clientInfo_t *ci, lerpFrame_t *lf, int newA
 =======================================================================================================================================
 CG_RunPlayerLerpFrame
 
-Sets cg.snap, cg.oldFrame, and cg.backlerp, cg.time should be between oldFrameTime and frameTime after exit.
+Sets cg.snap, cg.oldFrame, and cg.backlerp.
+cg.time should be between oldFrameTime and frameTime after exit.
 =======================================================================================================================================
 */
 static void CG_RunPlayerLerpFrame(clientInfo_t *ci, lerpFrame_t *lf, int newAnimation, float speedScale) {
@@ -814,10 +816,11 @@ static void CG_RunPlayerLerpFrame(clientInfo_t *ci, lerpFrame_t *lf, int newAnim
 
 /*
 =======================================================================================================================================
-CG_ClearLerpFrame.
+CG_ClearLerpFrame
 =======================================================================================================================================
 */
 static void CG_ClearLerpFrame(clientInfo_t *ci, lerpFrame_t *lf, int animationNumber) {
+
 	lf->frameTime = lf->oldFrameTime = cg.time;
 	CG_SetLerpFrameAnimation(ci, lf, animationNumber);
 	lf->oldFrame = lf->frame = lf->animation->firstFrame;
@@ -825,7 +828,7 @@ static void CG_ClearLerpFrame(clientInfo_t *ci, lerpFrame_t *lf, int animationNu
 
 /*
 =======================================================================================================================================
-CG_PlayerAnimation.
+CG_PlayerAnimation
 =======================================================================================================================================
 */
 static void CG_PlayerAnimation(centity_t *cent, int *legsOld, int *legs, float *legsBackLerp, int *torsoOld, int *torso, float *torsoBackLerp) {
@@ -861,7 +864,7 @@ static void CG_PlayerAnimation(centity_t *cent, int *legsOld, int *legs, float *
 
 /*
 =======================================================================================================================================
-CG_PlayerNonSegAnimation.
+CG_PlayerNonSegAnimation
 =======================================================================================================================================
 */
 static void CG_PlayerNonSegAnimation(centity_t *cent, int *nonSegOld, int *nonSeg, float *nonSegBackLerp) {
@@ -899,7 +902,7 @@ static void CG_PlayerNonSegAnimation(centity_t *cent, int *nonSegOld, int *nonSe
 
 /*
 =======================================================================================================================================
-CG_SwingAngles.
+CG_SwingAngles
 =======================================================================================================================================
 */
 static void CG_SwingAngles(float destination, float swingTolerance, float clampTolerance, float speed, float *angle, qboolean *swinging) {
@@ -962,7 +965,7 @@ static void CG_SwingAngles(float destination, float swingTolerance, float clampT
 
 /*
 =======================================================================================================================================
-CG_AddPainTwitch.
+CG_AddPainTwitch
 =======================================================================================================================================
 */
 static void CG_AddPainTwitch(centity_t *cent, vec3_t torsoAngles) {
@@ -988,14 +991,11 @@ static void CG_AddPainTwitch(centity_t *cent, vec3_t torsoAngles) {
 =======================================================================================================================================
 CG_PlayerAngles
 
-Handles seperate torso motion
+Handles separate torso motion.
 
-	legs pivot based on direction of movement
+Legs pivot based on direction of movement. Head always looks exactly at cent->lerpAngles.
 
-	head always looks exactly at cent->lerpAngles
-
-	if motion < 20 degrees, show in head only
-	if < 45 degrees, also show in torso.
+If motion < 20 degrees, show in head only. If < 45 degrees, also show in torso.
 =======================================================================================================================================
 */
 static void CG_PlayerAngles(centity_t *cent, vec3_t srcAngles, vec3_t legs[3], vec3_t torso[3], vec3_t head[3]) {
@@ -1011,7 +1011,8 @@ static void CG_PlayerAngles(centity_t *cent, vec3_t srcAngles, vec3_t legs[3], v
 	headAngles[YAW] = AngleMod(headAngles[YAW]);
 	VectorClear(legsAngles);
 	VectorClear(torsoAngles);
-	// --------- yaw-------------
+
+	// --------- yaw -------------
 
 	// allow yaw to drift a bit
 	if ((cent->currentState.legsAnim & ~ANIM_TOGGLEBIT) != LEGS_IDLE || (cent->currentState.torsoAnim & ~ANIM_TOGGLEBIT) != TORSO_STAND) {
@@ -1046,7 +1047,8 @@ static void CG_PlayerAngles(centity_t *cent, vec3_t srcAngles, vec3_t legs[3], v
 
 	torsoAngles[YAW] = cent->pe.torso.yawAngle;
 	legsAngles[YAW] = cent->pe.legs.yawAngle;
-	// --------- pitch-------------
+
+	// --------- pitch -------------
 
 	// only show a fraction of the pitch angle in the torso
 	if (headAngles[PITCH] > 180) {
@@ -1057,7 +1059,6 @@ static void CG_PlayerAngles(centity_t *cent, vec3_t srcAngles, vec3_t legs[3], v
 
 	CG_SwingAngles(dest, 15, 30, 0.1f, &cent->pe.torso.pitchAngle, &cent->pe.torso.pitching);
 	torsoAngles[PITCH] = cent->pe.torso.pitchAngle;
-
 	clientNum = cent->currentState.clientNum;
 
 	if (clientNum >= 0 && clientNum < MAX_CLIENTS) {
@@ -1067,8 +1068,8 @@ static void CG_PlayerAngles(centity_t *cent, vec3_t srcAngles, vec3_t legs[3], v
 			torsoAngles[PITCH] = 0.0f;
 		}
 	}
-	// --------- roll-------------
 
+	// --------- roll -------------
 
 	// lean towards the direction of travel
 	VectorCopy(cent->currentState.pos.trDelta, velocity);
@@ -1101,7 +1102,7 @@ static void CG_PlayerAngles(centity_t *cent, vec3_t srcAngles, vec3_t legs[3], v
 	}
 	// pain twitch
 	CG_AddPainTwitch(cent, torsoAngles);
-	// pull the angles back out of the hierarchial chain
+	// pull the angles back out of the hierarchical chain
 	AnglesSubtract(headAngles, torsoAngles, headAngles);
 	AnglesSubtract(torsoAngles, legsAngles, torsoAngles);
 	AnglesToAxis(legsAngles, legs);
@@ -1193,7 +1194,7 @@ static void CG_PlayerWWSmoothing(centity_t *cent, vec3_t in[3], vec3_t out[3]) {
 =======================================================================================================================================
 CG_PlayerNonSegAngles
 
-Resolve angles for non - segmented models.
+Resolve angles for non-segmented models.
 =======================================================================================================================================
 */
 static void CG_PlayerNonSegAngles(centity_t *cent, vec3_t srcAngles, vec3_t nonSegAxis[3]) {
@@ -1221,7 +1222,8 @@ static void CG_PlayerNonSegAngles(centity_t *cent, vec3_t srcAngles, vec3_t nonS
 		cent->pe.nonseg.yawAngle = localAngles[YAW];
 		cent->pe.nonseg.yawing = qfalse;
 	}
-	// --------- yaw-------------
+
+	// --------- yaw -------------
 
 	// allow yaw to drift a bit
 	if ((cent->currentState.legsAnim & ~ANIM_TOGGLEBIT) != NSPA_STAND) {
@@ -1248,11 +1250,12 @@ static void CG_PlayerNonSegAngles(centity_t *cent, vec3_t srcAngles, vec3_t nonS
 	}
 
 	localAngles[YAW] = cent->pe.nonseg.yawAngle;
-	// --------- pitch-------------
+
+	// --------- pitch -------------
 
 	// NO PITCH!
 
-	// --------- roll-------------
+	// --------- roll -------------
 
 	// lean towards the direction of travel
 	VectorCopy(cent->currentState.pos.trDelta, velocity);
@@ -1428,7 +1431,6 @@ static void CG_PlayerFloatSprite(centity_t *cent, qhandle_t shader) {
 	memset(&ent, 0, sizeof(ent));
 
 	VectorCopy(cent->lerpOrigin, ent.origin);
-
 	ent.origin[2] += 48;
 	ent.reType = RT_SPRITE;
 	ent.customShader = shader;
@@ -1438,7 +1440,6 @@ static void CG_PlayerFloatSprite(centity_t *cent, qhandle_t shader) {
 	ent.shaderRGBA[1] = 255;
 	ent.shaderRGBA[2] = 255;
 	ent.shaderRGBA[3] = 255;
-
 	trap_R_AddRefEntityToScene(&ent);
 }
 
@@ -1601,6 +1602,7 @@ int CG_LightVerts(vec3_t normal, int numVerts, polyVert_t *verts) {
 		}
 
 		verts[i].modulate[0] = j;
+
 		j = (ambientLight[1] + incoming * directedLight[1]);
 
 		if (j > 255) {
@@ -1608,6 +1610,7 @@ int CG_LightVerts(vec3_t normal, int numVerts, polyVert_t *verts) {
 		}
 
 		verts[i].modulate[1] = j;
+
 		j = (ambientLight[2] + incoming * directedLight[2]);
 
 		if (j > 255) {
@@ -1700,8 +1703,7 @@ CG_Player
 */
 void CG_Player(centity_t *cent) {
 	clientInfo_t *ci;
-	// NOTE: legs is used for nonsegmented models
-	// 		 this helps reduce code to be changed
+	// NOTE: legs is used for nonsegmented models this helps reduce code to be changed
 	refEntity_t legs;
 	refEntity_t torso;
 	refEntity_t head;
@@ -1726,8 +1728,7 @@ void CG_Player(centity_t *cent) {
 	}
 
 	ci = &cgs.clientinfo[clientNum];
-	// it is possible to see corpses from disconnected players that may
-	// not have valid clientinfo
+	// it is possible to see corpses from disconnected players that may not have valid clientinfo
 	if (!ci->infoValid) {
 		return;
 	}

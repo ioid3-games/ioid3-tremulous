@@ -20,12 +20,11 @@ along with Tremulous; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
 =======================================================================================================================================
 */
+
 #include "client.h"
 
 /*
-
 key up events are sent even if in console mode
-
 */
 
 field_t historyEditLines[COMMAND_HISTORY];
@@ -34,7 +33,6 @@ int nextHistoryLine; // the last line in the history buffer, not masked
 int historyLine; // the line being displayed from history buffer will be <= nextHistoryLine
 
 field_t g_consoleField;
-
 qboolean key_overstrikeMode;
 
 int anykeydown;
@@ -60,7 +58,6 @@ keyname_t keynames[] = {
 	{"SHIFT", K_SHIFT},
 	{"COMMAND", K_COMMAND},
 	{"CAPSLOCK", K_CAPSLOCK},
-
 	{"F1", K_F1},
 	{"F2", K_F2},
 	{"F3", K_F3},
@@ -157,7 +154,6 @@ keyname_t keynames[] = {
 	{"KP_EQUALS", K_KP_EQUALS},
 	{"PAUSE", K_PAUSE},
 	{"SEMICOLON", '; '}, // because a raw semicolon seperates commands
-
 	{"WORLD_0", K_WORLD_0},
 	{"WORLD_1", K_WORLD_1},
 	{"WORLD_2", K_WORLD_2},
@@ -302,13 +298,11 @@ keyname_t keynames[] = {
 =======================================================================================================================================
 */
 
-
 /*
 =======================================================================================================================================
 Field_Draw
 
-Handles horizontal scrolling and cursor blinking
-x, y, and width are in pixels.
+Handles horizontal scrolling and cursor blinking x, y, and width are in pixels.
 =======================================================================================================================================
 */
 void Field_VariableSizeDraw(field_t *edit, int x, int y, int width, int size, qboolean showCursor, qboolean noColorEscape) {
@@ -484,7 +478,7 @@ void Field_KeyDownEvent(field_t *edit, int key) {
 
 /*
 =======================================================================================================================================
-Field_CharEvent.
+Field_CharEvent
 =======================================================================================================================================
 */
 void Field_CharEvent(field_t *edit, int ch) {
@@ -533,8 +527,10 @@ void Field_CharEvent(field_t *edit, int ch) {
 
 	if (key_overstrikeMode) {
 		// -2 to leave room for the leading slash and trailing \0
-		if (edit->cursor == MAX_EDIT_LINE - 2)
+		if (edit->cursor == MAX_EDIT_LINE - 2) {
 			return;
+		}
+
 		edit->buffer[edit->cursor] = ch;
 		edit->cursor++;
 	} else { // insert mode
@@ -544,6 +540,7 @@ void Field_CharEvent(field_t *edit, int ch) {
 		}
 
 		memmove(edit->buffer + edit->cursor + 1, edit->buffer + edit->cursor, len + 1 - edit->cursor);
+
 		edit->buffer[edit->cursor] = ch;
 		edit->cursor++;
 	}
@@ -576,8 +573,8 @@ void Console_Key(int key) {
 
 	// ctrl - L clears screen
 	if (key == 'l' && keys[K_CTRL].down) {
-			Cbuf_AddText("clear\n");
-			return;
+		Cbuf_AddText("clear\n");
+		return;
 	}
 	// enter finishes the line
 	if (key == K_ENTER || key == K_KP_ENTER) {
@@ -623,13 +620,11 @@ void Console_Key(int key) {
 		return;
 	}
 	// command completion
-
 	if (key == K_TAB) {
 		Field_AutoComplete(&g_consoleField);
 		return;
 	}
 	// command history(ctrl - p ctrl - n for unix style)
-
 	if ((key == K_MWHEELUP && keys[K_SHIFT].down) || (key == K_UPARROW) || (key == K_KP_UPARROW) || ((tolower(key) == 'p') && keys[K_CTRL].down)) {
 		if (nextHistoryLine - historyLine < COMMAND_HISTORY && historyLine > 0) {
 			historyLine--;
@@ -1229,7 +1224,7 @@ void CL_KeyUpEvent(int key, unsigned time) {
 	if (key == K_CONSOLE || (key == K_ESCAPE && keys[K_SHIFT].down)) {
 		return;
 	}
-	// key up events only perform actions if the game key binding is a button command(leading + sign).  These will be processed even in
+	// key up events only perform actions if the game key binding is a button command(leading + sign). These will be processed even in
 	// console mode and menu mode, to keep the character from continuing an action started before a mode switch.
 	CL_ParseBinding(key, qfalse, time);
 
@@ -1292,7 +1287,6 @@ void Key_ClearStates(void) {
 	for (i = 0; i < MAX_KEYS; i++) {
 		if (keys[i].down) {
 			CL_KeyEvent(i, qfalse, 0);
-
 		}
 
 		keys[i].down = 0;
@@ -1355,6 +1349,7 @@ void Key_SetCatcher(int catcher) {
 // this must not exceed MAX_CMD_LINE
 #define MAX_CONSOLE_SAVE_BUFFER 1024
 #define CONSOLE_HISTORY_FILE "q3history"
+
 static char consoleSaveBuffer[MAX_CONSOLE_SAVE_BUFFER];
 static int consoleSaveBufferSize = 0;
 
@@ -1441,6 +1436,7 @@ void CL_SaveConsoleHistory(void) {
 	consoleSaveBuffer[0] = '\0';
 
 	i = (nextHistoryLine - 1) % COMMAND_HISTORY;
+
 	do {
 		if (historyEditLines[i].buffer[0]) {
 			lineLength = strlen(historyEditLines[i].buffer);

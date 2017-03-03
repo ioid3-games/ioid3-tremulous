@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
 
 /*
 =======================================================================================================================================
-Svcmd_EntityList_f.
+Svcmd_EntityList_f
 =======================================================================================================================================
 */
 void Svcmd_EntityList_f(void) {
@@ -37,8 +37,9 @@ void Svcmd_EntityList_f(void) {
 	check = g_entities;
 
 	for (e = 0; e < level.num_entities; e++, check++) {
-		if (!check->inuse)
+		if (!check->inuse) {
 			continue;
+		}
 
 		G_Printf("%3i:", e);
 
@@ -108,13 +109,19 @@ void Svcmd_EntityList_f(void) {
 				break;
 		}
 
-		if (check->classname)
+		if (check->classname) {
 			G_Printf("%s", check->classname);
+		}
 
 		G_Printf("\n");
 	}
 }
 
+/*
+=======================================================================================================================================
+ClientForString
+=======================================================================================================================================
+*/
 static gclient_t *ClientForString(char *s) {
 	int idnum;
 	char err[MAX_STRING_CHARS];
@@ -129,6 +136,11 @@ static gclient_t *ClientForString(char *s) {
 	return &level.clients[idnum];
 }
 
+/*
+=======================================================================================================================================
+Svcmd_Status_f
+=======================================================================================================================================
+*/
 static void Svcmd_Status_f(void) {
 	int i;
 	gclient_t *cl;
@@ -138,16 +150,18 @@ static void Svcmd_Status_f(void) {
 	G_Printf("--------------------							--- - 		--- - \n");
 
 	for (i = 0, cl = level.clients; i < level.maxclients; i++, cl++) {
-		if (cl->pers.connected == CON_DISCONNECTED)
+		if (cl->pers.connected == CON_DISCONNECTED) {
 			continue;
+		}
 
 		G_Printf("% - 4d ", i);
 		G_Printf("% - 5d ", cl->ps.persistant[PERS_SCORE]);
 
-		if (cl->pers.connected == CON_CONNECTING)
+		if (cl->pers.connected == CON_CONNECTING) {
 			G_Printf("CNCT ");
 		} else {
 			G_Printf("% - 4d ", cl->ps.ping);
+		}
 
 		trap_GetUserinfo(i, userinfo, sizeof(userinfo));
 		G_Printf("% - 21s ", Info_ValueForKey(userinfo, "ip"));
@@ -160,7 +174,7 @@ static void Svcmd_Status_f(void) {
 =======================================================================================================================================
 Svcmd_ForceTeam_f
 
-forceteam < player > < team > .
+forceteam <player> <team>.
 =======================================================================================================================================
 */
 static void Svcmd_ForceTeam_f(void) {
@@ -176,8 +190,9 @@ static void Svcmd_ForceTeam_f(void) {
 	trap_Argv(1, str, sizeof(str));
 	cl = ClientForString(str);
 
-	if (!cl)
+	if (!cl) {
 		return;
+	}
 
 	trap_Argv(2, str, sizeof(str));
 	team = G_TeamFromString(str);
@@ -194,7 +209,7 @@ static void Svcmd_ForceTeam_f(void) {
 =======================================================================================================================================
 Svcmd_LayoutSave_f
 
-layoutsave < name > .
+layoutsave <name>.
 =======================================================================================================================================
 */
 static void Svcmd_LayoutSave_f(void) {
@@ -235,7 +250,7 @@ char *ConcatArgs(int start);
 =======================================================================================================================================
 Svcmd_LayoutLoad_f
 
-layoutload [< name > [< name2 > [< name3 [...]]]]
+layoutload [<name> [<name2> [<name3 [...]]]]
 
 This is just a silly alias for doing:
  set g_layouts "name name2 name3"
@@ -247,7 +262,7 @@ static void Svcmd_LayoutLoad_f(void) {
 	char *s;
 
 	if (trap_Argc() < 2) {
-		G_Printf("usage : layoutload < name > ...\n");
+		G_Printf("usage : layoutload < name >...\n");
 		return;
 	}
 
@@ -258,6 +273,11 @@ static void Svcmd_LayoutLoad_f(void) {
 	level.restarted = qtrue;
 }
 
+/*
+=======================================================================================================================================
+Svcmd_AdmitDefeat_f
+=======================================================================================================================================
+*/
 static void Svcmd_AdmitDefeat_f(void) {
 	int team;
 	char teamNum[2];
@@ -285,9 +305,15 @@ static void Svcmd_AdmitDefeat_f(void) {
 	G_BaseSelfDestruct(team);
 }
 
+/*
+=======================================================================================================================================
+Svcmd_TeamWin_f
+=======================================================================================================================================
+*/
 static void Svcmd_TeamWin_f(void) {
 	// this is largely made redundant by admitdefeat < team>
 	char cmd[6];
+
 	trap_Argv(0, cmd, sizeof(cmd));
 
 	switch (G_TeamFromString(cmd)) {
@@ -303,13 +329,24 @@ static void Svcmd_TeamWin_f(void) {
 	}
 }
 
+/*
+=======================================================================================================================================
+Svcmd_Evacuation_f
+=======================================================================================================================================
+*/
 static void Svcmd_Evacuation_f(void) {
+
 	trap_SendServerCommand(-1, "print \"Evacuation ordered\n\"");
 	level.lastWin = TEAM_NONE;
 	trap_SetConfigstring(CS_WINNER, "Evacuation");
 	LogExit("Evacuation.");
 }
 
+/*
+=======================================================================================================================================
+Svcmd_MapRotation_f
+=======================================================================================================================================
+*/
 static void Svcmd_MapRotation_f(void) {
 	char rotationName[MAX_QPATH];
 
@@ -322,10 +359,16 @@ static void Svcmd_MapRotation_f(void) {
 
 	trap_Argv(1, rotationName, sizeof(rotationName));
 
-	if (!G_StartMapRotation(rotationName, qfalse, qtrue, qfalse, 0))
+	if (!G_StartMapRotation(rotationName, qfalse, qtrue, qfalse, 0)) {
 		G_Printf("maprotation : invalid map rotation \"%s\"\n", rotationName);
+	}
 }
 
+/*
+=======================================================================================================================================
+Svcmd_TeamMessage_f
+=======================================================================================================================================
+*/
 static void Svcmd_TeamMessage_f(void) {
 	char teamNum[2];
 	team_t team;
@@ -347,7 +390,13 @@ static void Svcmd_TeamMessage_f(void) {
 	G_LogPrintf("SayTeam : - 1 \"console\" : %s\n", ConcatArgs(2));
 }
 
+/*
+=======================================================================================================================================
+Svcmd_CenterPrint_f
+=======================================================================================================================================
+*/
 static void Svcmd_CenterPrint_f(void) {
+
 	if (trap_Argc() < 2) {
 		G_Printf("usage : cp < message > \n");
 		return;
@@ -356,6 +405,11 @@ static void Svcmd_CenterPrint_f(void) {
 	trap_SendServerCommand(-1, va("cp \"%s\"", ConcatArgs(1)));
 }
 
+/*
+=======================================================================================================================================
+Svcmd_EjectClient_f
+=======================================================================================================================================
+*/
 static void Svcmd_EjectClient_f(void) {
 	char *reason, name[MAX_STRING_CHARS];
 
@@ -371,18 +425,22 @@ static void Svcmd_EjectClient_f(void) {
 		int i;
 
 		for (i = 0; i < level.maxclients; i++) {
-			if (level.clients[i].pers.connected == CON_DISCONNECTED)
+			if (level.clients[i].pers.connected == CON_DISCONNECTED) {
 				continue;
+			}
 
-			if (level.clients[i].pers.localClient)
+			if (level.clients[i].pers.localClient) {
 				continue;
+			}
+
 			trap_DropClient(i, reason);
 		}
 	} else {
 		gclient_t *cl = ClientForString(name);
 
-		if (!cl)
+		if (!cl) {
 			return;
+		}
 
 		if (cl->pers.localClient) {
 			G_Printf("eject : cannot eject local clients\n");
@@ -393,6 +451,11 @@ static void Svcmd_EjectClient_f(void) {
 	}
 }
 
+/*
+=======================================================================================================================================
+Svcmd_DumpUser_f
+=======================================================================================================================================
+*/
 static void Svcmd_DumpUser_f(void) {
 	char name[MAX_STRING_CHARS], userinfo[MAX_INFO_STRING];
 	char key[BIG_INFO_KEY], value[BIG_INFO_VALUE];
@@ -407,8 +470,9 @@ static void Svcmd_DumpUser_f(void) {
 	trap_Argv(1, name, sizeof(name));
 	cl = ClientForString(name);
 
-	if (!cl)
+	if (!cl) {
 		return;
+	}
 
 	trap_GetUserinfo(cl - level.clients, userinfo, sizeof(userinfo));
 	info = &userinfo[0];
@@ -418,13 +482,19 @@ static void Svcmd_DumpUser_f(void) {
 	while (1) {
 		Info_NextPair(&info, key, value);
 
-		if (!*info)
+		if (!*info) {
 			return;
+		}
 
 		G_Printf("% - 20s%s\n", key, value);
 	}
 }
 
+/*
+=======================================================================================================================================
+Svcmd_Pr_f
+=======================================================================================================================================
+*/
 static void Svcmd_Pr_f(void) {
 	char targ[4];
 	int cl;
@@ -435,6 +505,7 @@ static void Svcmd_Pr_f(void) {
 	}
 
 	trap_Argv(1, targ, sizeof(targ));
+
 	cl = atoi(targ);
 
 	if (cl >= MAX_CLIENTS || cl < -1) {
@@ -445,6 +516,11 @@ static void Svcmd_Pr_f(void) {
 	trap_SendServerCommand(cl, va("print \"%s\n\"", ConcatArgs(2)));
 }
 
+/*
+=======================================================================================================================================
+Svcmd_PrintQueue_f
+=======================================================================================================================================
+*/
 static void Svcmd_PrintQueue_f(void) {
 	char team[MAX_STRING_CHARS];
 
@@ -462,31 +538,48 @@ static void Svcmd_PrintQueue_f(void) {
 		case TEAM_HUMANS:
 			G_PrintSpawnQueue(&level.humanSpawnQueue);
 			break;
-
 		default:
 			G_Printf("unknown team\n");
 	}
 }
 
-// dumb wrapper for "a", "m", "chat", and "say"
+/*
+=======================================================================================================================================
+Svcmd_MessageWrapper
+
+Dumb wrapper for "a", "m", "chat", and "say".
+=======================================================================================================================================
+*/
 static void Svcmd_MessageWrapper(void) {
 	char cmd[5];
+
 	trap_Argv(0, cmd, sizeof(cmd));
 
-	if (!Q_stricmp(cmd, "a"))
+	if (!Q_stricmp(cmd, "a")) {
 		Cmd_AdminMessage_f(NULL);
-	else if (!Q_stricmp(cmd, "m"))
+	} else if (!Q_stricmp(cmd, "m")) {
 		Cmd_PrivateMessage_f(NULL);
-	else if (!Q_stricmp(cmd, "say"))
+	} else if (!Q_stricmp(cmd, "say")) {
 		G_Say(NULL, SAY_ALL, ConcatArgs(1));
-	else if (!Q_stricmp(cmd, "chat"))
+	} else if (!Q_stricmp(cmd, "chat")) {
 		G_Say(NULL, SAY_RAW, ConcatArgs(1));
+	}
 }
 
+/*
+=======================================================================================================================================
+Svcmd_ListMapsWrapper
+=======================================================================================================================================
+*/
 static void Svcmd_ListMapsWrapper(void) {
 	Cmd_ListMaps_f(NULL);
 }
 
+/*
+=======================================================================================================================================
+Svcmd_SuddenDeath_f
+=======================================================================================================================================
+*/
 static void Svcmd_SuddenDeath_f(void) {
 	char secs[5];
 	int offset;
@@ -497,6 +590,11 @@ static void Svcmd_SuddenDeath_f(void) {
 	trap_SendServerCommand(-1, va("cp \"Sudden Death will begin in %d second%s\"", offset, offset == 1 ? "" : "s"));
 }
 
+/*
+=======================================================================================================================================
+Svcmd_G_AdvanceMapRotation_f
+=======================================================================================================================================
+*/
 static void Svcmd_G_AdvanceMapRotation_f(void) {
 	G_AdvanceMapRotation(0);
 }
@@ -536,7 +634,7 @@ struct svcmd {
 
 /*
 =======================================================================================================================================
-ConsoleCommand.
+ConsoleCommand
 =======================================================================================================================================
 */
 qboolean ConsoleCommand(void) {
@@ -549,40 +647,57 @@ qboolean ConsoleCommand(void) {
 
 	if (!command) {
 		// see if this is an admin command
-		if (G_admin_cmd_check(NULL))
+		if (G_admin_cmd_check(NULL)) {
 			return qtrue;
+		}
 
-		if (g_dedicated.integer)
+		if (g_dedicated.integer) {
 			G_Printf("unknown command : %s\n", cmd);
+		}
 
 		return qfalse;
 	}
 
-	if (command->dedicated && !g_dedicated.integer)
+	if (command->dedicated && !g_dedicated.integer) {
 		return qfalse;
+	}
 
 	command->function();
 	return qtrue;
 }
 
+/*
+=======================================================================================================================================
+G_RegisterCommands
+=======================================================================================================================================
+*/
 void G_RegisterCommands(void) {
 	int i;
 
 	for (i = 0; i < ARRAY_LEN(svcmds); i++) {
-		if (svcmds[i].dedicated && !g_dedicated.integer)
+		if (svcmds[i].dedicated && !g_dedicated.integer) {
 			continue;
+		}
+
 		trap_AddCommand(svcmds[i].cmd);
 	}
 
 	G_admin_register_cmds();
 }
 
+/*
+=======================================================================================================================================
+G_UnregisterCommands
+=======================================================================================================================================
+*/
 void G_UnregisterCommands(void) {
 	int i;
 
 	for (i = 0; i < ARRAY_LEN(svcmds); i++) {
-		if (svcmds[i].dedicated && !g_dedicated.integer)
+		if (svcmds[i].dedicated && !g_dedicated.integer) {
 			continue;
+		}
+
 		trap_RemoveCommand(svcmds[i].cmd);
 	}
 

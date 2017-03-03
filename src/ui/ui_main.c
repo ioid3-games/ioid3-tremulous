@@ -221,7 +221,6 @@ void UI_DrawSides(float x, float y, float w, float h, float size) {
 
 	sizeY = size * uiInfo.uiDC.yscale;
 	size *= uiInfo.uiDC.xscale;
-
 	trap_R_DrawStretchPic(x, y + sizeY, size, h - (sizeY * 2.0f), 0, 0, 0, 0, uiInfo.uiDC.whiteShader);
 	trap_R_DrawStretchPic(x + w - size, y + sizeY, size, h - (sizeY * 2.0f), 0, 0, 0, 0, uiInfo.uiDC.whiteShader);
 }

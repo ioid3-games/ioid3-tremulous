@@ -21,8 +21,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
 =======================================================================================================================================
 */
 
-// cg_weapons.c--events and effects dealing with weapons
-
+/**************************************************************************************************************************************
+ Events and effects dealing with weapons.
+**************************************************************************************************************************************/
 
 #include "cg_local.h"
 
@@ -85,8 +86,7 @@ void CG_InitUpgrades(void) {
 =======================================================================================================================================
 CG_ParseWeaponAnimationFile
 
-Read a configuration file containing animation counts and rates
-models/weapons / rifle / animation.cfg, etc.
+Read a configuration file containing animation counts and rates models/weapons/rifle/animation.cfg, etc.
 =======================================================================================================================================
 */
 static qboolean CG_ParseWeaponAnimationFile(const char *filename, weaponInfo_t *weapon) {
@@ -711,7 +711,7 @@ static qboolean CG_ParseWeaponFile(const char *filename, weaponInfo_t *wi) {
 
 /*
 =======================================================================================================================================
-CG_RegisterWeapon.
+CG_RegisterWeapon
 =======================================================================================================================================
 */
 void CG_RegisterWeapon(int weaponNum) {
@@ -861,7 +861,7 @@ static int CG_MapTorsoToWeaponFrame(clientInfo_t *ci, int frame) {
 
 /*
 =======================================================================================================================================
-CG_CalculateWeaponPosition.
+CG_CalculateWeaponPosition
 =======================================================================================================================================
 */
 static void CG_CalculateWeaponPosition(vec3_t origin, vec3_t angles) {
@@ -910,11 +910,11 @@ static void CG_CalculateWeaponPosition(vec3_t origin, vec3_t angles) {
 
 /*
 =======================================================================================================================================
-CG_MachinegunSpinAngle.
+CG_MachinegunSpinAngle
 =======================================================================================================================================
 */
-#define  SPIN_SPEED  0.9
-#define  COAST_TIME  1000
+#define SPIN_SPEED 0.9
+#define COAST_TIME 1000
 static float CG_MachinegunSpinAngle(centity_t *cent, qboolean firing) {
 	int delta;
 	float angle;
@@ -946,9 +946,8 @@ static float CG_MachinegunSpinAngle(centity_t *cent, qboolean firing) {
 =======================================================================================================================================
 CG_AddPlayerWeapon
 
-Used for both the view weapon(ps is valid) and the world modelother character models(ps is NULL)
-The main player will have this called for BOTH cases, so effects like light and
-sound should only be done on the world model case.
+Used for both the view weapon (ps is valid) and the world modelother character models (ps is NULL).
+The main player will have this called for BOTH cases, so effects like light and sound should only be done on the world model case.
 =======================================================================================================================================
 */
 void CG_AddPlayerWeapon(refEntity_t *parent, playerState_t *ps, centity_t *cent) {
@@ -987,6 +986,7 @@ void CG_AddPlayerWeapon(refEntity_t *parent, playerState_t *ps, centity_t *cent)
 	Com_Memset(&flash, 0, sizeof(flash));
 
 	VectorCopy(parent->lightingOrigin, gun.lightingOrigin);
+
 	gun.shadowPlane = parent->shadowPlane;
 	gun.renderfx = parent->renderfx;
 
@@ -1091,6 +1091,7 @@ void CG_AddPlayerWeapon(refEntity_t *parent, playerState_t *ps, centity_t *cent)
 	}
 
 	VectorCopy(parent->lightingOrigin, flash.lightingOrigin);
+
 	flash.shadowPlane = parent->shadowPlane;
 	flash.renderfx = parent->renderfx;
 
@@ -1299,9 +1300,7 @@ static qboolean CG_UpgradeSelectable(upgrade_t upgrade) {
 	return BG_Upgrade(upgrade)->usable;
 }
 
-
 #define ICON_BORDER 4
-
 /*
 =======================================================================================================================================
 CG_DrawItemSelect
@@ -1574,7 +1573,7 @@ void CG_PrevWeapon_f(void) {
 
 /*
 =======================================================================================================================================
-CG_Weapon_f.
+CG_Weapon_f
 =======================================================================================================================================
 */
 void CG_Weapon_f(void) {
@@ -1778,10 +1777,9 @@ void CG_MissileHitEntity(weapon_t weaponNum, weaponMode_t weaponMode, vec3_t ori
 =======================================================================================================================================
 */
 
-
 /*
 =======================================================================================================================================
-CG_Tracer.
+CG_Tracer
 =======================================================================================================================================
 */
 void CG_Tracer(vec3_t source, vec3_t dest) {
@@ -1883,8 +1881,8 @@ static qboolean CG_CalcMuzzlePoint(int entityNum, vec3_t muzzle) {
 	}
 
 	VectorCopy(cent->currentState.pos.trBase, muzzle);
-
 	AngleVectors(cent->currentState.apos.trBase, forward, NULL, NULL);
+
 	anim = cent->currentState.legsAnim & ~ANIM_TOGGLEBIT;
 
 	if (anim == LEGS_WALKCR || anim == LEGS_IDLECR) {
@@ -1894,9 +1892,7 @@ static qboolean CG_CalcMuzzlePoint(int entityNum, vec3_t muzzle) {
 	}
 
 	VectorMA(muzzle, 14, forward, muzzle);
-
 	return qtrue;
-
 }
 
 /*
@@ -2040,4 +2036,3 @@ void CG_Bleed(vec3_t origin, vec3_t normal, int entityNum) {
 		CG_SetParticleSystemNormal(ps, normal);
 	}
 }
-

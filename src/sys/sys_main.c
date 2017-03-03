@@ -26,7 +26,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 #include <string.h>
 #include <ctype.h>
 #include <errno.h>
-
 #ifndef DEDICATED
 #ifdef USE_LOCAL_HEADERS
 #include "SDL.h"
@@ -36,14 +35,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 #include <SDL_cpuinfo.h>
 #endif
 #endif
-
 #include "sys_local.h"
 #include "sys_loadlib.h"
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
 
 static char binaryPath[MAX_OSPATH] = {0};
-
 static char installPath[MAX_OSPATH] = {0};
 
 /*
@@ -80,10 +77,11 @@ Sys_DefaultInstallPath
 */
 char *Sys_DefaultInstallPath(void) {
 
-	if (*installPath)
+	if (*installPath) {
 		return installPath;
 	} else {
 		return Sys_Cwd();
+	}
 }
 
 /*
@@ -150,7 +148,6 @@ char *Sys_GetClipboardData(void) {
 #else
 #define PID_FILENAME PRODUCT_NAME ".pid"
 #endif
-
 /*
 =======================================================================================================================================
 Sys_PIDFileName
@@ -159,8 +156,9 @@ Sys_PIDFileName
 static char *Sys_PIDFileName(void) {
 	const char *homePath = Cvar_VariableString("fs_homepath");
 
-	if (*homePath != '\0')
+	if (*homePath != '\0') {
 		return va("%s/%s", homePath, PID_FILENAME);
+	}
 
 	return NULL;
 }
@@ -177,21 +175,24 @@ qboolean Sys_WritePIDFile(void) {
 	FILE *f;
 	qboolean stale = qfalse;
 
-	if (pidFile == NULL)
+	if (pidFile == NULL) {
 		return qfalse;
+	}
 	// First, check if the pid file is already there
 	if ((f = fopen(pidFile, "r")) != NULL) {
 		char pidBuffer[64] = {0};
 		int pid;
 
 		pid = fread(pidBuffer, sizeof(char), sizeof(pidBuffer) - 1, f);
+
 		fclose(f);
 
 		if (pid > 0) {
 			pid = atoi(pidBuffer);
 
-			if (!Sys_PIDIsRunning(pid))
+			if (!Sys_PIDIsRunning(pid)) {
 				stale = qtrue;
+			}
 		} else {
 			stale = qtrue;
 	}
@@ -201,6 +202,7 @@ qboolean Sys_WritePIDFile(void) {
 		fclose(f);
 	} else {
 		Com_Printf(S_COLOR_YELLOW "Couldn't write %s.\n", pidFile);
+	}
 
 	return stale;
 }
@@ -213,6 +215,7 @@ Single exit point (regular exit or in case of error).
 =======================================================================================================================================
 */
 static __attribute__((noreturn)) void Sys_Exit(int exitCode) {
+
 	CON_Shutdown();
 #ifndef DEDICATED
 	SDL_Quit();
@@ -221,8 +224,9 @@ static __attribute__((noreturn)) void Sys_Exit(int exitCode) {
 		// Normal exit
 		char *pidFile = Sys_PIDFileName();
 
-		if (pidFile != NULL)
+		if (pidFile != NULL) {
 			remove(pidFile);
+		}
 	}
 
 	NET_Shutdown();
@@ -249,17 +253,29 @@ Sys_GetProcessorFeatures
 cpuFeatures_t Sys_GetProcessorFeatures(void) {
 	cpuFeatures_t features = 0;
 #ifndef DEDICATED
-	if (SDL_HasRDTSC())    features |= CF_RDTSC;
+	if (SDL_HasRDTSC()) {
+		features |= CF_RDTSC;
+	}
 
-	if (SDL_Has3DNow())    features |= CF_3DNOW;
+	if (SDL_Has3DNow()) {
+		features |= CF_3DNOW;
+	}
 
-	if (SDL_HasMMX())      features |= CF_MMX;
+	if (SDL_HasMMX()) {
+		features |= CF_MMX;
+	}
 
-	if (SDL_HasSSE())      features |= CF_SSE;
+	if (SDL_HasSSE()) {
+		features |= CF_SSE;
+	}
 
-	if (SDL_HasSSE2())     features |= CF_SSE2;
+	if (SDL_HasSSE2()) {
+		features |= CF_SSE2;
+	}
 
-	if (SDL_HasAltiVec())  features |= CF_ALTIVEC;
+	if (SDL_HasAltiVec()) {
+		features |= CF_ALTIVEC;
+	}
 #endif
 	return features;
 }
@@ -270,7 +286,9 @@ Sys_Init
 =======================================================================================================================================
 */
 void Sys_Init(void) {
+
 	Cmd_AddCommand("in_restart", Sys_In_Restart_f);
+
 	Cvar_Set("arch", OS_STRING " " ARCH_STRING);
 	Cvar_Set("username", Sys_GetCurrentUser());
 }
@@ -293,7 +311,7 @@ void Sys_AnsiColorPrint(const char *msg) {
 		34, // COLOR_BLUE
 		36, // COLOR_CYAN
 		35, // COLOR_MAGENTA
-		0  // COLOR_WHITE
+		0 // COLOR_WHITE
 	};
 
 	while (*msg) {
@@ -310,7 +328,7 @@ void Sys_AnsiColorPrint(const char *msg) {
 				fputs("\033[0m\n", stderr);
 				msg++;
 			} else {
-				// Print the color code(reset first to clear potential inverse(black))
+				// Print the color code (reset first to clear potential inverse(black))
 				Com_sprintf(buffer, sizeof(buffer), "\033[0m\033[%dm", q3ToAnsi[ColorIndex(*(msg + 1))]);
 				fputs(buffer, stderr);
 				msg += 2;
@@ -356,10 +374,8 @@ void Sys_Error(const char *error, ...) {
 	va_end(argptr);
 
 	Sys_ErrorDialog(string);
-
 	Sys_Exit(3);
 }
-
 #if 0
 /*
 =======================================================================================================================================
@@ -377,7 +393,6 @@ static __attribute__((format(printf, 1, 2))) void Sys_Warn(char *warning, ...) {
 	CON_Print(va("Warning: %s", string));
 }
 #endif
-
 /*
 =======================================================================================================================================
 Sys_FileTime
@@ -420,8 +435,9 @@ First try to load library name from system library path, from executable path, t
 void *Sys_LoadDll(const char *name, qboolean useSystemLib) {
 	void *dllhandle;
 
-	if (useSystemLib)
+	if (useSystemLib) {
 		Com_Printf("Trying to load \"%s\"...\n", name);
+	}
 
 	if (!useSystemLib || !(dllhandle = Sys_LoadLibrary(name))) {
 		const char *topDir;
@@ -429,8 +445,9 @@ void *Sys_LoadDll(const char *name, qboolean useSystemLib) {
 
 		topDir = Sys_BinaryPath();
 
-		if (!*topDir)
+		if (!*topDir) {
 			topDir = ".";
+		}
 
 		Com_Printf("Trying to load \"%s\" from \"%s\"...\n", name, topDir);
 		Com_sprintf(libPath, sizeof(libPath), "%s%c%s", topDir, PATH_SEP, name);
@@ -438,17 +455,19 @@ void *Sys_LoadDll(const char *name, qboolean useSystemLib) {
 		if (!(dllhandle = Sys_LoadLibrary(libPath))) {
 			const char *basePath = Cvar_VariableString("fs_basepath");
 
-	if (!basePath || !*basePath)
+			if (!basePath || !*basePath) {
 				basePath = ".";
+			}
 
-	if (FS_FilenameCompare(topDir, basePath)) {
+			if (FS_FilenameCompare(topDir, basePath)) {
 				Com_Printf("Trying to load \"%s\" from \"%s\"...\n", name, basePath);
 				Com_sprintf(libPath, sizeof(libPath), "%s%c%s", basePath, PATH_SEP, name);
 				dllhandle = Sys_LoadLibrary(libPath);
 			}
 
-			if (!dllhandle)
+			if (!dllhandle) {
 				Com_Printf("Loading \"%s\" failed\n", name);
+			}
 		}
 	}
 
@@ -477,12 +496,11 @@ void *Sys_LoadGameDll(const char *name, intptr_t(QDECL **entryPoint)(int, ...), 
 	}
 
 	dllEntry = Sys_LoadFunction(libHandle, "dllEntry");
- *entryPoint = Sys_LoadFunction(libHandle, "vmMain");
+	*entryPoint = Sys_LoadFunction(libHandle, "vmMain");
 
 	if (!*entryPoint || !dllEntry) {
 		Com_Printf("Sys_LoadGameDll(%s) failed to find vmMain function:\n\"%s\" !\n", name, Sys_LibraryError());
 		Sys_UnloadLibrary(libHandle);
-
 		return NULL;
 	}
 
@@ -503,15 +521,14 @@ void Sys_ParseArgs(int argc, char **argv) {
 		if (!strcmp(argv[1], "--version") || !strcmp(argv[1], "-v")) {
 			const char *date = __DATE__;
 #ifdef DEDICATED
-			fprintf(stdout, Q3_VERSION " dedicated server(%s)\n", date);
+			fprintf(stdout, Q3_VERSION " dedicated server (%s)\n", date);
 #else
-			fprintf(stdout, Q3_VERSION " client(%s)\n", date);
+			fprintf(stdout, Q3_VERSION " client (%s)\n", date);
 #endif
 			Sys_Exit(0);
 		}
 	}
 }
-
 #ifndef DEFAULT_BASEDIR
 #ifdef MACOS_X
 #define DEFAULT_BASEDIR Sys_StripAppBundle(Sys_BinaryPath())
@@ -519,7 +536,6 @@ void Sys_ParseArgs(int argc, char **argv) {
 #define DEFAULT_BASEDIR Sys_BinaryPath()
 #endif
 #endif
-
 /*
 =======================================================================================================================================
 Sys_SigHandler
@@ -540,10 +556,11 @@ void Sys_SigHandler(int signal) {
 		VM_Forced_Unload_Done();
 	}
 
-	if (signal == SIGTERM || signal == SIGINT)
+	if (signal == SIGTERM || signal == SIGINT) {
 		Sys_Exit(1);
 	} else {
 		Sys_Exit(2);
+	}
 }
 
 /*
@@ -556,27 +573,20 @@ int main(int argc, char **argv) {
 	char commandLine[MAX_STRING_CHARS] = {0};
 #ifndef DEDICATED
 	// SDL version check
-
 	// Compile time
 #if !SDL_VERSION_ATLEAST (MINSDL_MAJOR, MINSDL_MINOR, MINSDL_PATCH)
-#		error A more recent version of SDL is required
+#error A more recent version of SDL is required
 #endif
-
 	// Run time
 	SDL_version ver;
 	SDL_GetVersion(&ver);
-
 #define MINSDL_VERSION \
 	XSTRING(MINSDL_MAJOR) "." \
 	XSTRING(MINSDL_MINOR) "." \
 	XSTRING(MINSDL_PATCH)
 
-	if (SDL_VERSIONNUM(ver.major, ver.minor, ver.patch) < 
-			SDL_VERSIONNUM(MINSDL_MAJOR, MINSDL_MINOR, MINSDL_PATCH)) {
-		Sys_Dialog(DT_ERROR, va("SDL version " MINSDL_VERSION " or greater is required, "
-			"but only version %d.%d.%d was found. You may be able to obtain a more recent copy "
-			"from http://www.libsdl.org/.", ver.major, ver.minor, ver.patch), "SDL Library Too Old");
-
+	if (SDL_VERSIONNUM(ver.major, ver.minor, ver.patch) < SDL_VERSIONNUM(MINSDL_MAJOR, MINSDL_MINOR, MINSDL_PATCH)) {
+		Sys_Dialog(DT_ERROR, va("SDL version " MINSDL_VERSION " or greater is required, but only version %d.%d.%d was found. You may be able to obtain a more recent copy from http://www.libsdl.org/.", ver.major, ver.minor, ver.patch), "SDL Library Too Old");
 		Sys_Exit(1);
 	}
 #endif
@@ -585,8 +595,9 @@ int main(int argc, char **argv) {
 	Sys_Milliseconds();
 #ifdef MACOS_X
 	// This is passed if we are launched by double-clicking
-	if (argc >= 2 && Q_strncmp(argv[1], "-psn", 4) == 0)
+	if (argc >= 2 && Q_strncmp(argv[1], "-psn", 4) == 0) {
 		argc = 1;
+	}
 #endif
 	Sys_ParseArgs(argc, argv);
 	Sys_SetBinaryPath(Sys_Dirname(argv[0]));
@@ -595,18 +606,21 @@ int main(int argc, char **argv) {
 	for (i = 1; i < argc; i++) {
 		const qboolean containsSpaces = strchr(argv[i], ' ') != NULL;
 
-		if (containsSpaces)
+		if (containsSpaces) {
 			Q_strcat(commandLine, sizeof(commandLine), "\"");
+		}
 
 		Q_strcat(commandLine, sizeof(commandLine), argv[i]);
 
-		if (containsSpaces)
+		if (containsSpaces) {
 			Q_strcat(commandLine, sizeof(commandLine), "\"");
+		}
 
 		Q_strcat(commandLine, sizeof(commandLine), " ");
 	}
 
 	Com_Init(commandLine);
+
 	NET_Init();
 
 	CON_Init();
@@ -624,4 +638,3 @@ int main(int argc, char **argv) {
 
 	return 0;
 }
-

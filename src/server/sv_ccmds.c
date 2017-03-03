@@ -84,8 +84,9 @@ static void SV_Map_f(void) {
 		Cvar_Set("sv_cheats", "0");
 	}
 	// this forces the local master server IP address cache to be updated on sending the next heartbeat
-	for (i = 0; i < MAX_MASTER_SERVERS; i++)
+	for (i = 0; i < MAX_MASTER_SERVERS; i++) {
 		sv_master[i]->modified = qtrue;
+	}
 }
 
 /*
@@ -186,7 +187,7 @@ static void SV_MapRestart_f(void) {
 			continue;
 		}
 
-		if (client->state == CS_ACTIVE)
+		if (client->state == CS_ACTIVE) {
 			SV_ClientEnterWorld(client, &client->lastUsercmd);
 		} else {
 			// If we don't reset client->lastUsercmd and are restarting during map load, the client will hang because we'll use the
@@ -314,4 +315,3 @@ void SV_RemoveOperatorCommands(void) {
 	Cmd_RemoveCommand("sectorlist");
 #endif
 }
-

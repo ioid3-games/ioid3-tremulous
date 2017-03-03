@@ -21,44 +21,35 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
 =======================================================================================================================================
 */
 
-// cg_view.c--setup all the parameters(position, angle, etc)
-// for a 3D rendering
-
+/**************************************************************************************************************************************
+ Setup all the parameters (position, angle, etc.) for a 3D rendering.
+**************************************************************************************************************************************/
 
 #include "cg_local.h"
-
 
 /*
 =======================================================================================================================================
 
-  MODEL TESTING
+	MODEL TESTING
 
-The viewthing and gun positioning tools from Q2 have been integrated and
-enhanced into a single model testing facility.
+	Model viewing can begin with either "testmodel <modelname>" or "testgun <modelname>".
 
-Model viewing can begin with either "testmodel < modelname>" or "testgun < modelname>".
+	The names must be the full pathname after the basedir, like "models/weapons/v_launch/tris.md3" or "players/male/tris.md3"
 
-The names must be the full pathname after the basedir, like
-"models/weapons / v_launch / tris.md3" or "players / male / tris.md3"
+	Testmodel will create a fake entity 100 units in front of the current view position, directly facing the viewer. It will remain
+	immobile, so you can move around it to view it from different angles.
 
-Testmodel will create a fake entity 100 units in front of the current view
-position, directly facing the viewer.  It will remain immobile, so you can
-move around it to view it from different angles.
+	Testgun will cause the model to follow the player around and supress the real view weapon model. The default frame 0 of most guns
+	is completely off screen, so you will probably have to cycle a couple frames to see it.
 
-Testgun will cause the model to follow the player around and supress the real
-view weapon model.  The default frame 0 of most guns is completely off screen, 
-so you will probably have to cycle a couple frames to see it.
+	"nextframe", "prevframe", "nextskin", and "prevskin" commands will change the frame or skin of the testmodel. These are bound to F5,
+	F6, F7, and F8 in q3default.cfg.
 
-"nextframe", "prevframe", "nextskin", and "prevskin" commands will change the
-frame or skin of the testmodel.  These are bound to F5, F6, F7, and F8 in
-q3default.cfg.
+	If a gun is being tested, the "gun_x", "gun_y", and "gun_z" variables will let you adjust the positioning.
 
-If a gun is being tested, the "gun_x", "gun_y", and "gun_z" variables will let
-you adjust the positioning.
+	Note that none of the model testing features update while the game is paused, so it may be convenient to test with deathmatch set
+	to 1 so that bringing down the console doesn't pause the game.
 
-Note that none of the model testing features update while the game is paused, so
-it may be convenient to test with deathmatch set to 1 so that bringing down the
-console doesn't pause the game.
 =======================================================================================================================================
 */
 
@@ -123,18 +114,30 @@ Replaces the current view weapon with the given model.
 =======================================================================================================================================
 */
 void CG_TestGun_f(void) {
+
 	CG_TestModel_f();
 	cg.testGun = qtrue;
 	cg.testModelEntity.renderfx = RF_MINLIGHT|RF_DEPTHHACK|RF_FIRST_PERSON;
 }
 
-
+/*
+=======================================================================================================================================
+CG_TestModelNextFrame_f
+=======================================================================================================================================
+*/
 void CG_TestModelNextFrame_f(void) {
+
 	cg.testModelEntity.frame++;
 	CG_Printf("frame %i\n", cg.testModelEntity.frame);
 }
 
+/*
+=======================================================================================================================================
+CG_TestModelPrevFrame_f
+=======================================================================================================================================
+*/
 void CG_TestModelPrevFrame_f(void) {
+
 	cg.testModelEntity.frame--;
 
 	if (cg.testModelEntity.frame < 0) {
@@ -144,12 +147,24 @@ void CG_TestModelPrevFrame_f(void) {
 	CG_Printf("frame %i\n", cg.testModelEntity.frame);
 }
 
+/*
+=======================================================================================================================================
+CG_TestModelNextSkin_f
+=======================================================================================================================================
+*/
 void CG_TestModelNextSkin_f(void) {
+
 	cg.testModelEntity.skinNum++;
 	CG_Printf("skin %i\n", cg.testModelEntity.skinNum);
 }
 
+/*
+=======================================================================================================================================
+CG_TestModelPrevSkin_f
+=======================================================================================================================================
+*/
 void CG_TestModelPrevSkin_f(void) {
+
 	cg.testModelEntity.skinNum--;
 
 	if (cg.testModelEntity.skinNum < 0) {
@@ -159,9 +174,15 @@ void CG_TestModelPrevSkin_f(void) {
 	CG_Printf("skin %i\n", cg.testModelEntity.skinNum);
 }
 
+/*
+=======================================================================================================================================
+CG_AddTestModel
+=======================================================================================================================================
+*/
 static void CG_AddTestModel(void) {
 	int i;
-	// re - register the model, because the level may have changed
+
+	// re-register the model, because the level may have changed
 	cg.testModelEntity.hModel = trap_R_RegisterModel(cg.testModelName);
 	cg.testModelBarrelEntity.hModel = trap_R_RegisterModel(cg.testModelBarrelName);
 
@@ -169,7 +190,7 @@ static void CG_AddTestModel(void) {
 		CG_Printf("Can't register model\n");
 		return;
 	}
-	// if testing a gun, set the origin reletive to the view origin
+	// if testing a gun, set the origin relative to the view origin
 	if (cg.testGun) {
 		VectorCopy(cg.refdef.vieworg, cg.testModelEntity.origin);
 		VectorCopy(cg.refdef.viewaxis[0], cg.testModelEntity.axis[0]);
@@ -192,9 +213,6 @@ static void CG_AddTestModel(void) {
 	}
 }
 
-// ============================================================================ 
-
-
 /*
 =======================================================================================================================================
 CG_CalcVrect
@@ -204,7 +222,8 @@ Sets the coordinates of the rendered window.
 */
 static void CG_CalcVrect(void) {
 	int size;
-	// the intermission should allways be full screen
+
+	// the intermission should always be full screen
 	if (cg.snap->ps.pm_type == PM_INTERMISSION) {
 		size = 100;
 	} else {
@@ -212,16 +231,14 @@ static void CG_CalcVrect(void) {
 	}
 
 	cg.refdef.width = cgs.glconfig.vidWidth * size / 100;
-	cg.refdef.width & = ~1;
+	cg.refdef.width &= ~1;
 
 	cg.refdef.height = cgs.glconfig.vidHeight * size / 100;
-	cg.refdef.height & = ~1;
+	cg.refdef.height &= ~1;
 
 	cg.refdef.x = (cgs.glconfig.vidWidth - cg.refdef.width) / 2;
 	cg.refdef.y = (cgs.glconfig.vidHeight - cg.refdef.height) / 2;
 }
-
-// ============================================================================== 
 
 /*
 =======================================================================================================================================
@@ -233,7 +250,7 @@ void CG_OffsetThirdPersonView(void) {
 	vec3_t forward, right, up;
 	vec3_t view;
 	trace_t trace;
-	static vec3_t mins = {- 8, -8, -8};
+	static vec3_t mins = {-8, -8, -8};
 	static vec3_t maxs = {8, 8, 8};
 	vec3_t focusPoint;
 	vec3_t surfNormal;
@@ -288,16 +305,14 @@ void CG_OffsetThirdPersonView(void) {
 		range = 30.0f;
 	}
 	// calculate the angle of the camera's position around the player.
-	// unless in demo, PLAYING in third person, or in dead - third - person cam, allow the player 
-	// to control camera position offsets using the mouse position.
+	// unless in demo, PLAYING in third person, or in dead - third - person cam, allow the player  to control camera position offsets using the mouse position.
 	if (cg.demoPlayback || ((cg.snap->ps.pm_flags & PMF_FOLLOW) && (cg.predictedPlayerState.stats[STAT_HEALTH] > 0))) {
 		// collect our input values from the mouse.
 		cmdNum = trap_GetCurrentCmdNumber();
 		trap_GetUserCmd(cmdNum, &cmd);
 		trap_GetUserCmd(cmdNum - 1, &oldCmd);
 		// prevent pitch from wrapping and clamp it within a [- 75, 90] range.
-		// cgame has no access to ps.delta_angles[] here, so we need to reproduce
-		// it ourselves.
+		// cgame has no access to ps.delta_angles[] here, so we need to reproduce it ourselves.
 		deltaPitch = SHORT2ANGLE(cmd.angles[PITCH] - oldCmd.angles[PITCH]);
 
 		if (fabs(deltaPitch) < 200.0f) {
@@ -321,10 +336,8 @@ void CG_OffsetThirdPersonView(void) {
 			rotationAngles[i] = AngleNormalize180(cg.refdefViewAngles[i]) + mouseInputAngles[i];
 			AngleNormalize180(rotationAngles[i]);
 		}
-		// don't let pitch go too high / too low or the camera flips around and
-		// that's really annoying.
-		// however, when we're not on the floor or ceiling(wallwalk) pitch 
-		// may not be pitch, so just let it go.
+		// don't let pitch go too high/too low or the camera flips around and that's really annoying.
+		// however, when we're not on the floor or ceiling (wallwalk) pitch may not be pitch, so just let it go.
 		if (surfNormal[2] > 0.5f || surfNormal[2] < -0.5f) {
 			if (rotationAngles[PITCH] > 85.0f) {
 				rotationAngles[PITCH] = 85.0f;
@@ -342,8 +355,7 @@ void CG_OffsetThirdPersonView(void) {
 		AxisToAngles(rotaxis, rotationAngles);
 	} else {
 		if (cg.predictedPlayerState.stats[STAT_HEALTH] > 0) {
-			// if we're playing the game in third person, the viewangles already
-			// take care of our mouselook, so just use them.
+			// if we're playing the game in third person, the viewangles already take care of our mouselook, so just use them.
 			for (i = 0; i < 3; i++) {
 				rotationAngles[i] = cg.refdefViewAngles[i];
 			}
@@ -358,27 +370,22 @@ void CG_OffsetThirdPersonView(void) {
 	AngleVectors(rotationAngles, forward, right, up);
 	VectorCopy(cg.refdef.vieworg, view);
 	VectorMA(view, -range, forward, view);
-	// ensure that the current camera position isn't out of bounds and that there
-	// is nothing between the camera and the player.
+	// ensure that the current camera position isn't out of bounds and that there is nothing between the camera and the player.
 	if (!cg_cameraMode.integer) {
-		// trace a ray from the origin to the viewpoint to make sure the view isn't
-		// in a solid block.  Use an 8 by 8 block to prevent the view from near clipping anything
+		// trace a ray from the origin to the viewpoint to make sure the view isn't in a solid block. Use an 8 by 8 block to prevent the view from near clipping anything
 		CG_Trace(&trace, cg.refdef.vieworg, mins, maxs, view, cg.predictedPlayerState.clientNum, MASK_SOLID);
 
 		if (trace.fraction != 1.0f) {
 			VectorCopy(trace.endpos, view);
 			view[2] += (1.0f - trace.fraction) * 32;
-			// try another trace to this position, because a tunnel may have the ceiling
-			// close enogh that this is poking out.
-
+			// try another trace to this position, because a tunnel may have the ceiling close enough that this is poking out
 			CG_Trace(&trace, cg.refdef.vieworg, mins, maxs, view, cg.predictedPlayerState.clientNum, MASK_SOLID);
 			VectorCopy(trace.endpos, view);
 		}
 	}
 	// set the camera position to what we calculated.
 	VectorCopy(view, cg.refdef.vieworg);
-	// the above checks may have moved the camera such that the existing viewangles
-	// may not still face the player. Recalculate them to do so.
+	// the above checks may have moved the camera such that the existing viewangles may not still face the player. Recalculate them to do so.
 	// but if we're dead, don't bother because we'd rather see what killed us
 	if (cg.predictedPlayerState.stats[STAT_HEALTH] > 0) {
 		VectorSubtract(focusPoint, cg.refdef.vieworg, focusPoint);
@@ -413,8 +420,7 @@ void CG_OffsetShoulderView(void) {
 	VectorMA(cg.refdef.vieworg, classConfig->shoulderOffsets[0], forward, cg.refdef.vieworg);
 	VectorMA(cg.refdef.vieworg, classConfig->shoulderOffsets[1], right, cg.refdef.vieworg);
 	VectorMA(cg.refdef.vieworg, classConfig->shoulderOffsets[2], up, cg.refdef.vieworg);
-	// if someone is playing like this, the rest is already taken care of
-	// so just get the firstperson effects and leave.
+	// if someone is playing like this, the rest is already taken care of so just get the firstperson effects and leave.
 	if (!cg.demoPlayback && !(cg.snap->ps.pm_flags & PMF_FOLLOW)) {
 		CG_OffsetFirstPersonView();
 		return;
@@ -424,8 +430,7 @@ void CG_OffsetShoulderView(void) {
 	trap_GetUserCmd(cmdNum, &cmd);
 	trap_GetUserCmd(cmdNum - 1, &oldCmd);
 	// prevent pitch from wrapping and clamp it within a [30, -50] range.
-	// cgame has no access to ps.delta_angles[] here, so we need to reproduce
-	// it ourselves here.
+	// cgame has no access to ps.delta_angles[] here, so we need to reproduce it ourselves here.
 	deltaMousePitch = SHORT2ANGLE(cmd.angles[PITCH] - oldCmd.angles[PITCH]);
 
 	if (fabs(deltaMousePitch) < 200.0f) {
@@ -433,7 +438,6 @@ void CG_OffsetShoulderView(void) {
 	}
 	// handle pitch.
 	rotationAngles[PITCH] = mousePitch;
-
 	rotationAngles[PITCH] = AngleNormalize180(rotationAngles[PITCH] + AngleNormalize180(cg.refdefViewAngles[PITCH]));
 
 	if (rotationAngles [PITCH] < -90.0f) {
@@ -462,6 +466,13 @@ void CG_OffsetShoulderView(void) {
 	CG_OffsetFirstPersonView();
 }
 
+/*
+=======================================================================================================================================
+CG_StepOffset
+
+NOTE: This causes a compiler bug on mac MrC compiler.
+=======================================================================================================================================
+*/
 // this causes a compiler bug on mac MrC compiler
 static void CG_StepOffset(void) {
 	float steptime;
@@ -487,7 +498,6 @@ static void CG_StepOffset(void) {
 #define PCLOUD_ZOOM_AMPLITUDE 15
 #define PCLOUD_ZOOM_FREQUENCY 0.625f // 2.5s / 4
 #define PCLOUD_DISORIENT_DURATION 2500
-
 
 /*
 =======================================================================================================================================
@@ -561,14 +571,13 @@ void CG_OffsetFirstPersonView(void) {
 	angles[ROLL] -= delta * cg_runroll.value;
 	// add angles based on bob
 	// bob amount is class dependant
-
 	if (cg.snap->ps.persistant[PERS_SPECSTATE] != SPECTATOR_NOT) {
 		bob2 = 0.0f;
 	} else {
 		bob2 = BG_Class(cg.predictedPlayerState.stats[STAT_CLASS])->bob;
 	}
 
-#define LEVEL4_FEEDBACK  10.0f
+#define LEVEL4_FEEDBACK 10.0f
 	// give a charging player some feedback
 	if (ps->weapon == WP_ALEVEL4) {
 		if (ps->stats[STAT_MISC] > 0) {
@@ -605,7 +614,7 @@ void CG_OffsetFirstPersonView(void) {
 		angles[ROLL] += delta;
 	}
 
-#define LEVEL3_FEEDBACK  20.0f
+#define LEVEL3_FEEDBACK 20.0f
 
 	// provide some feedback for pouncing
 	if ((cg.predictedPlayerState.weapon == WP_ALEVEL3 ||´cg.predictedPlayerState.weapon == WP_ALEVEL3_UPG) && cg.predictedPlayerState.stats[STAT_MISC] > 0) {
@@ -716,7 +725,7 @@ void CG_OffsetFirstPersonView(void) {
 	timeDelta = cg.time - cg.duckTime;
 
 	if (timeDelta < DUCK_TIME) {
-		cg.refdef.vieworg[2] -= cg.duckChange *(DUCK_TIME - timeDelta) / DUCK_TIME;
+		cg.refdef.vieworg[2] -= cg.duckChange * DUCK_TIME - timeDelta) / DUCK_TIME;
 	}
 	// add bob height
 	bob = cg.bobfracsin * cg.xyspeed * bob2;
@@ -741,6 +750,13 @@ void CG_OffsetFirstPersonView(void) {
 	CG_StepOffset();
 }
 
+#define WAVE_AMPLITUDE 1.0f
+#define WAVE_FREQUENCY 0.4f
+#define FOVWARPTIME 400.0f
+#define BASE_FOV_Y 73.739792f // atan2(3, 4 / tan(90))
+#define MAX_FOV_Y 120.0f
+#define MAX_FOV_WARP_Y 127.5f
+
 /*
 =======================================================================================================================================
 CG_CalcFov
@@ -748,14 +764,6 @@ CG_CalcFov
 Fixed fov at intermissions, otherwise account for fov variable and zooms.
 =======================================================================================================================================
 */
-#define WAVE_AMPLITUDE 1.0f
-#define WAVE_FREQUENCY 0.4f
-
-#define FOVWARPTIME 400.0f
-#define BASE_FOV_Y 73.739792f // atan2(3, 4 / tan(90))
-#define MAX_FOV_Y 120.0f
-#define MAX_FOV_WARP_Y 127.5f
-
 static int CG_CalcFov(void) {
 	float y;
 	float phase;
@@ -933,7 +941,7 @@ static void CG_DrawSurfNormal(void) {
 
 /*
 =======================================================================================================================================
-CG_addSmoothOp.
+CG_addSmoothOp
 =======================================================================================================================================
 */
 void CG_addSmoothOp(vec3_t rotAxis, float rotAngle, float timeMod) {
@@ -956,7 +964,7 @@ void CG_addSmoothOp(vec3_t rotAxis, float rotAngle, float timeMod) {
 
 /*
 =======================================================================================================================================
-CG_smoothWWTransitions.
+CG_smoothWWTransitions
 =======================================================================================================================================
 */
 static void CG_smoothWWTransitions(playerState_t *ps, const vec3_t in, vec3_t out) {
@@ -979,8 +987,7 @@ static void CG_smoothWWTransitions(playerState_t *ps, const vec3_t in, vec3_t ou
 	AnglesToAxis(in, inAxis);
 	// if we are moving from one surface to another smooth the transition
 	if (!VectorCompare(surfNormal, cg.lastNormal)) {
-		// if we moving from the ceiling to the floor special case
-		// (x product of colinear vectors is undefined)
+		// if we moving from the ceiling to the floor special case (x product of colinear vectors is undefined)
 		if (VectorCompare(ceilingNormal, cg.lastNormal) && VectorCompare(refNormal, surfNormal)) {
 			AngleVectors(in, temp, NULL, NULL);
 			ProjectPointOnPlane(rotAxis, temp, refNormal);
@@ -1035,7 +1042,7 @@ static void CG_smoothWWTransitions(playerState_t *ps, const vec3_t in, vec3_t ou
 
 /*
 =======================================================================================================================================
-CG_smoothWJTransitions.
+CG_smoothWJTransitions
 =======================================================================================================================================
 */
 static void CG_smoothWJTransitions(playerState_t *ps, const vec3_t in, vec3_t out) {
@@ -1093,7 +1100,6 @@ static int CG_CalcViewValues(void) {
 		VectorCopy(ps->origin, cg.refdef.vieworg);
 		VectorCopy(ps->viewangles, cg.refdefViewAngles);
 		AnglesToAxis(cg.refdefViewAngles, cg.refdef.viewaxis);
-
 		return CG_CalcFov();
 	}
 
@@ -1114,8 +1120,7 @@ static int CG_CalcViewValues(void) {
 	} else {
 		VectorCopy(ps->viewangles, cg.refdefViewAngles);
 	}
-	// clumsy logic, but it needs to be this way round because the CS propogation
-	// delay screws things up otherwise
+	// clumsy logic, but it needs to be this way round because the CS propogation delay screws things up otherwise
 	if (!BG_ClassHasAbility(ps->stats[STAT_CLASS], SCA_WALLJUMPER)) {
 		if (!(ps->stats[STAT_STATE] & SS_WALLCLIMBING)) {
 			VectorSet(cg.lastNormal, 0.0f, 0.0f, 1.0f);
@@ -1151,7 +1156,7 @@ static int CG_CalcViewValues(void) {
 		// offset for local bobbing and kicks
 		CG_OffsetFirstPersonView();
 	}
-	// position eye reletive to origin
+	// position eye relative to origin
 	AnglesToAxis(cg.refdefViewAngles, cg.refdef.viewaxis);
 
 	if (cg.hyperspace) {
@@ -1226,8 +1231,7 @@ void CG_DrawActiveFrame(int serverTime, stereoFrame_t stereoView, qboolean demoP
 	trap_R_ClearScene();
 	// set up cg.snap and possibly cg.nextSnap
 	CG_ProcessSnapshots();
-	// if we haven't received any snapshots yet, all
-	// we can draw is the information screen
+	// if we haven't received any snapshots yet, all we can draw is the information screen
 	if (!cg.snap || (cg.snap->snapFlags & SNAPFLAG_NOT_ACTIVE)) {
 		CG_DrawLoadingScreen();
 		return;
@@ -1264,6 +1268,7 @@ void CG_DrawActiveFrame(int serverTime, stereoFrame_t stereoView, qboolean demoP
 	}
 
 	cg.refdef.time = cg.time;
+
 	memcpy(cg.refdef.areamask, cg.snap->areamask, sizeof(cg.refdef.areamask));
 	// remove expired console lines
 	if (cg.consoleLines[0].time + cg_consoleLatency.integer < cg.time && cg_consoleLatency.integer > 0) {
@@ -1309,4 +1314,3 @@ void CG_DrawActiveFrame(int serverTime, stereoFrame_t stereoView, qboolean demoP
 		CG_Printf("cg.clientFrame:%i\n", cg.clientFrame);
 	}
 }
-

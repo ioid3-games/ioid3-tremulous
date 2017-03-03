@@ -31,11 +31,18 @@ Return the team referenced by a string.
 =======================================================================================================================================
 */
 team_t G_TeamFromString(char *str) {
+
 	switch (tolower(*str)) {
-		case '0' : case 's' : return TEAM_NONE;
-		case '1' : case 'a' : return TEAM_ALIENS;
-		case '2' : case 'h' : return TEAM_HUMANS;
-		default : return NUM_TEAMS;
+		case '0':
+		case 's':
+			return TEAM_NONE;
+		case '1':
+		case 'a':
+			return TEAM_ALIENS;
+		case '2':
+		case 'h':
+			return TEAM_HUMANS;
+		default: return NUM_TEAMS;
 	}
 }
 
@@ -51,31 +58,34 @@ void G_TeamCommand(team_t team, const char *cmd) {
 
 	for (i = 0; i < level.maxclients; i++) {
 		if (level.clients[i].pers.connected == CON_CONNECTED) {
-			if (level.clients[i].pers.teamSelection == team ||
-(level.clients[i].pers.teamSelection == TEAM_NONE && G_admin_permission(&g_entities[i], ADMF_SPEC_ALLCHAT)))
+			if (level.clients[i].pers.teamSelection == team || (level.clients[i].pers.teamSelection == TEAM_NONE && G_admin_permission(&g_entities[i], ADMF_SPEC_ALLCHAT))) {
 				trap_SendServerCommand(i, cmd);
+			}
 		}
 	}
 }
 
 /*
 =======================================================================================================================================
-OnSameTeam.
+OnSameTeam
 =======================================================================================================================================
 */
 qboolean OnSameTeam(gentity_t *ent1, gentity_t *ent2) {
-	if (!ent1->client || !ent2->client)
-		return qfalse;
 
-	if (ent1->client->pers.teamSelection == ent2->client->pers.teamSelection)
+	if (!ent1->client || !ent2->client) {
+		return qfalse;
+	}
+
+	if (ent1->client->pers.teamSelection == ent2->client->pers.teamSelection) {
 		return qtrue;
+	}
 
 	return qfalse;
 }
 
 /*
 =======================================================================================================================================
-G_ClientListForTeam.
+G_ClientListForTeam
 =======================================================================================================================================
 */
 static clientList_t G_ClientListForTeam(team_t team) {
@@ -87,11 +97,13 @@ static clientList_t G_ClientListForTeam(team_t team) {
 	for (i = 0; i < g_maxclients.integer; i++) {
 		gentity_t *ent = g_entities + i;
 
-		if (ent->client->pers.connected != CON_CONNECTED)
+		if (ent->client->pers.connected != CON_CONNECTED) {
 			continue;
+		}
 
-		if (ent->inuse && (ent->client->ps.stats[STAT_TEAM] == team))
+		if (ent->inuse && (ent->client->ps.stats[STAT_TEAM] == team)) {
 			Com_ClientListAdd(&clientList, ent->client->ps.clientNum);
+		}
 	}
 
 	return clientList;
@@ -99,7 +111,7 @@ static clientList_t G_ClientListForTeam(team_t team) {
 
 /*
 =======================================================================================================================================
-G_UpdateTeamConfigStrings.
+G_UpdateTeamConfigStrings
 =======================================================================================================================================
 */
 void G_UpdateTeamConfigStrings(void) {
@@ -128,7 +140,7 @@ void G_UpdateTeamConfigStrings(void) {
 
 /*
 =======================================================================================================================================
-G_LeaveTeam.
+G_LeaveTeam
 =======================================================================================================================================
 */
 void G_LeaveTeam(gentity_t *self) {
@@ -136,13 +148,15 @@ void G_LeaveTeam(gentity_t *self) {
 	gentity_t *ent;
 	int i;
 
-	if (team == TEAM_ALIENS)
+	if (team == TEAM_ALIENS) {
 		G_RemoveFromSpawnQueue(&level.alienSpawnQueue, self->client->ps.clientNum);
-	else if (team == TEAM_HUMANS)
+	} else if (team == TEAM_HUMANS) {
 		G_RemoveFromSpawnQueue(&level.humanSpawnQueue, self->client->ps.clientNum);
-	else {
-		if (self->client->sess.spectatorState == SPECTATOR_FOLLOW)
+	} else {
+		if (self->client->sess.spectatorState == SPECTATOR_FOLLOW) {
 			G_StopFollowing(self);
+		}
+
 		return;
 	}
 	// stop any following clients
@@ -154,15 +168,18 @@ void G_LeaveTeam(gentity_t *self) {
 	for (i = 0; i < level.num_entities; i++) {
 		ent = &g_entities[i];
 
-		if (!ent->inuse)
+		if (!ent->inuse) {
 			continue;
+		}
 
 		if (ent->client && ent->client->pers.connected == CON_CONNECTED) {
 			// cure poison
-			if (ent->client->ps.stats[STAT_STATE] & SS_POISONED && ent->client->lastPoisonClient == self)
+			if (ent->client->ps.stats[STAT_STATE] & SS_POISONED && ent->client->lastPoisonClient == self) {
 				ent->client->ps.stats[STAT_STATE] & = ~SS_POISONED;
-		} else if (ent->s.eType == ET_MISSILE && ent->r.ownerNum == self->s.number)
+			}
+		} else if (ent->s.eType == ET_MISSILE && ent->r.ownerNum == self->s.number) {
 			G_FreeEntity(ent);
+		}
 	}
 	// cut all relevant zap beams
 	G_ClearPlayerZapEffects(self);
@@ -172,44 +189,38 @@ void G_LeaveTeam(gentity_t *self) {
 
 /*
 =======================================================================================================================================
-G_ChangeTeam.
+G_ChangeTeam
 =======================================================================================================================================
 */
 void G_ChangeTeam(gentity_t *ent, team_t newTeam) {
 	team_t oldTeam = ent->client->pers.teamSelection;
 
-	if (oldTeam == newTeam)
+	if (oldTeam == newTeam) {
 		return;
+	}
 
 	G_LeaveTeam(ent);
 	ent->client->pers.teamChangeTime = level.time;
 	ent->client->pers.teamSelection = newTeam;
 	ent->client->pers.classSelection = PCL_NONE;
+
 	ClientSpawn(ent, NULL, NULL, NULL);
 
 	if (oldTeam == TEAM_HUMANS && newTeam == TEAM_ALIENS) {
 		// convert from human to alien credits
-		ent->client->pers.credit = 
-(int)(ent->client->pers.credit *
-						ALIEN_MAX_CREDITS / HUMAN_MAX_CREDITS + 0.5f);
+		ent->client->pers.credit = (int)(ent->client->pers.credit * ALIEN_MAX_CREDITS / HUMAN_MAX_CREDITS + 0.5f);
 	} else if (oldTeam == TEAM_ALIENS && newTeam == TEAM_HUMANS) {
 		// convert from alien to human credits
-		ent->client->pers.credit = 
-(int)(ent->client->pers.credit *
-						HUMAN_MAX_CREDITS / ALIEN_MAX_CREDITS + 0.5f);
+		ent->client->pers.credit = (int)(ent->client->pers.credit * HUMAN_MAX_CREDITS / ALIEN_MAX_CREDITS + 0.5f);
 	}
 	// copy credits to ps for the client
 	ent->client->ps.persistant[PERS_CREDIT] = ent->client->pers.credit;
 
 	ClientUserinfoChanged(ent->client->ps.clientNum, qfalse);
-
 	G_UpdateTeamConfigStrings();
-
-	G_LogPrintf("ChangeTeam : %d %s : %s" S_COLOR_WHITE " switched teams\n", 
-(int)(ent - g_entities), BG_TeamName(newTeam), ent->client->pers.netname);
-
+	G_LogPrintf("ChangeTeam : %d %s : %s" S_COLOR_WHITE " switched teams\n", (int)(ent - g_entities), BG_TeamName(newTeam), ent->client->pers.netname);
 	G_namelog_update_score(ent->client);
-  TeamplayInfoMessage(ent);
+	TeamplayInfoMessage(ent);
 }
 
 /*
@@ -223,17 +234,19 @@ gentity_t *Team_GetLocation(gentity_t *ent) {
 	gentity_t *eloc, *best;
 	float bestlen, len;
 
-  best = NULL;
-  bestlen = 3.0f * 8192.0f * 8192.0f;
+	best = NULL;
+	bestlen = 3.0f * 8192.0f * 8192.0f;
 
 	for (eloc = level.locationHead; eloc; eloc = eloc->nextTrain) {
 		len = DistanceSquared(ent->r.currentOrigin, eloc->r.currentOrigin);
 
-		if (len > bestlen)
+		if (len > bestlen) {
 			continue;
+		}
 
-		if (!trap_InPVS(ent->r.currentOrigin, eloc->r.currentOrigin))
+		if (!trap_InPVS(ent->r.currentOrigin, eloc->r.currentOrigin)) {
 			continue;
+		}
 
 		bestlen = len;
 		best = eloc;
@@ -242,14 +255,11 @@ gentity_t *Team_GetLocation(gentity_t *ent) {
 	return best;
 }
 
-/*--------------------------------------------------------------------------- */
-
 /*
 =======================================================================================================================================
 TeamplayInfoMessage
 
-Format:
-	clientNum location health weapon upgrade
+Format: clientNum location health weapon upgrade
 =======================================================================================================================================
 */
 void TeamplayInfoMessage(gentity_t *ent) {
@@ -258,43 +268,48 @@ void TeamplayInfoMessage(gentity_t *ent) {
 	int team, stringlength;
 	gentity_t *player;
 	gclient_t *cl;
-  upgrade_t upgrade = UP_NONE;
+	upgrade_t upgrade = UP_NONE;
 	int curWeaponClass = WP_NONE; // sends weapon for humans, class for aliens
 	char *format;
 
-	if (!g_allowTeamOverlay.integer)
+	if (!g_allowTeamOverlay.integer) {
 		return;
+	}
 
-	if (!ent->client->pers.teamInfo)
+	if (!ent->client->pers.teamInfo) {
 		return;
+	}
 
 	if (ent->client->pers.teamSelection == TEAM_NONE) {
-		if (ent->client->sess.spectatorState == SPECTATOR_FREE ||
-				ent->client->sess.spectatorClient < 0)
+		if (ent->client->sess.spectatorState == SPECTATOR_FREE || ent->client->sess.spectatorClient < 0) {
 			return;
-		team = g_entities[ent->client->sess.spectatorClient].client->
-			pers.teamSelection;
-	} else
+		}
+
+		team = g_entities[ent->client->sess.spectatorClient].client->pers.teamSelection;
+	} else {
 		team = ent->client->pers.teamSelection;
+	}
 
-	if (team == TEAM_ALIENS)
+	if (team == TEAM_ALIENS) {
 		format = " %i %i %i %i"; // aliens don't have upgrades
-	else
+	} else {
 		format = " %i %i %i %i %i";
+	}
 
-  string[0] = '\0';
-  stringlength = 0;
+	string[0] = '\0';
+	stringlength = 0;
 
 	for (i = 0; i < level.maxclients; i++) {
 		player = g_entities + i;
 		cl = player->client;
 
-		if (ent == player || !cl || team != cl->pers.teamSelection ||
-				!player->inuse)
+		if (ent == player || !cl || team != cl->pers.teamSelection || !player->inuse) {
 			continue;
+		}
 		// only update if changed since last time
-		if (cl->pers.infoChangeTime <= ent->client->pers.teamInfo)
+		if (cl->pers.infoChangeTime <= ent->client->pers.teamInfo) {
 			continue;
+		}
 
 		if (cl->sess.spectatorState != SPECTATOR_NOT) {
 			curWeaponClass = WP_NONE;
@@ -302,18 +317,19 @@ void TeamplayInfoMessage(gentity_t *ent) {
 		} else if (cl->pers.teamSelection == TEAM_HUMANS) {
 			curWeaponClass = cl->ps.weapon;
 
-			if (BG_InventoryContainsUpgrade(UP_BATTLESUIT, cl->ps.stats))
+			if (BG_InventoryContainsUpgrade(UP_BATTLESUIT, cl->ps.stats)) {
 				upgrade = UP_BATTLESUIT;
-			else if (BG_InventoryContainsUpgrade(UP_JETPACK, cl->ps.stats))
+			} else if (BG_InventoryContainsUpgrade(UP_JETPACK, cl->ps.stats)) {
 				upgrade = UP_JETPACK;
-			else if (BG_InventoryContainsUpgrade(UP_BATTPACK, cl->ps.stats))
+			} else if (BG_InventoryContainsUpgrade(UP_BATTPACK, cl->ps.stats)) {
 				upgrade = UP_BATTPACK;
-			else if (BG_InventoryContainsUpgrade(UP_HELMET, cl->ps.stats))
+			} else if (BG_InventoryContainsUpgrade(UP_HELMET, cl->ps.stats)) {
 				upgrade = UP_HELMET;
-			else if (BG_InventoryContainsUpgrade(UP_LIGHTARMOUR, cl->ps.stats))
+			} else if (BG_InventoryContainsUpgrade(UP_LIGHTARMOUR, cl->ps.stats)) {
 				upgrade = UP_LIGHTARMOUR;
-			else
+			} else {
 				upgrade = UP_NONE;
+			}
 		} else if (cl->pers.teamSelection == TEAM_ALIENS) {
 			curWeaponClass = cl->ps.stats[STAT_CLASS];
 			upgrade = UP_NONE;
@@ -323,8 +339,9 @@ void TeamplayInfoMessage(gentity_t *ent) {
 
 		j = strlen(entry);
 		// this should not happen if entry and string sizes are correct
-		if (stringlength + j >= sizeof(string))
+		if (stringlength + j >= sizeof(string)) {
 			break;
+		}
 
 		strcpy(string + stringlength, entry);
 		stringlength += j;
@@ -336,6 +353,11 @@ void TeamplayInfoMessage(gentity_t *ent) {
 	}
 }
 
+/*
+=======================================================================================================================================
+CheckTeamStatus
+=======================================================================================================================================
+*/
 void CheckTeamStatus(void) {
 	int i;
 	gentity_t *loc, *ent;
@@ -346,12 +368,11 @@ void CheckTeamStatus(void) {
 		for (i = 0; i < g_maxclients.integer; i++) {
 			ent = g_entities + i;
 
-			if (ent->client->pers.connected != CON_CONNECTED)
+			if (ent->client->pers.connected != CON_CONNECTED) {
 				continue;
+			}
 
-			if (ent->inuse && (ent->client->ps.stats[STAT_TEAM] == TEAM_HUMANS ||
-													ent->client->ps.stats[STAT_TEAM] == TEAM_ALIENS)) {
-
+			if (ent->inuse && (ent->client->ps.stats[STAT_TEAM] == TEAM_HUMANS || ent->client->ps.stats[STAT_TEAM] == TEAM_ALIENS)) {
 				loc = Team_GetLocation(ent);
 
 				if (loc) {
@@ -369,28 +390,24 @@ void CheckTeamStatus(void) {
 		for (i = 0; i < g_maxclients.integer; i++) {
 			ent = g_entities + i;
 
-			if (ent->client->pers.connected != CON_CONNECTED)
+			if (ent->client->pers.connected != CON_CONNECTED) {
 				continue;
+			}
 
-			if (ent->inuse)
+			if (ent->inuse) {
 				TeamplayInfoMessage(ent);
+			}
 		}
 	}
 	// warn on imbalanced teams
-	if (g_teamImbalanceWarnings.integer && !level.intermissiontime && 
-(level.time - level.lastTeamImbalancedTime>
-(g_teamImbalanceWarnings.integer * 1000)) && level.numTeamImbalanceWarnings < 3 && !level.restarted) {
+	if (g_teamImbalanceWarnings.integer && !level.intermissiontime && (level.time - level.lastTeamImbalancedTime > (g_teamImbalanceWarnings.integer * 1000)) && level.numTeamImbalanceWarnings < 3 && !level.restarted) {
 		level.lastTeamImbalancedTime = level.time;
 
-		if (level.numAlienSpawns > 0 && 
-				level.numHumanClients - level.numAlienClients > 2) {
-			trap_SendServerCommand(-1, "print \"Teams are imbalanced. "
-																	"Humans have more players.\n\"");
+		if (level.numAlienSpawns > 0 && level.numHumanClients - level.numAlienClients > 2) {
+			trap_SendServerCommand(-1, "print \"Teams are imbalanced. Humans have more players.\n\"");
 			level.numTeamImbalanceWarnings++;
-		} else if (level.numHumanSpawns > 0 && 
-						level.numAlienClients - level.numHumanClients > 2) {
-			trap_SendServerCommand(-1, "print \"Teams are imbalanced. "
-																	"Aliens have more players.\n\"");
+		} else if (level.numHumanSpawns > 0 && level.numAlienClients - level.numHumanClients > 2) {
+			trap_SendServerCommand(-1, "print \"Teams are imbalanced. Aliens have more players.\n\"");
 			level.numTeamImbalanceWarnings++;
 		} else {
 			level.numTeamImbalanceWarnings = 0;

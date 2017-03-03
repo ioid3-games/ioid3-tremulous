@@ -242,7 +242,7 @@ void CL_Voip_f(void) {
 		reason = "Voip codec not initialized";
 	} else if (!clc.voipEnabled) {
 		reason = "Server doesn't support VoIP";
-	v
+	}
 
 	if (reason != NULL) {
 		Com_Printf("VoIP : command ignored : %s\n", reason);
@@ -260,8 +260,7 @@ void CL_Voip_f(void) {
 			int id = atoi(Cmd_Argv(2));
 
 			if (id >= 0 && id < MAX_CLIENTS) {
-				Com_Printf("VoIP : current gain for player #%d "
-					"is %f\n", id, clc.voipGain[id]);
+				Com_Printf("VoIP : current gain for player #%d is %f\n", id, clc.voipGain[id]);
 			} else {
 				Com_Printf("VoIP : invalid player ID#\n");
 			}
@@ -289,6 +288,7 @@ CL_VoipNewGeneration
 =======================================================================================================================================
 */
 static void CL_VoipNewGeneration(void) {
+
 	// don't have a zero generation so new clients won't match, and don't wrap to negative so MSG_ReadLong() doesn't "fail."
 	clc.voipOutgoingGeneration++;
 
@@ -362,10 +362,7 @@ void CL_VoipParseTargets(void) {
 		}
 
 		if (val < 0 || val >= MAX_CLIENTS) {
-			Com_Printf(S_COLOR_YELLOW "WARNING: VoIP "
-					"target %d is not a valid client "
-					"number\n", val);
-
+			Com_Printf(S_COLOR_YELLOW "WARNING: VoIP target %d is not a valid client number\n", val);
 			continue;
 		}
 
@@ -566,9 +563,9 @@ The given command will be transmitted to the server, and is gauranteed to not ha
 */
 void CL_AddReliableCommand(const char *cmd, qboolean isDisconnectCmd) {
 	int unacknowledged = clc.reliableSequence - clc.reliableAcknowledge;
+
 	// if we would be losing an old command that hasn't been acknowledged, we must drop the connection
 	// also leave one slot open for the disconnect command in this case.
-
 	if ((isDisconnectCmd && unacknowledged > MAX_RELIABLE_COMMANDS) || (!isDisconnectCmd && unacknowledged >= MAX_RELIABLE_COMMANDS)) {
 		if (com_errorEntered) {
 			return;
@@ -601,10 +598,12 @@ void CL_WriteDemoMessage(msg_t *msg, int headerBytes) {
 	// write the packet sequence
 	len = clc.serverMessageSequence;
 	swlen = LittleLong(len);
+
 	FS_Write(&swlen, 4, clc.demofile);
 	// skip the packet sequencing information
 	len = msg->cursize - headerBytes;
 	swlen = LittleLong(len);
+
 	FS_Write(&swlen, 4, clc.demofile);
 	FS_Write(msg->data + headerBytes, len, clc.demofile);
 }
@@ -845,7 +844,7 @@ void CL_DemoCompleted(void) {
 
 		if (time > 0) {
 			// millisecond times are frame durations:
-			// minimum / average / maximum / std deviation
+			// minimum/average/maximum/std deviation
 			Com_sprintf(buffer, sizeof(buffer), "%i frames %3.1f seconds %3.1f fps %d.0 / %.1f / %d.0 / %.1f ms\n", clc.timeDemoFrames, time / 1000.0, clc.timeDemoFrames * 1000.0 / time, clc.timeDemoMinDuration, time / (float)clc.timeDemoFrames, clc.timeDemoMaxDuration, CL_DemoFrameDurationSDev());
 			Com_Printf("%s", buffer);
 			// write a log of all the frame durations
@@ -1283,7 +1282,7 @@ Called before parsing a gamestate.
 */
 void CL_ClearState(void) {
 
-// 	S_StopAllSounds();
+//	S_StopAllSounds();
 
 	Com_Memset(&cl, 0, sizeof(cl));
 }
@@ -1315,6 +1314,7 @@ CL_OldGame
 =======================================================================================================================================
 */
 static void CL_OldGame(void) {
+
 	if (cl_oldGameSet) {
 		// change back to previous fs_game
 		cl_oldGameSet = qfalse;
@@ -1371,6 +1371,7 @@ void CL_Disconnect(qboolean showMainMenu) {
 
 	if (clc.voipCodecInitialized) {
 		int i;
+
 		opus_encoder_destroy(clc.opusEncoder);
 
 		for (i = 0; i < MAX_CLIENTS; i++) {
@@ -1529,6 +1530,7 @@ CL_Disconnect_f
 =======================================================================================================================================
 */
 void CL_Disconnect_f(void) {
+
 	SCR_StopCinematic();
 	Cvar_Set("ui_singlePlayerActive", "0");
 
@@ -1716,8 +1718,7 @@ void CL_Rcon_f(void) {
 	netadr_t to;
 
 	if (!rcon_client_password->string[0]) {
-		Com_Printf("You must set 'rconpassword' before\n"
-					"issuing an rcon command.\n");
+		Com_Printf("You must set 'rconpassword' before issuing an rcon command.\n");
 		return;
 	}
 
@@ -1857,8 +1858,7 @@ void CL_Snd_Shutdown(void) {
 =======================================================================================================================================
 CL_Snd_Restart_f
 
-Restart the sound subsystem.
-The cgame and game must also be forced to restart because handles will be invalid.
+Restart the sound subsystem. The cgame and game must also be forced to restart because handles will be invalid.
 =======================================================================================================================================
 */
 void CL_Snd_Restart_f(void) {
@@ -1984,7 +1984,7 @@ void CL_DownloadsComplete(void) {
 	// starting to load a map so we get out of full screen ui mode
 	Cvar_Set("r_uiFullScreen", "0");
 	// flush client memory and start loading stuff
-	// this will also(re)load the UI
+	// this will also (re)load the UI
 	// if this is a local client then only the client part of the hunk
 	// will be cleared, note that this is done after the hunk mark has been set
 	CL_FlushMemory();
@@ -2146,7 +2146,6 @@ void CL_NextDownload(void) {
 		s = clc.downloadList;
 		// format is:
 		// @remotename@localname@remotename@localname, etc.
-
 		if (*s == '@') {
 			s++;
 		}
@@ -2170,24 +2169,17 @@ void CL_NextDownload(void) {
 			Com_Printf("Trying CURL download : %s; %s\n", localName, remoteName);
 
 			if (clc.sv_allowDownload & DLF_NO_REDIRECT) {
-				Com_Printf("WARNING: server does not "
-									"allow download redirection "
-									"(sv_allowDownload is %d)\n", clc.sv_allowDownload);
+				Com_Printf("WARNING: server does not allow download redirection (sv_allowDownload is %d)\n", clc.sv_allowDownload);
 			} else if (!*clc.sv_dlURL) {
-				Com_Printf("WARNING: server allows "
-									"download redirection, but does not "
-									"have sv_dlURL set\n");
+				Com_Printf("WARNING: server allows download redirection, but does not have sv_dlURL set\n");
 			} else if (!CL_cURL_Init()) {
-				Com_Printf("WARNING: could not load "
-									"cURL library\n");
+				Com_Printf("WARNING: could not load cURL library\n");
 			} else {
 				CL_cURL_BeginDownload(localName, va("%s / %s", clc.sv_dlURL, remoteName));
 				useCURL = qtrue;
 			}
 		} else if (!(clc.sv_allowDownload & DLF_NO_REDIRECT)) {
-						Com_Printf("WARNING: server allows download "
-								"redirection, but it disabled by client "
-								"configuration(cl_allowDownload is %d)\n", cl_allowDownload->integer);
+			Com_Printf("WARNING: server allows download redirection, but it disabled by client configuration(cl_allowDownload is %d)\n", cl_allowDownload->integer);
 		}
 #endif /* USE_CURL */
 		if (!useCURL) {
@@ -2195,10 +2187,7 @@ void CL_NextDownload(void) {
 
 			if ((!(cl_allowDownload->integer & DLF_ENABLE) || (cl_allowDownload->integer & DLF_NO_UDP)) && prompt != DLP_UDP) {
 				if (cl_connectedToPureServer) {
-					Com_Error(ERR_DROP, "Automatic downloads are "
-										"disabled on your client(cl_allowDownload is %d). "
-										"You can enable automatic downloads in the Options "
- "menu.", cl_allowDownload->integer);
+					Com_Error(ERR_DROP, "Automatic downloads are disabled on your client(cl_allowDownload is %d). You can enable automatic downloads in the Options menu.", cl_allowDownload->integer);
 					return;
 				}
 
@@ -2281,8 +2270,7 @@ void CL_CheckForResend(void) {
 			// requesting a challenge
 
 			// the challenge request shall be followed by a client challenge so no malicious server can hijack this connection.
-			// add the gamename so the server knows we're running the correct game or can reject the client
-			// with a meaningful message
+			// add the gamename so the server knows we're running the correct game or can reject the client with a meaningful message
 			Com_sprintf(data, sizeof(data), "getchallenge %d %s", clc.challenge, com_gamename->string);
 
 			NET_OutOfBandPrint(NS_CLIENT, clc.serverAddress, "%s", data);
@@ -2329,8 +2317,7 @@ void CL_MotdPacket(netadr_t from, const char *info) {
 	v = Info_ValueForKey(info, "challenge");
 
 	if (strcmp(v, cls.updateChallenge)) {
-		Com_DPrintf("MOTD packet mismatched challenge : "
-								"'%s' != '%s'\n", v, cls.updateChallenge);
+		Com_DPrintf("MOTD packet mismatched challenge: '%s' != '%s'\n", v, cls.updateChallenge);
 		return;
 	}
 
@@ -2397,8 +2384,7 @@ int CL_GSRSequenceInformation(byte ** data) {
 	}
 
 	if (cls.numMasterPackets > 0 && num != cls.numMasterPackets) {
-		// assume we sent two getservers and somehow they changed in
-		// between - only use the results that arrive later
+		// assume we sent two getservers and somehow they changed in between - only use the results that arrive later
 		Com_DPrintf("Master changed its mind about packet count!\n");
 		cls.receivedMasterPackets = 0;
 		cls.numglobalservers = 0;
@@ -2428,8 +2414,7 @@ void CL_GSRFeaturedLabel(byte ** data, char *buf, int size) {
 		if (l < &buf[size - 1]) {
 			*l = * * data;
 		} else if (l == &buf[size - 1]) {
-			Com_DPrintf(S_COLOR_YELLOW "Warning : "
-				"CL_GSRFeaturedLabel : overflow\n");
+			Com_DPrintf(S_COLOR_YELLOW "Warning: CL_GSRFeaturedLabel : overflow\n");
 		}
 
 		l++, (*data)++;
@@ -2466,8 +2451,7 @@ void CL_ServersResponsePacket(const netadr_t *from, msg_t *msg, qboolean extende
 	// skip header
 	buffptr += 4;
 	// advance to initial token
-	// i considered using strchr for this but I don't feel like relying
-	// on its behaviour with '\0'
+	// i considered using strchr for this but I don't feel like relying on its behaviour with '\0'
 	while (*buffptr && *buffptr != '\\' && *buffptr != '/') {
 		buffptr++;
 
@@ -2483,14 +2467,12 @@ void CL_ServersResponsePacket(const netadr_t *from, msg_t *msg, qboolean extende
 			// this denotes the start of new - syntax stuff
 			// have we already received this packet?
 			if (cls.receivedMasterPackets &(1 << (ind - 1))) {
-				Com_DPrintf("CL_ServersResponsePacket : "
-					"received packet %d again, ignoring\n", ind);
+				Com_DPrintf("CL_ServersResponsePacket: received packet %d again, ignoring\n", ind);
 				return;
 			}
 			// tODO : detect dropped packets and make another
 			// request
-			Com_DPrintf("CL_ServersResponsePacket : packet "
-				"%d of %d\n", ind, cls.numMasterPackets);
+			Com_DPrintf("CL_ServersResponsePacket: packet %d of %d\n", ind, cls.numMasterPackets);
 			cls.receivedMasterPackets|= (1 << (ind - 1));
 
 			CL_GSRFeaturedLabel(&buffptr, label, sizeof(label));
@@ -2630,8 +2612,7 @@ void CL_ConnectionlessPacket(netadr_t from, msg_t *msg) {
 		clc.state = CA_CHALLENGING;
 		clc.connectPacketCount = 0;
 		clc.connectTime = -99999;
-		// take this address as the new server address.  This allows
-		// a server proxy to hand off connections to multiple servers
+		// take this address as the new server address. This allows a server proxy to hand off connections to multiple servers
 		clc.serverAddress = from;
 		Com_DPrintf("challengeResponse : %d\n", clc.challenge);
 		return;
@@ -2857,8 +2838,7 @@ void CL_Frame(int msec) {
 #ifdef USE_CURL
 	if (clc.downloadCURLM) {
 		CL_cURL_PerformDownload();
-		// we can't process frames normally when in disconnected download mode since the ui vm expects clc.state to be
-		// CA_CONNECTED
+		// we can't process frames normally when in disconnected download mode since the ui vm expects clc.state to be CA_CONNECTED
 		if (clc.cURLDisconnected) {
 			cls.realFrametime = msec;
 			cls.frametime = msec;
@@ -3517,7 +3497,7 @@ void CL_Init(void) {
 
 	SCR_Init();
 
-// 	Cbuf_Execute();
+//	Cbuf_Execute();
 
 	Cvar_Set("cl_running", "1");
 
@@ -3590,6 +3570,7 @@ void CL_Shutdown(const char *finalmsg, qboolean disconnect, qboolean quit) {
 	recursive = qfalse;
 
 	Com_Memset(&cls, 0, sizeof(cls));
+
 	Key_SetCatcher(0);
 
 	Com_Printf("-----------------------\n");
@@ -3923,6 +3904,7 @@ void CL_ServerStatusResponse(netadr_t from, msg_t *msg) {
 
 			if (s) {
 				s = strchr(s + 1, ' ');
+			}
 
 			if (s) {
 				s++;

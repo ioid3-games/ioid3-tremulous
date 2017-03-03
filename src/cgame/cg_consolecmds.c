@@ -214,8 +214,7 @@ static consoleCommand_t commands[] = {
 =======================================================================================================================================
 CG_ConsoleCommand
 
-The string has been tokenized and can be retrieved with
-Cmd_Argc() / Cmd_Argv().
+The string has been tokenized and can be retrieved with Cmd_Argc() / Cmd_Argv().
 =======================================================================================================================================
 */
 qboolean CG_ConsoleCommand(void) {
@@ -235,8 +234,7 @@ qboolean CG_ConsoleCommand(void) {
 =======================================================================================================================================
 CG_InitConsoleCommands
 
-Let the client system know about all of our commands
-so it can perform tab completion.
+Let the client system know about all of our commands so it can perform tab completion.
 =======================================================================================================================================
 */
 void CG_InitConsoleCommands(void) {

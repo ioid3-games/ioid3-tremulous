@@ -508,39 +508,39 @@ static void ROQ_GenYUVTables(void) {
 }
 
 #define VQ2TO4(a, b, c, d) {\
-			*c+ += a[0]; 	\
-	*d+ += a[0]; 	\
-	*d+ += a[0]; 	\
-	*c+ += a[1]; 	\
-	*d+ += a[1]; 	\
-	*d+ += a[1]; 	\
-	*c+ += b[0]; 	\
-	*d+ += b[0]; 	\
-	*d+ += b[0]; 	\
-	*c+ += b[1]; 	\
-	*d+ += b[1]; 	\
-	*d+ += b[1]; 	\
-	*d+ += a[0]; 	\
-	*d+ += a[0]; 	\
-	*d+ += a[1]; 	\
-	*d+ += a[1]; 	\
-	*d+ += b[0]; 	\
-	*d+ += b[0]; 	\
-	*d+ += b[1]; 	\
-	*d+ += b[1]; 	\
+			*c++ = a[0]; 	\
+	*d++ = a[0]; 	\
+	*d++ = a[0]; 	\
+	*c++ = a[1]; 	\
+	*d++ = a[1]; 	\
+	*d++ = a[1]; 	\
+	*c++ = b[0]; 	\
+	*d++ = b[0]; 	\
+	*d++ = b[0]; 	\
+	*c++ = b[1]; 	\
+	*d++ = b[1]; 	\
+	*d++ = b[1]; 	\
+	*d++ = a[0]; 	\
+	*d++ = a[0]; 	\
+	*d++ = a[1]; 	\
+	*d++ = a[1]; 	\
+	*d++ = b[0]; 	\
+	*d++ = b[0]; 	\
+	*d++ = b[1]; 	\
+	*d++ = b[1]; 	\
 	a += 2; b += 2; }
  
 #define VQ2TO2(a, b, c, d) {\
-	*c+ += *a; 	\
-	*d+ += *a; 	\
-	*d+ += *a; 	\
-	*c+ += *b; 	\
-	*d+ += *b; 	\
-	*d+ += *b; 	\
-	*d+ += *a; 	\
-	*d+ += *a; 	\
-	*d+ += *b; 	\
-	*d+ += *b; 	\
+	*c++ = *a; 	\
+	*d++ = *a; 	\
+	*d++ = *a; 	\
+	*c++ = *b; 	\
+	*d++ = *b; 	\
+	*d++ = *b; 	\
+	*d++ = *a; 	\
+	*d++ = *a; 	\
+	*d++ = *b; 	\
+	*d++ = *b; 	\
 	a++; b++; }
 
 /****** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
@@ -630,10 +630,10 @@ static void decodeCodeBook(byte *input, unsigned short roq_flags) {
 					y3 = (long)*input++;
 					cr = (long)*input++;
 					cb = (long)*input++;
-					*bptr+ += yuv_to_rgb(y0, cr, cb);
-					*bptr+ += yuv_to_rgb(y1, cr, cb);
-					*bptr+ += yuv_to_rgb(y2, cr, cb);
-					*bptr+ += yuv_to_rgb(y3, cr, cb);
+					*bptr++ = yuv_to_rgb(y0, cr, cb);
+					*bptr++ = yuv_to_rgb(y1, cr, cb);
+					*bptr++ = yuv_to_rgb(y2, cr, cb);
+					*bptr++ = yuv_to_rgb(y3, cr, cb);
 				}
 
 				cptr = (unsigned short *)vq4;
@@ -656,10 +656,10 @@ static void decodeCodeBook(byte *input, unsigned short roq_flags) {
 					y3 = (long)*input++;
 					cr = (long)*input++;
 					cb = (long)*input++;
-					*ibptr.i+ += yuv_to_rgb24(y0, cr, cb);
-					*ibptr.i+ += yuv_to_rgb24(y1, cr, cb);
-					*ibptr.i+ += yuv_to_rgb24(y2, cr, cb);
-					*ibptr.i+ += yuv_to_rgb24(y3, cr, cb);
+					*ibptr.i++ = yuv_to_rgb24(y0, cr, cb);
+					*ibptr.i++ = yuv_to_rgb24(y1, cr, cb);
+					*ibptr.i++ = yuv_to_rgb24(y2, cr, cb);
+					*ibptr.i++ = yuv_to_rgb24(y3, cr, cb);
 				}
 
 				icptr.s = vq4;
@@ -678,10 +678,10 @@ static void decodeCodeBook(byte *input, unsigned short roq_flags) {
 				bbptr = (byte *)bptr;
 
 				for (i = 0; i < two; i++) {
-					*bbptr+ += cinTable[currentHandle].gray[*input++];
-					*bbptr+ += cinTable[currentHandle].gray[*input++];
-					*bbptr+ += cinTable[currentHandle].gray[*input++];
-					*bbptr+ += cinTable[currentHandle].gray[*input];
+					*bbptr++ = cinTable[currentHandle].gray[*input++];
+					*bbptr++ = cinTable[currentHandle].gray[*input++];
+					*bbptr++ = cinTable[currentHandle].gray[*input++];
+					*bbptr++ = cinTable[currentHandle].gray[*input];
 					input += 3;
 				}
 
@@ -708,14 +708,14 @@ static void decodeCodeBook(byte *input, unsigned short roq_flags) {
 					y3 = (long)*input++;
 					cr = (long)*input++;
 					cb = (long)*input++;
-					*bptr+ += yuv_to_rgb(y0, cr, cb);
-					*bptr+ += yuv_to_rgb(y1, cr, cb);
-					*bptr+ += yuv_to_rgb(((y0 * 3) + y2) / 4, cr, cb);
-					*bptr+ += yuv_to_rgb(((y1 * 3) + y3) / 4, cr, cb);
-					*bptr+ += yuv_to_rgb((y0 + (y2 * 3)) / 4, cr, cb);
-					*bptr+ += yuv_to_rgb((y1 + (y3 * 3)) / 4, cr, cb);
-					*bptr+ += yuv_to_rgb(y2, cr, cb);
-					*bptr+ += yuv_to_rgb(y3, cr, cb);
+					*bptr++ = yuv_to_rgb(y0, cr, cb);
+					*bptr++ = yuv_to_rgb(y1, cr, cb);
+					*bptr++ = yuv_to_rgb(((y0 * 3) + y2) / 4, cr, cb);
+					*bptr++ = yuv_to_rgb(((y1 * 3) + y3) / 4, cr, cb);
+					*bptr++ = yuv_to_rgb((y0 + (y2 * 3)) / 4, cr, cb);
+					*bptr++ = yuv_to_rgb((y1 + (y3 * 3)) / 4, cr, cb);
+					*bptr++ = yuv_to_rgb(y2, cr, cb);
+					*bptr++ = yuv_to_rgb(y3, cr, cb);
 				}
 
 				cptr = (unsigned short *)vq4;
@@ -740,14 +740,14 @@ static void decodeCodeBook(byte *input, unsigned short roq_flags) {
 					y3 = (long)*input++;
 					cr = (long)*input++;
 					cb = (long)*input++;
-					*ibptr.i+ += yuv_to_rgb24(y0, cr, cb);
-					*ibptr.i+ += yuv_to_rgb24(y1, cr, cb);
-					*ibptr.i+ += yuv_to_rgb24(((y0 * 3) + y2) / 4, cr, cb);
-					*ibptr.i+ += yuv_to_rgb24(((y1 * 3) + y3) / 4, cr, cb);
-					*ibptr.i+ += yuv_to_rgb24((y0 + (y2 * 3)) / 4, cr, cb);
-					*ibptr.i+ += yuv_to_rgb24((y1 + (y3 * 3)) / 4, cr, cb);
-					*ibptr.i+ += yuv_to_rgb24(y2, cr, cb);
-					*ibptr.i+ += yuv_to_rgb24(y3, cr, cb);
+					*ibptr.i++ = yuv_to_rgb24(y0, cr, cb);
+					*ibptr.i++ = yuv_to_rgb24(y1, cr, cb);
+					*ibptr.i++ = yuv_to_rgb24(((y0 * 3) + y2) / 4, cr, cb);
+					*ibptr.i++ = yuv_to_rgb24(((y1 * 3) + y3) / 4, cr, cb);
+					*ibptr.i++ = yuv_to_rgb24((y0 + (y2 * 3)) / 4, cr, cb);
+					*ibptr.i++ = yuv_to_rgb24((y1 + (y3 * 3)) / 4, cr, cb);
+					*ibptr.i++ = yuv_to_rgb24(y2, cr, cb);
+					*ibptr.i++ = yuv_to_rgb24(y3, cr, cb);
 				}
 
 				icptr.s = vq4;
@@ -772,14 +772,14 @@ static void decodeCodeBook(byte *input, unsigned short roq_flags) {
 					y1 = (long)*input++;
 					y2 = (long)*input++;
 					y3 = (long)*input; input += 3;
-					*bbptr+ += cinTable[currentHandle].gray[y0];
-					*bbptr+ += cinTable[currentHandle].gray[y1];
-					*bbptr+ += cinTable[currentHandle].gray[((y0 * 3) + y2) / 4];
-					*bbptr+ += cinTable[currentHandle].gray[((y1 * 3) + y3) / 4];
-					*bbptr+ += cinTable[currentHandle].gray[(y0 + (y2 * 3)) / 4];
-					*bbptr+ += cinTable[currentHandle].gray[(y1 + (y3 * 3)) / 4];
-					*bbptr+ += cinTable[currentHandle].gray[y2];
-					*bbptr+ += cinTable[currentHandle].gray[y3];
+					*bbptr++ = cinTable[currentHandle].gray[y0];
+					*bbptr++ = cinTable[currentHandle].gray[y1];
+					*bbptr++ = cinTable[currentHandle].gray[((y0 * 3) + y2) / 4];
+					*bbptr++ = cinTable[currentHandle].gray[((y1 * 3) + y3) / 4];
+					*bbptr++ = cinTable[currentHandle].gray[(y0 + (y2 * 3)) / 4];
+					*bbptr++ = cinTable[currentHandle].gray[(y1 + (y3 * 3)) / 4];
+					*bbptr++ = cinTable[currentHandle].gray[y2];
+					*bbptr++ = cinTable[currentHandle].gray[y3];
 				}
 
 				bcptr = (byte *)vq4;
@@ -806,8 +806,8 @@ static void decodeCodeBook(byte *input, unsigned short roq_flags) {
 				y2 = (long)*input; input += 2;
 				cr = (long)*input++;
 				cb = (long)*input++;
-				*bptr+ += yuv_to_rgb(y0, cr, cb);
-				*bptr+ += yuv_to_rgb(y2, cr, cb);
+				*bptr++ = yuv_to_rgb(y0, cr, cb);
+				*bptr++ = yuv_to_rgb(y2, cr, cb);
 			}
 
 			cptr = (unsigned short *)vq4;
@@ -825,9 +825,9 @@ static void decodeCodeBook(byte *input, unsigned short roq_flags) {
 			bbptr = (byte *)bptr;
 		
 			for (i = 0; i < two; i++) {
-				*bbptr+ += cinTable[currentHandle].gray[*input];
+				*bbptr++ = cinTable[currentHandle].gray[*input];
 				input += 2;
-				*bbptr+ += cinTable[currentHandle].gray[*input];
+				*bbptr++ = cinTable[currentHandle].gray[*input];
 				input += 4;
 			}
 
@@ -852,8 +852,8 @@ static void decodeCodeBook(byte *input, unsigned short roq_flags) {
 				input += 2;
 				cr = (long)*input++;
 				cb = (long)*input++;
-				*ibptr.i+ += yuv_to_rgb24(y0, cr, cb);
-				*ibptr.i+ += yuv_to_rgb24(y2, cr, cb);
+				*ibptr.i++ = yuv_to_rgb24(y0, cr, cb);
+				*ibptr.i++ = yuv_to_rgb24(y2, cr, cb);
 			}
 
 			icptr.s = vq4;

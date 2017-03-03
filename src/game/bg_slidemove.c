@@ -28,11 +28,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
 #include "bg_local.h"
 
 /*
-
 input : origin, velocity, bounds, groundPlane, trace function
-
 output : origin, velocity, impacts, stairup boolean
-
 */
 
 /*
@@ -207,7 +204,7 @@ qboolean PM_SlideMove(qboolean gravity) {
 
 /*
 =======================================================================================================================================
-PM_StepEvent.
+PM_StepEvent
 =======================================================================================================================================
 */
 void PM_StepEvent(vec3_t from, vec3_t to, vec3_t normal) {
@@ -255,7 +252,7 @@ void PM_StepEvent(vec3_t from, vec3_t to, vec3_t normal) {
 
 /*
 =======================================================================================================================================
-PM_StepSlideMove.
+PM_StepSlideMove
 =======================================================================================================================================
 */
 qboolean PM_StepSlideMove(qboolean gravity, qboolean predictive) {
@@ -348,7 +345,7 @@ qboolean PM_StepSlideMove(qboolean gravity, qboolean predictive) {
 
 /*
 =======================================================================================================================================
-PM_PredictStepMove.
+PM_PredictStepMove
 =======================================================================================================================================
 */
 qboolean PM_PredictStepMove(void) {

@@ -36,6 +36,11 @@ typedef struct {
 int remapCount = 0;
 shaderRemap_t remappedShaders[MAX_SHADER_REMAPS];
 
+/*
+=======================================================================================================================================
+AddRemap
+=======================================================================================================================================
+*/
 void AddRemap(const char *oldShader, const char *newShader, float timeOffset) {
 	int i;
 
@@ -56,6 +61,11 @@ void AddRemap(const char *oldShader, const char *newShader, float timeOffset) {
 	}
 }
 
+/*
+=======================================================================================================================================
+BuildShaderStateConfig
+=======================================================================================================================================
+*/
 const char *BuildShaderStateConfig(void) {
 	static char buff[MAX_STRING_CHARS * 4];
 	char out[(MAX_QPATH * 2) + 5];
@@ -75,6 +85,7 @@ const char *BuildShaderStateConfig(void) {
 =======================================================================================================================================
 
 model / sound configstring indexes
+
 =======================================================================================================================================
 */
 
@@ -87,82 +98,108 @@ int G_FindConfigstringIndex(char *name, int start, int max, qboolean create) {
 	int i;
 	char s[MAX_STRING_CHARS];
 
-	if (!name || !name[0])
+	if (!name || !name[0]) {
 		return 0;
+	}
 
 	for (i = 1; i < max; i++) {
 		trap_GetConfigstring(start + i, s, sizeof(s));
 
-		if (!s[0])
+		if (!s[0]) {
 			break;
+		}
 
-		if (!strcmp(s, name))
+		if (!strcmp(s, name)) {
 			return i;
+		}
 	}
 
-	if (!create)
+	if (!create) {
 		return 0;
+	}
 
-	if (i == max)
+	if (i == max) {
 		G_Error("G_FindConfigstringIndex : overflow");
+	}
 
 	trap_SetConfigstring(start + i, name);
 
 	return i;
 }
 
+/*
+=======================================================================================================================================
+G_ParticleSystemIndex
+=======================================================================================================================================
+*/
 int G_ParticleSystemIndex(char *name) {
 	return G_FindConfigstringIndex(name, CS_PARTICLE_SYSTEMS, MAX_GAME_PARTICLE_SYSTEMS, qtrue);
 }
 
+/*
+=======================================================================================================================================
+G_ShaderIndex
+=======================================================================================================================================
+*/
 int G_ShaderIndex(char *name) {
 	return G_FindConfigstringIndex(name, CS_SHADERS, MAX_GAME_SHADERS, qtrue);
 }
 
+/*
+=======================================================================================================================================
+G_ModelIndex
+=======================================================================================================================================
+*/
 int G_ModelIndex(char *name) {
 	return G_FindConfigstringIndex(name, CS_MODELS, MAX_MODELS, qtrue);
 }
 
+/*
+=======================================================================================================================================
+G_SoundIndex
+=======================================================================================================================================
+*/
 int G_SoundIndex(char *name) {
 	return G_FindConfigstringIndex(name, CS_SOUNDS, MAX_SOUNDS, qtrue);
 }
-
-// ===================================================================== 
 
 /*
 =======================================================================================================================================
 G_Find
 
-Searches all active entities for the next one that holds
-the matching string at fieldofs(use the FOFS() macro) in the structure.
-
-Searches beginning at the entity after from, or the beginning if NULL
-NULL will be returned if the end of the list is reached.
+Searches all active entities for the next one that holds the matching string at fieldofs (use the FOFS() macro) in the structure.
+Searches beginning at the entity after from, or the beginning if NULL. NULL will be returned if the end of the list is reached.
 =======================================================================================================================================
 */
 gentity_t *G_Find(gentity_t *from, int fieldofs, const char *match) {
 	char *s;
 
-	if (!from)
+	if (!from) {
 		from = g_entities;
-	else
+	} else {
 		from++;
+	}
 
 	for (; from < &g_entities[level.num_entities]; from++) {
-		if (!from->inuse)
+		if (!from->inuse) {
 			continue;
+		}
+
 		s = * (char **)((byte *)from + fieldofs);
 
-		if (!s)
+		if (!s) {
 			continue;
+		}
 
-		if (!Q_stricmp(s, match))
+		if (!Q_stricmp(s, match)) {
 			return from;
+		}
 	}
 
 	return NULL;
 }
 
+#define MAXCHOICES 32
 /*
 =======================================================================================================================================
 G_PickTarget
@@ -170,8 +207,6 @@ G_PickTarget
 Selects a random entity from among the targets.
 =======================================================================================================================================
 */
-#define MAXCHOICES  32
-
 gentity_t *G_PickTarget(char *targetname) {
 	gentity_t *ent = NULL;
 	int num_choices = 0;
@@ -185,13 +220,15 @@ gentity_t *G_PickTarget(char *targetname) {
 	while (1) {
 		ent = G_Find(ent, FOFS(targetname), targetname);
 
-		if (!ent)
+		if (!ent) {
 			break;
+		}
 
 		choice[num_choices++] = ent;
 
-		if (num_choices == MAXCHOICES)
+		if (num_choices == MAXCHOICES) {
 			break;
+		}
 	}
 
 	if (!num_choices) {
@@ -208,8 +245,7 @@ G_UseTargets
 
 "activator" should be set to the entity that initiated the firing.
 
-Search for (string)targetname in all entities that
-match(string)self.target and call their .use function
+Search for (string)targetname in all entities that match (string)self.target and call their .use function
 =======================================================================================================================================
 */
 void G_UseTargets(gentity_t *ent, gentity_t *activator) {
@@ -217,6 +253,7 @@ void G_UseTargets(gentity_t *ent, gentity_t *activator) {
 
 	if (!ent)
 		return;
+	}
 
 	if (ent->targetShaderName && ent->targetShaderNewName) {
 		float f = level.time * 0.001;
@@ -224,17 +261,19 @@ void G_UseTargets(gentity_t *ent, gentity_t *activator) {
 		trap_SetConfigstring(CS_SHADERSTATE, BuildShaderStateConfig());
 	}
 
-	if (!ent->target)
+	if (!ent->target) {
 		return;
+	}
 
 	t = NULL;
 
 	while ((t = G_Find(t, FOFS(targetname), ent->target)) != NULL) {
-		if (t == ent)
+		if (t == ent) {
 			G_Printf("WARNING: Entity used itself.\n");
-		else {
-			if (t->use)
+		} else {
+			if (t->use) {
 				t->use(t, ent, activator);
+			}
 		}
 
 		if (!ent->inuse) {
@@ -246,40 +285,39 @@ void G_UseTargets(gentity_t *ent, gentity_t *activator) {
 
 /*
 =======================================================================================================================================
-TempVector
+tv
 
-This is just a convenience function
-for making temporary vectors for function calls.
+This is just a convenience function for making temporary vectors for function calls.
 =======================================================================================================================================
 */
 float *tv(float x, float y, float z) {
 	static int index;
 	static vec3_t vecs[8];
 	float *v;
-	// use an array so that multiple tempvectors won't collide
-	// for a while
+
+	// use an array so that multiple tempvectors won't collide for a while
 	v = vecs[index];
 	index = (index + 1) & 7;
 
-  v[0] = x;
-  v[1] = y;
-  v[2] = z;
+	v[0] = x;
+	v[1] = y;
+	v[2] = z;
 
 	return v;
 }
 
 /*
 =======================================================================================================================================
-VectorToString
+vtos
 
-This is just a convenience function
-for printing vectors.
+This is just a convenience function for printing vectors.
 =======================================================================================================================================
 */
 char *vtos(const vec3_t v) {
 	static int index;
 	static char str[8][32];
 	char *s;
+
 	// use an array so that multiple vtos won't collide
 	s = str[index];
 	index = (index + 1) & 7;
@@ -293,10 +331,8 @@ char *vtos(const vec3_t v) {
 =======================================================================================================================================
 G_SetMovedir
 
-The editor only specifies a single value for angles(yaw), 
-but we have special constants to generate an up or down direction.
-Angles will be cleared, because it is being used to represent a direction
-instead of an orientation.
+The editor only specifies a single value for angles(yaw), but we have special constants to generate an up or down direction.
+Angles will be cleared, because it is being used to represent a direction instead of an orientation.
 =======================================================================================================================================
 */
 void G_SetMovedir(vec3_t angles, vec3_t movedir) {
@@ -305,43 +341,54 @@ void G_SetMovedir(vec3_t angles, vec3_t movedir) {
 	static vec3_t VEC_DOWN = {0, -2, 0};
 	static vec3_t MOVEDIR_DOWN = {0, 0, -1};
 
-	if (VectorCompare(angles, VEC_UP))
+	if (VectorCompare(angles, VEC_UP)) {
 		VectorCopy(MOVEDIR_UP, movedir);
-	else if (VectorCompare(angles, VEC_DOWN))
+	} else if (VectorCompare(angles, VEC_DOWN)) {
 		VectorCopy(MOVEDIR_DOWN, movedir);
-	else
+	} else {
 		AngleVectors(angles, movedir, NULL, NULL);
+	}
 
 	VectorClear(angles);
 }
 
-
+/*
+=======================================================================================================================================
+vectoyaw
+=======================================================================================================================================
+*/
 float vectoyaw(const vec3_t vec) {
 	float yaw;
 
 	if (vec[YAW] == 0 && vec[PITCH] == 0) {
 		yaw = 0;
 	} else {
-		if (vec[PITCH])
+		if (vec[PITCH]) {
 			yaw = (atan2(vec[YAW], vec[PITCH]) * 180 / M_PI);
-		else if (vec[YAW] > 0)
+		} else if (vec[YAW] > 0) {
 			yaw = 90;
 		} else {
 			yaw = 270;
+		}
 
-		if (yaw < 0)
+		if (yaw < 0) {
 			yaw += 360;
+		}
 	}
 
 	return yaw;
 }
 
-
+/*
+=======================================================================================================================================
+G_InitGentity
+=======================================================================================================================================
+*/
 void G_InitGentity(gentity_t *e) {
-  e->inuse = qtrue;
-  e->classname = "noclass";
-  e->s.number = e - g_entities;
-  e->r.ownerNum = ENTITYNUM_NONE;
+	e->inuse = qtrue;
+	e->classname = "noclass";
+	e->s.number = e - g_entities;
+	e->r.ownerNum = ENTITYNUM_NONE;
 }
 
 /*
@@ -350,13 +397,10 @@ G_Spawn
 
 Either finds a free entity, or allocates a new one.
 
-  The slots from 0 to MAX_CLIENTS - 1 are always reserved for clients, and will
-never be used by anything else.
+The slots from 0 to MAX_CLIENTS - 1 are always reserved for clients, and will never be used by anything else.
 
-Try to avoid reusing an entity that was recently freed, because it
-can cause the client to think the entity morphed into something else
-instead of being removed and recreated, which can cause interpolated
-angles and bad trails.
+Try to avoid reusing an entity that was recently freed, because it can cause the client to think the entity morphed into something else
+instead of being removed and recreated, which can cause interpolated angles and bad trails.
 =======================================================================================================================================
 */
 gentity_t *G_Spawn(void) {
@@ -364,31 +408,34 @@ gentity_t *G_Spawn(void) {
 	gentity_t *e;
 
 	e = NULL; // shut up warning
-  i = 0; // shut up warning
+	i = 0; // shut up warning
 
 	for (force = 0; force < 2; force++) {
 		// if we go through all entities and can't find one to free, // override the normal minimum times before use
 		e = &g_entities[MAX_CLIENTS];
 
 		for (i = MAX_CLIENTS; i < level.num_entities; i++, e++) {
-			if (e->inuse)
+			if (e->inuse) {
 				continue;
-			// the first couple seconds of server time can involve a lot of
-			// freeing and allocating, so relax the replacement policy
-			if (!force && e->freetime > level.startTime + 2000 && level.time - e->freetime < 1000)
+			}
+			// the first couple seconds of server time can involve a lot of freeing and allocating, so relax the replacement policy
+			if (!force && e->freetime > level.startTime + 2000 && level.time - e->freetime < 1000) {
 				continue;
+			}
 			// reuse this slot
 			G_InitGentity(e);
 			return e;
 		}
 
-		if (i != MAX_GENTITIES)
+		if (i != MAX_GENTITIES) {
 			break;
+		}
 	}
 
 	if (i == ENTITYNUM_MAX_NORMAL) {
-		for (i = 0; i < MAX_GENTITIES; i++)
+		for (i = 0; i < MAX_GENTITIES; i++) {
 			G_Printf("%4i : %s\n", i, g_entities[i].classname);
+		}
 
 		G_Error("G_Spawn : no free entities");
 	}
@@ -403,7 +450,7 @@ gentity_t *G_Spawn(void) {
 
 /*
 =======================================================================================================================================
-G_EntitiesFree.
+G_EntitiesFree
 =======================================================================================================================================
 */
 qboolean G_EntitiesFree(void) {
@@ -413,8 +460,9 @@ qboolean G_EntitiesFree(void) {
 	e = &g_entities[MAX_CLIENTS];
 
 	for (i = MAX_CLIENTS; i < level.num_entities; i++, e++) {
-		if (e->inuse)
+		if (e->inuse) {
 			continue;
+		}
 		// slot available
 		return qtrue;
 	}
@@ -430,12 +478,15 @@ Marks the entity as free.
 =======================================================================================================================================
 */
 void G_FreeEntity(gentity_t *ent) {
+
 	trap_UnlinkEntity(ent); // unlink from world
 
-	if (ent->neverFree)
+	if (ent->neverFree) {
 		return;
+	}
 
 	memset(ent, 0, sizeof(*ent));
+
 	ent->classname = "freent";
 	ent->freetime = level.time;
 	ent->inuse = qfalse;
@@ -445,9 +496,8 @@ void G_FreeEntity(gentity_t *ent) {
 =======================================================================================================================================
 G_TempEntity
 
-Spawns an event entity that will be auto - removed
-The origin will be snapped to save net bandwidth, so care
-must be taken if the origin is right on a surface(snap towards start vector first).
+Spawns an event entity that will be auto - removed. The origin will be snapped to save net bandwidth, so care must be taken if the
+origin is right on a surface (snap towards start vector first).
 =======================================================================================================================================
 */
 gentity_t *G_TempEntity(vec3_t origin, int event) {
@@ -455,11 +505,10 @@ gentity_t *G_TempEntity(vec3_t origin, int event) {
 	vec3_t snapped;
 
 	e = G_Spawn();
-  e->s.eType = ET_EVENTS + event;
-
-  e->classname = "tempEntity";
-  e->eventTime = level.time;
-  e->freeAfterEvent = qtrue;
+	e->s.eType = ET_EVENTS + event;
+	e->classname = "tempEntity";
+	e->eventTime = level.time;
+	e->freeAfterEvent = qtrue;
 
 	VectorCopy(origin, snapped);
 	SnapVector(snapped); // save network bandwidth
@@ -481,8 +530,7 @@ Kill box
 =======================================================================================================================================
 G_KillBox
 
-Kills all entities that would touch the proposed new positioning
-of ent.  Ent should be unlinked before calling this!.
+Kills all entities that would touch the proposed new positioning of ent. Ent should be unlinked before calling this!
 =======================================================================================================================================
 */
 void G_KillBox(gentity_t *ent) {
@@ -498,30 +546,31 @@ void G_KillBox(gentity_t *ent) {
 	for (i = 0; i < num; i++) {
 		hit = &g_entities[touch[i]];
 
-		if (!hit->client)
+		if (!hit->client) {
 			continue;
+		}
 		// impossible to telefrag self
-		if (ent == hit)
+		if (ent == hit) {
 			continue;
+		}
 		// nail it
 		G_Damage(hit, ent, ent, NULL, NULL, 100000, DAMAGE_NO_PROTECTION, MOD_TELEFRAG);
 	}
 }
 
-// ============================================================================== 
-
 /*
 =======================================================================================================================================
 G_AddPredictableEvent
 
-Use for non - pmove events that would also be predicted on the
-client side : jumppads and item pickups
+Use for non - pmove events that would also be predicted on the client side: jumppads and item pickups.
 Adds an event + parm and twiddles the event counter.
 =======================================================================================================================================
 */
 void G_AddPredictableEvent(gentity_t *ent, int event, int eventParm) {
-	if (!ent->client)
+
+	if (!ent->client) {
 		return;
+	}
 
 	BG_AddPredictableEventToPlayerstate(event, eventParm, &ent->client->ps);
 }
@@ -542,8 +591,7 @@ void G_AddEvent(gentity_t *ent, int event, int eventParm) {
 	}
 	// eventParm is converted to uint8_t(0 - 255) in msg.c 
 	if (eventParm & ~0xFF) {
-		G_Printf(S_COLOR_YELLOW "WARNING: G_AddEvent(%s) has eventParm %d, "
-							"which will overflow\n", BG_EventName(event), eventParm);
+		G_Printf(S_COLOR_YELLOW "WARNING: G_AddEvent(%s) has eventParm %d, which will overflow\n", BG_EventName(event), eventParm);
 	}
 	// clients need to add the event in playerState_t instead of entityState_t
 	if (ent->client) {
@@ -579,34 +627,33 @@ void G_BroadcastEvent(int event, int eventParm) {
 
 /*
 =======================================================================================================================================
-G_Sound.
+G_Sound
 =======================================================================================================================================
 */
 void G_Sound(gentity_t *ent, int channel, int soundIndex) {
 	gentity_t *te;
 
-  te = G_TempEntity(ent->r.currentOrigin, EV_GENERAL_SOUND);
-  te->s.eventParm = soundIndex;
+	te = G_TempEntity(ent->r.currentOrigin, EV_GENERAL_SOUND);
+	te->s.eventParm = soundIndex;
 }
 
 /*
 =======================================================================================================================================
-G_ClientIsLagging.
+G_ClientIsLagging
 =======================================================================================================================================
 */
 qboolean G_ClientIsLagging(gclient_t *client) {
+
 	if (client) {
-		if (client->ps.ping >= 999)
+		if (client->ps.ping >= 999) {
 			return qtrue;
 		} else {
 			return qfalse;
+		}
 	}
 
 	return qfalse; // is a non - existant client lagging? woooo zen
 }
-
-// ============================================================================== 
-
 
 /*
 =======================================================================================================================================
@@ -616,37 +663,48 @@ Sets the pos trajectory for a fixed position.
 =======================================================================================================================================
 */
 void G_SetOrigin(gentity_t *ent, vec3_t origin) {
+
 	VectorCopy(origin, ent->s.pos.trBase);
+
 	ent->s.pos.trType = TR_STATIONARY;
 	ent->s.pos.trTime = 0;
 	ent->s.pos.trDuration = 0;
-	VectorClear(ent->s.pos.trDelta);
 
+	VectorClear(ent->s.pos.trDelta);
 	VectorCopy(origin, ent->r.currentOrigin);
 	VectorCopy(origin, ent->s.origin);
 }
 
-// from quakestyle.telefragged.com
-// (NOBODY) : Code helper function
-//
+/*
+=======================================================================================================================================
+G_FindRadius
+
+From quakestyle.telefragged.com
+(NOBODY): Code helper function.
+=======================================================================================================================================
+*/
 gentity_t *G_FindRadius(gentity_t *from, vec3_t org, float rad) {
 	vec3_t eorg;
 	int j;
 
-	if (!from)
+	if (!from) {
 		from = g_entities;
-	else
+	} else {
 		from++;
+	}
 
 	for (; from < &g_entities[level.num_entities]; from++) {
-		if (!from->inuse)
+		if (!from->inuse) {
 			continue;
+		}
 
-		for (j = 0; j < 3; j++)
+		for (j = 0; j < 3; j++) {
 			eorg[j] = org[j] - (from->r.currentOrigin[j] + (from->r.mins[j] + from->r.maxs[j]) * 0.5);
+		}
 
-		if (VectorLength(eorg) > rad)
+		if (VectorLength(eorg) > rad) {
 			continue;
+		}
 
 		return from;
 	}
@@ -665,7 +723,6 @@ qboolean G_Visible(gentity_t *ent1, gentity_t *ent2, int contents) {
 	trace_t trace;
 
 	trap_Trace(&trace, ent1->s.pos.trBase, NULL, NULL, ent2->s.pos.trBase, ent1->s.number, contents);
-
 	return trace.fraction >= 1.0f || trace.entityNum == ent2 - g_entities;
 }
 
@@ -681,8 +738,9 @@ gentity_t *G_ClosestEnt(vec3_t origin, gentity_t **entities, int numEntities) {
 	float nd, d;
 	gentity_t *closestEnt;
 
-	if (numEntities <= 0)
+	if (numEntities <= 0) {
 		return NULL;
+	}
 
 	closestEnt = entities[0];
 	d = DistanceSquared(origin, closestEnt->s.origin);
@@ -745,7 +803,7 @@ void G_CloseMenus(int clientNum) {
 
 /*
 =======================================================================================================================================
-G_AddressParse
+addr4parse
 
 Make an IP address more usable.
 =======================================================================================================================================
@@ -754,29 +812,42 @@ static const char *addr4parse(const char *str, addr_t *addr) {
 	int i;
 	int octet = 0;
 	int num = 0;
+
 	memset(addr, 0, sizeof(addr_t));
-  addr->type = IPv4;
+
+	addr->type = IPv4;
 
 	for (i = 0; octet < 4; i++) {
-		if (isdigit(str[i]))
+		if (isdigit(str[i])) {
 			num = num * 10 + str[i] - '0';
-		else {
-			if (num < 0 || num > 255)
+		} else {
+			if (num < 0 || num > 255) {
 				return NULL;
+			}
+
 			addr->addr[octet] = (byte)num;
 			octet++;
 
-			if (str[i] != '.' || str[i + 1] == '.')
+			if (str[i] != '.' || str[i + 1] == '.') {
 				break;
+			}
+
 			num = 0;
 		}
 	}
 
-	if (octet < 1)
+	if (octet < 1) {
 		return NULL;
+	}
+
 	return str + i;
 }
 
+/*
+=======================================================================================================================================
+addr6parse
+=======================================================================================================================================
+*/
 static const char *addr6parse(const char *str, addr_t *addr) {
 	int i;
 	qboolean seen = qfalse;
@@ -785,24 +856,25 @@ static const char *addr6parse(const char *str, addr_t *addr) {
 	byte a[ADDRLEN], b[ADDRLEN];
 	size_t before = 0, after = 0;
 	int num = 0;
+
  /* 8 hexadectets unless : : is present */
 	for (i = 0; before + after <= 8; i++) {
 		// num = num << 4|str[i] - '0';
 
-		if (isdigit(str[i]))
+		if (isdigit(str[i])) {
 			num = num * 16 + str[i] - '0';
-		else if (str[i] >= 'A' && str[i] <= 'F')
+		} else if (str[i] >= 'A' && str[i] <= 'F') {
 			num = num * 16 + 10 + str[i] - 'A';
-		else if (str[i] >= 'a' && str[i] <= 'f')
+		} else if (str[i] >= 'a' && str[i] <= 'f') {
 			num = num * 16 + 10 + str[i] - 'a';
-		else {
-			if (num < 0 || num > 65535)
+		} else {
+			if (num < 0 || num > 65535) {
 				return NULL;
+			}
 
 			if (i == 0) {
-				//
-			} else if (seen) // : : has been seen already
-			{
+
+			} else if (seen) { // : : has been seen already
 				b[after * 2] = num >> 8;
 				b[after * 2 + 1] = num & 0xff;
 				after++;
@@ -812,41 +884,59 @@ static const char *addr6parse(const char *str, addr_t *addr) {
 				before++;
 			}
 
-			if (!str[i])
+			if (!str[i]) {
 				break;
+			}
 
-			if (str[i] != ':' || before + after == 8)
+			if (str[i] != ':' || before + after == 8) {
 				break;
+			}
 
 			if (str[i + 1] == ':') {
 				// :: : or multiple ::
-				if (seen || str[i + 2] == ':')
+				if (seen || str[i + 2] == ':') {
 					break;
+				}
+
 				seen = qtrue;
 				i++;
-			} else if (i == 0) // starts with : but not ::
+			} else if (i == 0) { // starts with : but not ::
 				return NULL;
+			}
+
 			num = 0;
 		}
 	}
 
 	if (seen) {
 		// there have to be fewer than 8 hexadectets when : : is present
-		if (before + after == 8)
+		if (before + after == 8) {
 			return NULL;
-	} else if (before + after < 8) // require exactly 8 hexadectets
+		}
+	} else if (before + after < 8) { // require exactly 8 hexadectets
 		return NULL;
+	}
+
 	memset(addr, 0, sizeof(addr_t));
-  addr->type = IPv6;
 
-	if (before)
+	addr->type = IPv6;
+
+	if (before) {
 		memcpy(addr->addr, a, before * 2);
+	}
 
-	if (after)
+	if (after) {
 		memcpy(addr->addr + ADDRLEN - 2 * after, b, after * 2);
+	}
+
 	return str + i;
 }
 
+/*
+=======================================================================================================================================
+G_AddressParse
+=======================================================================================================================================
+*/
 qboolean G_AddressParse(const char *str, addr_t *addr) {
 	const char *p;
 	int max;
@@ -857,21 +947,27 @@ qboolean G_AddressParse(const char *str, addr_t *addr) {
 	} else if (strchr(str, '.')) {
 		p = addr4parse(str, addr);
 		max = 32;
-	} else
+	} else {
 		return qfalse;
+	}
+
 	Q_strncpyz(addr->str, str, sizeof(addr->str));
 
-	if (!p)
+	if (!p) {
 		return qfalse;
+	}
 
 	if (*p == '/') {
 		addr->mask = atoi(p + 1);
 
-		if (addr->mask < 1 || addr->mask > max)
+		if (addr->mask < 1 || addr->mask > max) {
 			addr->mask = max;
+		}
 	} else {
-		if (*p)
+		if (*p) {
 			return qfalse;
+		}
+
 		addr->mask = max;
 	}
 
@@ -890,19 +986,25 @@ qboolean G_AddressCompare(const addr_t *a, const addr_t *b) {
 
 	if (a->type != b->type)
 		return qfalse;
-  netmask = a->mask;
+	}
+
+	netmask = a->mask;
 
 	if (a->type == IPv4) {
-		if (netmask < 1 || netmask > 32)
+		if (netmask < 1 || netmask > 32) {
 			netmask = 32;
+		}
 	} else if (a->type == IPv6) {
-		if (netmask < 1 || netmask > 128)
+		if (netmask < 1 || netmask > 128) {
 			netmask = 128;
+		}
 	}
 
 	for (i = 0; netmask > 7; i++, netmask -= 8)
-		if (a->addr[i] != b->addr[i])
+		if (a->addr[i] != b->addr[i]) {
 			return qfalse;
+		}
+	}
 
 	if (netmask) {
 		netmask = ((1 << netmask) - 1) << (8 - netmask);

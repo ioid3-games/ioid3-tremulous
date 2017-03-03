@@ -76,8 +76,7 @@ static void *GPA(char *str) {
 		return rv;
 	}
 }
-#endif /* USE_CURL_DLOPEN */
-
+#endif // USE_CURL_DLOPEN
 /*
 =======================================================================================================================================
 CL_cURL_Init
@@ -140,7 +139,7 @@ qboolean CL_cURL_Init() {
 #else
 	clc.cURLEnabled = qtrue;
 	return qtrue;
-#endif /* USE_CURL_DLOPEN */
+#endif // USE_CURL_DLOPEN
 }
 
 /*
@@ -172,7 +171,7 @@ void CL_cURL_Shutdown(void) {
 	qcurl_multi_cleanup = NULL;
 	qcurl_multi_info_read = NULL;
 	qcurl_multi_strerror = NULL;
-#endif /* USE_CURL_DLOPEN */
+#endif // USE_CURL_DLOPEN
 }
 
 /*
@@ -181,6 +180,7 @@ CL_cURL_Cleanup
 =======================================================================================================================================
 */
 void CL_cURL_Cleanup(void) {
+
 	if (clc.downloadCURLM) {
 		CURLMcode result;
 
@@ -213,8 +213,7 @@ void CL_cURL_Cleanup(void) {
 CL_cURL_CallbackProgress
 =======================================================================================================================================
 */
-static int CL_cURL_CallbackProgress(void *dummy, double dltotal, double dlnow,
-	double ultotal, double ulnow) {
+static int CL_cURL_CallbackProgress(void *dummy, double dltotal, double dlnow, double ultotal, double ulnow) {
 	clc.downloadSize = (int)dltotal;
 	Cvar_SetValue("cl_downloadSize", clc.downloadSize);
 	clc.downloadCount = (int)dlnow;
@@ -227,8 +226,7 @@ static int CL_cURL_CallbackProgress(void *dummy, double dltotal, double dlnow,
 CL_cURL_CallbackWrite
 =======================================================================================================================================
 */
-static size_t CL_cURL_CallbackWrite(void *buffer, size_t size, size_t nmemb,
-	void *stream) {
+static size_t CL_cURL_CallbackWrite(void *buffer, size_t size, size_t nmemb, void *stream) {
 	FS_Write(buffer, size * nmemb, ((fileHandle_t *)stream)[0]);
 	return size * nmemb;
 }
@@ -273,6 +271,7 @@ void CL_cURL_BeginDownload(const char *localName, const char *remoteURL) {
 	CURLMcode result;
 
 	clc.cURLUsed = qtrue;
+
 	Com_Printf("URL : %s\n", remoteURL);
 	Com_DPrintf(" *** * * CL_cURL_BeginDownload *** * *\n"
 		"Localname : %s\n"
@@ -294,16 +293,14 @@ void CL_cURL_BeginDownload(const char *localName, const char *remoteURL) {
 	clc.downloadCURL = qcurl_easy_init();
 
 	if (!clc.downloadCURL) {
-		Com_Error(ERR_DROP, "CL_cURL_BeginDownload: qcurl_easy_init() "
-			"failed");
+		Com_Error(ERR_DROP, "CL_cURL_BeginDownload: qcurl_easy_init() failed");
 		return;
 	}
 
 	clc.download = FS_SV_FOpenFileWrite(clc.downloadTempName);
 
 	if (!clc.download) {
-		Com_Error(ERR_DROP, "CL_cURL_BeginDownload: failed to open "
-			"%s for writing", clc.downloadTempName);
+		Com_Error(ERR_DROP, "CL_cURL_BeginDownload: failed to open %s for writing", clc.downloadTempName);
 		return;
 	}
 
@@ -393,4 +390,4 @@ void CL_cURL_PerformDownload(void) {
 
 	CL_NextDownload();
 }
-#endif /* USE_CURL */
+#endif // USE_CURL

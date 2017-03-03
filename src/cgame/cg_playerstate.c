@@ -21,11 +21,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
 =======================================================================================================================================
 */
 
-// cg_playerstate.c--this file acts on changes in a new playerState_t
-// with normal play, this will be done after local prediction, but when
-// following another player or playing back a demo, it will be checked
-// when the snapshot transitions like all the other entities
-
+/**************************************************************************************************************************************
+ This file acts on changes in a new playerState_t.
+ With normal play, this will be done after local prediction, but when following another player or playing back a demo, it will be
+ checked when the snapshot transitions like all the other entities.
+**************************************************************************************************************************************/
 
 #include "cg_local.h"
 
@@ -43,6 +43,7 @@ void CG_DamageFeedback(int yawByte, int pitchByte, int damage) {
 	vec3_t angles;
 	float dist;
 	float yaw, pitch;
+
 	// show the attacking player's head and name in corner
 	cg.attackerTime = cg.time;
 	// the lower on health you are, the greater the view kick will be
@@ -63,7 +64,7 @@ void CG_DamageFeedback(int yawByte, int pitchByte, int damage) {
 	if (kick > 10) {
 		kick = 10;
 	}
-	// if yaw and pitch are both 255, make the damage always centered(falling, etc)
+	// if yaw and pitch are both 255, make the damage always centered (falling, etc.)
 	if (yawByte == 255 && pitchByte == 255) {
 		cg.damageX = 0;
 		cg.damageY = 0;
@@ -95,7 +96,6 @@ void CG_DamageFeedback(int yawByte, int pitchByte, int damage) {
 		}
 
 		cg.v_dmg_roll = kick * left;
-
 		cg.v_dmg_pitch = -kick * front;
 
 		if (front <= 0.1) {
@@ -170,18 +170,16 @@ void CG_CheckPlayerstateEvents(playerState_t *ps, playerState_t *ops) {
 	cent = &cg.predictedPlayerEntity; // cg_entities[ps->clientNum];
 	// go through the predictable events buffer
 	for (i = ps->eventSequence - MAX_PS_EVENTS; i < ps->eventSequence; i++) {
-		// if we have a new predictable event
-		if (i >= ops->eventSequence || (i > ops->eventSequence - MAX_PS_EVENTS && ps->events[i &(MAX_PS_EVENTS - 1)] != ops->events[i &(MAX_PS_EVENTS - 1)])) {
-			// or the server told us to play another event instead of a predicted event we already issued
-			// or something the server told us changed our prediction causing a different event
-			event = ps->events[i &(MAX_PS_EVENTS - 1)];
-
+		// if we have a new predictable event or the server told us to play another event instead of a predicted event we already issued
+		// or something the server told us changed our prediction causing a different event
+		if (i >= ops->eventSequence || (i > ops->eventSequence - MAX_PS_EVENTS && ps->events[i & (MAX_PS_EVENTS - 1)] != ops->events[i & (MAX_PS_EVENTS - 1)])) {
+			event = ps->events[i & (MAX_PS_EVENTS - 1)];
 			cent->currentState.event = event;
-			cent->currentState.eventParm = ps->eventParms[i &(MAX_PS_EVENTS - 1)];
+			cent->currentState.eventParm = ps->eventParms[i & (MAX_PS_EVENTS - 1)];
 
 			CG_EntityEvent(cent, cent->lerpOrigin);
 
-			cg.predictableEvents[i &(MAX_PREDICTED_EVENTS - 1)] = event;
+			cg.predictableEvents[i & (MAX_PREDICTED_EVENTS - 1)] = event;
 			cg.eventSequence++;
 		}
 	}
@@ -206,13 +204,14 @@ void CG_CheckChangedPredictableEvents(playerState_t *ps) {
 		// if this event is not further back in than the maximum predictable events we remember
 		if (i > cg.eventSequence - MAX_PREDICTED_EVENTS) {
 			// if the new playerstate event is different from a previously predicted one
-			if (ps->events[i &(MAX_PS_EVENTS - 1)] != cg.predictableEvents[i &(MAX_PREDICTED_EVENTS - 1)]) {
-				event = ps->events[i &(MAX_PS_EVENTS - 1)];
+			if (ps->events[i & (MAX_PS_EVENTS - 1)] != cg.predictableEvents[i & (MAX_PREDICTED_EVENTS - 1)]) {
+				event = ps->events[i & (MAX_PS_EVENTS - 1)];
 				cent->currentState.event = event;
-				cent->currentState.eventParm = ps->eventParms[i &(MAX_PS_EVENTS - 1)];
+				cent->currentState.eventParm = ps->eventParms[i & (MAX_PS_EVENTS - 1)];
+
 				CG_EntityEvent(cent, cent->lerpOrigin);
 
-				cg.predictableEvents[i &(MAX_PREDICTED_EVENTS - 1)] = event;
+				cg.predictableEvents[i & (MAX_PREDICTED_EVENTS - 1)] = event;
 
 				if (cg_showmiss.integer) {
 					CG_Printf("WARNING: changed predicted event\n");
@@ -224,7 +223,7 @@ void CG_CheckChangedPredictableEvents(playerState_t *ps) {
 
 /*
 =======================================================================================================================================
-CG_CheckLocalSounds.
+CG_CheckLocalSounds
 =======================================================================================================================================
 */
 void CG_CheckLocalSounds(playerState_t *ps, playerState_t *ops) {
@@ -261,7 +260,7 @@ void CG_TransitionPlayerState(playerState_t *ps, playerState_t *ops) {
 		CG_DamageFeedback(ps->damageYaw, ps->damagePitch, ps->damageCount);
 	}
 	// respawning
-	if (ps->persistant[PERS_SPAWN_COUNT] != ops->persistant[PERS_SPAWN_COUNT])
+	if (ps->persistant[PERS_SPAWN_COUNT] != ops->persistant[PERS_SPAWN_COUNT]) {
 		CG_Respawn();
 	}
 

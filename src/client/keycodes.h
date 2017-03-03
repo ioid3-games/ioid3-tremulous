@@ -24,31 +24,24 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
 #ifndef __KEYCODES_H__
 #define __KEYCODES_H__
 
-//
 // these are the key numbers that should be passed to KeyEvent
-//
 
 // normal keys should be passed as lowercased ascii
-
 typedef enum {
 	K_NONE = -1,
 	K_TAB = 9,
 	K_ENTER = 13,
 	K_ESCAPE = 27,
 	K_SPACE = 32,
-
 	K_BACKSPACE = 127,
-
 	K_COMMAND = 128,
 	K_CAPSLOCK,
 	K_POWER,
 	K_PAUSE,
-
 	K_UPARROW,
 	K_DOWNARROW,
 	K_LEFTARROW,
 	K_RIGHTARROW,
-
 	K_ALT,
 	K_CTRL,
 	K_SHIFT,
@@ -58,7 +51,6 @@ typedef enum {
 	K_PGUP,
 	K_HOME,
 	K_END,
-
 	K_F1,
 	K_F2,
 	K_F3,
@@ -74,7 +66,6 @@ typedef enum {
 	K_F13,
 	K_F14,
 	K_F15,
-
 	K_KP_HOME,
 	K_KP_UPARROW,
 	K_KP_PGUP,
@@ -93,16 +84,13 @@ typedef enum {
 	K_KP_NUMLOCK,
 	K_KP_STAR,
 	K_KP_EQUALS,
-
 	K_MOUSE1,
 	K_MOUSE2,
 	K_MOUSE3,
 	K_MOUSE4,
 	K_MOUSE5,
-
 	K_MWHEELDOWN,
 	K_MWHEELUP,
-
 	K_JOY1,
 	K_JOY2,
 	K_JOY3,
@@ -135,7 +123,6 @@ typedef enum {
 	K_JOY30,
 	K_JOY31,
 	K_JOY32,
-
 	K_AUX1,
 	K_AUX2,
 	K_AUX3,
@@ -152,7 +139,6 @@ typedef enum {
 	K_AUX14,
 	K_AUX15,
 	K_AUX16,
-
 	K_WORLD_0,
 	K_WORLD_1,
 	K_WORLD_2,
@@ -249,7 +235,6 @@ typedef enum {
 	K_WORLD_93,
 	K_WORLD_94,
 	K_WORLD_95,
-
 	K_SUPER,
 	K_COMPOSE,
 	K_MODE,
@@ -261,7 +246,6 @@ typedef enum {
 	K_MENU,
 	K_EURO,
 	K_UNDO,
-
 	// gamepad controls
 	// ordered to match SDL2 game controller buttons and axes
 	// do not change this order without also changing IN_GamepadMove() in SDL_input.c
@@ -280,7 +264,6 @@ typedef enum {
 	K_PAD0_DPAD_DOWN,
 	K_PAD0_DPAD_LEFT,
 	K_PAD0_DPAD_RIGHT,
-
 	K_PAD0_LEFTSTICK_LEFT,
 	K_PAD0_LEFTSTICK_RIGHT,
 	K_PAD0_LEFTSTICK_UP,
@@ -291,21 +274,16 @@ typedef enum {
 	K_PAD0_RIGHTSTICK_DOWN,
 	K_PAD0_LEFTTRIGGER,
 	K_PAD0_RIGHTTRIGGER,
-
 	// pseudo - key that brings the console down
 	K_CONSOLE,
-
 	MAX_KEYS
 } keyNum_t;
-
-// mAX_KEYS replaces K_LAST_KEY, however some mods may have used K_LAST_KEY
+// MAX_KEYS replaces K_LAST_KEY, however some mods may have used K_LAST_KEY
 // in detecting binds, so we leave it defined to the old hardcoded value
 // of maxiumum keys to prevent mods from crashing older versions of the engine
-#define K_LAST_KEY							256
-
-// the menu code needs to get both key and char events, but
-// to avoid duplicating the paths, the char events are just
+#define K_LAST_KEY 256
+// the menu code needs to get both key and char events, but to avoid duplicating the paths, the char events are just
 // distinguished by or'ing in K_CHAR_FLAG(ugly)
-#define K_CHAR_FLAG		1024
+#define K_CHAR_FLAG 1024
 
 #endif

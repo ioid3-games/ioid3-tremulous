@@ -1,174 +1,184 @@
 //
-// author : blowFish < blowfish@badsec.org>
+// Author: blowFish <blowfish@badsec.org>
 //
 
 #include "g_local.h"
 
-// -------------------------------------------------------------------------
-// player models
-// -------------------------------------------------------------------------
-//
-static qboolean
-_is_playermodel_uniq(const char *model) {
-		int i;
+/*
+=======================================================================================================================================
+_is_playermodel_uniq
+=======================================================================================================================================
+*/
+static qboolean _is_playermodel_uniq(const char *model) {
+	int i;
 
-		for (i = 0; i < level.playerModelCount; i++) {
-				if (!strcmp(model, level.playerModel[i]))
-						return qfalse;
+	for (i = 0; i < level.playerModelCount; i++) {
+		if (!strcmp(model, level.playerModel[i])) {
+			return qfalse;
 		}
+	}
 
-		return qtrue;
+	return qtrue;
 }
 
-static void
-G_AddPlayerModel(const char *model) {
-		if (!_is_playermodel_uniq(model))
-				return;
-		// hACK!
-		if (!strcmp(model, "human_bsuit"))
-				return;
+/*
+=======================================================================================================================================
+G_AddPlayerModel
+=======================================================================================================================================
+*/
+static void G_AddPlayerModel(const char *model) {
 
-		level.playerModel[level.playerModelCount] = G_CopyString(model);
-		level.playerModelCount++;
+	if (!_is_playermodel_uniq(model)) {
+		return;
+	}
+	// HACK!
+	if (!strcmp(model, "human_bsuit")) {
+		return;
+	}
+
+	level.playerModel[level.playerModelCount] = G_CopyString(model);
+	level.playerModelCount++;
 }
 
+/*
+=======================================================================================================================================
+G_InitPlayerModel
+=======================================================================================================================================
+*/
 void G_InitPlayerModel(void) {
-		char fileList[16 * 1024] = {""};
-		char *filePtr;
-		int numFiles;
-		int fileLen = 0;
-		int i;
-		// tODO : Add an FS trap which is does correct file globbing
-		numFiles = trap_FS_GetFilteredFiles("/models/players", "", "models * players * head_ * .skin", fileList, sizeof(fileList));
-		filePtr = fileList;
+	char fileList[16 * 1024] = {""};
+	char *filePtr;
+	int numFiles;
+	int fileLen = 0;
+	int i;
 
-		for (i = 0; i < numFiles && level.playerModelCount < MAX_PLAYER_MODEL;
-						i++, filePtr += fileLen + 1) {
-				char *start, *c;
+	// TODO : Add an FS trap which is does correct file globbing
+	numFiles = trap_FS_GetFilteredFiles("/models/players", "", "models * players * head_ * .skin", fileList, sizeof(fileList));
+	filePtr = fileList;
 
-				fileLen = strlen(filePtr);
-				// skip leading '/'
-				start = filePtr + 15;
-				// only want directory names at the current depth.
-				for (c = start; c != '\0'; c++) {
-						if (*c == '/' || *c == '\\') {
-								*c = '\0';
-								break;
-						}
-				}
+	for (i = 0; i < numFiles && level.playerModelCount < MAX_PLAYER_MODEL; i++, filePtr += fileLen + 1) {
+		char *start, *c;
 
-				G_AddPlayerModel(start);
+		fileLen = strlen(filePtr);
+		// skip leading '/'
+		start = filePtr + 15;
+		// only want directory names at the current depth.
+		for (c = start; c != '\0'; c++) {
+			if (*c == '/' || *c == '\\') {
+				*c = '\0';
+				break;
+			}
 		}
+
+		G_AddPlayerModel(start);
+	}
 }
 
+/*
+=======================================================================================================================================
+G_IsValidPlayerModel
+=======================================================================================================================================
+*/
 qboolean G_IsValidPlayerModel(const char *model) {
-		return !_is_playermodel_uniq(model);
+	return !_is_playermodel_uniq(model);
 }
 
+/*
+=======================================================================================================================================
+G_FreePlayerModel
+=======================================================================================================================================
+*/
 void G_FreePlayerModel(void) {
-		int i;
+	int i;
 
-		for (i = 0; i < level.playerModelCount; i++)
-				BG_Free(level.playerModel[i]);
+	for (i = 0; i < level.playerModelCount; i++) {
+		BG_Free(level.playerModel[i]);
+	}
 }
 
-// -------------------------------------------------------------------------
-// skins
-// -------------------------------------------------------------------------
+/*
+=======================================================================================================================================
+G_GetPlayerModelSkins
+=======================================================================================================================================
+*/
+void G_GetPlayerModelSkins(const char *modelname, char skins[][64], int maxskins, int *numskins) {
+	char fileList[16 * 1024] = {""};
+	int nFiles;
+	char *filePtr;
+	int fileLen = 0;
+	int i;
 
-void G_GetPlayerModelSkins(const char *modelname, char skins[][64], 
- int maxskins, int *numskins) {
-		char fileList[16 * 1024] = {""};
-		int nFiles;
-		char *filePtr;
-		int fileLen = 0;
-		int i;
+	*numskins = 0;
+	nFiles = trap_FS_GetFilteredFiles("models/players", ".skin", va("models * players * %s * skin", modelname), fileList, sizeof(fileList));
+	filePtr = fileList;
 
-		*numskins = 0;
-		nFiles = trap_FS_GetFilteredFiles("models/players", ".skin", va("models * players * %s * skin", modelname), fileList, sizeof(fileList));
-		filePtr = fileList;
+	for (i = 0; i < nFiles && i < maxskins; i++) {
+		char *start, *end;
 
-		for (i = 0; i < nFiles && i < maxskins; i++) {
-				char *start, *end;
-
-				fileLen = strlen(filePtr);
-
-				start = filePtr;
-				start += strlen(va("models/players / %s / ", modelname));
-
-				end = filePtr + fileLen;
-				end -= 5;
-				*end = '\0';
-				filePtr += fileLen + 1;
-				// dumb way to filter out the unique skins of segmented and
-				// nonsegmented models.
-				// tODO : Stop writing code at 4am.
-				if (start[0] == 'h'
-					&& start[1] == 'e'
-					&& start[2] == 'a'
-					&& start[3] == 'd'
-					&& start[4] == '_')
-						start += 5;
-
-				else if (start[0] == 'n'
-							&& start[1] == 'o'
-							&& start[2] == 'n'
-							&& start[3] == 's'
-							&& start[4] == 'e'
-							&& start[5] == 'g'
-							&& start[6] == '_')
-						start += 7;
-
-				else
-						continue;
-
-				strncpy(skins[*numskins], start, 64);
-(*numskins)++;
+		fileLen = strlen(filePtr);
+		start = filePtr;
+		start += strlen(va("models/players/%s/", modelname));
+		end = filePtr + fileLen;
+		end -= 5;
+		*end = '\0';
+		filePtr += fileLen + 1;
+		// dumb way to filter out the unique skins of segmented and nonsegmented models.
+		// TODO : Stop writing code at 4am.
+		if (start[0] == 'h' && start[1] == 'e' && start[2] == 'a' && start[3] == 'd' && start[4] == '_') {
+			start += 5;
+		} else if (start[0] == 'n' && start[1] == 'o' && start[2] == 'n' && start[3] == 's' && start[4] == 'e' && start[5] == 'g' && start[6] == '_') {
+			start += 7;
+		} else {
+			continue;
 		}
+
+		strncpy(skins[*numskins], start, 64);
+		(*numskins)++;
+	}
 }
 
 /*
 =======================================================================================================================================
 GetSkin
 
-Probably should be called GetSkin[or]Default. Tries to recreate what
-appears to be an undocumented set of conventions that must be allowed
-in other q3 derives.
-
-This algorithm is not really good enough for Tremulous considering
-armour + upgrade / advanced in gameplay
+Probably should be called GetSkin[or]Default.
+Tries to recreate what appears to be an undocumented set of conventions that must be allowed in other q3 derives. This algorithm is not
+really good enough for Tremulous considering armour + upgrade / advanced in gameplay.
 
 XXX Move this into bg_.
 =======================================================================================================================================
 */
 char *GetSkin(char *modelname, char *wish) {
-		char skins[MAX_PLAYER_MODEL][64];
-		int numskins;
-		int i;
-		qboolean foundDefault = qfalse;
-		qboolean foundSelfNamed = qfalse;
-		static char lastpick[64] = {""};
-		lastpick[0] = '\0'; // reset static buf
+	char skins[MAX_PLAYER_MODEL][64];
+	int numskins;
+	int i;
+	qboolean foundDefault = qfalse;
+	qboolean foundSelfNamed = qfalse;
+	static char lastpick[64] = {""};
 
-		G_GetPlayerModelSkins(modelname, skins, MAX_PLAYER_MODEL, &numskins);
+	lastpick[0] = '\0'; // reset static buf
 
-		for (i = 0; i < numskins; i++) {
-				if (i == 0)
-						strncpy(lastpick, skins[0], 64);
+	G_GetPlayerModelSkins(modelname, skins, MAX_PLAYER_MODEL, &numskins);
 
-				if (!strcmp(wish, skins[i]))
-						return wish;
-				else if (!strcmp("default", skins[i]))
-						foundDefault = qtrue;
-				else if (!strcmp(modelname, skins[i]))
-						foundSelfNamed = qtrue;
+	for (i = 0; i < numskins; i++) {
+		if (i == 0) {
+			strncpy(lastpick, skins[0], 64);
 		}
 
-		if (foundDefault)
-				return "default";
-		else if (foundSelfNamed)
-				return modelname;
+		if (!strcmp(wish, skins[i])) {
+			return wish;
+		} else if (!strcmp("default", skins[i])) {
+			foundDefault = qtrue;
+		} else if (!strcmp(modelname, skins[i])) {
+			foundSelfNamed = qtrue;
+		}
+	}
 
-		return lastpick;
+	if (foundDefault) {
+		return "default";
+	} else if (foundSelfNamed) {
+		return modelname;
+	}
+
+	return lastpick;
 }
-

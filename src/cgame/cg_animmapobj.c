@@ -174,8 +174,7 @@ void CG_AnimMapObj(centity_t *cent) {
 	cent->lerpFrame.animation = &anim;
 
 	if (!anim.loopFrames) {
-		// add one frame to allow the animation to play the last frame
-		// add another to get it to stop playing at the first frame
+		// add one frame to allow the animation to play the last frame add another to get it to stop playing at the first frame
 		anim.numFrames += 2;
 
 		if (!cent->animInit) {

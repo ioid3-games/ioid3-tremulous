@@ -82,20 +82,20 @@ extern "C" {
 	} unz_global_info;
 	// unz_file_info contain information about a file in the zipfile
 	typedef struct unz_file_info_s {
-		uLong version;             // version made by                 2 bytes
-		uLong version_needed;      // version needed to extract       2 bytes
-		uLong flag;                // general purpose bit flag        2 bytes
-		uLong compression_method;  // compression method              2 bytes
-		uLong dosDate;             // last mod file date in Dos fmt   4 bytes
-		uLong crc;                 // crc-32                          4 bytes
-		uLong compressed_size;     // compressed size                 4 bytes
-		uLong uncompressed_size;   // uncompressed size               4 bytes
-		uLong size_filename;       // filename length                 2 bytes
-		uLong size_file_extra;     // extra field length              2 bytes
-		uLong size_file_comment;   // file comment length             2 bytes
-		uLong disk_num_start;      // disk number start               2 bytes
-		uLong internal_fa;         // internal file attributes        2 bytes
-		uLong external_fa;         // external file attributes        4 bytes
+		uLong version;              // version made by                 2 bytes
+		uLong version_needed;       // version needed to extract       2 bytes
+		uLong flag;                 // general purpose bit flag        2 bytes
+		uLong compression_method;   // compression method              2 bytes
+		uLong dosDate;              // last mod file date in Dos fmt   4 bytes
+		uLong crc;                  // crc-32                          4 bytes
+		uLong compressed_size;      // compressed size                 4 bytes
+		uLong uncompressed_size;    // uncompressed size               4 bytes
+		uLong size_filename;        // filename length                 2 bytes
+		uLong size_file_extra;      // extra field length              2 bytes
+		uLong size_file_comment;    // file comment length             2 bytes
+		uLong disk_num_start;       // disk number start               2 bytes
+		uLong internal_fa;          // internal file attributes        2 bytes
+		uLong external_fa;          // external file attributes        4 bytes
 		tm_unz tmu_date;
 	} unz_file_info;
 
@@ -172,8 +172,8 @@ extern "C" {
 
 	// unz_file_info contain information about a file in the zipfile
 	typedef struct unz_file_pos_s {
-		uLong pos_in_zip_directory;  // offset in zip file directory
-		uLong num_of_file;           // # of file
+		uLong pos_in_zip_directory;   // offset in zip file directory
+		uLong num_of_file;            // # of file
 	} unz_file_pos;
 
 	extern int ZEXPORT unzGetFilePos(unzFile file, unz_file_pos * file_pos);

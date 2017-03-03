@@ -72,6 +72,7 @@ void TeleportPlayer(gentity_t *player, vec3_t origin, vec3_t angles) {
 	// spit the player out
 	AngleVectors(angles, player->client->ps.velocity, NULL, NULL);
 	VectorScale(player->client->ps.velocity, 400, player->client->ps.velocity);
+
 	player->client->ps.pm_time = 160; // hold time
 	player->client->ps.pm_flags|= PMF_TIME_KNOCKBACK;
 	// toggle the teleport bit so the client knows to not lerp
@@ -260,6 +261,7 @@ void SP_misc_particle_system(gentity_t *self) {
 
 	self->use = SP_use_particle_system;
 	self->s.eType = ET_PARTICLE_SYSTEM;
+
 	trap_LinkEntity(self);
 }
 
@@ -339,12 +341,11 @@ static void findEmptySpot(vec3_t origin, float radius, vec3_t spot) {
 	trace_t tr;
 
 	VectorClear(total);
-	// 54(!) traces to test for empty spots
+	// 54 (!) traces to test for empty spots
 	for (i = -1; i <= 1; i++) {
 		for (j = -1; j <= 1; j++) {
 			for (k = -1; k <= 1; k++) {
 				VectorSet(delta, (i * radius), (j * radius), (k * radius));
-
 				VectorAdd(origin, delta, test);
 
 				trap_Trace(&tr, test, NULL, NULL, test, -1, MASK_SOLID);

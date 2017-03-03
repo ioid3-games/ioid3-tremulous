@@ -21,10 +21,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
 =======================================================================================================================================
 */
 
-// cg_servercmds.c--reliably sequenced text commands sent by the server
-// these are processed at snapshot transition time, so there will definately
-// be a valid snapshot this frame
-
+/**************************************************************************************************************************************
+ Reliably sequenced text commands sent by the server these are processed at snapshot transition time, so there will definitely be a
+ valid snapshot this frame.
+**************************************************************************************************************************************/
 
 #include "cg_local.h"
 
@@ -127,7 +127,7 @@ void CG_ParseServerinfo(void) {
 
 /*
 =======================================================================================================================================
-CG_ParseWarmup.
+CG_ParseWarmup
 =======================================================================================================================================
 */
 static void CG_ParseWarmup(void) {
@@ -135,6 +135,7 @@ static void CG_ParseWarmup(void) {
 	int warmup;
 
 	info = CG_ConfigString(CS_WARMUP);
+
 	warmup = atoi(info);
 	cg.warmupTime = warmup;
 }
@@ -168,7 +169,7 @@ void CG_SetConfigValues(void) {
 
 /*
 =======================================================================================================================================
-CG_ShaderStateChanged.
+CG_ShaderStateChanged
 =======================================================================================================================================
 */
 void CG_ShaderStateChanged(void) {
@@ -181,7 +182,7 @@ void CG_ShaderStateChanged(void) {
 	o = CG_ConfigString(CS_SHADERSTATE);
 
 	while (o && *o) {
-		n = strstr(o, " = ");
+		n = strstr(o, "=");
 
 		if (n && *n) {
 			strncpy(originalShader, o, n - o);
@@ -213,7 +214,7 @@ void CG_ShaderStateChanged(void) {
 
 /*
 =======================================================================================================================================
-CG_AnnounceAlienStageTransistion.
+CG_AnnounceAlienStageTransistion
 =======================================================================================================================================
 */
 static void CG_AnnounceAlienStageTransistion(stage_t from, stage_t to) {
@@ -228,7 +229,7 @@ static void CG_AnnounceAlienStageTransistion(stage_t from, stage_t to) {
 
 /*
 =======================================================================================================================================
-CG_AnnounceHumanStageTransistion.
+CG_AnnounceHumanStageTransistion
 =======================================================================================================================================
 */
 static void CG_AnnounceHumanStageTransistion(stage_t from, stage_t to) {
@@ -336,8 +337,7 @@ static void CG_ConfigStringModified(void) {
 CG_MapRestart
 
 The server has issued a map_restart, so the next snapshot is completely new and should not be interpolated to.
-
-A tournement restart will clear everything, but doesn't require a reload of all the media.
+A tournament restart will clear everything, but doesn't require a reload of all the media.
 =======================================================================================================================================
 */
 static void CG_MapRestart(void) {
@@ -363,7 +363,7 @@ static void CG_MapRestart(void) {
 
 /*
 =======================================================================================================================================
-CG_Menu.
+CG_Menu
 =======================================================================================================================================
 */
 void CG_Menu(int menu, int arg) {
@@ -440,9 +440,8 @@ void CG_Menu(int menu, int arg) {
 			shortMsg = "No free player slots";
 			type = DT_COMMAND;
 			break;
-		// since cheating commands have no default binds, they will often be done
-		// via console. In light of this, perhaps opening a menu is 
-		// counterintuitive
+		// since cheating commands have no default binds, they will often be done via console.
+		// In light of this, perhaps opening a menu is counterintuitive.
 		case MN_CMD_CHEAT:
 			// longMsg = "This action is considered cheating. It can only be used in cheat mode, which is not enabled on this server.";
 			shortMsg = "Cheats are not enabled on this server";
@@ -691,7 +690,7 @@ void CG_Menu(int menu, int arg) {
 
 /*
 =======================================================================================================================================
-CG_Say.
+CG_Say
 =======================================================================================================================================
 */
 static void CG_Say(int clientNum, saymode_t mode, const char *text) {
@@ -912,7 +911,7 @@ static void CG_ParseVoice(void) {
 			Q_strncpyz(sayText, "*unintelligible gibberish*", sizeof(sayText));
 		}
 	}
- 
+
 	if (!cg_noVoiceText.integer) {
 		switch (vChan) {
 			case VOICE_CHAN_ALL:
@@ -955,7 +954,7 @@ static void CG_ParseVoice(void) {
 
 /*
 =======================================================================================================================================
-CG_CenterPrint_f.
+CG_CenterPrint_f
 =======================================================================================================================================
 */
 void CG_CenterPrint_f(void) {
@@ -964,7 +963,7 @@ void CG_CenterPrint_f(void) {
 
 /*
 =======================================================================================================================================
-CG_Print_f.
+CG_Print_f
 =======================================================================================================================================
 */
 static void CG_Print_f(void) {
@@ -973,7 +972,7 @@ static void CG_Print_f(void) {
 
 /*
 =======================================================================================================================================
-CG_Chat_f.
+CG_Chat_f
 =======================================================================================================================================
 */
 static void CG_Chat_f(void) {
@@ -988,7 +987,7 @@ static void CG_Chat_f(void) {
 
 /*
 =======================================================================================================================================
-CG_ClientLevelShot_f.
+CG_ClientLevelShot_f
 =======================================================================================================================================
 */
 static void CG_ClientLevelShot_f(void) {
@@ -997,7 +996,7 @@ static void CG_ClientLevelShot_f(void) {
 
 /*
 =======================================================================================================================================
-CG_ServerMenu_f.
+CG_ServerMenu_f
 =======================================================================================================================================
 */
 static void CG_ServerMenu_f(void) {
@@ -1103,7 +1102,7 @@ static consoleCommand_t svcommands[] = {
 =======================================================================================================================================
 CG_ServerCommand
 
-The string has been tokenized and can be retrieved with Cmd_Argc() / Cmd_Argv().
+The string has been tokenized and can be retrieved with Cmd_Argc()/Cmd_Argv().
 =======================================================================================================================================
 */
 static void CG_ServerCommand(void) {
