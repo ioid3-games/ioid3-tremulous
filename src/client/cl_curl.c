@@ -23,14 +23,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
 
 #ifdef USE_CURL
 #include "client.h"
-
 #ifdef USE_CURL_DLOPEN
 #include "../sys/sys_loadlib.h"
 
 cvar_t *cl_cURLLib;
 
 char *(*qcurl_version)(void);
-
 CURL *(*qcurl_easy_init)(void);
 CURLcode(*qcurl_easy_setopt)(CURL *curl, CURLoption option, ...);
 CURLcode(*qcurl_easy_perform)(CURL *curl);
@@ -39,22 +37,18 @@ CURLcode(*qcurl_easy_getinfo)(CURL *curl, CURLINFO info, ...);
 CURL *(*qcurl_easy_duphandle)(CURL *curl);
 void (*qcurl_easy_reset)(CURL *curl);
 const char *(*qcurl_easy_strerror)(CURLcode);
-
 CURLM *(*qcurl_multi_init)(void);
 CURLMcode(*qcurl_multi_add_handle)(CURLM *, CURL *curl_handle);
 CURLMcode(*qcurl_multi_remove_handle)(CURLM *, CURL *);
-CURLMcode(*qcurl_multi_fdset)(CURLM *, fd_set * read_set, fd_set * write_set, fd_set * exc_set, int *);
+CURLMcode(*qcurl_multi_fdset)(CURLM *, fd_set * read_set, fd_set *write_set, fd_set *exc_set, int *);
 CURLMcode(*qcurl_multi_perform)(CURLM *, int *);
 CURLMcode(*qcurl_multi_cleanup)(CURLM *);
 CURLMsg *(*qcurl_multi_info_read)(CURLM *, int *);
 const char *(*qcurl_multi_strerror)(CURLMcode);
-
 struct curl_slist *(*qcurl_slist_append)(struct curl_slist *, const char *);
 void (*qcurl_slist_free_all)(struct curl_slist *);
-
 CURLcode(*qcurl_global_init)(long);
 void (*qcurl_global_cleanup)(void);
-
 static void *cURLLib = NULL;
 
 /*
@@ -72,7 +66,7 @@ static void *GPA(char *str) {
 		clc.cURLEnabled = qfalse;
 		return NULL;
 	} else {
-		Com_DPrintf("Loaded symbol %s(0x%p)\n", str, rv);
+		Com_DPrintf("Loaded symbol %s (0x%p)\n", str, rv);
 		return rv;
 	}
 }
@@ -103,7 +97,6 @@ qboolean CL_cURL_Init() {
 	clc.cURLEnabled = qtrue;
 
 	qcurl_version = GPA("curl_version");
-
 	qcurl_easy_init = GPA("curl_easy_init");
 	qcurl_easy_setopt = GPA("curl_easy_setopt");
 	qcurl_easy_perform = GPA("curl_easy_perform");
@@ -112,7 +105,6 @@ qboolean CL_cURL_Init() {
 	qcurl_easy_duphandle = GPA("curl_easy_duphandle");
 	qcurl_easy_reset = GPA("curl_easy_reset");
 	qcurl_easy_strerror = GPA("curl_easy_strerror");
-
 	qcurl_multi_init = GPA("curl_multi_init");
 	qcurl_multi_add_handle = GPA("curl_multi_add_handle");
 	qcurl_multi_remove_handle = GPA("curl_multi_remove_handle");
@@ -148,6 +140,7 @@ CL_cURL_Shutdown
 =======================================================================================================================================
 */
 void CL_cURL_Shutdown(void) {
+
 	CL_cURL_Cleanup();
 #ifdef USE_CURL_DLOPEN
 	if (cURLLib) {
@@ -162,7 +155,6 @@ void CL_cURL_Shutdown(void) {
 	qcurl_easy_getinfo = NULL;
 	qcurl_easy_duphandle = NULL;
 	qcurl_easy_reset = NULL;
-
 	qcurl_multi_init = NULL;
 	qcurl_multi_add_handle = NULL;
 	qcurl_multi_remove_handle = NULL;
@@ -188,7 +180,7 @@ void CL_cURL_Cleanup(void) {
 			result = qcurl_multi_remove_handle(clc.downloadCURLM, clc.downloadCURL);
 
 			if (result != CURLM_OK) {
-				Com_DPrintf("qcurl_multi_remove_handle failed : %s\n", qcurl_multi_strerror(result));
+				Com_DPrintf("qcurl_multi_remove_handle failed: %s\n", qcurl_multi_strerror(result));
 			}
 
 			qcurl_easy_cleanup(clc.downloadCURL);
@@ -197,7 +189,7 @@ void CL_cURL_Cleanup(void) {
 		result = qcurl_multi_cleanup(clc.downloadCURLM);
 
 		if (result != CURLM_OK) {
-			Com_DPrintf("CL_cURL_Cleanup : qcurl_multi_cleanup failed : %s\n", qcurl_multi_strerror(result));
+			Com_DPrintf("CL_cURL_Cleanup: qcurl_multi_cleanup failed: %s\n", qcurl_multi_strerror(result));
 		}
 
 		clc.downloadCURLM = NULL;
@@ -214,6 +206,7 @@ CL_cURL_CallbackProgress
 =======================================================================================================================================
 */
 static int CL_cURL_CallbackProgress(void *dummy, double dltotal, double dlnow, double ultotal, double ulnow) {
+
 	clc.downloadSize = (int)dltotal;
 	Cvar_SetValue("cl_downloadSize", clc.downloadSize);
 	clc.downloadCount = (int)dlnow;
@@ -227,6 +220,7 @@ CL_cURL_CallbackWrite
 =======================================================================================================================================
 */
 static size_t CL_cURL_CallbackWrite(void *buffer, size_t size, size_t nmemb, void *stream) {
+
 	FS_Write(buffer, size * nmemb, ((fileHandle_t *)stream)[0]);
 	return size * nmemb;
 }
@@ -238,7 +232,6 @@ qcurl_easy_setopt_warn
 */
 CURLcode qcurl_easy_setopt_warn(CURL *curl, CURLoption option, ...) {
 	CURLcode result;
-
 	va_list argp;
 	va_start(argp, option);
 
@@ -254,7 +247,7 @@ CURLcode qcurl_easy_setopt_warn(CURL *curl, CURLoption option, ...) {
 	}
 
 	if (result != CURLE_OK) {
-		Com_DPrintf("qcurl_easy_setopt failed : %s\n", qcurl_easy_strerror(result));
+		Com_DPrintf("qcurl_easy_setopt failed: %s\n", qcurl_easy_strerror(result));
 	}
 
 	va_end(argp);
@@ -272,11 +265,11 @@ void CL_cURL_BeginDownload(const char *localName, const char *remoteURL) {
 
 	clc.cURLUsed = qtrue;
 
-	Com_Printf("URL : %s\n", remoteURL);
-	Com_DPrintf(" *** * * CL_cURL_BeginDownload *** * *\n"
-		"Localname : %s\n"
-		"RemoteURL : %s\n"
-		" *** *** *** *** *** *** *** *** *** *\n", localName, remoteURL);
+	Com_Printf("URL: %s\n", remoteURL);
+	Com_DPrintf("***** CL_cURL_BeginDownload *****\n"
+		"Localname: %s\n"
+		"RemoteURL: %s\n"
+		"****************************\n", localName, remoteURL);
 	CL_cURL_Cleanup();
 	Q_strncpyz(clc.downloadURL, remoteURL, sizeof(clc.downloadURL));
 	Q_strncpyz(clc.downloadName, localName, sizeof(clc.downloadName));
@@ -289,7 +282,6 @@ void CL_cURL_BeginDownload(const char *localName, const char *remoteURL) {
 
 	clc.downloadBlock = 0; // starting new file
 	clc.downloadCount = 0;
-
 	clc.downloadCURL = qcurl_easy_init();
 
 	if (!clc.downloadCURL) {
@@ -320,6 +312,7 @@ void CL_cURL_BeginDownload(const char *localName, const char *remoteURL) {
 	qcurl_easy_setopt_warn(clc.downloadCURL, CURLOPT_FAILONERROR, 1);
 	qcurl_easy_setopt_warn(clc.downloadCURL, CURLOPT_FOLLOWLOCATION, 1);
 	qcurl_easy_setopt_warn(clc.downloadCURL, CURLOPT_MAXREDIRS, 5);
+
 	clc.downloadCURLM = qcurl_multi_init();
 
 	if (!clc.downloadCURLM) {
@@ -339,11 +332,11 @@ void CL_cURL_BeginDownload(const char *localName, const char *remoteURL) {
 	}
 
 	if (!(clc.sv_allowDownload & DLF_NO_DISCONNECT) && !clc.cURLDisconnected) {
-
 		CL_AddReliableCommand("disconnect", qtrue);
 		CL_WritePacket();
 		CL_WritePacket();
 		CL_WritePacket();
+
 		clc.cURLDisconnected = qtrue;
 	}
 }
@@ -385,7 +378,7 @@ void CL_cURL_PerformDownload(void) {
 		long code;
 
 		qcurl_easy_getinfo(msg->easy_handle, CURLINFO_RESPONSE_CODE, &code);
-		Com_Error(ERR_DROP, "Download Error : %s Code : %ld URL : %s", qcurl_easy_strerror(msg->data.result), code, clc.downloadURL);
+		Com_Error(ERR_DROP, "Download Error: %s Code: %ld URL: %s", qcurl_easy_strerror(msg->data.result), code, clc.downloadURL);
 	}
 
 	CL_NextDownload();

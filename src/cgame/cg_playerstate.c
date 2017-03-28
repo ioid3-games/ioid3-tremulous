@@ -285,4 +285,3 @@ void CG_TransitionPlayerState(playerState_t *ps, playerState_t *ops) {
 		cg.chargeMeterAlpha = 0.0f;
 	}
 }
-

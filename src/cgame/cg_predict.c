@@ -87,7 +87,6 @@ static void CG_ClipMoveToEntities(const vec3_t start, const vec3_t mins, const v
 	clipHandle_t cmodel;
 	vec3_t bmins, bmaxs;
 	vec3_t origin, angles;
-
 	centity_t *cent;
 	// SUPAR HACK
 	// this causes a trace to collide with the local player
@@ -155,6 +154,7 @@ static void CG_ClipMoveToEntities(const vec3_t start, const vec3_t mins, const v
 			}
 		} else if (trace.startsolid) {
 			tr->startsolid = qtrue;
+		}
 
 		if (tr->allsolid) {
 			return;
@@ -487,8 +487,7 @@ void CG_PredictPlayerState(void) {
 	int stateIndex = 0, predictCmd = 0;
 
 	cg.hyperspace = qfalse; // will be set if touching a trigger_teleport
-
-	// if this is the first frame we must guarante predictedPlayerState is valid even if there is some other error condition
+	// if this is the first frame we must guarantee predictedPlayerState is valid even if there is some other error condition
 	if (!cg.validPPS) {
 		cg.validPPS = qtrue;
 		cg.predictedPlayerState = cg.snap->ps;

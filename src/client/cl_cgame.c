@@ -1083,4 +1083,3 @@ void CL_SetCGameTime(void) {
 		}
 	}
 }
-

@@ -220,7 +220,6 @@ void CG_DrawField(float x, float y, int width, float cw, float ch, int value) {
 	}
 
 	x += (2.0f * cgDC.aspectScale) + charWidth * (width - l);
-
 	ptr = num;
 
 	while (*ptr && l) {

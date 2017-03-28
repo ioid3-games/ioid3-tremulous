@@ -88,7 +88,7 @@ static void CG_ParseTeamInfo(void) {
 		}
 
 		if (client < 0 || client >= MAX_CLIENTS) {
-			CG_Printf("[skipnotify]CG_ParseTeamInfo : bad client number : %d\n", client);
+			CG_Printf("[skipnotify]CG_ParseTeamInfo: bad client number: %d\n", client);
 			return;
 		}
 

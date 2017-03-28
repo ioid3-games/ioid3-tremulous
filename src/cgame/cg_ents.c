@@ -607,6 +607,7 @@ static void CG_Portal(centity_t *cent) {
 
 	VectorCopy(cent->lerpOrigin, ent.origin);
 	VectorCopy(s1->origin2, ent.oldorigin);
+
 	ByteToDir(s1->eventParm, ent.axis[0]);
 	PerpendicularVector(ent.axis[1], ent.axis[0]);
 	// negating this tends to get the directions like they want we really should have a camera roll value

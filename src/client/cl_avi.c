@@ -378,6 +378,7 @@ qboolean CL_OpenAVIForWriting(const char *fileName) {
 	CL_WriteAVIHeader();
 
 	SafeFS_Write(buffer, bufIndex, afd.f);
+
 	afd.fileSize = bufIndex;
 	bufIndex = 0;
 	START_CHUNK("idx1");

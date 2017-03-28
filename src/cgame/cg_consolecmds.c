@@ -214,7 +214,7 @@ static consoleCommand_t commands[] = {
 =======================================================================================================================================
 CG_ConsoleCommand
 
-The string has been tokenized and can be retrieved with Cmd_Argc() / Cmd_Argv().
+The string has been tokenized and can be retrieved with Cmd_Argc()/Cmd_Argv().
 =======================================================================================================================================
 */
 qboolean CG_ConsoleCommand(void) {

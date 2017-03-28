@@ -119,7 +119,7 @@ void CG_FillRect(float x, float y, float width, float height, const float *color
 =======================================================================================================================================
 CG_DrawSides
 
-Coords are virtual 640x480.
+Coordinates are 640 * 480 virtual values.
 =======================================================================================================================================
 */
 void CG_DrawSides(float x, float y, float w, float h, float size) {

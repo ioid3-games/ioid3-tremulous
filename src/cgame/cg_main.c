@@ -1147,14 +1147,16 @@ void CG_ParseMenu(const char *menuFile) {
 		if (!trap_Parse_ReadToken(handle, &token)) {
 			break;
 		}
-		// if (Q_stricmp(token, "{")) {
-		// 	Com_Printf("Missing { in menu file\n");
-		// break;
-		// }
-		// if (menuCount == MAX_MENUS) {
-		// 	Com_Printf("Too many menus!\n");
-		// break;
-		// }
+
+		//if (Q_stricmp(token, "{")) {
+		//	Com_Printf("Missing { in menu file\n");
+		//	break;
+		//}
+
+		//if (menuCount == MAX_MENUS) {
+		//	Com_Printf("Too many menus!\n");
+		//	break;
+		//}
 
 		if (token.string[0] == '}') {
 			break;

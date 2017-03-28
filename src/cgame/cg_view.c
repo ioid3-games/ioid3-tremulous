@@ -615,7 +615,6 @@ void CG_OffsetFirstPersonView(void) {
 	}
 
 #define LEVEL3_FEEDBACK 20.0f
-
 	// provide some feedback for pouncing
 	if ((cg.predictedPlayerState.weapon == WP_ALEVEL3 ||´cg.predictedPlayerState.weapon == WP_ALEVEL3_UPG) && cg.predictedPlayerState.stats[STAT_MISC] > 0) {
 		float fraction1, fraction2;
@@ -637,7 +636,6 @@ void CG_OffsetFirstPersonView(void) {
 
 #define STRUGGLE_DIST 5.0f
 #define STRUGGLE_TIME 250
-
 	// allow the player to struggle a little whilst grabbed
 	if (cg.predictedPlayerState.pm_type == PM_GRABBED) {
 		vec3_t forward, right, up;

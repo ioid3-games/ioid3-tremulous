@@ -20,7 +20,10 @@ along with Tremulous; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
 =======================================================================================================================================
 */
-// cl.input.c--builds an intended movement command to send to the server
+
+/**************************************************************************************************************************************
+ Builds an intended movement command to send to the server.
+**************************************************************************************************************************************/
 
 #include "client.h"
 
@@ -30,16 +33,17 @@ int old_com_frameTime;
 /*
 =======================================================================================================================================
 
-KEY BUTTONS
+	KEY BUTTONS
 
-Continuous button event tracking is complicated by the fact that two different input sources (say, mouse button 1 and the control key)
-can both press the same button, but the button should only be released when both of the pressing key have been released.
+	Continuous button event tracking is complicated by the fact that two different input sources (say, mouse button 1 and the control
+	key) can both press the same button, but the button should only be released when both of the pressing key have been released.
 
-When a key event issues a button command(+ forward, + attack, etc), it appends its key number as argv(1) so it can be matched up with
-the release.
+	When a key event issues a button command (+forward, +attack, etc.), it appends its key number as argv(1) so it can be matched up
+	with the release.
 
-argv(2) will be set to the time the event happened, which allows exact control even at low framerates when the down and up events may
-both get qued at the same time.
+	argv(2) will be set to the time the event happened, which allows exact control even at low framerates when the down and up events
+	may both get qued at the same time.
+
 =======================================================================================================================================
 */
 
@@ -143,7 +147,7 @@ void IN_KeyUp(kbutton_t *b) {
 	} else if (b->down[1] == k) {
 		b->down[1] = 0;
 	} else {
-		return; // key up without coresponding down (menu pass through)
+		return; // key up without corresponding down (menu pass through)
 	}
 
 	if (b->down[0] || b->down[1]) {
@@ -444,7 +448,7 @@ void IN_VoipRecordUp(void) {
 #endif
 /*
 =======================================================================================================================================
-IN_Button0Up
+IN_Button0Down
 =======================================================================================================================================
 */
 void IN_Button0Down(void) {
@@ -781,12 +785,12 @@ void CL_KeyMove(usercmd_t *cmd) {
 	int forward, side, up;
 
 	// adjust for speed key/running
-	// the walking flag is to keep animations consistant even during acceleration and develeration
+	// the walking flag is to keep animations consistent even during acceleration and deceleration
 	if (in_speed.active ^ cl_run->integer) {
 		movespeed = 127;
-		cmd->buttons & = ~BUTTON_WALKING;
+		cmd->buttons &= ~BUTTON_WALKING;
 	} else {
-		cmd->buttons|= BUTTON_WALKING;
+		cmd->buttons |= BUTTON_WALKING;
 		movespeed = 64;
 	}
 
@@ -853,7 +857,6 @@ CL_JoystickMove
 */
 void CL_JoystickMove(usercmd_t *cmd) {
 	float anglespeed;
-
 	float yaw = j_yaw->value * cl.joystickAxis[j_yaw_axis->integer];
 	float right = j_side->value * cl.joystickAxis[j_side_axis->integer];
 	float forward = j_forward->value * cl.joystickAxis[j_forward_axis->integer];
@@ -861,7 +864,7 @@ void CL_JoystickMove(usercmd_t *cmd) {
 	float up = j_up->value * cl.joystickAxis[j_up_axis->integer];
 
 	if (!(in_speed.active ^ cl_run->integer)) {
-		cmd->buttons|= BUTTON_WALKING;
+		cmd->buttons |= BUTTON_WALKING;
 	}
 
 	if (in_speed.active) {
@@ -920,17 +923,17 @@ void CL_MouseMove(usercmd_t *cmd) {
 			float rate;
 
 			rate = sqrt(mx * mx + my * my) / (float)frame_msec;
-
 			accelSensitivity = cl_sensitivity->value + rate * cl_mouseAccel->value;
 			mx *= accelSensitivity;
 			my *= accelSensitivity;
 
 			if (cl_showMouseRate->integer) {
-				Com_Printf("rate : %f, accelSensitivity : %f\n", rate, accelSensitivity);
+				Com_Printf("rate: %f, accelSensitivity: %f\n", rate, accelSensitivity);
 			}
 		} else {
 			float rate[2];
 			float power[2];
+
 			// sensitivity remains pretty much unchanged at low speeds
 			// cl_mouseAccel is a power value to how the acceleration is shaped
 			// cl_mouseAccelOffset is the rate for which the acceleration will have doubled the non accelerated amplification
@@ -944,7 +947,7 @@ void CL_MouseMove(usercmd_t *cmd) {
 			my = cl_sensitivity->value * (my + ((my < 0) ? -power[1] : power[1]) * cl_mouseAccelOffset->value);
 
 			if (cl_showMouseRate->integer) {
-				Com_Printf("ratex : %f, ratey : %f, powx : %f, powy : %f\n", rate[0], rate[1], power[0], power[1]);
+				Com_Printf("ratex: %f, ratey: %f, powx: %f, powy: %f\n", rate[0], rate[1], power[0], power[1]);
 			}
 		}
 	} else {
@@ -954,7 +957,7 @@ void CL_MouseMove(usercmd_t *cmd) {
 	// ingame FOV
 	mx *= cl.cgameSensitivity;
 	my *= cl.cgameSensitivity;
-	// add mouse X / Y movement to cmd
+	// add mouse X/Y movement to cmd
 	if (in_strafe.active) {
 		cmd->rightmove = ClampChar(cmd->rightmove + m_side->value * mx);
 	} else {
@@ -980,18 +983,18 @@ void CL_CmdButtons(usercmd_t *cmd) {
 	// send a button bit even if the key was pressed and released in less than a frame
 	for (i = 0; i < 15; i++) {
 		if (in_buttons[i].active || in_buttons[i].wasPressed) {
-			cmd->buttons|= 1 << i;
+			cmd->buttons |= 1 << i;
 		}
 
 		in_buttons[i].wasPressed = qfalse;
 	}
 
 	if (Key_GetCatcher()) {
-		cmd->buttons|= BUTTON_TALK;
+		cmd->buttons |= BUTTON_TALK;
 	}
 	// allow the game to know if any key at all is currently pressed, even if it isn't bound to anything
 	if (anykeydown && Key_GetCatcher() == 0) {
-		cmd->buttons|= BUTTON_ANY;
+		cmd->buttons |= BUTTON_ANY;
 	}
 }
 
@@ -1182,11 +1185,9 @@ void CL_WritePacket(void) {
 
 	MSG_Init(&buf, data, sizeof(data));
 	MSG_Bitstream(&buf);
-	// write the current serverId so the server
-	// can tell if this is from the current gameState
+	// write the current serverId so the server can tell if this is from the current gameState
 	MSG_WriteLong(&buf, cl.serverId);
-	// write the last message we received, which can be used for delta compression, and is also used
-	// to tell if we dropped a gamestate
+	// write the last message we received, which can be used for delta compression, and is also used to tell if we dropped a gamestate
 	MSG_WriteLong(&buf, clc.serverMessageSequence);
 	// write the last reliable message we received
 	MSG_WriteLong(&buf, clc.serverCommandSequence);
@@ -1194,7 +1195,7 @@ void CL_WritePacket(void) {
 	for (i = clc.reliableAcknowledge + 1; i <= clc.reliableSequence; i++) {
 		MSG_WriteByte(&buf, clc_clientCommand);
 		MSG_WriteLong(&buf, i);
-		MSG_WriteString(&buf, clc.reliableCommands[i &(MAX_RELIABLE_COMMANDS - 1)]);
+		MSG_WriteString(&buf, clc.reliableCommands[i & (MAX_RELIABLE_COMMANDS - 1)]);
 	}
 	// we want to send all the usercmds that were generated in the last few packet, so even if a couple packets are dropped in a row,
 	// all the cmds will make it to the server
@@ -1241,6 +1242,7 @@ void CL_WritePacket(void) {
 				MSG_WriteBits(&fakemsg, clc.voipFlags, VOIP_FLAGCNT);
 				MSG_WriteData(&fakemsg, clc.voipOutgoingData, voipSize);
 				MSG_WriteByte(&fakemsg, svc_EOF);
+
 				CL_WriteDemoMessage(&fakemsg, 0);
 			}
 
@@ -1271,7 +1273,7 @@ void CL_WritePacket(void) {
 		// also use the message acknowledge
 		key ^= clc.serverMessageSequence;
 		// also use the last acknowledged server command in the key
-		key ^= MSG_HashKey(clc.serverCommands[clc.serverCommandSequence &(MAX_RELIABLE_COMMANDS - 1)], 32);
+		key ^= MSG_HashKey(clc.serverCommands[clc.serverCommandSequence & (MAX_RELIABLE_COMMANDS - 1)], 32);
 		// write all the commands, including the predicted command
 		for (i = 0; i < count; i++) {
 			j = (cl.cmdNumber - count + i + 1) & CMD_MASK;

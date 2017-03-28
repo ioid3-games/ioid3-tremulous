@@ -712,11 +712,11 @@ void CG_EntityEvent(centity_t *cent, vec3_t position) {
 		case EV_STEP_4:
 		case EV_STEP_8:
 		case EV_STEP_12:
-		case EV_STEP_16:		// smooth out step up transitions
+		case EV_STEP_16: // smooth out step up transitions
 		case EV_STEPDN_4:
 		case EV_STEPDN_8:
 		case EV_STEPDN_12:
-		case EV_STEPDN_16:		// smooth out step down transitions
+		case EV_STEPDN_16: // smooth out step down transitions
 			{
 				float oldStep;
 				int delta;
@@ -910,7 +910,7 @@ void CG_EntityEvent(centity_t *cent, vec3_t position) {
 			}
 
 			break;
-		case EV_GLOBAL_SOUND : // play from the player's head so it never diminishes
+		case EV_GLOBAL_SOUND: // play from the player's head so it never diminishes
 			if (cgs.gameSounds[es->eventParm]) {
 				trap_S_StartSound(NULL, cg.snap->ps.clientNum, CHAN_AUTO, cgs.gameSounds[es->eventParm]);
 			} else {
@@ -1092,4 +1092,3 @@ void CG_CheckEvents(centity_t *cent) {
 		cent->currentState.event = oldEvent;
 	}
 }
-

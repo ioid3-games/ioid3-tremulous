@@ -1462,9 +1462,7 @@ static void CG_PlayerSprites(centity_t *cent) {
 =======================================================================================================================================
 CG_PlayerShadow
 
-Returns the Z component of the surface being shadowed.
-
-Should it return a full plane instead of a Z?.
+Returns the Z component of the surface being shadowed. Should it return a full plane instead of a Z?
 =======================================================================================================================================
 */
 #define SHADOW_DISTANCE 128
@@ -1501,10 +1499,7 @@ static qboolean CG_PlayerShadow(centity_t *cent, float *shadowPlane, class_t cla
 	// no shadow if too high
 	if (trace.fraction == 1.0 || trace.startsolid || trace.allsolid) {
 		return qfalse;
-	// FIXME: stencil shadows will be broken for walls.
-	// 					Unfortunately there isn't much that can be
-	// 					done since Q3 references only the Z coord
-	// 					of the shadowPlane
+	// FIXME: stencil shadows will be broken for walls. Unfortunately there isn't much that can be done since Q3 references only the Z coord of the shadowPlane
 	if (surfNormal[2] < 0.0f) {
 		*shadowPlane = trace.endpos[2] - 1.0f;
 	} else {
@@ -1516,10 +1511,8 @@ static qboolean CG_PlayerShadow(centity_t *cent, float *shadowPlane, class_t cla
 	}
 	// fade the shadow out with height
 	alpha = 1.0 - trace.fraction;
-	// add the mark as a temporary, so it goes directly to the renderer
-	// without taking a spot in the cg_marks array
+	// add the mark as a temporary, so it goes directly to the renderer without taking a spot in the cg_marks array
 	CG_ImpactMark(cgs.media.shadowMarkShader, trace.endpos, trace.plane.normal, cent->pe.legs.yawAngle, 0.0f, 0.0f, 0.0f, alpha, qfalse, 24.0f * BG_ClassConfig(class)->shadowScale, qtrue);
-
 	return qtrue;
 }
 
@@ -1548,7 +1541,7 @@ static void CG_PlayerSplash(centity_t *cent, class_t class) {
 	// this won't handle moving water brushes, but they wouldn't draw right anyway...
 	contents = trap_CM_PointContents(end, 0);
 
-	if (!(contents &(CONTENTS_WATER|CONTENTS_SLIME|CONTENTS_LAVA))) {
+	if (!(contents & (CONTENTS_WATER|CONTENTS_SLIME|CONTENTS_LAVA))) {
 		return;
 	}
 
@@ -1557,7 +1550,7 @@ static void CG_PlayerSplash(centity_t *cent, class_t class) {
 	// if the head isn't out of liquid, don't make a mark
 	contents = trap_CM_PointContents(start, 0);
 
-	if (contents &(CONTENTS_SOLID|CONTENTS_WATER|CONTENTS_SLIME|CONTENTS_LAVA)) {
+	if (contents & (CONTENTS_SOLID|CONTENTS_WATER|CONTENTS_SLIME|CONTENTS_LAVA)) {
 		return;
 	}
 	// trace down to find the surface
@@ -1928,7 +1921,7 @@ void CG_Player(centity_t *cent) {
 			CG_DestroyParticleSystem(&cent->poisonCloudedPS);
 		}
 	}
-	// add the gun / barrel / flash
+	// add the gun/barrel/flash
 	if (es->weapon != WP_NONE) {
 		if (!ci->nonsegmented) {
 			CG_AddPlayerWeapon(&torso, NULL, cent);
@@ -2110,6 +2103,7 @@ A player just came into view or teleported, so reset all animation info.
 =======================================================================================================================================
 */
 void CG_ResetPlayerEntity(centity_t *cent) {
+
 	cent->errorTime = -99999; // guarantee no error decay added
 	cent->extrapolated = qfalse;
 
@@ -2124,25 +2118,28 @@ void CG_ResetPlayerEntity(centity_t *cent) {
 	VectorCopy(cent->lerpAngles, cent->rawAngles);
 
 	memset(&cent->pe.legs, 0, sizeof(cent->pe.legs));
+
 	cent->pe.legs.yawAngle = cent->rawAngles[YAW];
 	cent->pe.legs.yawing = qfalse;
 	cent->pe.legs.pitchAngle = 0;
 	cent->pe.legs.pitching = qfalse;
 
 	memset(&cent->pe.torso, 0, sizeof(cent->pe.legs));
+
 	cent->pe.torso.yawAngle = cent->rawAngles[YAW];
 	cent->pe.torso.yawing = qfalse;
 	cent->pe.torso.pitchAngle = cent->rawAngles[PITCH];
 	cent->pe.torso.pitching = qfalse;
 
 	memset(&cent->pe.nonseg, 0, sizeof(cent->pe.nonseg));
+
 	cent->pe.nonseg.yawAngle = cent->rawAngles[YAW];
 	cent->pe.nonseg.yawing = qfalse;
 	cent->pe.nonseg.pitchAngle = cent->rawAngles[PITCH];
 	cent->pe.nonseg.pitching = qfalse;
 
 	if (cg_debugPosition.integer) {
-		CG_Printf("%i ResetPlayerEntity yaw = %f\n", cent->currentState.number, cent->pe.torso.yawAngle);
+		CG_Printf("%i ResetPlayerEntity yaw=%f\n", cent->currentState.number, cent->pe.torso.yawAngle);
 	}
 }
 

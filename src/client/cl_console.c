@@ -20,20 +20,19 @@ along with Tremulous; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
 =======================================================================================================================================
 */
-// console.c
 
 #include "client.h"
 
 int g_console_field_width = 78;
 
 #define NUM_CON_TIMES 4
-
 #define CON_TEXTSIZE 163840
+
 typedef struct {
 	qboolean initialized;
 	short text[CON_TEXTSIZE];
 	int current;		// line where next message will be printed
-	int x; 				// offset in current line for next print
+	int x;				// offset in current line for next print
 	int display;		// bottom of console displays this line
 	int linewidth;		// characters across screen
 	int totallines;		// total lines in console scrollback
@@ -109,7 +108,7 @@ void Con_Dump_f(void) {
 	char filename[MAX_QPATH];
 
 	if (Cmd_Argc() != 2) {
-		Com_Printf("usage : condump < filename > \n");
+		Com_Printf("usage: condump <filename>\n");
 		return;
 	}
 
@@ -126,7 +125,7 @@ void Con_Dump_f(void) {
 	Com_Printf("Dumped console text to %s.\n", filename);
 	// skip empty lines
 	for (l = con.current - con.totallines + 1; l <= con.current; l++) {
-		line = con.text + (l%con.totallines) * con.linewidth;
+		line = con.text + (l % con.totallines) * con.linewidth;
 
 		for (x = 0; x < con.linewidth; x++) {
 			if ((line[x] & 0xff) != ' ') {
@@ -148,7 +147,7 @@ void Con_Dump_f(void) {
 	buffer[bufferlen - 1] = 0;
 
 	for (; l <= con.current; l++) {
-		line = con.text + (l%con.totallines) * con.linewidth;
+		line = con.text + (l % con.totallines) * con.linewidth;
 
 		for (i = 0; i < con.linewidth; i++) {
 			buffer[i] = line[i] & 0xff;
@@ -265,6 +264,7 @@ void Con_Init(void) {
 	con_conspeed = Cvar_Get("scr_conspeed", "3", 0);
 
 	Field_Clear(&g_consoleField);
+
 	g_consoleField.widthInChars = g_console_field_width;
 
 	for (i = 0; i < COMMAND_HISTORY; i++) {
@@ -310,7 +310,7 @@ void Con_Linefeed(qboolean skipnotify) {
 	con.current++;
 
 	for (i = 0; i < con.linewidth; i++) {
-		con.text[(con.current%con.totallines) * con.linewidth + i] = (ColorIndex(COLOR_WHITE) << 8)|' ';
+		con.text[(con.current % con.totallines) * con.linewidth + i] = (ColorIndex(COLOR_WHITE) << 8)|' ';
 	}
 }
 
@@ -318,8 +318,7 @@ void Con_Linefeed(qboolean skipnotify) {
 =======================================================================================================================================
 CL_ConsolePrint
 
-Handles cursor positioning, line wrapping, etc.
-All console printing must go through this in order to be logged to disk.
+Handles cursor positioning, line wrapping, etc. All console printing must go through this in order to be logged to disk.
 If no console is visible, the text will appear at the top of the game window.
 =======================================================================================================================================
 */
@@ -327,7 +326,7 @@ void CL_ConsolePrint(const char *txt) {
 	int y, l;
 	unsigned char c;
 	unsigned short color;
-	qboolean skipnotify = qfalse; // NERVE - SMF
+	qboolean skipnotify = qfalse;
 
 	// TTimo - prefix for text that shows up in console but not in notify
 	// backported from RTCW
@@ -358,7 +357,7 @@ void CL_ConsolePrint(const char *txt) {
 
 	color = ColorIndex(COLOR_WHITE);
 
-	while ((c = * ((unsigned char *) txt)) != 0) {
+	while ((c = *((unsigned char *) txt)) != 0) {
 		if (Q_IsColorString(txt)) {
 			color = ColorIndex(*(txt + 1));
 			txt += 2;
@@ -412,7 +411,7 @@ void CL_ConsolePrint(const char *txt) {
 =======================================================================================================================================
 Con_DrawInput
 
-Draw the editline after a] prompt.
+Draw the editline after a ] prompt.
 =======================================================================================================================================
 */
 void Con_DrawInput(void) {
@@ -426,7 +425,7 @@ void Con_DrawInput(void) {
 
 	re.SetColor(con.color);
 
-	SCR_DrawSmallChar(con.xadjust + 1 * SMALLCHAR_WIDTH, y, ']');
+	SCR_DrawSmallChar(con.xadjust + SMALLCHAR_WIDTH, y, ']');
 
 	Field_Draw(&g_consoleField, con.xadjust + 2 * SMALLCHAR_WIDTH, y, SCREEN_WIDTH - 3 * SMALLCHAR_WIDTH, qtrue, qtrue);
 }
@@ -444,7 +443,7 @@ void Con_DrawSolidConsole(float frac) {
 	short *text;
 	int row;
 	int lines;
-// 	qhandle_t conShader;
+//	qhandle_t conShader;
 	int currentColor;
 	vec4_t color;
 
@@ -488,7 +487,7 @@ void Con_DrawSolidConsole(float frac) {
 	y = lines - (SMALLCHAR_HEIGHT * 3);
 	// draw from the bottom up
 	if (con.display != con.current) {
-	// draw arrows to show the buffer is backscrolled
+		// draw arrows to show the buffer is backscrolled
 		re.SetColor(g_color_table[ColorIndex(COLOR_RED)]);
 
 		for (x = 0; x < con.linewidth; x += 4) {
@@ -541,7 +540,7 @@ void Con_DrawSolidConsole(float frac) {
 
 /*
 =======================================================================================================================================
-Con_DrawConsole.
+Con_DrawConsole
 =======================================================================================================================================
 */
 void Con_DrawConsole(void) {
@@ -550,7 +549,7 @@ void Con_DrawConsole(void) {
 	Con_CheckResize();
 	// if disconnected, render console full screen
 	if (clc.state == CA_DISCONNECTED) {
-		if (!(Key_GetCatcher() &(KEYCATCH_UI|KEYCATCH_CGAME))) {
+		if (!(Key_GetCatcher() & (KEYCATCH_UI|KEYCATCH_CGAME))) {
 			Con_DrawSolidConsole(1.0);
 			return;
 		}
@@ -660,7 +659,6 @@ void Con_Close(void) {
 
 	Field_Clear(&g_consoleField);
 	Key_SetCatcher(Key_GetCatcher() & ~KEYCATCH_CONSOLE);
-
 	con.finalFrac = 0; // none visible
 	con.displayFrac = 0;
 }

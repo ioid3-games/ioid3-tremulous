@@ -97,6 +97,10 @@ typedef enum {
 
 /**************************************************************************************************************************************
 
+	Player entities need to track more information than any other type of entity.
+
+	Note that not every player entity is a client entity, because corpses after respawn are outside the normal client numbering range.
+
 	When changing animation, set animationTime to frameTime + lerping time.
 	The current lerp will finish out, then it will lerp to the new animation.
 
@@ -149,24 +153,19 @@ typedef struct attachment_s {
 	struct particle_s *particle;
 } attachment_t;
 // particle system stuff
-#define MAX_PARTICLE_FILES				128
-
-#define MAX_PS_SHADER_FRAMES			32
-#define MAX_PS_MODELS						8
-#define MAX_EJECTORS_PER_SYSTEM   4
+#define MAX_PARTICLE_FILES 128
+#define MAX_PS_SHADER_FRAMES 32
+#define MAX_PS_MODELS 8
+#define MAX_EJECTORS_PER_SYSTEM 4
 #define MAX_PARTICLES_PER_EJECTOR 4
-
-#define MAX_BASEPARTICLE_SYSTEMS  192
+#define MAX_BASEPARTICLE_SYSTEMS 192
 #define MAX_BASEPARTICLE_EJECTORS MAX_BASEPARTICLE_SYSTEMS * MAX_EJECTORS_PER_SYSTEM
-#define MAX_BASEPARTICLES				MAX_BASEPARTICLE_EJECTORS * MAX_PARTICLES_PER_EJECTOR
-
-#define MAX_PARTICLE_SYSTEMS			48
-#define MAX_PARTICLE_EJECTORS		MAX_PARTICLE_SYSTEMS * MAX_EJECTORS_PER_SYSTEM
-#define MAX_PARTICLES						MAX_PARTICLE_EJECTORS * 5
-
-#define PARTICLES_INFINITE				- 1
-#define PARTICLES_SAME_AS_INITIAL - 2
-
+#define MAX_BASEPARTICLES MAX_BASEPARTICLE_EJECTORS * MAX_PARTICLES_PER_EJECTOR
+#define MAX_PARTICLE_SYSTEMS 48
+#define MAX_PARTICLE_EJECTORS MAX_PARTICLE_SYSTEMS * MAX_EJECTORS_PER_SYSTEM
+#define MAX_PARTICLES MAX_PARTICLE_EJECTORS * 5
+#define PARTICLES_INFINITE -1
+#define PARTICLES_SAME_AS_INITIAL -2
 // COMPILE TIME STRUCTURES
 typedef enum {
 	PMT_STATIC,
@@ -263,8 +262,8 @@ typedef struct baseParticle_s {
 typedef struct baseParticleEjector_s {
 	baseParticle_t *particles[MAX_PARTICLES_PER_EJECTOR];
 	int numParticles;
-	pLerpValues_t eject; 					// zero period indicates creation of all particles at once
-	int totalParticles; 				// can be infinite
+	pLerpValues_t eject;	// zero period indicates creation of all particles at once
+	int totalParticles;		// can be infinite
 	float totalParticlesRandFrac;
 } baseParticleEjector_t;
 // particle system template
@@ -273,14 +272,14 @@ typedef struct baseParticleSystem_s {
 	baseParticleEjector_t *ejectors[MAX_EJECTORS_PER_SYSTEM];
 	int numEjectors;
 	qboolean thirdPersonOnly;
-	qboolean registered; // whether or not the assets for this particle have been loaded
+	qboolean registered;	// whether or not the assets for this particle have been loaded
 } baseParticleSystem_t;
 // RUN TIME STRUCTURES
 typedef struct particleSystem_s {
 	baseParticleSystem_t *class;
 	attachment_t attachment;
 	qboolean valid;
-	qboolean lazyRemove; // mark this system for later removal
+	qboolean lazyRemove;	// mark this system for later removal
 	// for PMT_NORMAL
 	qboolean normalValid;
 	vec3_t normal;
@@ -324,20 +323,15 @@ typedef struct particle_s {
 	int frameWhenInvalidated;
 	int sortKey;
 } particle_t;
-
 // trail system stuff
-#define MAX_TRAIL_FILES					128
-
-#define MAX_BEAMS_PER_SYSTEM			4
-
-#define MAX_BASETRAIL_SYSTEMS		64
-#define MAX_BASETRAIL_BEAMS			MAX_BASETRAIL_SYSTEMS * MAX_BEAMS_PER_SYSTEM
-
-#define MAX_TRAIL_SYSTEMS				32
-#define MAX_TRAIL_BEAMS					MAX_TRAIL_SYSTEMS * MAX_BEAMS_PER_SYSTEM
-#define MAX_TRAIL_BEAM_NODES			128
-
-#define MAX_TRAIL_BEAM_JITTERS		4
+#define MAX_TRAIL_FILES 128
+#define MAX_BEAMS_PER_SYSTEM 4
+#define MAX_BASETRAIL_SYSTEMS 64
+#define MAX_BASETRAIL_BEAMS MAX_BASETRAIL_SYSTEMS * MAX_BEAMS_PER_SYSTEM
+#define MAX_TRAIL_SYSTEMS 32
+#define MAX_TRAIL_BEAMS MAX_TRAIL_SYSTEMS * MAX_BEAMS_PER_SYSTEM
+#define MAX_TRAIL_BEAM_NODES 128
+#define MAX_TRAIL_BEAM_JITTERS 4
 
 typedef enum {
 	TBTT_STRETCH,
@@ -417,18 +411,8 @@ typedef struct trailBeam_s {
 	qboolean valid;
 	int nextJitterTimes[MAX_TRAIL_BEAM_JITTERS];
 } trailBeam_t;
-
-// ====================================================================== 
-
-// player entities need to track more information
-// than any other type of entity.
-
-// note that not every player entity is a client entity, 
-// because corpses after respawn are outside the normal
-// client numbering range
-
 // smoothing of view and model for WW transitions
-#define  MAXSMOOTHS					32
+#define  MAXSMOOTHS 32
 
 typedef struct {
 	float time;
@@ -451,15 +435,15 @@ typedef struct {
 } playerEntity_t;
 
 typedef struct lightFlareStatus_s {
-	float lastRadius; // caching of likely flare radius
-	float lastRatio; // caching of likely flare ratio
-	int lastTime; 			// last time flare was visible / occluded
-	qboolean status; 				// flare is visble?
+	float lastRadius;	// caching of likely flare radius
+	float lastRatio;	// caching of likely flare ratio
+	int lastTime;		// last time flare was visible / occluded
+	qboolean status;	// flare is visble?
 } lightFlareStatus_t;
 
 typedef struct buildableStatus_s {
-	int lastTime; 			// last time status was visible
-	qboolean visible; 			// status is visble?
+	int lastTime;		// last time status was visible
+	qboolean visible;	// status is visble?
 } buildableStatus_t;
 
 typedef struct buildableCache_s {
@@ -469,8 +453,12 @@ typedef struct buildableCache_s {
 	vec3_t origin;
 } buildableCache_t;
 
-// centity_t have a direct corespondence with gentity_t in the game, but
-// only the entityState_t is directly communicated to the cgame
+/**************************************************************************************************************************************
+
+	centity_t have a direct correspondence with gentity_t in the game, but only the entityState_t is directly communicated to the cgame.
+
+**************************************************************************************************************************************/
+
 typedef struct centity_s {
 	entityState_t currentState;	// from cg.frame
 	entityState_t nextState;	// from cg.nextFrame, if available
@@ -497,12 +485,12 @@ typedef struct centity_s {
 	vec3_t lerpOrigin;
 	vec3_t lerpAngles;
 	lerpFrame_t lerpFrame;
-	buildableAnimNumber_t buildableAnim; // persistant anim number
-	buildableAnimNumber_t oldBuildableAnim; // to detect when new anims are set
-	qboolean buildableIdleAnim; // to check if new idle anim
+	buildableAnimNumber_t buildableAnim;	// persistant anim number
+	buildableAnimNumber_t oldBuildableAnim;	// to detect when new anims are set
+	qboolean buildableIdleAnim;				// to check if new idle anim
 	particleSystem_t *buildablePS;
 	buildableStatus_t buildableStatus;
-	buildableCache_t buildableCache; // so we don't recalculate things
+	buildableCache_t buildableCache;		// so we don't recalculate things
 	float lastBuildableHealth;
 	int lastBuildableDamageSoundTime;
 	lightFlareStatus_t lfs;
@@ -565,9 +553,7 @@ typedef struct {
 	int health;				// you only get this info about your teammates
 	int upgrade;
 	int curWeaponClass;		// sends current weapon for H, current class for A
-	// when clientinfo is changed, the loading of models/skins / sounds
-	// can be deferred until you are dead, to prevent hitches in
-	// gameplay
+	// when clientinfo is changed, the loading of models/skins/sounds can be deferred until you are dead, to prevent hitches in gameplay
 	char modelName[MAX_QPATH];
 	char skinName[MAX_QPATH];
 	qboolean newAnims;		// true if using the new mission pack animations
@@ -597,7 +583,7 @@ typedef struct {
 typedef struct weaponInfoMode_s {
 	float flashDlight;
 	vec3_t flashDlightColor;
-	sfxHandle_t flashSound[4]; // fast firing weapons randomly choose
+	sfxHandle_t flashSound[4];			// fast firing weapons randomly choose
 	qboolean continuousFlash;
 	qhandle_t missileModel;
 	sfxHandle_t missileSound;
@@ -622,8 +608,8 @@ typedef struct weaponInfoMode_s {
 	qhandle_t impactParticleSystem;
 	qhandle_t impactMark;
 	qhandle_t impactMarkSize;
-	sfxHandle_t impactSound[4]; // random impact sound
-	sfxHandle_t impactFleshSound[4]; // random impact sound
+	sfxHandle_t impactSound[4];			// random impact sound
+	sfxHandle_t impactFleshSound[4];	// random impact sound
 } weaponInfoMode_t;
 
 /**************************************************************************************************************************************
@@ -644,7 +630,7 @@ typedef struct weaponInfo_s {
 	qhandle_t flashModel3rdPerson;
 	animation_t animations[MAX_WEAPON_ANIMATIONS];
 	qboolean noDrift;
-	vec3_t weaponMidpoint; // so it will rotate centered instead of by tag
+	vec3_t weaponMidpoint;		// so it will rotate centered instead of by tag
 	qhandle_t weaponIcon;
 	qhandle_t ammoIcon;
 	qhandle_t crossHair;
@@ -698,55 +684,59 @@ typedef struct {
 
 #define MAX_CONSOLE_TEXT 8192
 #define MAX_CONSOLE_LINES 32
-// all cg.stepTime, cg.duckTime, cg.landTime, etc are set to cg.time when the action
-// occurs, and they will have visible effects for #define STEP_TIME or whatever msec after
+
+/**************************************************************************************************************************************
+
+	All cg.stepTime, cg.duckTime, cg.landTime, etc are set to cg.time when the action occurs, and they will have visible effects for
+	#define STEP_TIME or whatever msec after.
+
+**************************************************************************************************************************************/
+
 #define MAX_PREDICTED_EVENTS 16
-#define NUM_SAVED_STATES(CMD_BACKUP + 2)
+#define NUM_SAVED_STATES (CMD_BACKUP + 2)
 // after this many msec the crosshair name fades out completely
 #define CROSSHAIR_CLIENT_TIMEOUT 1000
 
 typedef struct {
-	int clientFrame; 												// incremented each frame
+	int clientFrame;				// incremented each frame
 	int clientNum;
 	qboolean demoPlayback;
-	qboolean levelShot; 													// taking a level menu screenshot
+	qboolean levelShot;				// taking a level menu screenshot
 	int deferredPlayerLoading;
-	qboolean loading; 														// don't defer players at initial startup
-	qboolean intermissionStarted; 								// don't play voice rewards, because game will end shortly
-	// there are only one or two snapshot_t that are relevent at a time
-	int latestSnapshotNum; 									// the number of snapshots the client system has received
-	int latestSnapshotTime; 								// the time from latestSnapshotNum, so we don't need to read the snapshot yet
-	snapshot_t *snap; 															// cg.snap->serverTime <= cg.time
-	snapshot_t *nextSnap; 													// cg.nextSnap->serverTime > cg.time, or NULL
+	qboolean loading;				// don't defer players at initial startup
+	qboolean intermissionStarted;	// don't play voice rewards, because game will end shortly
+	// there are only one or two snapshot_t that are relevant at a time
+	int latestSnapshotNum;			// the number of snapshots the client system has received
+	int latestSnapshotTime;			// the time from latestSnapshotNum, so we don't need to read the snapshot yet
+	snapshot_t *snap;				// cg.snap->serverTime <= cg.time
+	snapshot_t *nextSnap;			// cg.nextSnap->serverTime > cg.time, or NULL
 	snapshot_t activeSnapshots[2];
-	float frameInterpolation; 								// (float)(cg.time - cg.frame->serverTime) /
-																										// (cg.nextFrame->serverTime - cg.frame->serverTime)
+	float frameInterpolation;		// (float)(cg.time - cg.frame->serverTime) / (cg.nextFrame->serverTime - cg.frame->serverTime)
 	qboolean thisFrameTeleport;
 	qboolean nextFrameTeleport;
-	int frametime; 													// cg.time - cg.oldTime
-	int time; 															// this is the time value that the client
-																										// is rendering at.
-	int oldTime; 														// time at last frame, used for missile trails and prediction checking
-	int physicsTime; 												// either cg.snap->time or cg.nextSnap->time
-	int timelimitWarnings; 									// 5 min, 1 min, overtime
+	int frametime;					// cg.time - cg.oldTime
+	int time;						// this is the time value that the client is rendering at.
+	int oldTime;					// time at last frame, used for missile trails and prediction checking
+	int physicsTime;				// either cg.snap->time or cg.nextSnap->time
+	int timelimitWarnings;			// 5 min, 1 min, overtime
 	int fraglimitWarnings;
-	qboolean mapRestart; 												// set on a map restart to set back the weapon
-	qboolean renderingThirdPerson; 							// during deaths, chasecams, etc
+	qboolean mapRestart;			// set on a map restart to set back the weapon
+	qboolean renderingThirdPerson;	// during deaths, chasecams, etc
 	// prediction state
-	qboolean hyperspace; 												// true if prediction has hit a trigger_teleport
+	qboolean hyperspace;			// true if prediction has hit a trigger_teleport
 	playerState_t predictedPlayerState;
 	pmoveExt_t pmext;
 	centity_t predictedPlayerEntity;
-	qboolean validPPS; 													// clear until the first call to CG_PredictPlayerState
+	qboolean validPPS;				// clear until the first call to CG_PredictPlayerState
 	int predictedErrorTime;
 	vec3_t predictedError;
 	int eventSequence;
 	int predictableEvents[MAX_PREDICTED_EVENTS];
-	float stepChange; 												// for stair up smoothing
+	float stepChange;				// for stair up smoothing
 	int stepTime;
-	float duckChange; 												// for duck viewheight smoothing
+	float duckChange;				// for duck viewheight smoothing
 	int duckTime;
-	float landChange; 												// for landing hard
+	float landChange;				// for landing hard
 	int landTime;
 	// input state sent to server
 	int weaponSelect;
@@ -757,7 +747,7 @@ typedef struct {
 	vec3_t autoAxisFast[3];
 	// view rendering
 	refdef_t refdef;
-	vec3_t refdefViewAngles; 									// will be converted to refdef.viewaxis
+	vec3_t refdefViewAngles;		// will be converted to refdef.viewaxis
 	// zoom key
 	qboolean zoomed;
 	int zoomTime;
@@ -774,9 +764,9 @@ typedef struct {
 	qboolean scoreBoardShowing;
 	int scoreFadeTime;
 	char killerName[MAX_NAME_LENGTH];
-	char spectatorList[MAX_STRING_CHARS]; // list of names
-	int spectatorTime; 											// next time to offset
-	float spectatorOffset; 										// current offset from start
+	char spectatorList[MAX_STRING_CHARS];	// list of names
+	int spectatorTime;						// next time to offset
+	float spectatorOffset;					// current offset from start
 	// centerprinting
 	int centerPrintTime;
 	int centerPrintCharWidth;
@@ -815,7 +805,7 @@ typedef struct {
 	int warmupTime;
 	int itemPickup;
 	int itemPickupTime;
-	int itemPickupBlendTime; 								// the pulse around the crosshair is timed seperately
+	int itemPickupBlendTime; // the pulse around the crosshair is timed separately
 	int weaponSelectTime;
 	int weaponAnimation;
 	int weaponAnimationTime;
@@ -846,21 +836,21 @@ typedef struct {
 	char testModelName[MAX_QPATH];
 	char testModelBarrelName[MAX_QPATH];
 	qboolean testGun;
-	int spawnTime; 													// fovwarp
-	int weapon1Time; 												// time when BUTTON_ATTACK went t->f f->t
-	int weapon2Time; 												// time when BUTTON_ATTACK2 went t->f f->t
-	int weapon3Time; 												// time when BUTTON_USE_HOLDABLE went t->f f->t
+	int spawnTime;				// fovwarp
+	int weapon1Time;			// time when BUTTON_ATTACK went t->f f->t
+	int weapon2Time;			// time when BUTTON_ATTACK2 went t->f f->t
+	int weapon3Time;			// time when BUTTON_USE_HOLDABLE went t->f f->t
 	qboolean weapon1Firing;
 	qboolean weapon2Firing;
 	qboolean weapon3Firing;
 	int poisonedTime;
-	vec3_t lastNormal; 												// view smoothage
-	vec3_t lastVangles; 												// view smoothage
-	smooth_t sList[MAXSMOOTHS]; 								// wW smoothing
-	int forwardMoveTime; 										// for struggling
+	vec3_t lastNormal;			// view smoothage
+	vec3_t lastVangles;			// view smoothage
+	smooth_t sList[MAXSMOOTHS];	// WW smoothing
+	int forwardMoveTime;		// for struggling
 	int rightMoveTime;
 	int upMoveTime;
-	float charModelFraction; 									// loading percentages
+	float charModelFraction;	// loading percentages
 	float mediaFraction;
 	float buildablesFraction;
 	int lastBuildAttempt;
@@ -887,10 +877,14 @@ typedef struct {
 	int nearUsableBuildable;
 	int nextWeaponClickTime;
 } cg_t;
-// all of the model, shader, and sound references that are
-// loaded at gamestate time are stored in cgMedia_t
-// other media that can be tied to clients, weapons, or items are
-// stored in the clientInfo_t, itemInfo_t, weaponInfo_t, and powerupInfo_t
+
+/**************************************************************************************************************************************
+
+	All of the model, shader, and sound references that are loaded at gamestate time are stored in cgMedia_t. Other media that can be
+	tied to clients, weapons, or items are stored in the clientInfo_t, itemInfo_t, weaponInfo_t, and powerupInfo_t.
+
+**************************************************************************************************************************************/
+
 typedef struct {
 	qhandle_t charsetShader;
 	qhandle_t whiteShader;
@@ -1016,24 +1010,28 @@ typedef struct {
 	vec4_t backColor;
 	qboolean loaded;
 } buildStat_t;
-// the client game static(cgs) structure hold everything
-// loaded or calculated from the gamestate.  It will NOT
-// be cleared when a tournement restart is done, allowing
-// all clients to begin playing instantly
+
+/**************************************************************************************************************************************
+
+	The client game static (cgs) structure hold everything loaded or calculated from the gamestate. It will NOT be cleared when a
+	tournament restart is done, allowing all clients to begin playing instantly.
+
+**************************************************************************************************************************************/
+
 typedef struct {
-	gameState_t gameState; 							// gamestate from server
-	glconfig_t glconfig; 							// rendering configuration
-	float screenXScale; 					// derived from glconfig
+	gameState_t gameState;			// gamestate from server
+	glconfig_t glconfig;			// rendering configuration
+	float screenXScale;				// derived from glconfig
 	float screenYScale;
 	float screenXBias;
-	int serverCommandSequence; // reliable command stream counter
-	int processedSnapshotNum; // the number of snapshots cgame has requested
-	qboolean localServer; 						// detected on startup by checking sv_running
+	int serverCommandSequence;		// reliable command stream counter
+	int processedSnapshotNum;		// the number of snapshots cgame has requested
+	qboolean localServer;			// detected on startup by checking sv_running
 	// parsed from serverinfo
 	int timelimit;
 	int maxclients;
 	char mapname[MAX_QPATH];
-	qboolean markDeconstruct; 				// whether or not buildables are marked
+	qboolean markDeconstruct;		// whether or not buildables are marked
 	int voteTime[NUM_TEAMS];
 	int voteYes[NUM_TEAMS];
 	int voteNo[NUM_TEAMS];
@@ -1041,7 +1039,7 @@ typedef struct {
 	qboolean voteModified[NUM_TEAMS]; // beep whenever changed
 	char voteString[NUM_TEAMS][MAX_STRING_TOKENS];
 	int levelStartTime;
-	int scores1, scores2; // from configstrings
+	int scores1, scores2;			// from configstrings
 	qboolean newHud;
 	int alienStage;
 	int humanStage;
@@ -1208,9 +1206,7 @@ extern vmCvar_t cg_killMsgTime;
 extern vmCvar_t cg_killMsgHeight;
 extern vmCvar_t thz_radar;
 extern vmCvar_t thz_radarrange;
-//
 // cg_main.c
-//
 const char *CG_ConfigString(int index);
 const char *CG_Argv(int arg);
 void QDECL CG_Printf(const char *msg, ...) __attribute__((format(printf, 1, 2)));
@@ -1230,9 +1226,7 @@ void CG_BuildSpectatorString(void);
 qboolean CG_FileExists(const char *filename);
 void CG_RemoveNotifyLine(void);
 void CG_AddNotifyText(void);
-//
 // cg_view.c
-//
 void CG_addSmoothOp(vec3_t rotAxis, float rotAngle, float timeMod);
 void CG_TestModel_f(void);
 void CG_TestGun_f(void);
@@ -1245,9 +1239,7 @@ void CG_DrawActiveFrame(int serverTime, stereoFrame_t stereoView, qboolean demoP
 void CG_OffsetFirstPersonView(void);
 void CG_OffsetThirdPersonView(void);
 void CG_OffsetShoulderView(void);
-//
 // cg_drawtools.c
-//
 void CG_DrawPlane(vec3_t origin, vec3_t down, vec3_t right, qhandle_t shader);
 void CG_AdjustFrom640(float *x, float *y, float *w, float *h);
 void CG_FillRect(float x, float y, float width, float height, const float *color);
@@ -1265,9 +1257,7 @@ void CG_DrawTopBottom(float x, float y, float w, float h, float size);
 qboolean CG_WorldToScreen(vec3_t point, float *x, float *y);
 char *CG_KeyBinding(const char *bind);
 char CG_GetColorCharForHealth(int clientnum);
-//
 // cg_draw.c
-//
 void CG_AddLagometerFrameInfo(void);
 void CG_AddLagometerSnapshotInfo(snapshot_t *snap);
 void CG_AddSpeed(void);
@@ -1284,9 +1274,7 @@ void CG_DrawLoadingScreen(void);
 void CG_UpdateMediaFraction(float newFract);
 void CG_ResetPainBlend(void);
 void CG_DrawField(float x, float y, int width, float cw, float ch, int value);
-//
 // cg_players.c
-//
 void CG_Player(centity_t *cent);
 void CG_Corpse(centity_t *cent);
 void CG_ResetPlayerEntity(centity_t *cent);
@@ -1296,9 +1284,7 @@ sfxHandle_t CG_CustomSound(int clientNum, const char *soundName);
 void CG_PlayerDisconnect(vec3_t org);
 void CG_Bleed(vec3_t origin, vec3_t normal, int entityNum);
 centity_t *CG_GetPlayerLocation(void);
-//
 // cg_buildable.c
-//
 void CG_GhostBuildable(buildable_t buildable);
 void CG_Buildable(centity_t *cent);
 void CG_BuildableStatusParse(const char *filename, buildStat_t *bs);
@@ -1306,37 +1292,25 @@ void CG_DrawBuildableStatus(void);
 void CG_InitBuildables(void);
 void CG_HumanBuildableExplosion(vec3_t origin, vec3_t dir);
 void CG_AlienBuildableExplosion(vec3_t origin, vec3_t dir);
-//
 // cg_animation.c
-//
 void CG_RunLerpFrame(lerpFrame_t *lf, float scale);
-//
 // cg_animmapobj.c
-//
 void CG_AnimMapObj(centity_t *cent);
 void CG_ModelDoor(centity_t *cent);
-//
 // cg_predict.c
-//
-
-#define MAGIC_TRACE_HACK - 2
-
+#define MAGIC_TRACE_HACK -2
 void CG_BuildSolidList(void);
 int CG_PointContents(const vec3_t point, int passEntityNum);
 void CG_Trace(trace_t *result, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int skipNumber, int mask);
 void CG_CapTrace(trace_t *result, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int skipNumber, int mask);
 void CG_BiSphereTrace(trace_t *result, const vec3_t start, const vec3_t end, const float startRadius, const float endRadius, int skipNumber, int mask);
 void CG_PredictPlayerState(void);
-//
 // cg_events.c
-//
 void CG_CheckEvents(centity_t *cent);
 void CG_EntityEvent(centity_t *cent, vec3_t position);
 void CG_PainEvent(centity_t *cent, int health);
 void CG_AddToKillMsg(const char *killername, const char *victimname, int icon);
-//
 // cg_ents.c
-//
 void CG_DrawBoundingBox(vec3_t origin, vec3_t mins, vec3_t maxs);
 void CG_SetEntitySoundPosition(centity_t *cent);
 void CG_AddPacketEntities(void);
@@ -1344,9 +1318,7 @@ void CG_Beam(centity_t *cent);
 void CG_AdjustPositionForMover(const vec3_t in, int moverNum, int fromTime, int toTime, vec3_t out);
 void CG_PositionEntityOnTag(refEntity_t *entity, const refEntity_t *parent, qhandle_t parentModel, char *tagName);
 void CG_PositionRotatedEntityOnTag(refEntity_t *entity, const refEntity_t *parent, qhandle_t parentModel, char *tagName);
-//
 // cg_weapons.c
-//
 void CG_NextWeapon_f(void);
 void CG_PrevWeapon_f(void);
 void CG_Weapon_f(void);
@@ -1363,47 +1335,33 @@ void CG_AddViewWeapon(playerState_t *ps);
 void CG_AddPlayerWeapon(refEntity_t *parent, playerState_t *ps, centity_t *cent);
 void CG_DrawItemSelect(rectDef_t *rect, vec4_t color);
 void CG_DrawItemSelectText(rectDef_t *rect, float scale, int textStyle);
-//
 // cg_scanner.c
-//
 void CG_UpdateEntityPositions(void);
 void CG_Scanner(rectDef_t *rect, qhandle_t shader, vec4_t color);
 void CG_AlienSense(rectDef_t *rect);
 void THZ_DrawScanner(rectDef_t *rect);
-//
 // cg_marks.c
-//
 void CG_InitMarkPolys(void);
 void CG_AddMarks(void);
 void CG_ImpactMark(qhandle_t markShader, const vec3_t origin, const vec3_t dir, float orientation, float r, float g, float b, float a, qboolean alphaFade, float radius, qboolean temporary);
-//
 // cg_snapshot.c
-//
 void CG_ProcessSnapshots(void);
-//
 // cg_consolecmds.c
-//
 qboolean CG_ConsoleCommand(void);
 void CG_InitConsoleCommands(void);
 qboolean CG_RequestScores(void);
-//
 // cg_servercmds.c
-//
 void CG_ExecuteNewServerCommands(int latestSequence);
 void CG_ParseServerinfo(void);
 void CG_SetConfigValues(void);
 void CG_ShaderStateChanged(void);
 void CG_UnregisterCommands(void);
 void CG_CenterPrint_f(void);
-//
 // cg_playerstate.c
-//
 void CG_Respawn(void);
 void CG_TransitionPlayerState(playerState_t *ps, playerState_t *ops);
 void CG_CheckChangedPredictableEvents(playerState_t *ps);
-//
 // cg_attachment.c
-//
 qboolean CG_AttachmentPoint(attachment_t *a, vec3_t v);
 qboolean CG_AttachmentDir(attachment_t *a, vec3_t v);
 qboolean CG_AttachmentAxis(attachment_t *a, vec3_t axis[3]);
@@ -1419,9 +1377,7 @@ void CG_SetAttachmentCent(attachment_t *a, centity_t *cent);
 void CG_SetAttachmentTag(attachment_t *a, refEntity_t parent, qhandle_t model, char *tagName);
 void CG_SetAttachmentParticle(attachment_t *a, particle_t *p);
 void CG_SetAttachmentOffset(attachment_t *a, vec3_t v);
-//
 // cg_particles.c
-//
 void CG_LoadParticleSystems(void);
 qhandle_t CG_RegisterParticleSystem(char *name);
 particleSystem_t *CG_SpawnNewParticleSystem(qhandle_t psHandle);
@@ -1433,9 +1389,7 @@ void CG_AddParticles(void);
 void CG_ParticleSystemEntity(centity_t *cent);
 void CG_TestPS_f(void);
 void CG_DestroyTestPS_f(void);
-//
 // cg_trails.c
-//
 void CG_LoadTrailSystems(void);
 qhandle_t CG_RegisterTrailSystem(char *name);
 trailSystem_t *CG_SpawnNewTrailSystem(qhandle_t psHandle);
@@ -1444,32 +1398,25 @@ qboolean CG_IsTrailSystemValid(trailSystem_t **ts);
 void CG_AddTrails(void);
 void CG_TestTS_f(void);
 void CG_DestroyTestTS_f(void);
-//
 // cg_ptr.c
-//
 int CG_ReadPTRCode(void);
 void CG_WritePTRCode(int code);
-//
 // cg_tutorial.c
-//
 const char *CG_TutorialText(void);
-//
 // system traps
 // these functions are how the cgame communicates with the main game system
-//
 // print message on the local console
 void trap_Print(const char *fmt);
 // abort the game
 void trap_Error(const char *fmt) __attribute__((noreturn));
-// milliseconds should only be used for performance tuning, never
-// for anything game related.  Get time from the CG_DrawActiveFrame parameter
+// milliseconds should only be used for performance tuning, never for anything game related. Get time from the CG_DrawActiveFrame parameter
 int trap_Milliseconds(void);
 // console variable interaction
 void trap_Cvar_Register(vmCvar_t *vmCvar, const char *varName, const char *defaultValue, int flags);
 void trap_Cvar_Update(vmCvar_t *vmCvar);
 void trap_Cvar_Set(const char *var_name, const char *value);
 void trap_Cvar_VariableStringBuffer(const char *var_name, char *buffer, int bufsize);
-// serverCommand and ConsoleCommand parameter access
+// ServerCommand and ConsoleCommand parameter access
 int trap_Argc(void);
 void trap_Argv(int n, char *buffer, int bufferLength);
 void trap_Args(char *buffer, int bufferLength);
@@ -1482,10 +1429,8 @@ void trap_FS_Write(const void *buffer, int len, fileHandle_t f);
 void trap_FS_FCloseFile(fileHandle_t f);
 void trap_FS_Seek(fileHandle_t f, long offset, fsOrigin_t origin); // fsOrigin_t
 int trap_FS_GetFileList(const char *path, const char *extension, char *listbuf, int bufsize);
-// add commands to the local console as if they were typed in
-// for map changing, etc.  The command is not executed immediately, 
-// but will be executed in order the next time console commands
-// are processed
+// add commands to the local console as if they were typed in for map changing, etc.
+// The command is not executed immediately, but will be executed in order the next time console commands are processed
 void trap_SendConsoleCommand(const char *text);
 // register a command name so the console can perform command completion.
 // FIXME: replace this with a normal console command "defineCommand"?
@@ -1498,7 +1443,7 @@ void trap_UpdateScreen(void);
 // model collision
 void trap_CM_LoadMap(const char *mapname);
 int trap_CM_NumInlineModels(void);
-clipHandle_t trap_CM_InlineModel(int index); // 0 = world, 1 += bmodels
+clipHandle_t trap_CM_InlineModel(int index); // 0 = world, 1+ = bmodels
 clipHandle_t trap_CM_TempBoxModel(const vec3_t mins, const vec3_t maxs);
 int trap_CM_PointContents(const vec3_t p, clipHandle_t model);
 int trap_CM_TransformedPointContents(const vec3_t p, clipHandle_t model, const vec3_t origin, const vec3_t angles);
@@ -1510,8 +1455,7 @@ void trap_CM_BiSphereTrace(trace_t *results, const vec3_t start, const vec3_t en
 void trap_CM_TransformedBiSphereTrace(trace_t *results, const vec3_t start, const vec3_t end, float startRad, float endRad, clipHandle_t model, int mask, const vec3_t origin);
 // returns the projection of a polygon onto the solid brushes in the world
 int trap_CM_MarkFragments(int numPoints, const vec3_t *points, const vec3_t projection, int maxPoints, vec3_t pointBuffer, int maxFragments, markFragment_t *fragmentBuffer);
-// normal sounds will have their volume dynamically changed as their entity
-// moves and the listener moves
+// normal sounds will have their volume dynamically changed as their entity moves and the listener moves
 void trap_S_StartSound(vec3_t origin, int entityNum, int entchannel, sfxHandle_t sfx);
 void trap_S_StopLoopingSound(int entnum);
 // a local sound is always played full volume
@@ -1529,10 +1473,10 @@ void trap_S_StopBackgroundTrack(void);
 void trap_R_LoadWorldMap(const char *mapname);
 // all media should be registered during level startup to prevent
 // hitches during gameplay
-qhandle_t trap_R_RegisterModel(const char *name); // returns rgb axis if not found
-qhandle_t trap_R_RegisterSkin(const char *name); 			// returns all white if not found
-qhandle_t trap_R_RegisterShader(const char *name); 			// returns all white if not found
-qhandle_t trap_R_RegisterShaderNoMip(const char *name); // returns all white if not found
+qhandle_t trap_R_RegisterModel(const char *name);		// returns rgb axis if not found
+qhandle_t trap_R_RegisterSkin(const char *name);		// returns all white if not found
+qhandle_t trap_R_RegisterShader(const char *name);		// returns all white if not found
+qhandle_t trap_R_RegisterShaderNoMip(const char *name);	// returns all white if not found
 // a scene is built up by calls to R_ClearScene and the various R_Add functions.
 // nothing is drawn until R_RenderScene is called.
 void trap_R_ClearScene(void);
@@ -1546,25 +1490,21 @@ void trap_R_AddLightToScene(const vec3_t org, float intensity, float r, float g,
 void trap_R_AddAdditiveLightToScene(const vec3_t org, float intensity, float r, float g, float b);
 int trap_R_LightForPoint(vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir);
 void trap_R_RenderScene(const refdef_t *fd);
-void trap_R_SetColor(const float *rgba); // nULL = 1, 1, 1, 1
+void trap_R_SetColor(const float *rgba); // NULL = 1, 1, 1, 1
 void trap_R_SetClipRegion(const float *region);
 void trap_R_DrawStretchPic(float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader);
 void trap_R_ModelBounds(clipHandle_t model, vec3_t mins, vec3_t maxs);
 int trap_R_LerpTag(orientation_t *tag, clipHandle_t mod, int startFrame, int endFrame, float frac, const char *tagName);
 void trap_R_RemapShader(const char *oldShader, const char *newShader, const char *timeOffset);
-// the glconfig_t will not change during the life of a cgame.
-// if it needs to change, the entire cgame will be restarted, because
-// all the qhandle_t are then invalid.
+// The glconfig_t will not change during the life of a cgame.
+// If it needs to change, the entire cgame will be restarted, because all the qhandle_t are then invalid.
 void trap_GetGlconfig(glconfig_t *glconfig);
-// the gamestate should be grabbed at startup, and whenever a
-// configstring changes
+// the gamestate should be grabbed at startup, and whenever a configstring changes
 void trap_GetGameState(gameState_t *gamestate);
-// cgame will poll each frame to see if a newer snapshot has arrived
-// that it is interested in.  The time is returned seperately so that
-// snapshot latency can be calculated.
+// cgame will poll each frame to see if a newer snapshot has arrived that it is interested in.
+// The time is returned separately so that snapshot latency can be calculated.
 void trap_GetCurrentSnapshotNumber(int *snapshotNumber, int *serverTime);
-// a snapshot get can fail if the snapshot(or the entties it holds) is so
-// old that it has fallen out of the client system queue
+// a snapshot get can fail if the snapshot (or the entties it holds) is so old that it has fallen out of the client system queue
 qboolean trap_GetSnapshot(int snapshotNumber, snapshot_t *snapshot);
 // retrieve a text command from the server stream
 // the current snapshot will hold the number of the most recent command
@@ -1572,9 +1512,8 @@ qboolean trap_GetSnapshot(int snapshotNumber, snapshot_t *snapshot);
 // argc() / argv() can be used to examine the parameters of the command
 qboolean trap_GetServerCommand(int serverCommandNumber);
 // returns the most recent command number that can be passed to GetUserCmd
-// this will always be at least one higher than the number in the current
-// snapshot, and it may be quite a few higher if it is a fast computer on
-// a lagged connection
+// this will always be at least one higher than the number in the current snapshot, and it may be quite a few higher if it is a
+// fast computer on a lagged connection
 int trap_GetCurrentCmdNumber(void);
 qboolean trap_GetUserCmd(int cmdNumber, usercmd_t *ucmd);
 // used for the weapon select and zoom
