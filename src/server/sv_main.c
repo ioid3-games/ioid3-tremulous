@@ -49,7 +49,7 @@ cvar_t *sv_dlRate;
 cvar_t *sv_minPing;
 cvar_t *sv_maxPing;
 cvar_t *sv_pure;
-cvar_t *sv_lanForceRate;	// dedicated 1(LAN) server forces local client rates to 99999(bug #491)
+cvar_t *sv_lanForceRate;	// dedicated 1 (LAN) server forces local client rates to 99999 (bug #491)
 cvar_t *sv_banFile;
 
 /*
@@ -282,7 +282,7 @@ void SV_MasterHeartbeat(const char *message) {
 		}
 
 		Com_Printf("Sending heartbeat to %s\n", sv_master[i]->string);
-		// this command should be changed if the server info / status format ever incompatably changes
+		// this command should be changed if the server info/status format ever incompatably changes
 		if (adr[i][0].type != NA_BAD) {
 			NET_OutOfBandPrint(NS_SERVER, adr[i][0], "heartbeat %s\n", message);
 		}
@@ -536,17 +536,17 @@ static void SVC_Status(netadr_t from) {
 	int playerLength;
 	char infostring[MAX_INFO_STRING];
 
-	// Prevent using getstatus as an amplifier
+	// prevent using getstatus as an amplifier
 	if (SVC_RateLimitAddress(from, 10, 1000)) {
 		Com_DPrintf("SVC_Status: rate limit from %s exceeded, dropping request\n", NET_AdrToString(from));
 		return;
 	}
-	// Allow getstatus to be DoSed relatively easily, but prevent excess outbound bandwidth usage when being flooded inbound
+	// allow getstatus to be DoSed relatively easily, but prevent excess outbound bandwidth usage when being flooded inbound
 	if (SVC_RateLimit(&outboundLeakyBucket, 10, 100)) {
 		Com_DPrintf("SVC_Status: rate limit exceeded, dropping request\n");
 		return;
 	}
-	// A maximum challenge length of 128 should be more than plenty.
+	// a maximum challenge length of 128 should be more than plenty.
 	if (strlen(Cmd_Argv(1)) > 128) {
 		return;
 	}
@@ -591,21 +591,20 @@ void SVC_Info(netadr_t from) {
 	char *gamedir;
 	char infostring[MAX_INFO_STRING];
 
-	// Prevent using getinfo as an amplifier
+	// prevent using getinfo as an amplifier
 	if (SVC_RateLimitAddress(from, 10, 1000)) {
 		Com_DPrintf("SVC_Info: rate limit from %s exceeded, dropping request\n", NET_AdrToString(from));
 		return;
 	}
-	// Allow getinfo to be DoSed relatively easily, but prevent excess outbound bandwidth usage when being flooded inbound
+	// allow getinfo to be DoSed relatively easily, but prevent excess outbound bandwidth usage when being flooded inbound
 	if (SVC_RateLimit(&outboundLeakyBucket, 10, 100)) {
 		Com_DPrintf("SVC_Info: rate limit exceeded, dropping request\n");
 		return;
 	}
-	/*
-	*Check whether Cmd_Argv(1) has a sane length. This was not done in the original Quake3 version which led
-	*to the Infostring bug discovered by Luigi Auriemma. See http:// aluigi.altervista.org / for the advisory.
-	*/
-	// A maximum challenge length of 128 should be more than plenty.
+	// check whether Cmd_Argv(1) has a sane length. This was not done in the original Quake3 version which led to the Infostring bug
+	// discovered by Luigi Auriemma. See http://aluigi.altervista.org/ for the advisory.
+
+	// a maximum challenge length of 128 should be more than plenty.
 	if (strlen(Cmd_Argv(1)) > 128) {
 		return;
 	}

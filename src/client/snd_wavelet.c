@@ -121,8 +121,8 @@ byte MuLawEncode(short s) {
 		adjusted = 32767;
 	}
 
-	exponent = numBits[(adjusted >> 7) &0xff] - 1;
-	mantissa = (adjusted >> (exponent + 3)) &0xf;
+	exponent = numBits[(adjusted >> 7)&0xff] - 1;
+	mantissa = (adjusted >> (exponent + 3))&0xf;
 	return ~(sign|(exponent << 4)|mantissa);
 }
 

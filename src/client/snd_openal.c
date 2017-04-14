@@ -370,7 +370,6 @@ static void S_AL_BufferLoad(sfxHandle_t sfx, qboolean cache) {
 	if (info.size == 0) {
 		// we have no data to buffer, so buffer silence
 		byte dummyData[2] = {0};
-
 		qalBufferData(curSfx->buffer, AL_FORMAT_MONO16, (void *)dummyData, 2, 22050);
 	} else {
 		qalBufferData(curSfx->buffer, format, data, info.size, info.rate);
@@ -775,8 +774,6 @@ static void S_AL_SrcSetup(srcHandle_t src, sfxHandle_t sfx, alSrcPriority_t prio
 /*
 =======================================================================================================================================
 S_AL_SaveLoopPos
-
-Remove given source as loop master if it is the master and hand off master status to another source in this case.
 =======================================================================================================================================
 */
 static void S_AL_SaveLoopPos(src_t *dest, ALuint alSource) {
@@ -1966,9 +1963,9 @@ static cvar_t *s_alCapture;
 #endif
 #ifdef _WIN32
 #define ALDRIVER_DEFAULT "OpenAL32.dll"
-#elif defined (__APPLE__)
+#elif defined(__APPLE__)
 #define ALDRIVER_DEFAULT "/System/Library/Frameworks/OpenAL.framework/OpenAL"
-#elif defined (__OpenBSD__)
+#elif defined(__OpenBSD__)
 #define ALDRIVER_DEFAULT "libopenal.so"
 #else
 #define ALDRIVER_DEFAULT "libopenal.so.1"
@@ -2053,7 +2050,7 @@ static void S_AL_Update(void) {
 	}
 	// doppler parameters
 	if (s_alDopplerFactor->modified) {
-		if (s_doppler->integer)
+		if (s_doppler->integer) {
 			qalDopplerFactor(s_alDopplerFactor->value);
 		} else {
 			qalDopplerFactor(0.0f);

@@ -272,6 +272,7 @@ typedef enum {
 	K_PAD0_RIGHTTRIGGER,
 	// pseudo-key that brings the console down
 	K_CONSOLE,
+
 	MAX_KEYS
 } keyNum_t;
 // MAX_KEYS replaces K_LAST_KEY, however some mods may have used K_LAST_KEY in detecting binds, so we leave it defined

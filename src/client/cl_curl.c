@@ -113,7 +113,6 @@ qboolean CL_cURL_Init() {
 	qcurl_multi_cleanup = GPA("curl_multi_cleanup");
 	qcurl_multi_info_read = GPA("curl_multi_info_read");
 	qcurl_multi_strerror = GPA("curl_multi_strerror");
-
 	qcurl_slist_append = GPA("curl_slist_append");
 	qcurl_slist_free_all = GPA("curl_slist_free_all");
 	qcurl_global_init = GPA("curl_global_init");
@@ -302,7 +301,7 @@ void CL_cURL_BeginDownload(const char *localName, const char *remoteURL) {
 
 	qcurl_easy_setopt_warn(clc.downloadCURL, CURLOPT_URL, clc.downloadURL);
 	qcurl_easy_setopt_warn(clc.downloadCURL, CURLOPT_TRANSFERTEXT, 0);
-	qcurl_easy_setopt_warn(clc.downloadCURL, CURLOPT_REFERER, va("Tremulous:// %s", NET_AdrToString(clc.serverAddress)));
+	qcurl_easy_setopt_warn(clc.downloadCURL, CURLOPT_REFERER, va("Tremulous://%s", NET_AdrToString(clc.serverAddress)));
 	qcurl_easy_setopt_warn(clc.downloadCURL, CURLOPT_USERAGENT, va("%s %s", Q3_VERSION, qcurl_version()));
 	qcurl_easy_setopt_warn(clc.downloadCURL, CURLOPT_WRITEFUNCTION, CL_cURL_CallbackWrite);
 	qcurl_easy_setopt_warn(clc.downloadCURL, CURLOPT_WRITEDATA, &clc.download);

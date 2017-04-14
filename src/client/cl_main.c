@@ -1773,9 +1773,7 @@ void CL_ResetPureClientAtServer(void) {
 =======================================================================================================================================
 CL_Vid_Restart_f
 
-Restart the video subsystem.
-
-We also have to reload the UI and CGame because the renderer doesn't know what graphics to reload.
+Restart the video subsystem. We also have to reload the UI and CGame because the renderer doesn't know what graphics to reload.
 =======================================================================================================================================
 */
 void CL_Vid_Restart_f(void) {
@@ -2131,8 +2129,7 @@ void CL_NextDownload(void) {
 
 		prompt & = DLP_TYPE_MASK;
 		s = clc.downloadList;
-		// format is:
-		// @remotename@localname@remotename@localname, etc.
+		// format is: @remotename@localname@remotename@localname, etc.
 		if (*s == '@') {
 			s++;
 		}
@@ -2151,6 +2148,7 @@ void CL_NextDownload(void) {
 			*s++ = 0;
 		} else {
 			s = localName + strlen(localName); // point at the nul byte
+		}
 #ifdef USE_CURL
 		if (((cl_allowDownload->integer & DLF_ENABLE) && !(cl_allowDownload->integer & DLF_NO_REDIRECT)) || prompt == DLP_CURL) {
 			Com_Printf("Trying CURL download : %s; %s\n", localName, remoteName);
@@ -2166,7 +2164,7 @@ void CL_NextDownload(void) {
 				useCURL = qtrue;
 			}
 		} else if (!(clc.sv_allowDownload & DLF_NO_REDIRECT)) {
-			Com_Printf("WARNING: server allows download redirection, but it disabled by client configuration(cl_allowDownload is %d)\n", cl_allowDownload->integer);
+			Com_Printf("WARNING: server allows download redirection, but it disabled by client configuration (cl_allowDownload is %d)\n", cl_allowDownload->integer);
 		}
 #endif // USE_CURL
 		if (!useCURL) {
@@ -2294,7 +2292,7 @@ void CL_MotdPacket(netadr_t from, const char *info) {
 		return;
 	}
 
-	Com_DPrintf("MOTD packet : %s\n", info);
+	Com_DPrintf("MOTD packet: %s\n", info);
 
 	while (*info != '\\') {
 		info++;
@@ -2438,7 +2436,7 @@ void CL_ServersResponsePacket(const netadr_t *from, msg_t *msg, qboolean extende
 	// skip header
 	buffptr += 4;
 	// advance to initial token
-	// i considered using strchr for this but I don't feel like relying on its behaviour with '\0'
+	// I considered using strchr for this but I don't feel like relying on its behaviour with '\0'
 	while (*buffptr && *buffptr != '\\' && *buffptr != '/') {
 		buffptr++;
 
@@ -2457,8 +2455,7 @@ void CL_ServersResponsePacket(const netadr_t *from, msg_t *msg, qboolean extende
 				Com_DPrintf("CL_ServersResponsePacket: received packet %d again, ignoring\n", ind);
 				return;
 			}
-			// tODO : detect dropped packets and make another
-			// request
+			// TODO : detect dropped packets and make another request
 			Com_DPrintf("CL_ServersResponsePacket: packet %d of %d\n", ind, cls.numMasterPackets);
 			cls.receivedMasterPackets|= (1 << (ind - 1));
 
@@ -2662,7 +2659,7 @@ void CL_ConnectionlessPacket(netadr_t from, msg_t *msg) {
 		return;
 	}
 	// echo request from server
-	if (!Q_stricmp(c, "print")){
+	if (!Q_stricmp(c, "print")) {
 		s = MSG_ReadString(msg);
 
 		Q_strncpyz(clc.serverMessage, s, sizeof(clc.serverMessage));
@@ -3169,7 +3166,7 @@ void CL_SetModel_f(void) {
 =======================================================================================================================================
 CL_Video_f
 
-video
+video.
 video [filename].
 =======================================================================================================================================
 */
@@ -4164,7 +4161,7 @@ void CL_Ping_f(void) {
 	argc = Cmd_Argc();
 
 	if (argc != 2 && argc != 3) {
-		Com_Printf("usage : ping [-4|-6] server\n");
+		Com_Printf("usage: ping [-4|-6] server\n");
 		return;
 	}
 
