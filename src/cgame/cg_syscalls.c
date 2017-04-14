@@ -1,23 +1,18 @@
 /*
 =======================================================================================================================================
-Copyright(C) 1999 - 2005 Id Software, Inc.
-Copyright(C) 2000 - 2013 Darklegion Development
+Copyright (C) 1999-2005 Id Software, Inc.
+Copyright (C) 2000-2013 Darklegion Development.
 
 This file is part of Tremulous.
 
-Tremulous is free software; you can redistribute it
-and / or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the License, 
-or(at your option) any later version.
+Tremulous is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
 
-Tremulous is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Tremulous is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Tremulous; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
+You should have received a copy of the GNU General Public License along with Tremulous; if not, write to the Free Software Foundation,
+Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 =======================================================================================================================================
 */
 
@@ -576,7 +571,7 @@ void trap_R_AddPolysToScene(qhandle_t hShader, int numVerts, const polyVert_t *v
 
 /*
 =======================================================================================================================================
-trap_R_AddPolysToScene
+trap_R_LightForPoint
 =======================================================================================================================================
 */
 int trap_R_LightForPoint(vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir) {
@@ -875,7 +870,7 @@ void trap_SnapVector(float *v) {
 =======================================================================================================================================
 trap_CIN_PlayCinematic
 
-This returns a handle.  arg0 is the name in the format "idlogo.roq", set arg1 to NULL, alteredstates to qfalse (do not alter gamestate).
+This returns a handle. arg0 is the name in the format "idlogo.roq", set arg1 to NULL, alteredstates to qfalse (do not alter gamestate).
 =======================================================================================================================================
 */
 int trap_CIN_PlayCinematic(const char *arg0, int xpos, int ypos, int width, int height, int bits) {
@@ -886,7 +881,7 @@ int trap_CIN_PlayCinematic(const char *arg0, int xpos, int ypos, int width, int 
 =======================================================================================================================================
 trap_CIN_StopCinematic
 
-Stops playing the cinematic and ends it.  should always return FMV_EOF cinematics must be stopped in reverse order of when they are started.
+Stops playing the cinematic and ends it. Should always return FMV_EOF. Cinematics must be stopped in reverse order of when they are started.
 =======================================================================================================================================
 */
 e_status trap_CIN_StopCinematic(int handle) {
@@ -897,7 +892,7 @@ e_status trap_CIN_StopCinematic(int handle) {
 =======================================================================================================================================
 trap_CIN_RunCinematic
 
-Will run a frame of the cinematic but will not draw it.  Will return FMV_EOF if the end of the cinematic has been reached.
+Will run a frame of the cinematic but will not draw it. Will return FMV_EOF if the end of the cinematic has been reached.
 =======================================================================================================================================
 */
 e_status trap_CIN_RunCinematic(int handle) {

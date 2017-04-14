@@ -40,7 +40,7 @@ const char *(*qcurl_easy_strerror)(CURLcode);
 CURLM *(*qcurl_multi_init)(void);
 CURLMcode(*qcurl_multi_add_handle)(CURLM *, CURL *curl_handle);
 CURLMcode(*qcurl_multi_remove_handle)(CURLM *, CURL *);
-CURLMcode(*qcurl_multi_fdset)(CURLM *, fd_set * read_set, fd_set *write_set, fd_set *exc_set, int *);
+CURLMcode(*qcurl_multi_fdset)(CURLM *, fd_set *read_set, fd_set *write_set, fd_set *exc_set, int *);
 CURLMcode(*qcurl_multi_perform)(CURLM *, int *);
 CURLMcode(*qcurl_multi_cleanup)(CURLM *);
 CURLMsg *(*qcurl_multi_info_read)(CURLM *, int *);

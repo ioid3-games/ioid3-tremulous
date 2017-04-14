@@ -1,34 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C) 1999 - 2005 Id Software, Inc.
-Copyright(C) 2000 - 2013 Darklegion Development
+Copyright (C) 1999-2005 Id Software, Inc.
+Copyright (C) 2000-2013 Darklegion Development.
 
 This file is part of Tremulous.
 
-Tremulous is free software; you can redistribute it
-and / or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the License, 
-or(at your option) any later version.
+Tremulous is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
 
-Tremulous is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Tremulous is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Tremulous; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
+You should have received a copy of the GNU General Public License along with Tremulous; if not, write to the Free Software Foundation,
+Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 =======================================================================================================================================
 */
 
-/****** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** * * 
- * name:		snd_mem.c
- *
- * desc:		sound caching
- *
- * $Archive : / MissionPack / code/client/snd_mem.c $
- *
- *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** * */
+/**************************************************************************************************************************************
+ Sound caching.
+**************************************************************************************************************************************/
 
 #include "snd_local.h"
 #include "snd_codec.h"
@@ -38,7 +28,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
 /*
 =======================================================================================================================================
 
-memory management
+	Memory management
 
 =======================================================================================================================================
 */
@@ -47,6 +37,7 @@ static sndBuffer *buffer = NULL;
 static sndBuffer *freelist = NULL;
 static int inUse = 0;
 static int totalInUse = 0;
+
 short *sfxScratchBuffer = NULL;
 sfx_t *sfxScratchPointer = NULL;
 int sfxScratchIndex = 0;
@@ -58,7 +49,7 @@ SND_free
 */
 void SND_free(sndBuffer *v) {
 
-	*(sndBuffer * *)v = freelist;
+	*(sndBuffer **)v = freelist;
 	freelist = (sndBuffer *)v;
 	inUse += sizeof(sndBuffer);
 }
@@ -80,7 +71,7 @@ redo:
 	totalInUse += sizeof(sndBuffer);
 
 	v = freelist;
-	freelist = * (sndBuffer * *)freelist;
+	freelist = *(sndBuffer **)freelist;
 	v->next = NULL;
 	return v;
 }
@@ -96,22 +87,21 @@ void SND_setup(void) {
 	int scs;
 
 	cv = Cvar_Get("com_soundMegs", DEF_COMSOUNDMEGS, CVAR_LATCH|CVAR_ARCHIVE);
-
 	scs = (cv->integer * 1536);
 	buffer = malloc(scs * sizeof(sndBuffer));
 	// allocate the stack based hunk allocator
-	sfxScratchBuffer = malloc(SND_CHUNK_SIZE * sizeof(short) * 4); // hunk_Alloc(SND_CHUNK_SIZE * sizeof(short) * 4);
+	sfxScratchBuffer = malloc(SND_CHUNK_SIZE * sizeof(short) * 4); //Hunk_Alloc(SND_CHUNK_SIZE * sizeof(short) * 4);
 	sfxScratchPointer = NULL;
 
 	inUse = scs * sizeof(sndBuffer);
 	p = buffer;
 	q = p + scs;
 
-	while (-- q > p) {
-		*(sndBuffer * *)q = q - 1;
+	while (--q > p) {
+		*(sndBuffer **)q = q - 1;
 	}
 
-	*(sndBuffer * *)q = NULL;
+	*(sndBuffer **)q = NULL;
 	freelist = p + scs - 1;
 
 	Com_Printf("Sound memory manager started\n");
@@ -185,7 +175,7 @@ static int ResampleSfx(sfx_t *sfx, int channels, int inrate, int inwidth, int sa
 
 /*
 =======================================================================================================================================
-ResampleSfx
+ResampleSfxRaw
 
 Resample/decimate to the current source rate.
 =======================================================================================================================================
@@ -256,11 +246,8 @@ qboolean S_LoadSound(sfx_t *sfx) {
 	samples = Hunk_AllocateTempMemory(info.channels * info.samples * sizeof(short) * 2);
 
 	sfx->lastTimeUsed = Com_Milliseconds() + 1;
-	// each of these compression schemes works just fine
-	// but the 16bit quality is much nicer and with a local
-	// install assured we can rely upon the sound memory
-	// manager to do the right thing for us and page
-	// sound in as needed
+	// each of these compression schemes works just fine but the 16bit quality is much nicer and with a local install assured
+	// we can rely upon the sound memory manager to do the right thing for us and page sound in as needed
 	if (info.channels == 1 && sfx->soundCompressed == qtrue) {
 		sfx->soundCompressionMethod = 1;
 		sfx->soundData = NULL;

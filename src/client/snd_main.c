@@ -39,7 +39,7 @@ static soundInterface_t si;
 
 /*
 =======================================================================================================================================
-S_ValidateInterface
+S_ValidSoundInterface
 =======================================================================================================================================
 */
 static qboolean S_ValidSoundInterface(soundInterface_t *si) {
@@ -48,103 +48,103 @@ static qboolean S_ValidSoundInterface(soundInterface_t *si) {
 		return qfalse;
 	}
 
-	if (!si->StartSound {
+	if (!si->StartSound) {
 		return qfalse;
 	}
 
-	if (!si->StartLocalSound {
+	if (!si->StartLocalSound) {
 		return qfalse;
 	}
 
-	if (!si->StartBackgroundTrack {
+	if (!si->StartBackgroundTrack) {
 		return qfalse;
 	}
 
-	if (!si->StopBackgroundTrack {
+	if (!si->StopBackgroundTrack) {
 		return qfalse;
 	}
 
-	if (!si->RawSamples {
+	if (!si->RawSamples) {
 		return qfalse;
 	}
 
-	if (!si->StopAllSounds {
+	if (!si->StopAllSounds) {
 		return qfalse;
 	}
 
-	if (!si->ClearLoopingSounds {
+	if (!si->ClearLoopingSounds) {
 		return qfalse;
 	}
 
-	if (!si->AddLoopingSound {
+	if (!si->AddLoopingSound) {
 		return qfalse;
 	}
 
-	if (!si->AddRealLoopingSound {
+	if (!si->AddRealLoopingSound) {
 		return qfalse;
 	}
 
-	if (!si->StopLoopingSound {
+	if (!si->StopLoopingSound) {
 		return qfalse;
 	}
 
-	if (!si->Respatialize {
+	if (!si->Respatialize) {
 		return qfalse;
 	}
 
-	if (!si->UpdateEntityPositio {
+	if (!si->UpdateEntityPosition) {
 		return qfalse;
 	}
 
-	if (!si->Update {
+	if (!si->Update) {
 		return qfalse;
 	}
 
-	if (!si->DisableSounds {
+	if (!si->DisableSounds) {
 		return qfalse;
 	}
 
-	if (!si->BeginRegistratio {
+	if (!si->BeginRegistration) {
 		return qfalse;
 	}
 
-	if (!si->RegisterSound {
+	if (!si->RegisterSound) {
 		return qfalse;
 	}
 
-	if (!si->SoundDuratio {
+	if (!si->SoundDuration) {
 		return qfalse;
 	}
 
-	if (!si->ClearSoundBuffer {
+	if (!si->ClearSoundBuffer) {
 		return qfalse;
 	}
 
-	if (!si->SoundInfo {
+	if (!si->SoundInfo) {
 		return qfalse;
 	}
 
-	if (!si->SoundList {
+	if (!si->SoundList) {
 		return qfalse;
 	}
 #ifdef USE_VOIP
-	if (!si->StartCapture {
+	if (!si->StartCapture) {
 		return qfalse;
 	}
 
-	if (!si->AvailableCaptureSamples {
+	if (!si->AvailableCaptureSamples) {
 		return qfalse;
 	}
 
-	if (!si->Capture {
+	if (!si->Capture) {
 		return qfalse;
 	}
 
-	if (!si->StopCapture {
+	if (!si->StopCapture) {
 		return qfalse;
 	}
 
-	if (!si->MasterGai {
+	if (!si->MasterGain) {
 		return qfalse;
 	}
 #endif
@@ -308,8 +308,7 @@ void S_Update(void) {
 			s_muted->modified = qtrue;
 		}
 	} else {
-		if ((s_muteWhenMinimized->integer && com_minimized->integer) ||
-		(s_muteWhenUnfocused->integer && com_unfocused->integer)) {
+		if ((s_muteWhenMinimized->integer && com_minimized->integer) || (s_muteWhenUnfocused->integer && com_unfocused->integer)) {
 			s_muted->integer = qtrue;
 			s_muted->modified = qtrue;
 		}
@@ -487,7 +486,7 @@ void S_Play_f(void) {
 	c = Cmd_Argc();
 
 	if (c < 2) {
-		Com_Printf("Usage : play < sound filename > [sound filename] [sound filename] ...\n");
+		Com_Printf("Usage: play <sound filename> [sound filename] [sound filename] ...\n");
 		return;
 	}
 
@@ -519,7 +518,7 @@ void S_Music_f(void) {
 	} else if (c == 3) {
 		si.StartBackgroundTrack(Cmd_Argv(1), Cmd_Argv(2));
 	} else {
-		Com_Printf("Usage : music < musicfile > [loopfile]\n");
+		Com_Printf("Usage: music <musicfile> [loopfile]\n");
 		return;
 	}
 }
@@ -547,7 +546,7 @@ void S_Init(void) {
 	cvar_t *cv;
 	qboolean started = qfalse;
 
-	Com_Printf("------ Initializing Sound------ \n");
+	Com_Printf("------ Initializing Sound ------\n");
 
 	s_volume = Cvar_Get("s_volume", "0.8", CVAR_ARCHIVE);
 	s_musicVolume = Cvar_Get("s_musicvolume", "0.25", CVAR_ARCHIVE);

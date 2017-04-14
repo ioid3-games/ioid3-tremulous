@@ -1,26 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C) 1999 - 2005 Id Software, Inc.
-Copyright(C) 2000 - 2013 Darklegion Development
+Copyright (C) 1999-2005 Id Software, Inc.
+Copyright (C) 2000-2013 Darklegion Development.
 
 This file is part of Tremulous.
 
-Tremulous is free software; you can redistribute it
-and / or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the License, 
-or(at your option) any later version.
+Tremulous is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
 
-Tremulous is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Tremulous is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Tremulous; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
+You should have received a copy of the GNU General Public License along with Tremulous; if not, write to the Free Software Foundation,
+Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 =======================================================================================================================================
 */
-// cl_scrn.c--master for refresh, status bar, console, chat, notify, etc
+
+/**************************************************************************************************************************************
+ Master for refresh, status bar, console, chat, notify, etc.
+**************************************************************************************************************************************/
 
 #include "client.h"
 
@@ -96,7 +94,9 @@ Coordinates are 640 * 480 virtual values.
 void SCR_FillRect(float x, float y, float width, float height, const float *color) {
 
 	re.SetColor(color);
+
 	SCR_AdjustFrom640(&x, &y, &width, &height);
+
 	re.DrawStretchPic(x, y, width, height, 0, 0, 0, 0, cls.whiteShader);
 	re.SetColor(NULL);
 }
@@ -126,7 +126,7 @@ static void SCR_DrawChar(int x, int y, float size, int ch) {
 	float frow, fcol;
 	float ax, ay, aw, ah;
 
-	ch & = 255;
+	ch &= 255;
 
 	if (ch == ' ') {
 		return;
@@ -140,13 +140,15 @@ static void SCR_DrawChar(int x, int y, float size, int ch) {
 	ay = y;
 	aw = size;
 	ah = size;
+
 	SCR_AdjustFrom640(&ax, &ay, &aw, &ah);
 
 	row = ch >> 4;
-	col = ch&15;
+	col = ch &15;
 	frow = row * 0.0625;
 	fcol = col * 0.0625;
 	size = 0.0625;
+
 	re.DrawStretchPic(ax, ay, aw, ah, fcol, frow, fcol + size, frow + size, cls.charSetShader);
 }
 
@@ -162,7 +164,7 @@ void SCR_DrawSmallChar(int x, int y, int ch) {
 	float frow, fcol;
 	float size;
 
-	ch & = 255;
+	ch &= 255;
 
 	if (ch == ' ') {
 		return;
@@ -173,18 +175,19 @@ void SCR_DrawSmallChar(int x, int y, int ch) {
 	}
 
 	row = ch >> 4;
-	col = ch&15;
+	col = ch &15;
 	frow = row * 0.0625;
 	fcol = col * 0.0625;
 	size = 0.0625;
+
 	re.DrawStretchPic(x, y, SMALLCHAR_WIDTH, SMALLCHAR_HEIGHT, fcol, frow, fcol + size, frow + size, cls.charSetShader);
 }
 
 /*
 =======================================================================================================================================
-SCR_DrawBigString[Color]
+SCR_DrawStringExt
 
-Draws a multi - colored string with a drop shadow, optionally forcing to a fixed color.
+Draws a multi-colored string with a drop shadow, optionally forcing to a fixed color.
 Coordinates are at 640 by 480 virtual resolution.
 =======================================================================================================================================
 */
@@ -196,7 +199,9 @@ void SCR_DrawStringExt(int x, int y, float size, const char *string, float *setC
 	// draw the drop shadow
 	color[0] = color[1] = color[2] = 0;
 	color[3] = setColor[3];
+
 	re.SetColor(color);
+
 	s = string;
 	xx = x;
 
@@ -261,9 +266,9 @@ void SCR_DrawBigStringColor(int x, int y, const char *s, vec4_t color, qboolean 
 
 /*
 =======================================================================================================================================
-SCR_DrawSmallString[Color]
+SCR_DrawSmallStringExt
 
-Draws a multi - colored string with a drop shadow, optionally forcing to a fixed color.
+Draws a multi-colored string with a drop shadow, optionally forcing to a fixed color.
 =======================================================================================================================================
 */
 void SCR_DrawSmallStringExt(int x, int y, const char *string, float *setColor, qboolean forceColor, qboolean noColorEscape) {
@@ -300,7 +305,9 @@ void SCR_DrawSmallStringExt(int x, int y, const char *string, float *setColor, q
 
 /*
 =======================================================================================================================================
-SCR_Strlen--skips color escape codes
+SCR_Strlen
+
+Skips color escape codes.
 =======================================================================================================================================
 */
 static int SCR_Strlen(const char *str) {
@@ -332,7 +339,7 @@ int SCR_GetBigStringWidth(const char *str) {
 =======================================================================================================================================
 SCR_DrawVoipMeter
 
-FIXME: inherited from ioq3, move to cgame / ui.
+FIXME: inherited from ioq3, move to cgame/ui.
 =======================================================================================================================================
 */
 void SCR_DrawVoipMeter(void) {
@@ -370,7 +377,7 @@ void SCR_DrawVoipMeter(void) {
 
 	buffer[i] = '\0';
 
-	sprintf(string, "VoIP : [%s]", buffer);
+	sprintf(string, "VoIP: [%s]", buffer);
 	SCR_DrawStringExt(320 - strlen(string) * 4, 10, 8, string, g_color_table[7], qtrue, qfalse);
 }
 #endif
@@ -469,7 +476,7 @@ void SCR_DrawScreenField(stereoFrame_t stereoFrame) {
 	if (uivm && !uiFullscreen) {
 		switch (clc.state) {
 			default:
-				Com_Error(ERR_FATAL, "SCR_DrawScreenField : bad clc.state");
+				Com_Error(ERR_FATAL, "SCR_DrawScreenField: bad clc.state");
 				break;
 			case CA_CINEMATIC:
 				SCR_DrawCinematic();
@@ -527,7 +534,7 @@ void SCR_UpdateScreen(void) {
 	}
 
 	if (++recursive > 2) {
-		Com_Error(ERR_FATAL, "SCR_UpdateScreen : recursively called");
+		Com_Error(ERR_FATAL, "SCR_UpdateScreen: recursively called");
 	}
 
 	recursive = 1;

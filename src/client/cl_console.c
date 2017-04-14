@@ -1,23 +1,18 @@
 /*
 =======================================================================================================================================
-Copyright(C) 1999 - 2005 Id Software, Inc.
-Copyright(C) 2000 - 2013 Darklegion Development
+Copyright (C) 1999-2005 Id Software, Inc.
+Copyright (C) 2000-2013 Darklegion Development.
 
 This file is part of Tremulous.
 
-Tremulous is free software; you can redistribute it
-and / or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the License, 
-or(at your option) any later version.
+Tremulous is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
 
-Tremulous is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Tremulous is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Tremulous; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
+You should have received a copy of the GNU General Public License along with Tremulous; if not, write to the Free Software Foundation,
+Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 =======================================================================================================================================
 */
 
@@ -328,8 +323,7 @@ void CL_ConsolePrint(const char *txt) {
 	unsigned short color;
 	qboolean skipnotify = qfalse;
 
-	// TTimo - prefix for text that shows up in console but not in notify
-	// backported from RTCW
+	// work around for text that shows up in console but not in notify
 	if (!Q_strncmp(txt, "[skipnotify]", 12)) {
 		skipnotify = qtrue;
 		txt += 12;
@@ -351,13 +345,12 @@ void CL_ConsolePrint(const char *txt) {
 		// feed the text to cgame
 		Cmd_TokenizeString(txt);
 		CL_GameConsoleText();
-
 		Cmd_RestoreCmdContext();
 	}
 
 	color = ColorIndex(COLOR_WHITE);
 
-	while ((c = *((unsigned char *) txt)) != 0) {
+	while ((c = *((unsigned char *)txt)) != 0) {
 		if (Q_IsColorString(txt)) {
 			color = ColorIndex(*(txt + 1));
 			txt += 2;

@@ -1,23 +1,18 @@
 /*
 =======================================================================================================================================
-Copyright(C) 1999 - 2005 Id Software, Inc.
-Copyright(C) 2000 - 2013 Darklegion Development
+Copyright (C) 1999-2005 Id Software, Inc.
+Copyright (C) 2000-2013 Darklegion Development.
 
 This file is part of Tremulous.
 
-Tremulous is free software; you can redistribute it
-and / or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the License, 
-or(at your option) any later version.
+Tremulous is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
 
-Tremulous is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Tremulous is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Tremulous; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
+You should have received a copy of the GNU General Public License along with Tremulous; if not, write to the Free Software Foundation,
+Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 =======================================================================================================================================
 */
 
@@ -784,7 +779,7 @@ void CL_KeyMove(usercmd_t *cmd) {
 	int movespeed;
 	int forward, side, up;
 
-	// adjust for speed key/running
+	// adjust for speed key / running
 	// the walking flag is to keep animations consistent even during acceleration and deceleration
 	if (in_speed.active ^ cl_run->integer) {
 		movespeed = 127;
@@ -1153,15 +1148,16 @@ Including both the reliable commands and the usercmds.
 
 During normal gameplay, a client packet will contain something like:
 
-4	sequence number
-2	qport
-4	serverid
-4	acknowledged sequence number
-4	clc.serverCommandSequence
- <optional reliable commands>
-1	clc_move or clc_moveNoDelta
-1	command count
- <count * usercmds>
+ 4	sequence number
+ 2	qport
+ 4	serverid
+ 4	acknowledged sequence number
+ 4	clc.serverCommandSequence
+
+	<optional reliable commands>
+ 1	clc_move or clc_moveNoDelta
+ 1	command count
+	<count * usercmds>
 =======================================================================================================================================
 */
 void CL_WritePacket(void) {
@@ -1223,8 +1219,8 @@ void CL_WritePacket(void) {
 			MSG_WriteByte(&buf, clc.voipFlags);
 			MSG_WriteShort(&buf, clc.voipOutgoingDataSize);
 			MSG_WriteData(&buf, clc.voipOutgoingData, clc.voipOutgoingDataSize);
-			// if we're recording a demo, we have to fake a server packet with this VoIP data so it gets to disk; the server doesn't
-			// send it back to us, and we might as well eliminate concerns about dropped and misordered packets here.
+			// if we're recording a demo, we have to fake a server packet with this VoIP data so it gets to disk; the server doesn't send it
+			// back to us, and we might as well eliminate concerns about dropped and misordered packets here.
 			if (clc.demorecording && !clc.demowaiting) {
 				const int voipSize = clc.voipOutgoingDataSize;
 				msg_t fakemsg;

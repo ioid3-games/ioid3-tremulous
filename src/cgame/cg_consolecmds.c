@@ -1,29 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C) 1999 - 2005 Id Software, Inc.
-Copyright(C) 2000 - 2013 Darklegion Development
+Copyright (C) 1999-2005 Id Software, Inc.
+Copyright (C) 2000-2013 Darklegion Development.
 
 This file is part of Tremulous.
 
-Tremulous is free software; you can redistribute it
-and / or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the License, 
-or(at your option) any later version.
+Tremulous is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
 
-Tremulous is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Tremulous is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Tremulous; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
+You should have received a copy of the GNU General Public License along with Tremulous; if not, write to the Free Software Foundation,
+Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 =======================================================================================================================================
 */
 
-// cg_consolecmds.c--text commands typed in at the local console, or
-// executed by a key binding
-
+/**************************************************************************************************************************************
+ Text commands typed in at the local console, or executed by a key binding.
+**************************************************************************************************************************************/
 
 #include "cg_local.h"
 
@@ -62,20 +57,31 @@ static void CG_Viewpos_f(void) {
 	CG_Printf("(%i %i %i) : %i\n", (int)cg.refdef.vieworg[0], (int)cg.refdef.vieworg[1], (int)cg.refdef.vieworg[2], (int)cg.refdefViewAngles[YAW]);
 }
 
+/*
+=======================================================================================================================================
+CG_RequestScores
+=======================================================================================================================================
+*/
 qboolean CG_RequestScores(void) {
 
 	if (cg.scoresRequestTime + 2000 < cg.time) {
-		// the scores are more than two seconds out of data, // so request new ones
+		// the scores are more than two seconds out of data, so request new ones
 		cg.scoresRequestTime = cg.time;
 		trap_SendClientCommand("score\n");
 
 		return qtrue;
-	} else
+	} else {
 		return qfalse;
+	}
 }
 
 extern menuDef_t *menuScoreboard;
 
+/*
+=======================================================================================================================================
+CG_scrollScoresDown_f
+=======================================================================================================================================
+*/
 static void CG_scrollScoresDown_f(void) {
 
 	if (menuScoreboard && cg.scoreBoardShowing) {
@@ -84,7 +90,11 @@ static void CG_scrollScoresDown_f(void) {
 	}
 }
 
-
+/*
+=======================================================================================================================================
+CG_scrollScoresUp_f
+=======================================================================================================================================
+*/
 static void CG_scrollScoresUp_f(void) {
 
 	if (menuScoreboard && cg.scoreBoardShowing) {
@@ -93,6 +103,11 @@ static void CG_scrollScoresUp_f(void) {
 	}
 }
 
+/*
+=======================================================================================================================================
+CG_ScoresDown_f
+=======================================================================================================================================
+*/
 static void CG_ScoresDown_f(void) {
 
 	if (!cg.showScores) {
@@ -105,6 +120,11 @@ static void CG_ScoresDown_f(void) {
 	}
 }
 
+/*
+=======================================================================================================================================
+CG_ScoresUp_f
+=======================================================================================================================================
+*/
 static void CG_ScoresUp_f(void) {
 
 	if (cg.showScores) {
@@ -113,6 +133,11 @@ static void CG_ScoresUp_f(void) {
 	}
 }
 
+/*
+=======================================================================================================================================
+CG_ClientList_f
+=======================================================================================================================================
+*/
 void CG_ClientList_f(void) {
 	clientInfo_t *ci;
 	int i;
@@ -145,6 +170,11 @@ void CG_ClientList_f(void) {
 	Com_Printf("Listed %2d clients\n", count);
 }
 
+/*
+=======================================================================================================================================
+CG_VoiceMenu_f
+=======================================================================================================================================
+*/
 static void CG_VoiceMenu_f(void) {
 	char cmd[sizeof("voicemenu3")];
 
@@ -166,10 +196,20 @@ static void CG_VoiceMenu_f(void) {
 	trap_SendConsoleCommand("menu tremulous_voicecmd\n");
 }
 
+/*
+=======================================================================================================================================
+CG_UIMenu_f
+=======================================================================================================================================
+*/
 static void CG_UIMenu_f(void) {
 	trap_SendConsoleCommand(va("menu %s\n", CG_Argv(1)));
 }
 
+/*
+=======================================================================================================================================
+CG_KillMessage_f
+=======================================================================================================================================
+*/
 static void CG_KillMessage_f(void) {
 	char msg1[33 * 3 + 1];
 	char msg2[33 * 3 + 1];

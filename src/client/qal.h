@@ -22,40 +22,33 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
 =======================================================================================================================================
 */
 
-
 #ifndef __QAL_H__
 #define __QAL_H__
-
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
-
 #ifdef USE_OPENAL_DLOPEN
 #define AL_NO_PROTOTYPES
 #define ALC_NO_PROTOTYPES
 #endif
-
 #ifdef USE_LOCAL_HEADERS
-#include "../AL / al.h"
-#include "../AL / alc.h"
+#include "../AL/al.h"
+#include "../AL/alc.h"
 #else
 #if defined (_MSC_VER) || defined (__APPLE__)
-	// mSVC users must install the OpenAL SDK which doesn't use the AL/*.h scheme.
-	// oSX framework also needs this
+// MSVC users must install the OpenAL SDK which doesn't use the AL/*.h scheme. OSX framework also needs this
 #include <al.h>
 #include <alc.h>
 #else
-#include <AL / al.h>
-#include <AL / alc.h>
+#include <AL/al.h>
+#include <AL/alc.h>
 #endif
 #endif
-
-/* Hack to enable compiling both on OpenAL SDK and OpenAL - soft. */
+// Hack to enable compiling both on OpenAL SDK and OpenAL-soft.
 #ifndef ALC_ENUMERATE_ALL_EXT
 #define ALC_ENUMERATE_ALL_EXT 1
-#define ALC_DEFAULT_ALL_DEVICES_SPECIFIER				0x1012
-#define ALC_ALL_DEVICES_SPECIFIER								0x1013
+#define ALC_DEFAULT_ALL_DEVICES_SPECIFIER 0x1012
+#define ALC_ALL_DEVICES_SPECIFIER 0x1013
 #endif
-
 #ifdef USE_OPENAL_DLOPEN
 extern LPALENABLE qalEnable;
 extern LPALDISABLE qalDisable;
@@ -129,7 +122,6 @@ extern LPALGETBUFFERIV qalGetBufferiv;
 extern LPALDOPPLERFACTOR qalDopplerFactor;
 extern LPALSPEEDOFSOUND qalSpeedOfSound;
 extern LPALDISTANCEMODEL qalDistanceModel;
-
 extern LPALCCREATECONTEXT qalcCreateContext;
 extern LPALCMAKECONTEXTCURRENT qalcMakeContextCurrent;
 extern LPALCPROCESSCONTEXT qalcProcessContext;
@@ -223,7 +215,6 @@ extern LPALCCAPTURESAMPLES qalcCaptureSamples;
 #define qalDopplerFactor alDopplerFactor
 #define qalSpeedOfSound alSpeedOfSound
 #define qalDistanceModel alDistanceModel
-
 #define qalcCreateContext alcCreateContext
 #define qalcMakeContextCurrent alcMakeContextCurrent
 #define qalcProcessContext alcProcessContext
@@ -245,8 +236,6 @@ extern LPALCCAPTURESAMPLES qalcCaptureSamples;
 #define qalcCaptureStop alcCaptureStop
 #define qalcCaptureSamples alcCaptureSamples
 #endif
-
 qboolean QAL_Init(const char *libname);
 void QAL_Shutdown(void);
-
-#endif	// __QAL_H__
+#endif // __QAL_H__

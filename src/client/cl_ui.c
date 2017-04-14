@@ -1,23 +1,18 @@
 /*
 =======================================================================================================================================
-Copyright(C) 1999 - 2005 Id Software, Inc.
-Copyright(C) 2000 - 2013 Darklegion Development
+Copyright (C) 1999-2005 Id Software, Inc.
+Copyright (C) 2000-2013 Darklegion Development.
 
 This file is part of Tremulous.
 
-Tremulous is free software; you can redistribute it
-and / or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the License, 
-or(at your option) any later version.
+Tremulous is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
 
-Tremulous is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Tremulous is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Tremulous; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
+You should have received a copy of the GNU General Public License along with Tremulous; if not, write to the Free Software Foundation,
+Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 =======================================================================================================================================
 */
 
@@ -34,9 +29,11 @@ static void GetClientState(uiClientState_t *state) {
 
 	state->connectPacketCount = clc.connectPacketCount;
 	state->connState = clc.state;
+
 	Q_strncpyz(state->servername, clc.servername, sizeof(state->servername));
 	Q_strncpyz(state->updateInfoString, cls.updateInfoString, sizeof(state->updateInfoString));
 	Q_strncpyz(state->messageString, clc.serverMessage, sizeof(state->messageString));
+
 	state->clientNum = cl.snap.ps.clientNum;
 }
 
@@ -48,6 +45,7 @@ LAN_LoadCachedServers
 void LAN_LoadCachedServers(void) {
 	int size;
 	fileHandle_t fileIn;
+
 	cls.numglobalservers = cls.numfavoriteservers = 0;
 	cls.numGlobalServerAddresses = 0;
 
@@ -80,7 +78,9 @@ void LAN_SaveServersToCache(void) {
 
 	FS_Write(&cls.numglobalservers, sizeof(int), fileOut);
 	FS_Write(&cls.numfavoriteservers, sizeof(int), fileOut);
+
 	size = sizeof(cls.globalServers) + sizeof(cls.favoriteServers);
+
 	FS_Write(&size, sizeof(int), fileOut);
 	FS_Write(&cls.globalServers, sizeof(cls.globalServers), fileOut);
 	FS_Write(&cls.favoriteServers, sizeof(cls.favoriteServers), fileOut);
@@ -178,6 +178,7 @@ static int LAN_AddServer(int source, const char *name, const char *address) {
 	int max, *count, i;
 	netadr_t adr;
 	serverInfo_t *servers = NULL;
+
 	max = MAX_OTHER_SERVERS;
 	count = NULL;
 
@@ -229,6 +230,7 @@ LAN_RemoveServer
 static void LAN_RemoveServer(int source, const char *addr) {
 	int *count, i;
 	serverInfo_t *servers = NULL;
+
 	count = NULL;
 
 	switch (source) {
@@ -292,7 +294,7 @@ static int LAN_GetServerCount(int source) {
 
 /*
 =======================================================================================================================================
-LAN_GetLocalServerAddressString
+LAN_GetServerAddressString
 =======================================================================================================================================
 */
 static void LAN_GetServerAddressString(int source, int n, char *buf, int buflen) {
@@ -333,6 +335,7 @@ LAN_GetServerInfo
 static void LAN_GetServerInfo(int source, int n, char *buf, int buflen) {
 	char info[MAX_STRING_CHARS];
 	serverInfo_t *server = NULL;
+
 	info[0] = '\0';
 
 	switch (source) {
@@ -598,7 +601,7 @@ static void LAN_MarkServerVisible(int source, int n, qboolean visible) {
 				server = &cls.localServers[0];
 				break;
 			case AS_MPLAYER:
-			case AS_GLOBAL :
+			case AS_GLOBAL:
 				server = &cls.globalServers[0];
 				count = MAX_GLOBAL_SERVERS;
 				break;
@@ -689,7 +692,7 @@ int LAN_GetServerStatus(char *serverAddress, char *serverStatus, int maxLen) {
 
 /*
 =======================================================================================================================================
-CL_GetGlConfig
+CL_GetGlconfig
 =======================================================================================================================================
 */
 static void CL_GetGlconfig(glconfig_t *config) {
@@ -1018,7 +1021,7 @@ intptr_t CL_UISystemCalls(intptr_t *args) {
 			re.RemapShader(VMA(1), VMA(2), VMA(3));
 			return 0;
 		default:
-			Com_Error(ERR_DROP, "Bad UI system trap : %ld", (long int) args[0]);
+			Com_Error(ERR_DROP, "Bad UI system trap: %ld", (long int)args[0]);
 	}
 
 	return 0;
@@ -1040,6 +1043,7 @@ void CL_ShutdownUI(void) {
 
 	VM_Call(uivm, UI_SHUTDOWN);
 	VM_Free(uivm);
+
 	uivm = NULL;
 }
 

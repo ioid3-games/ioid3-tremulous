@@ -1,23 +1,18 @@
 /*
 =======================================================================================================================================
-Copyright(C) 1999 - 2005 Id Software, Inc.
-Copyright(C) 2000 - 2013 Darklegion Development
+Copyright (C) 1999-2005 Id Software, Inc.
+Copyright (C) 2000-2013 Darklegion Development.
 
 This file is part of Tremulous.
 
-Tremulous is free software; you can redistribute it
-and / or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the License, 
-or(at your option) any later version.
+Tremulous is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
 
-Tremulous is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Tremulous is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Tremulous; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110 - 1301  USA.
+You should have received a copy of the GNU General Public License along with Tremulous; if not, write to the Free Software Foundation,
+Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 =======================================================================================================================================
 */
 
@@ -265,8 +260,7 @@ void CG_OffsetThirdPersonView(void) {
 	static vec3_t killerPos = {0, 0, 0};
 
 	// if cg_thirdpersonShoulderViewMode == 2, do shoulder view instead
-	// if cg_thirdpersonShoulderViewMode == 1, do shoulder view when chasing
-	// a wallwalker because it's really erratic to watch
+	// if cg_thirdpersonShoulderViewMode == 1, do shoulder view when chasing a wallwalker because it's really erratic to watch
 	if ((cg_thirdPersonShoulderViewMode.integer == 2) || ((cg_thirdPersonShoulderViewMode.integer == 1) && (cg.snap->ps.stats[STAT_STATE] & SS_WALLCLIMBING) && (cg.snap->ps.stats[STAT_HEALTH] > 0))) {
 		CG_OffsetShoulderView();
 		return;
