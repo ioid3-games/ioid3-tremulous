@@ -22,9 +22,8 @@ Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 =======================================================================================================================================
 G_DamageFeedback
 
-Called just before a snapshot is sent to the given player.
-Totals up all damage and generates both the player_state_t damage values to that client for pain blends and kicks, and global pain
-sound events for all clients.
+Called just before a snapshot is sent to the given player. Totals up all damage and generates both the player_state_t damage values to
+that client for pain blends and kicks, and global pain sound events for all clients.
 =======================================================================================================================================
 */
 void P_DamageFeedback(gentity_t *player) {
@@ -49,7 +48,7 @@ void P_DamageFeedback(gentity_t *player) {
 	}
 	// send the information to the client
 
-	// world damage(falling, slime, etc) uses a special code to make the blend blob centered instead of positional
+	// world damage (falling, slime, etc.) uses a special code to make the blend blob centered instead of positional
 	if (client->damage_fromWorld) {
 		client->ps.damagePitch = 255;
 		client->ps.damageYaw = 255;
@@ -59,7 +58,7 @@ void P_DamageFeedback(gentity_t *player) {
 		client->ps.damagePitch = angles[PITCH] / 360.0 * 256;
 		client->ps.damageYaw = angles[YAW] / 360.0 * 256;
 	}
-	// play an apropriate pain sound
+	// play an appropriate pain sound
 	if ((level.time > player->pain_debounce_time) && !(player->flags & FL_GODMODE)) {
 		player->pain_debounce_time = level.time + 700;
 		G_AddEvent(player, EV_PAIN, player->health > 255 ? 255 : player->health);
@@ -121,7 +120,7 @@ void P_WorldEffects(gentity_t *ent) {
 		ent->client->airOutTime = level.time + 12000;
 		ent->damage = 2;
 	}
-	// check for sizzle damage(move to pmove?)
+	// check for sizzle damage (move to pmove?)
 	if (waterlevel && (ent->watertype &(CONTENTS_LAVA|CONTENTS_SLIME))) {
 		if (ent->health > 0 && ent->pain_debounce_time <= level.time) {
 			if (ent->watertype & CONTENTS_LAVA) {
@@ -151,7 +150,7 @@ void G_SetClientSound(gentity_t *ent) {
 
 /*
 =======================================================================================================================================
-ClientShove
+GetClientMass
 =======================================================================================================================================
 */
 static int GetClientMass(gentity_t *ent) {
@@ -170,6 +169,11 @@ static int GetClientMass(gentity_t *ent) {
 	return entMass;
 }
 
+/*
+=======================================================================================================================================
+ClientShove
+=======================================================================================================================================
+*/
 static void ClientShove(gentity_t *ent, gentity_t *victim) {
 	vec3_t dir, push;
 	float force;
@@ -226,7 +230,7 @@ static void ClientShove(gentity_t *ent, gentity_t *victim) {
 
 /*
 =======================================================================================================================================
-ClientImpacts.
+ClientImpacts
 =======================================================================================================================================
 */
 void ClientImpacts(gentity_t *ent, pmove_t *pm) {
@@ -310,9 +314,7 @@ void G_TouchTriggers(gentity_t *ent) {
 		}
 		// ignore most entities if a spectator
 		if (ent->client->sess.spectatorState != SPECTATOR_NOT) {
-			if (hit->s.eType != ET_TELEPORT_TRIGGER && // this is ugly but adding a new ET_? type will
-					// most likely cause network incompatibilities
-					hit->touch != Touch_DoorTrigger) {
+			if (hit->s.eType != ET_TELEPORT_TRIGGER && hit->touch != Touch_DoorTrigger) { // this is ugly but adding a new ET_? type will most likely cause network incompatibilities
 				// check for manually triggered doors
 				manualTriggerSpectator(hit, ent);
 				continue;
@@ -333,7 +335,7 @@ void G_TouchTriggers(gentity_t *ent) {
 
 /*
 =======================================================================================================================================
-SpectatorThink.
+SpectatorThink
 =======================================================================================================================================
 */
 void SpectatorThink(gentity_t *ent, usercmd_t *ucmd) {
@@ -418,6 +420,7 @@ void SpectatorThink(gentity_t *ent, usercmd_t *ucmd) {
 		client->ps.weapon = WP_NONE;
 		// set up for pmove
 		memset(&pm, 0, sizeof(pm));
+
 		pm.ps = &client->ps;
 		pm.pmext = &client->pmext;
 		pm.cmd = *ucmd;
@@ -454,7 +457,7 @@ Returns qfalse if the client is dropped.
 qboolean ClientInactivityTimer(gentity_t *ent) {
 	gclient_t *client = ent->client;
 
-	if (! g_inactivity.integer) {
+	if (!g_inactivity.integer) {
 		// give everyone some time, so if the operator sets g_inactivity during gameplay, everyone isn't kicked
 		client->inactivityTime = level.time + 60 * 1000;
 		client->inactivityWarning = qfalse;
@@ -679,20 +682,20 @@ void ClientTimerActions(gentity_t *ent, int msec) {
 
 /*
 =======================================================================================================================================
-ClientIntermissionThink.
+ClientIntermissionThink
 =======================================================================================================================================
 */
 void ClientIntermissionThink(gclient_t *client) {
 
-	client->ps.eFlags & = ~EF_FIRING;
-	client->ps.eFlags & = ~EF_FIRING2;
+	client->ps.eFlags &= ~EF_FIRING;
+	client->ps.eFlags &= ~EF_FIRING2;
 	// the level will exit when everyone wants to or after timeouts
 
 	// swap and latch button actions
 	client->oldbuttons = client->buttons;
 	client->buttons = client->pers.cmd.buttons;
 
-	if (client->buttons &(BUTTON_ATTACK|BUTTON_USE_HOLDABLE) &(client->oldbuttons ^ client->buttons)) {
+	if (client->buttons & (BUTTON_ATTACK|BUTTON_USE_HOLDABLE) & (client->oldbuttons ^ client->buttons)) {
 		client->readyToExit = 1;
 	}
 }
@@ -722,7 +725,7 @@ void ClientEvents(gentity_t *ent, int oldEventSequence) {
 	}
 
 	for (i = oldEventSequence; i < client->ps.eventSequence; i++) {
-		event = client->ps.events[i &(MAX_PS_EVENTS - 1)];
+		event = client->ps.events[i & (MAX_PS_EVENTS - 1)];
 
 		switch (event) {
 			case EV_FALL_MEDIUM:
@@ -980,7 +983,7 @@ void G_UnlaggedOff(void) {
 G_UnlaggedOn
 
 Called after G_UnlaggedCalc() to apply the calculated values to all active clients. Once finished tracing, G_UnlaggedOff() must be
-called to restore the clients' position data
+called to restore the clients' position data.
 
 As an optimization, all clients that have an unlagged position that is not touchable at "range" from "muzzle" will be ignored.
 This is required to prevent a huge amount of trap_LinkEntity() calls per user cmd.
@@ -1099,10 +1102,9 @@ static void G_UnlaggedDetectCollisions(gentity_t *ent) {
 
 /*
 =======================================================================================================================================
-ClientThink
+ClientThink_Real
 
 This will be called once for each client frame, which will usually be a couple times for each server frame on fast clients.
-
 If "g_synchronousClients 1" is set, this will be called exactly once for each server frame, which makes for smooth demo recording.
 =======================================================================================================================================
 */
@@ -1114,7 +1116,7 @@ void ClientThink_real(gentity_t *ent) {
 	usercmd_t *ucmd;
 
 	client = ent->client;
-	// don't think if the client is not yet connected(and thus not yet spawned in)
+	// don't think if the client is not yet connected (and thus not yet spawned in)
 	if (client->pers.connected != CON_CONNECTED) {
 		return;
 	}
@@ -1123,12 +1125,12 @@ void ClientThink_real(gentity_t *ent) {
 	// sanity check the command time to prevent speedup cheating
 	if (ucmd->serverTime > level.time + 200) {
 		ucmd->serverTime = level.time + 200;
-//		G_Printf("serverTime << << < \n");
+//		G_Printf("serverTime <<<<<\n");
 	}
 
 	if (ucmd->serverTime < level.time - 1000) {
 		ucmd->serverTime = level.time - 1000;
-//		G_Printf("serverTime >> >> > \n");
+//		G_Printf("serverTime >>>>>\n");
 	}
 
 	msec = ucmd->serverTime - client->ps.commandTime;
@@ -1151,11 +1153,10 @@ void ClientThink_real(gentity_t *ent) {
 
 	if (pmove_fixed.integer || client->pers.pmoveFixed) {
 		ucmd->serverTime = ((ucmd->serverTime + pmove_msec.integer - 1) / pmove_msec.integer) * pmove_msec.integer;
-		// if (ucmd->serverTime - client->ps.commandTime <= 0)
-		// 	return;
+		//if (ucmd->serverTime - client->ps.commandTime <= 0)
+		//	return;
 	}
 	// check for exiting intermission
-
 	if (level.intermissiontime) {
 		ClientIntermissionThink(client);
 		return;
@@ -1357,8 +1358,8 @@ void ClientThink_real(gentity_t *ent) {
 	memset(&pm, 0, sizeof(pm));
 
 	if (ent->flags & FL_FORCE_GESTURE) {
-		ent->flags & = ~FL_FORCE_GESTURE;
-		ent->client->pers.cmd.buttons|= BUTTON_GESTURE;
+		ent->flags &= ~FL_FORCE_GESTURE;
+		ent->client->pers.cmd.buttons |= BUTTON_GESTURE;
 	}
 	// clear fall velocity before every pmove
 	client->pmext.fallVelocity = 0.0f;
@@ -1617,7 +1618,7 @@ void SpectatorClientEndFrame(gentity_t *ent) {
 =======================================================================================================================================
 ClientEndFrame
 
-Called at the end of each server frame for each connected client. A fast client will have multiple ClientThink for each ClientEdFrame,
+Called at the end of each server frame for each connected client. A fast client will have multiple ClientThink for each ClientEndFrame,
 while a slow client may have multiple ClientEndFrame between ClientThink.
 =======================================================================================================================================
 */
@@ -1637,9 +1638,9 @@ void ClientEndFrame(gentity_t *ent) {
 	P_DamageFeedback(ent);
 	// add the EF_CONNECTION flag if we haven't gotten commands recently
 	if (level.time - ent->client->lastCmdTime > 1000) {
-		ent->s.eFlags|= EF_CONNECTION;
+		ent->s.eFlags |= EF_CONNECTION;
 	} else {
-		ent->s.eFlags & = ~EF_CONNECTION;
+		ent->s.eFlags &= ~EF_CONNECTION;
 	}
 
 	if (ent->client->ps.stats[STAT_HEALTH] != ent->health) {

@@ -16,15 +16,17 @@ Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 =======================================================================================================================================
 */
 
-// bg_slidemove.c--part of bg_pmove functionality
+/**************************************************************************************************************************************
+ Part of bg_pmove functionality.
+**************************************************************************************************************************************/
 
 #include "../qcommon/q_shared.h"
 #include "bg_public.h"
 #include "bg_local.h"
 
 /*
-input : origin, velocity, bounds, groundPlane, trace function
-output : origin, velocity, impacts, stairup boolean
+input: origin, velocity, bounds, groundPlane, trace function
+output: origin, velocity, impacts, stairup boolean
 */
 
 /*
@@ -77,6 +79,7 @@ qboolean PM_SlideMove(qboolean gravity) {
 	}
 	// never turn against original velocity
 	VectorNormalize2(pm->ps->velocity, planes[numplanes]);
+
 	numplanes++;
 
 	for (bumpcount = 0; bumpcount < numbumps; bumpcount++) {
@@ -109,7 +112,7 @@ qboolean PM_SlideMove(qboolean gravity) {
 			VectorClear(pm->ps->velocity);
 			return qtrue;
 		}
-		// if this is the same plane we hit before, nudge velocity out along it, which fixes some epsilon issues with non - axial planes
+		// if this is the same plane we hit before, nudge velocity out along it, which fixes some epsilon issues with non-axial planes
 		for (i = 0; i < numplanes; i++) {
 			if (DotProduct(trace.plane.normal, planes[i]) > 0.99) {
 				VectorAdd(trace.plane.normal, pm->ps->velocity, pm->ps->velocity);
@@ -122,6 +125,7 @@ qboolean PM_SlideMove(qboolean gravity) {
 		}
 
 		VectorCopy(trace.plane.normal, planes[numplanes]);
+
 		numplanes++;
 		// modify velocity so it parallels all of the clip planes
 
@@ -133,8 +137,9 @@ qboolean PM_SlideMove(qboolean gravity) {
 				continue; // move doesn't interact with the plane
 			}
 			// see how hard we are hitting things
-			if (-into > pml.impactSpeed)
+			if (-into > pml.impactSpeed) {
 				pml.impactSpeed = -into;
+			}
 			// slide along the plane
 			PM_ClipVelocity(pm->ps->velocity, planes[i], clipVelocity, OVERCLIP);
 			// slide along the plane
@@ -189,7 +194,7 @@ qboolean PM_SlideMove(qboolean gravity) {
 	if (gravity) {
 		VectorCopy(endVelocity, pm->ps->velocity);
 	}
-	// don't change velocity if in a timer(FIXME: is this correct?)
+	// don't change velocity if in a timer (FIXME: is this correct?)
 	if (pm->ps->pm_time) {
 		VectorCopy(primal_velocity, pm->ps->velocity);
 	}

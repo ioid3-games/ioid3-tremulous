@@ -16,7 +16,9 @@ Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 =======================================================================================================================================
 */
 
-// g_local.h--local definitions for game module
+/**************************************************************************************************************************************
+ Local definitions for game module.
+**************************************************************************************************************************************/
 
 #include "../qcommon/q_shared.h"
 #include "bg_public.h"
@@ -28,7 +30,6 @@ typedef struct gclient_s gclient_t;
 #include "g_admin.h"
 
 #define INFINITE 1000000
-
 #define FRAMETIME 100 // msec
 #define CARNAGE_REWARD_TIME 3000
 #define REWARD_SPRITE_TIME 2000
@@ -59,7 +60,7 @@ typedef enum {
 	MODEL_2TO1
 } moverState_t;
 
-#define SP_PODIUM_MODEL   "models/mapobjects / podium / podium4.md3"
+#define SP_PODIUM_MODEL "models/mapobjects/podium/podium4.md3"
 
 typedef struct gitem_s {
 	int ammo; // ammo held

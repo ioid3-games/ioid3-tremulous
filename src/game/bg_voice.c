@@ -66,8 +66,8 @@ static voice_t *BG_VoiceList(void) {
 		return NULL;
 	}
 	// special case for default.voice. This file is REQUIRED and will always be loaded first in the event of overflow of voice definitions
-	if (!trap_FS_FOpenFile("voice / default.voice", NULL, FS_READ)) {
-		Com_Printf("voice / default.voice missing, voice system disabled.");
+	if (!trap_FS_FOpenFile("voice/default.voice", NULL, FS_READ)) {
+		Com_Printf("voice/default.voice missing, voice system disabled.");
 		return NULL;
 	}
 
@@ -92,8 +92,8 @@ static voice_t *BG_VoiceList(void) {
 			continue;
 		}
 		// trap_FS_GetFileList() buffer has overflowed
-		if (!trap_FS_FOpenFile(va("voice / %s", filePtr), NULL, FS_READ)) {
-			Com_Printf(S_COLOR_YELLOW "WARNING: BG_VoiceList(): detected an invalid .voice file \"%s\" in directory listing.  You have probably named one or more .voice files with outrageously long names. gjbs", filePtr);
+		if (!trap_FS_FOpenFile(va("voice/%s", filePtr), NULL, FS_READ)) {
+			Com_Printf(S_COLOR_YELLOW "WARNING: BG_VoiceList(): detected an invalid .voice file \"%s\" in directory listing. You have probably named one or more .voice files with outrageously long names. gjbs", filePtr);
 			break;
 		}
 
@@ -306,7 +306,7 @@ static voiceCmd_t *BG_VoiceParse(char *name) {
 	qboolean parsingCmd = qfalse;
 	int handle;
 
-	handle = trap_Parse_LoadSource(va("voice / %s.voice", name));
+	handle = trap_Parse_LoadSource(va("voice/%s.voice", name));
 
 	if (!handle) {
 		return NULL;

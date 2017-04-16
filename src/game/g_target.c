@@ -18,7 +18,7 @@ Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
 #include "g_local.h"
 
-/*QUAKED target_delay(1 0 0)(-8 - 8 - 8)(8 8 8)
+/*QUAKED target_delay (1 0 0) (-8 -8 -8) (8 8 8)
 "wait" seconds to pause before firing targets.
 "random" delay variance, total delay = delay + / - random seconds
 */
@@ -56,7 +56,7 @@ void SP_target_delay(gentity_t *ent) {
 	ent->use = Use_Target_Delay;
 }
 
-/*QUAKED target_score(1 0 0)(-8 - 8 - 8)(8 8 8)
+/*QUAKED target_score (1 0 0) (-8 -8 -8) (8 8 8)
 "count" number of points to add, default 1
 The activator is given this many points.
 */
@@ -83,7 +83,7 @@ void SP_target_score(gentity_t *ent) {
 	ent->use = Use_Target_Score;
 }
 
-/*QUAKED target_print(1 0 0)(-8 - 8 - 8)(8 8 8) humanteam alienteam private
+/*QUAKED target_print (1 0 0) (-8 -8 -8) (8 8 8) humanteam alienteam private
 "message" text to print
 If "private", only the activator gets the message. If no checks, all clients get the message.
 */
@@ -99,11 +99,11 @@ void Use_Target_Print(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 
 	if (ent->spawnflags & 3) {
 		if (ent->spawnflags & 1) {
-			G_TeamCommand(TEAM_HUMANS, va("cp \"%s\"", ent->message));;
+			G_TeamCommand(TEAM_HUMANS, va("cp \"%s\"", ent->message));
 		}
 
 		if (ent->spawnflags & 2) {
-			G_TeamCommand(TEAM_ALIENS, va("cp \"%s\"", ent->message));;
+			G_TeamCommand(TEAM_ALIENS, va("cp \"%s\"", ent->message));
 		}
 
 		return;
@@ -121,7 +121,7 @@ void SP_target_print(gentity_t *ent) {
 	ent->use = Use_Target_Print;
 }
 
-/*QUAKED target_speaker(1 0 0)(-8 - 8 - 8)(8 8 8) looped - on looped - off global activator
+/*QUAKED target_speaker (1 0 0) (-8 - 8 - 8) (8 8 8) looped - on looped - off global activator
 "noise"   wav file to play
 
 A global sound will play full volume throughout the level.
@@ -135,14 +135,13 @@ Multiple identical looping sounds will just increase volume without any speed co
 */
 void Use_Target_Speaker(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 
-	if (ent->spawnflags & 3) {	// looping sound toggles
+	if (ent->spawnflags & 3) { // looping sound toggles
 		if (ent->s.loopSound) {
 			ent->s.loopSound = 0; // turn it off
 		} else {
-			ent->s.loopSound = ent->noise_index; // start it;
+			ent->s.loopSound = ent->noise_index; // start it
 		}
-	} else {
-		// normal sound
+	} else { // normal sound
 		if (ent->spawnflags & 8 && activator) {
 			G_AddEvent(activator, EV_GENERAL_SOUND, ent->noise_index);
 		} else if (ent->spawnflags & 4) {
@@ -168,9 +167,9 @@ void SP_target_speaker(gentity_t *ent) {
 	if (!G_SpawnString("noise", "NOSOUND", &s)) {
 		G_Error("target_speaker without a noise key at %s", vtos(ent->s.origin));
 	}
-	// force all client reletive sounds to be "activator" speakers that play on the entity that activates it
+	// force all client relative sounds to be "activator" speakers that play on the entity that activates it
 	if (s[0] == '*') {
-		ent->spawnflags|= 8;
+		ent->spawnflags |= 8;
 	}
 
 	if (!strstr(s, ".wav")) {
@@ -193,7 +192,7 @@ void SP_target_speaker(gentity_t *ent) {
 	ent->use = Use_Target_Speaker;
 
 	if (ent->spawnflags & 4) {
-		ent->r.svFlags|= SVF_BROADCAST;
+		ent->r.svFlags |= SVF_BROADCAST;
 	}
 
 	VectorCopy(ent->s.origin, ent->s.pos.trBase);
@@ -223,7 +222,7 @@ void target_teleporter_use(gentity_t *self, gentity_t *other, gentity_t *activat
 	TeleportPlayer(activator, dest->s.origin, dest->s.angles);
 }
 
-/*QUAKED target_teleporter(1 0 0)(-8 - 8 - 8)(8 8 8)
+/*QUAKED target_teleporter (1 0 0) (-8 -8 -8) (8 8 8)
 The activator will be teleported away.
 */
 void SP_target_teleporter(gentity_t *self) {
@@ -235,7 +234,7 @@ void SP_target_teleporter(gentity_t *self) {
 	self->use = target_teleporter_use;
 }
 
-/*QUAKED target_relay(.5 .5 .5)(-8 - 8 - 8)(8 8 8) RED_ONLY BLUE_ONLY RANDOM
+/*QUAKED target_relay (.5 .5 .5) (-8 -8 -8) (8 8 8) RED_ONLY BLUE_ONLY RANDOM
 This doesn't perform any actions except fire its targets.
 The activator can be forced to be from a certain team.
 if RANDOM is checked, only one of the targets will be fired, not all of them
@@ -274,7 +273,7 @@ void SP_target_relay(gentity_t *self) {
 	self->use = target_relay_use;
 }
 
-/*QUAKED target_kill(.5 .5 .5)(-8 - 8 - 8)(8 8 8)
+/*QUAKED target_kill(.5 .5 .5) (-8 -8 -8) (8 8 8)
 Kills the activator.
 */
 void target_kill_use(gentity_t *self, gentity_t *other, gentity_t *activator) {
@@ -295,14 +294,14 @@ void SP_target_kill(gentity_t *self) {
 	self->use = target_kill_use;
 }
 
-/*QUAKED target_position(0 0.5 0)(-4 - 4 - 4)(4 4 4)
+/*QUAKED target_position(0 0.5 0) (-4 -4 -4) (4 4 4)
 Used as a positional target for in - game calculation, like jumppad targets.
 */
 void SP_target_position(gentity_t *self) {
 	G_SetOrigin(self, self->s.origin);
 }
 
-/*QUAKED target_location(0 0.5 0)(-8 - 8 - 8)(8 8 8)
+/*QUAKED target_location(0 0.5 0) (-8 -8 -8) (8 8 8)
 Set "message" to the name of this location.
 Set "count" to 0 - 7 for color.
 0:white 1:red 2:green 3:yellow 4:blue 5:cyan 6:magenta 7:white

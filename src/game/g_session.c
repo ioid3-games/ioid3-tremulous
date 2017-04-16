@@ -18,13 +18,13 @@ Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
 #include "g_local.h"
 
-
 /*
 =======================================================================================================================================
 
-  SESSION DATA
+	SESSION DATA
 
-Session data is the only data that stays persistant across level loads and tournament restarts.
+	Session data is the only data that stays persistant across level loads and tournament restarts.
+
 =======================================================================================================================================
 */
 
@@ -74,7 +74,7 @@ void G_ReadSessionData(gclient_t *client) {
 =======================================================================================================================================
 G_InitSessionData
 
-Called on a first - time connect.
+Called on a first-time connect.
 =======================================================================================================================================
 */
 void G_InitSessionData(gclient_t *client, char *userinfo) {

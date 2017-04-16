@@ -21,16 +21,13 @@ Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 level_locals_t level;
 
 typedef struct {
-  vmCvar_t *vmCvar;
+	vmCvar_t *vmCvar;
 	char *cvarName;
 	char *defaultString;
 	int cvarFlags;
 	int modificationCount; // for tracking changes
 	qboolean trackChange; // track this variable, and announce if changed
- /* certain cvars can be set in worldspawn, but we don't want those values to
-	persist, so keep track of non - worldspawn changes and restore that on map
-	end. unfortunately, if the server crashes, the value set in worldspawn may
-	persist */
+	// certain cvars can be set in worldspawn, but we don't want those values to persist, so keep track of non-worldspawn changes and restore that on map end. unfortunately, if the server crashes, the value set in worldspawn may persist
 	char *explicit;
 } cvarTable_t;
 
@@ -309,7 +306,7 @@ void QDECL G_Error(const char *fmt, ...) {
 =======================================================================================================================================
 G_FindTeams
 
-Chain together all entities with a matching team field. Entity teams are used for item groups and multi - entity mover groups.
+Chain together all entities with a matching team field. Entity teams are used for item groups and multi-entity mover groups.
 
 All but the first will have the FL_TEAMSLAVE flag set and teammaster field set.
 All but the last will have the teamchain field set to the next one.
@@ -358,7 +355,7 @@ void G_FindTeams(void) {
 				e2->teamchain = e->teamchain;
 				e->teamchain = e2;
 				e2->teammaster = e;
-				e2->flags|= FL_TEAMSLAVE;
+				e2->flags |= FL_TEAMSLAVE;
 				// make sure that targets only point at the master
 				if (e2->targetname) {
 					e->targetname = e2->targetname;
@@ -395,7 +392,7 @@ void G_RegisterCvars(void) {
 
 /*
 =======================================================================================================================================
-G_UpdateCvars.
+G_UpdateCvars
 =======================================================================================================================================
 */
 void G_UpdateCvars(void) {
@@ -410,7 +407,7 @@ void G_UpdateCvars(void) {
 				cv->modificationCount = cv->vmCvar->modificationCount;
 
 				if (cv->trackChange) {
-					trap_SendServerCommand(-1, va("print \"Server : %s changed to %s\n\"", cv->cvarName, cv->vmCvar->string));
+					trap_SendServerCommand(-1, va("print \"Server: %s changed to %s\n\"", cv->cvarName, cv->vmCvar->string));
 				}
 
 				if (!level.spawning && cv->explicit) {
@@ -423,7 +420,7 @@ void G_UpdateCvars(void) {
 
 /*
 =======================================================================================================================================
-G_RestoreCvars.
+G_RestoreCvars
 =======================================================================================================================================
 */
 void G_RestoreCvars(void) {
@@ -439,7 +436,7 @@ void G_RestoreCvars(void) {
 
 /*
 =======================================================================================================================================
-G_MapConfigs.
+G_MapConfigs
 =======================================================================================================================================
 */
 void G_MapConfigs(const char *mapname) {
@@ -470,9 +467,9 @@ void G_InitGame(int levelTime, int randomSeed, int restart) {
 
 	G_RegisterCvars();
 
-	G_Printf("-------Game Initialization-------\n");
-	G_Printf("gamename : %s\n", GAME_VERSION);
-	G_Printf("gamedate : %s\n", __DATE__);
+	G_Printf("------- Game Initialization -------\n");
+	G_Printf("gamename: %s\n", GAME_VERSION);
+	G_Printf("gamedate: %s\n", __DATE__);
 
 	BG_InitMemory();
 	// set some level globals
@@ -481,7 +478,7 @@ void G_InitGame(int levelTime, int randomSeed, int restart) {
 	level.time = levelTime;
 	level.startTime = levelTime;
 	level.alienStage2Time = level.alienStage3Time = level.humanStage2Time = level.humanStage3Time = level.startTime;
-	level.snd_fry = G_SoundIndex("sound / misc / fry.wav"); // FIXME standing in lava / slime
+	level.snd_fry = G_SoundIndex("sound/misc/fry.wav"); // FIXME standing in lava/slime
 
 	if (g_logFile.string[0]) {
 		if (g_logFileSync.integer)
@@ -491,7 +488,7 @@ void G_InitGame(int levelTime, int randomSeed, int restart) {
 		}
 
 		if (!level.logFile) {
-			G_Printf("WARNING: Couldn't open logfile : %s\n", g_logFile.string);
+			G_Printf("WARNING: Couldn't open logfile: %s\n", g_logFile.string);
 		} else {
 			char serverinfo[MAX_INFO_STRING];
 			qtime_t qt;
@@ -499,11 +496,10 @@ void G_InitGame(int levelTime, int randomSeed, int restart) {
 			trap_GetServerinfo(serverinfo, sizeof(serverinfo));
 
 			G_LogPrintf("------------------------------------------------------------\n");
-			G_LogPrintf("InitGame : %s\n", serverinfo);
+			G_LogPrintf("InitGame: %s\n", serverinfo);
 
 			trap_RealTime(&qt);
-			G_LogPrintf("RealTime : %04i / %02i / %02i %02i:%02i:%02i\n", qt.tm_year + 1900, qt.tm_mon + 1, qt.tm_mday, qt.tm_hour, qt.tm_min, qt.tm_sec);
-
+			G_LogPrintf("RealTime: %04i/%02i/%02i %02i:%02i:%02i\n", qt.tm_year + 1900, qt.tm_mon + 1, qt.tm_mday, qt.tm_hour, qt.tm_min, qt.tm_sec);
 		}
 	} else {
 		G_Printf("Not logging to disk\n");
@@ -522,10 +518,13 @@ void G_InitGame(int levelTime, int randomSeed, int restart) {
 	G_LoadCensors();
 	// initialize all entities for this game
 	memset(g_entities, 0, MAX_GENTITIES * sizeof(g_entities[0]));
+
 	level.gentities = g_entities;
 	// initialize all clients for this game
 	level.maxclients = g_maxclients.integer;
+
 	memset(g_clients, 0, MAX_CLIENTS * sizeof(g_clients[0]));
+
 	level.clients = g_clients;
 	// set client fields on player ents
 	for (i = 0; i < level.maxclients; i++) {
@@ -566,6 +565,7 @@ void G_InitGame(int levelTime, int randomSeed, int restart) {
 	}
 
 	level.voices = BG_VoiceInit();
+
 	BG_PrintVoices(level.voices, g_debugVoices.integer);
 	// reset stages
 	trap_Cvar_Set("g_alienStage", va("%d", S1));
@@ -577,7 +577,6 @@ void G_InitGame(int levelTime, int randomSeed, int restart) {
 	G_Printf("-----------------------------------\n");
 	// so the server counts the spawns without a client attached
 	G_CountSpawns();
-
 	G_UpdateTeamConfigStrings();
 
 	if (g_lockTeamsAtStart.integer) {
@@ -591,7 +590,7 @@ void G_InitGame(int levelTime, int randomSeed, int restart) {
 =======================================================================================================================================
 G_ClearVotes
 
-remove all currently active votes.
+Remove all currently active votes.
 =======================================================================================================================================
 */
 static void G_ClearVotes(void) {
@@ -607,7 +606,7 @@ static void G_ClearVotes(void) {
 
 /*
 =======================================================================================================================================
-G_ShutdownGame.
+G_ShutdownGame
 =======================================================================================================================================
 */
 void G_ShutdownGame(int restart) {
@@ -751,7 +750,7 @@ int G_PopSpawnQueue(spawnQueue_t *sq) {
 		sq->clients[sq->front] = -1;
 		sq->front = QUEUE_PLUS1(sq->front);
 		G_StopFollowing(g_entities + clientNum);
-		g_entities[clientNum].client->ps.pm_flags & = ~PMF_QUEUED;
+		g_entities[clientNum].client->ps.pm_flags &= ~PMF_QUEUED;
 
 		return clientNum;
 	} else {
@@ -805,7 +804,7 @@ qboolean G_PushSpawnQueue(spawnQueue_t *sq, int clientNum) {
 	sq->back = QUEUE_PLUS1(sq->back);
 	sq->clients[sq->back] = clientNum;
 
-	g_entities[clientNum].client->ps.pm_flags|= PMF_QUEUED;
+	g_entities[clientNum].client->ps.pm_flags |= PMF_QUEUED;
 	return qtrue;
 }
 
@@ -830,7 +829,7 @@ qboolean G_RemoveFromSpawnQueue(spawnQueue_t *sq, int clientNum) {
 				} while (i != QUEUE_PLUS1(sq->back));
 
 				sq->back = QUEUE_MINUS1(sq->back);
-				g_entities[clientNum].client->ps.pm_flags & = ~PMF_QUEUED;
+				g_entities[clientNum].client->ps.pm_flags &= ~PMF_QUEUED;
 
 				return qtrue;
 			}
@@ -1625,12 +1624,12 @@ void LogExit(const char *string) {
 	gclient_t *cl;
 	gentity_t *ent;
 
-	G_LogPrintf("Exit : %s\n", string);
+	G_LogPrintf("Exit: %s\n", string);
 
 	level.intermissionQueued = level.time;
 	// this will keep the clients from playing any voice sounds that will get cut off when the queued intermission starts
 	trap_SetConfigstring(CS_INTERMISSION, "1");
-	// don't send more than 32 scores(FIXME?)
+	// don't send more than 32 scores (FIXME?)
 	numSorted = level.numConnectedClients;
 
 	if (numSorted > 32) {
@@ -1652,7 +1651,7 @@ void LogExit(const char *string) {
 
 		ping = cl->ps.ping < 999 ? cl->ps.ping : 999;
 
-		G_LogPrintf("score : %i  ping : %i	client : %i %s\n", cl->ps.persistant[PERS_SCORE], ping, level.sortedClients[i], cl->pers.netname);
+		G_LogPrintf("score: %i  ping: %i  client: %i %s\n", cl->ps.persistant[PERS_SCORE], ping, level.sortedClients[i], cl->pers.netname);
 
 	}
 
@@ -1675,7 +1674,8 @@ void LogExit(const char *string) {
 =======================================================================================================================================
 CheckIntermissionExit
 
-The level will stay at the intermission for a minimum of 5 seconds. If all players wish to continue, the level will then exit.
+The level will stay at the intermission for a minimum of 5 seconds.
+If all players wish to continue, the level will then exit.
 If one or more players have not acknowledged the continue, the game will wait 10 seconds before going on.
 =======================================================================================================================================
 */
@@ -1741,8 +1741,7 @@ void CheckIntermissionExit(void) {
 		level.readyToExit = qtrue;
 		level.exitTime = level.time;
 	}
-	// if we have waited thirty seconds since at least one player
-	// wanted to exit, go ahead
+	// if we have waited thirty seconds since at least one player wanted to exit, go ahead
 	if (level.time < level.exitTime + 30000) {
 		return;
 	}
@@ -1752,7 +1751,7 @@ void CheckIntermissionExit(void) {
 
 /*
 =======================================================================================================================================
-ScoreIsTied.
+ScoreIsTied
 =======================================================================================================================================
 */
 qboolean ScoreIsTied(void) {
@@ -1778,7 +1777,7 @@ see the last frag.
 */
 void CheckExitRules(void) {
 
-	// if at the intermission, wait for all non - bots to signal ready, then go to next level
+	// if at the intermission, wait for all non-bots to signal ready, then go to next level
 	if (level.intermissiontime) {
 		CheckIntermissionExit();
 		return;
@@ -1826,7 +1825,7 @@ void CheckExitRules(void) {
 
 /*
 =======================================================================================================================================
-G_Vote.
+G_Vote
 =======================================================================================================================================
 */
 void G_Vote(gentity_t *ent, team_t team, qboolean voting) {
@@ -1843,7 +1842,7 @@ void G_Vote(gentity_t *ent, team_t team, qboolean voting) {
 		return;
 	}
 
-	ent->client->pers.voted|= 1 << team;
+	ent->client->pers.voted |= 1 << team;
 
 	if (ent->client->pers.vote &(1 << team)) {
 		if (voting) {
@@ -1885,7 +1884,7 @@ void G_ExecuteVote(team_t team) {
 
 /*
 =======================================================================================================================================
-G_CheckVote.
+G_CheckVote
 =======================================================================================================================================
 */
 void G_CheckVote(team_t team) {
@@ -1931,7 +1930,7 @@ void G_CheckVote(team_t team) {
 	level.voteNo[team] = 0;
 
 	for (i = 0; i < level.maxclients; i++) {
-		level.clients[i].pers.voted & = ~(1 << team);
+		level.clients[i].pers.voted &= ~(1 << team);
 	}
 
 	trap_SetConfigstring(CS_VOTE_TIME + team, "");
@@ -1942,7 +1941,7 @@ void G_CheckVote(team_t team) {
 
 /*
 =======================================================================================================================================
-CheckCvars.
+CheckCvars
 =======================================================================================================================================
 */
 void CheckCvars(void) {
@@ -2044,7 +2043,7 @@ void G_EvaluateAcceleration(gentity_t *ent, int msec) {
 =======================================================================================================================================
 G_RunFrame
 
-Advances the non - player objects in the world.
+Advances the non-player objects in the world.
 =======================================================================================================================================
 */
 void G_RunFrame(int levelTime) {
@@ -2093,7 +2092,6 @@ void G_RunFrame(int levelTime) {
 	level.time = levelTime;
 
 	msec = level.time - level.previousTime;
-
 	// get any cvar changes
 	G_UpdateCvars();
 	CheckCvars();
@@ -2109,12 +2107,12 @@ void G_RunFrame(int levelTime) {
 		// clear events that are too old
 		if (level.time - ent->eventTime > EVENT_VALID_MSEC) {
 			if (ent->s.event) {
-				ent->s.event = 0; // & = EV_EVENT_BITS;
+				ent->s.event = 0; // &= EV_EVENT_BITS;
 
 				if (ent->client) {
 					ent->client->ps.externalEvent = 0;
-					// ent->client->ps.events[0] = 0;
-					// ent->client->ps.events[1] = 0;
+					//ent->client->ps.events[0] = 0;
+					//ent->client->ps.events[1] = 0;
 				}
 			}
 

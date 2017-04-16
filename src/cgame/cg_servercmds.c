@@ -743,7 +743,7 @@ static void CG_Say(int clientNum, saymode_t mode, const char *text) {
 	} else {
 		name = "console";
 	}
-	// iRC - like / me parsing
+	// IRC - like /me parsing
 	if (mode != SAY_RAW && Q_stricmpn(text, "/me ", 4) == 0) {
 		text += 4;
 		Q_strcat(prefix, sizeof(prefix), "*");

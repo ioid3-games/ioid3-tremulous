@@ -201,7 +201,7 @@ float G_RewardAttackers(gentity_t *self) {
 
 /*
 =======================================================================================================================================
-player_die.
+player_die
 =======================================================================================================================================
 */
 void player_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int meansOfDeath) {
@@ -242,7 +242,7 @@ void player_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int 
 		obit = modNames[meansOfDeath];
 	}
 
-	G_LogPrintf("Die : %d %d %s : %s" S_COLOR_WHITE " killed %s\n", killer, (int)(self - g_entities), obit, killerName, self->client->pers.netname);
+	G_LogPrintf("Die: %d %d %s: %s" S_COLOR_WHITE " killed %s\n", killer, (int)(self - g_entities), obit, killerName, self->client->pers.netname);
 	// deactivate all upgrades
 	for (i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++) {
 		BG_DeactivateUpgrade(i, self->client->ps.stats);
@@ -314,7 +314,8 @@ void player_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int 
 
 	self->s.loopSound = 0;
 	self->r.maxs[2] = -8;
-	// don't allow respawn until the death anim is done g_forcerespawn may force spawning at some later time
+	// don't allow respawn until the death anim is done
+	// g_forcerespawn may force spawning at some later time
 	self->client->respawnTime = level.time + 1700;
 	// clear misc
 	memset(self->client->ps.misc, 0, sizeof(self->client->ps.misc));
@@ -376,7 +377,7 @@ static int G_ParseDmgScript(damageRegion_t *regions, char *buf) {
 	float angleSpan, heightSpan;
 	int count;
 
-	for (count = 0; ; count++) {
+	for (count = 0;; count++) {
 		token = COM_Parse(&buf);
 
 		if (!token[0]) {
@@ -861,7 +862,7 @@ void G_Damage(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_t
 	}
 
 	if (!dir) {
-		dflags|= DAMAGE_NO_KNOCKBACK;
+		dflags |= DAMAGE_NO_KNOCKBACK;
 	} else {
 		VectorNormalize(dir);
 	}
@@ -900,8 +901,7 @@ void G_Damage(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_t
 
 		VectorScale(dir, g_knockback.value * (float)knockback / mass, kvel);
 		VectorAdd(targ->client->ps.velocity, kvel, targ->client->ps.velocity);
-		// set the timer so that the other client can't cancel
-		// out the movement immediately
+		// set the timer so that the other client can't cancel out the movement immediately
 		if (!targ->client->ps.pm_time) {
 			int t;
 
@@ -916,7 +916,7 @@ void G_Damage(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_t
 			}
 
 			targ->client->ps.pm_time = t;
-			targ->client->ps.pm_flags|= PMF_TIME_KNOCKBACK;
+			targ->client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
 		}
 	}
 	// don't do friendly fire on movement attacks
@@ -975,8 +975,7 @@ void G_Damage(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_t
 
 	take = damage;
 	// add to the damage inflicted on a player this frame
-	// the total will be turned into screen blends and view angle kicks
-	// at the end of the frame
+	// the total will be turned into screen blends and view angle kicks at the end of the frame
 	if (client) {
 		if (attacker) {
 			client->ps.persistant[PERS_ATTACKER] = attacker->s.number;
@@ -1002,7 +1001,7 @@ void G_Damage(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_t
 		// if boosted poison every attack
 		if (attacker->client && attacker->client->ps.stats[STAT_STATE] & SS_BOOSTED) {
 			if (targ->client->ps.stats[STAT_TEAM] == TEAM_HUMANS && mod != MOD_LEVEL2_ZAP && mod != MOD_POISON && mod != MOD_LEVEL1_PCLOUD && mod != MOD_HSPAWN && mod != MOD_ASPAWN && targ->client->poisonImmunityTime < level.time) {
-				targ->client->ps.stats[STAT_STATE]|= SS_POISONED;
+				targ->client->ps.stats[STAT_STATE] |= SS_POISONED;
 				targ->client->lastPoisonTime = level.time;
 				targ->client->lastPoisonClient = attacker;
 			}
@@ -1034,7 +1033,7 @@ void G_Damage(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_t
 
 		if (targ->health <= 0) {
 			if (client) {
-				targ->flags|= FL_NO_KNOCKBACK;
+				targ->flags |= FL_NO_KNOCKBACK;
 			}
 
 			if (targ->health < -999) {
@@ -1114,7 +1113,7 @@ qboolean CanDamage(gentity_t *targ, vec3_t origin) {
 
 /*
 =======================================================================================================================================
-G_SelectiveRadiusDamage.
+G_SelectiveRadiusDamage
 =======================================================================================================================================
 */
 qboolean G_SelectiveRadiusDamage(vec3_t origin, gentity_t *attacker, float damage, float radius, gentity_t *ignore, int mod, int team) {
@@ -1186,7 +1185,7 @@ qboolean G_SelectiveRadiusDamage(vec3_t origin, gentity_t *attacker, float damag
 
 /*
 =======================================================================================================================================
-G_RadiusDamage.
+G_RadiusDamage
 =======================================================================================================================================
 */
 qboolean G_RadiusDamage(vec3_t origin, gentity_t *attacker, float damage, float radius, gentity_t *ignore, int mod) {
@@ -1256,7 +1255,7 @@ qboolean G_RadiusDamage(vec3_t origin, gentity_t *attacker, float damage, float 
 =======================================================================================================================================
 G_LogDestruction
 
-Log deconstruct / destroy events.
+Log deconstruct/destroy events.
 =======================================================================================================================================
 */
 void G_LogDestruction(gentity_t *self, gentity_t *actor, int mod) {

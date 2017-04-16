@@ -50,12 +50,12 @@ typedef char *va_list;
 #define LONG_MIN(-LONG_MAX - 1) /* minimum(signed) long value */
 #define ULONG_MAX		0xffffffffUL /* maximum unsigned long value */
 
-typedef   signed	char int8_t;
+typedef signed	char int8_t;
 typedef unsigned char uint8_t;
-typedef   signed short int16_t;
+typedef signed short int16_t;
 typedef unsigned short uint16_t;
-typedef   signed  long int32_t;
-typedef unsigned  long uint32_t;
+typedef signed long int32_t;
+typedef unsigned long uint32_t;
 
 #define isalnum(c)(isalpha(c) || isdigit(c))
 #define isalpha(c)(isupper(c) || islower(c))
@@ -63,12 +63,12 @@ typedef unsigned  long uint32_t;
 #define iscntrl(c)(((c) >= 0) && (((c) <= 0x1f) || ((c) == 0x7f)))
 #define isdigit(c)((c) >= '0' && (c) <= '9')
 #define isgraph(c)((c) != ' ' && isprint(c))
-#define islower(c)((c) >=  'a' && (c) <= 'z')
+#define islower(c)((c) >= 'a' && (c) <= 'z')
 #define isprint(c)((c) >= ' ' && (c) <= '~')
 #define ispunct(c)(((c) > ' ' && (c) <= '~') && !isalnum(c))
-#define isspace(c)((c) ==  ' ' || (c) == '\f' || (c) == '\n' || (c) == '\r' || \
+#define isspace(c)((c) == ' ' || (c) == '\f' || (c) == '\n' || (c) == '\r' || \
 (c) == '\t' || (c) == '\v')
-#define isupper(c)((c) >=  'A' && (c) <= 'Z')
+#define isupper(c)((c) >= 'A' && (c) <= 'Z')
 #define isxdigit(c)(isxupper(c) || isxlower(c))
 #define isxlower(c)(isdigit(c) || (c >= 'a' && c <= 'f'))
 #define isxupper(c)(isdigit(c) || (c >= 'A' && c <= 'F')) 
@@ -97,9 +97,9 @@ char *strncpy(char *strDest, const char *strSource, size_t count);
 int tolower(int c);
 int toupper(int c);
 
-double  atof(const char *string);
-double  _atof(const char **stringPtr);
-double  strtod(const char *nptr, char **endptr);
+double atof(const char *string);
+double _atof(const char **stringPtr);
+double strtod(const char *nptr, char **endptr);
 int atoi(const char *string);
 int _atoi(const char **stringPtr);
 long strtol(const char *nptr, char **endptr, int base);
@@ -115,17 +115,17 @@ void *memset(void *dest, int c, size_t count);
 void *memcpy(void *dest, const void *src, size_t count);
 
 // math functions
-double  ceil(double x);
-double  floor(double x);
-double  sqrt(double x);
-double  sin(double x);
-double  cos(double x);
-double  atan2(double y, double x);
+double ceil(double x);
+double floor(double x);
+double sqrt(double x);
+double sin(double x);
+double cos(double x);
+double atan2(double y, double x);
 double	tan(double x);
 int abs(int n);
-double  fabs(double x);
-double  acos(double x);
+double fabs(double x);
+double acos(double x);
 float pow(float x, float y);
-double  rint(double v);
+double rint(double v);
 
 #endif // bG_LIB_H

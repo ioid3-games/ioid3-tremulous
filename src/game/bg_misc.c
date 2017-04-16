@@ -16,7 +16,9 @@ Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 =======================================================================================================================================
 */
 
-// bg_misc.c--both games misc functions, all completely stateless
+/**************************************************************************************************************************************
+ Both games misc functions, all completely stateless.
+**************************************************************************************************************************************/
 
 #include "../qcommon/q_shared.h"
 #include "bg_public.h"
@@ -695,7 +697,7 @@ static qboolean BG_ParseBuildableFile(const char *filename, buildableConfig_t *b
 
 			Q_strncpyz(bc->models[index], token, sizeof(bc->models[0]));
 
-			defined|= MODEL;
+			defined |= MODEL;
 			continue;
 		} else if (!Q_stricmp(token, "modelScale")) {
 			token = COM_Parse(&text_p);
@@ -711,7 +713,7 @@ static qboolean BG_ParseBuildableFile(const char *filename, buildableConfig_t *b
 			}
 
 			bc->modelScale = scale;
-			defined|= MODELSCALE;
+			defined |= MODELSCALE;
 			continue;
 		} else if (!Q_stricmp(token, "mins")) {
 			for (i = 0; i <= 2; i++) {
@@ -724,7 +726,7 @@ static qboolean BG_ParseBuildableFile(const char *filename, buildableConfig_t *b
 				bc->mins[i] = atof(token);
 			}
 
-			defined|= MINS;
+			defined |= MINS;
 			continue;
 		} else if (!Q_stricmp(token, "maxs")) {
 			for (i = 0; i <= 2; i++) {
@@ -737,7 +739,7 @@ static qboolean BG_ParseBuildableFile(const char *filename, buildableConfig_t *b
 				bc->maxs[i] = atof(token);
 			}
 
-			defined|= MAXS;
+			defined |= MAXS;
 			continue;
 		} else if (!Q_stricmp(token, "zOffset")) {
 			float offset;
@@ -750,7 +752,7 @@ static qboolean BG_ParseBuildableFile(const char *filename, buildableConfig_t *b
 
 			offset = atof(token);
 			bc->zOffset = offset;
-			defined|= ZOFFSET;
+			defined |= ZOFFSET;
 			continue;
 		}
 
@@ -1378,7 +1380,7 @@ static qboolean BG_ParseClassFile(const char *filename, classConfig_t *cc) {
 
 			Q_strncpyz(cc->modelName, token, sizeof(cc->modelName));
 
-			defined|= MODEL;
+			defined |= MODEL;
 			continue;
 		} else if (!Q_stricmp(token, "skin")) {
 			token = COM_Parse(&text_p);
@@ -1389,7 +1391,7 @@ static qboolean BG_ParseClassFile(const char *filename, classConfig_t *cc) {
 
 			Q_strncpyz(cc->skinName, token, sizeof(cc->skinName));
 
-			defined|= SKIN;
+			defined |= SKIN;
 			continue;
 		} else if (!Q_stricmp(token, "hud")) {
 			token = COM_Parse(&text_p);
@@ -1400,7 +1402,7 @@ static qboolean BG_ParseClassFile(const char *filename, classConfig_t *cc) {
 
 			Q_strncpyz(cc->hudName, token, sizeof(cc->hudName));
 
-			defined|= HUD;
+			defined |= HUD;
 			continue;
 		} else if (!Q_stricmp(token, "modelScale")) {
 			token = COM_Parse(&text_p);
@@ -1416,7 +1418,7 @@ static qboolean BG_ParseClassFile(const char *filename, classConfig_t *cc) {
 			}
 
 			cc->modelScale = scale;
-			defined|= MODELSCALE;
+			defined |= MODELSCALE;
 			continue;
 		} else if (!Q_stricmp(token, "shadowScale")) {
 			token = COM_Parse(&text_p);
@@ -1431,7 +1433,7 @@ static qboolean BG_ParseClassFile(const char *filename, classConfig_t *cc) {
 			}
 
 			cc->shadowScale = scale;
-			defined|= SHADOWSCALE;
+			defined |= SHADOWSCALE;
 			continue;
 		} else if (!Q_stricmp(token, "mins")) {
 			for (i = 0; i <= 2; i++) {
@@ -1444,7 +1446,7 @@ static qboolean BG_ParseClassFile(const char *filename, classConfig_t *cc) {
 				cc->mins[i] = atof(token);
 			}
 
-			defined|= MINS;
+			defined |= MINS;
 			continue;
 		} else if (!Q_stricmp(token, "maxs")) {
 			for (i = 0; i <= 2; i++) {
@@ -1457,7 +1459,7 @@ static qboolean BG_ParseClassFile(const char *filename, classConfig_t *cc) {
 				cc->maxs[i] = atof(token);
 			}
 
-			defined|= MAXS;
+			defined |= MAXS;
 			continue;
 		} else if (!Q_stricmp(token, "deadMins")) {
 			for (i = 0; i <= 2; i++) {
@@ -1470,7 +1472,7 @@ static qboolean BG_ParseClassFile(const char *filename, classConfig_t *cc) {
 				cc->deadMins[i] = atof(token);
 			}
 
-			defined|= DEADMINS;
+			defined |= DEADMINS;
 			continue;
 		} else if (!Q_stricmp(token, "deadMaxs")) {
 			for (i = 0; i <= 2; i++) {
@@ -1483,7 +1485,7 @@ static qboolean BG_ParseClassFile(const char *filename, classConfig_t *cc) {
 				cc->deadMaxs[i] = atof(token);
 			}
 
-			defined|= DEADMAXS;
+			defined |= DEADMAXS;
 			continue;
 		} else if (!Q_stricmp(token, "crouchMaxs")) {
 			for (i = 0; i <= 2; i++) {
@@ -1496,17 +1498,17 @@ static qboolean BG_ParseClassFile(const char *filename, classConfig_t *cc) {
 				cc->crouchMaxs[i] = atof(token);
 			}
 
-			defined|= CROUCHMAXS;
+			defined |= CROUCHMAXS;
 			continue;
 		} else if (!Q_stricmp(token, "viewheight")) {
 			token = COM_Parse(&text_p);
 			cc->viewheight = atoi(token);
-			defined|= VIEWHEIGHT;
+			defined |= VIEWHEIGHT;
 			continue;
 		} else if (!Q_stricmp(token, "crouchViewheight")) {
 			token = COM_Parse(&text_p);
 			cc->crouchViewheight = atoi(token);
-			defined|= CVIEWHEIGHT;
+			defined |= CVIEWHEIGHT;
 			continue;
 		} else if (!Q_stricmp(token, "zOffset")) {
 			float offset;
@@ -1519,7 +1521,7 @@ static qboolean BG_ParseClassFile(const char *filename, classConfig_t *cc) {
 
 			offset = atof(token);
 			cc->zOffset = offset;
-			defined|= ZOFFSET;
+			defined |= ZOFFSET;
 			continue;
 		} else if (!Q_stricmp(token, "name")) {
 			token = COM_Parse(&text_p);
@@ -1530,7 +1532,7 @@ static qboolean BG_ParseClassFile(const char *filename, classConfig_t *cc) {
 
 			Q_strncpyz(cc->humanName, token, sizeof(cc->humanName));
 
-			defined|= NAME;
+			defined |= NAME;
 			continue;
 		} else if (!Q_stricmp(token, "shoulderOffsets")) {
 			for (i = 0; i <= 2; i++) {
@@ -1543,7 +1545,7 @@ static qboolean BG_ParseClassFile(const char *filename, classConfig_t *cc) {
 				cc->shoulderOffsets[i] = atof(token);
 			}
 
-			defined|= SHOULDEROFFSETS;
+			defined |= SHOULDEROFFSETS;
 			continue;
 		}
 
@@ -2475,7 +2477,7 @@ void BG_EvaluateTrajectory(const trajectory_t *tr, int atTime, vec3_t result) {
 			result[2] += 0.5 * DEFAULT_GRAVITY * deltaTime * deltaTime; // FIXME: local gravity...
 			break;
 		default:
-			Com_Error(ERR_DROP, "BG_EvaluateTrajectory : unknown trType : %i", tr->trTime);
+			Com_Error(ERR_DROP, "BG_EvaluateTrajectory: unknown trType: %i", tr->trTime);
 			break;
 	}
 }
@@ -2523,9 +2525,8 @@ void BG_EvaluateTrajectoryDelta(const trajectory_t *tr, int atTime, vec3_t resul
 			VectorCopy(tr->trDelta, result);
 			result[2] += DEFAULT_GRAVITY * deltaTime; // FIXME: local gravity...
 			break;
-
 		default:
-			Com_Error(ERR_DROP, "BG_EvaluateTrajectoryDelta : unknown trType : %i", tr->trTime);
+			Com_Error(ERR_DROP, "BG_EvaluateTrajectoryDelta: unknown trType: %i", tr->trTime);
 			break;
 	}
 }
@@ -2638,15 +2639,15 @@ void BG_AddPredictableEventToPlayerstate(int newEvent, int eventParm, playerStat
 
 		if (atof(buf) != 0) {
 #ifdef GAME
-			Com_Printf(" game event svt %5d->%5d : num = %20s parm %d\n", ps->pmove_framecount/*ps->commandTime*/, ps->eventSequence, BG_EventName(newEvent), eventParm);
+			Com_Printf(" game event svt %5d -> %5d: num = %20s parm %d\n", ps->pmove_framecount/*ps->commandTime*/, ps->eventSequence, BG_EventName(newEvent), eventParm);
 #else
-			Com_Printf("Cgame event svt %5d->%5d : num = %20s parm %d\n", ps->pmove_framecount/*ps->commandTime*/, ps->eventSequence, BG_EventName(newEvent), eventParm);
+			Com_Printf("Cgame event svt %5d -> %5d: num = %20s parm %d\n", ps->pmove_framecount/*ps->commandTime*/, ps->eventSequence, BG_EventName(newEvent), eventParm);
 #endif
 		}
 	}
 #endif
-	ps->events[ps->eventSequence &(MAX_PS_EVENTS - 1)] = newEvent;
-	ps->eventParms[ps->eventSequence &(MAX_PS_EVENTS - 1)] = eventParm;
+	ps->events[ps->eventSequence & (MAX_PS_EVENTS - 1)] = newEvent;
+	ps->eventParms[ps->eventSequence & (MAX_PS_EVENTS - 1)] = eventParm;
 	ps->eventSequence++;
 }
 
@@ -2669,8 +2670,8 @@ void BG_PlayerStateToEntityState(playerState_t *ps, entityState_t *s, qboolean s
 	}
 
 	s->number = ps->clientNum;
-
 	s->pos.trType = TR_INTERPOLATE;
+
 	VectorCopy(ps->origin, s->pos.trBase);
 
 	if (snap) {
@@ -2680,6 +2681,7 @@ void BG_PlayerStateToEntityState(playerState_t *ps, entityState_t *s, qboolean s
 	VectorCopy(ps->velocity, s->pos.trDelta);
 
 	s->apos.trType = TR_INTERPOLATE;
+
 	VectorCopy(ps->viewangles, s->apos.trBase);
 
 	if (snap) {
@@ -2694,15 +2696,15 @@ void BG_PlayerStateToEntityState(playerState_t *ps, entityState_t *s, qboolean s
 	s->eFlags = ps->eFlags;
 
 	if (ps->stats[STAT_HEALTH] <= 0) {
-		s->eFlags|= EF_DEAD;
+		s->eFlags |= EF_DEAD;
 	} else {
-		s->eFlags & = ~EF_DEAD;
+		s->eFlags &= ~EF_DEAD;
 	}
 
 	if (ps->stats[STAT_STATE] & SS_BLOBLOCKED) {
-		s->eFlags|= EF_BLOBLOCKED;
+		s->eFlags |= EF_BLOBLOCKED;
 	} else {
-		s->eFlags & = ~EF_BLOBLOCKED;
+		s->eFlags &= ~EF_BLOBLOCKED;
 	}
 
 	if (ps->externalEvent) {
@@ -2715,7 +2717,7 @@ void BG_PlayerStateToEntityState(playerState_t *ps, entityState_t *s, qboolean s
 			ps->entityEventSequence = ps->eventSequence - MAX_PS_EVENTS;
 		}
 
-		seq = ps->entityEventSequence &(MAX_PS_EVENTS - 1);
+		seq = ps->entityEventSequence & (MAX_PS_EVENTS - 1);
 		s->event = ps->events[seq]|((ps->entityEventSequence & 3) << 8);
 		s->eventParm = ps->eventParms[seq];
 		ps->entityEventSequence++;
@@ -2729,10 +2731,10 @@ void BG_PlayerStateToEntityState(playerState_t *ps, entityState_t *s, qboolean s
 
 	for (i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++) {
 		if (BG_InventoryContainsUpgrade(i, ps->stats)) {
-			s->modelindex|= 1 << i;
+			s->modelindex |= 1 << i;
 
 			if (BG_UpgradeIsActive(i, ps->stats)) {
-				s->modelindex2|= 1 << i;
+				s->modelindex2 |= 1 << i;
 			}
 		}
 	}
@@ -2770,8 +2772,8 @@ void BG_PlayerStateToEntityStateExtraPolate(playerState_t *ps, entityState_t *s,
 	}
 
 	s->number = ps->clientNum;
-
 	s->pos.trType = TR_LINEAR_STOP;
+
 	VectorCopy(ps->origin, s->pos.trBase);
 
 	if (snap) {
@@ -2782,9 +2784,9 @@ void BG_PlayerStateToEntityStateExtraPolate(playerState_t *ps, entityState_t *s,
 	// set the time for linear prediction
 	s->pos.trTime = time;
 	// set maximum extra polation time
-	s->pos.trDuration = 50; // 1000 / sv_fps(default = 20)
-
+	s->pos.trDuration = 50; // 1000 / sv_fps (default = 20)
 	s->apos.trType = TR_INTERPOLATE;
+
 	VectorCopy(ps->viewangles, s->apos.trBase);
 
 	if (snap) {
@@ -2799,15 +2801,15 @@ void BG_PlayerStateToEntityStateExtraPolate(playerState_t *ps, entityState_t *s,
 	s->eFlags = ps->eFlags;
 
 	if (ps->stats[STAT_HEALTH] <= 0) {
-		s->eFlags|= EF_DEAD;
+		s->eFlags |= EF_DEAD;
 	} else {
-		s->eFlags & = ~EF_DEAD;
+		s->eFlags &= ~EF_DEAD;
 	}
 
 	if (ps->stats[STAT_STATE] & SS_BLOBLOCKED) {
-		s->eFlags|= EF_BLOBLOCKED;
+		s->eFlags |= EF_BLOBLOCKED;
 	} else {
-		s->eFlags & = ~EF_BLOBLOCKED;
+		s->eFlags &= ~EF_BLOBLOCKED;
 	}
 
 	if (ps->externalEvent) {
@@ -2820,7 +2822,7 @@ void BG_PlayerStateToEntityStateExtraPolate(playerState_t *ps, entityState_t *s,
 			ps->entityEventSequence = ps->eventSequence - MAX_PS_EVENTS;
 		}
 
-		seq = ps->entityEventSequence &(MAX_PS_EVENTS - 1);
+		seq = ps->entityEventSequence & (MAX_PS_EVENTS - 1);
 		s->event = ps->events[seq]|((ps->entityEventSequence & 3) << 8);
 		s->eventParm = ps->eventParms[seq];
 		ps->entityEventSequence++;
@@ -2834,10 +2836,10 @@ void BG_PlayerStateToEntityStateExtraPolate(playerState_t *ps, entityState_t *s,
 
 	for (i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++) {
 		if (BG_InventoryContainsUpgrade(i, ps->stats)) {
-			s->modelindex|= 1 << i;
+			s->modelindex |= 1 << i;
 
 			if (BG_UpgradeIsActive(i, ps->stats)) {
-				s->modelindex2|= 1 << i;
+				s->modelindex2 |= 1 << i;
 			}
 		}
 	}
@@ -2906,7 +2908,7 @@ int BG_SlotsForInventory(int stats[]) {
 	slots = BG_Weapon(stats[STAT_WEAPON])->slots;
 
 	if (stats[STAT_TEAM] == TEAM_HUMANS) {
-		slots|= BG_Weapon(WP_BLASTER)->slots;
+		slots |= BG_Weapon(WP_BLASTER)->slots;
 	}
 
 	for (i = UP_NONE; i < UP_NUM_UPGRADES; i++) {
@@ -2917,7 +2919,7 @@ int BG_SlotsForInventory(int stats[]) {
 				Com_Printf(S_COLOR_YELLOW "WARNING: held item %d conflicts with inventory slot %d\n", i, slot);
 			}
 
-			slots|= slot;
+			slots |= slot;
 		}
 	}
 
@@ -2932,7 +2934,7 @@ Give the player an upgrade.
 =======================================================================================================================================
 */
 void BG_AddUpgradeToInventory(int item, int stats[]) {
-	stats[STAT_ITEMS]|= (1 << item);
+	stats[STAT_ITEMS] |= (1 << item);
 }
 
 /*
@@ -2943,7 +2945,7 @@ Take an upgrade from the player.
 =======================================================================================================================================
 */
 void BG_RemoveUpgradeFromInventory(int item, int stats[]) {
-	stats[STAT_ITEMS] & = ~(1 << item);
+	stats[STAT_ITEMS] &= ~(1 << item);
 }
 
 /*
@@ -2965,7 +2967,7 @@ Activates an upgrade.
 =======================================================================================================================================
 */
 void BG_ActivateUpgrade(int item, int stats[]) {
-	stats[STAT_ACTIVEITEMS]|= (1 << item);
+	stats[STAT_ACTIVEITEMS] |= (1 << item);
 }
 
 /*
@@ -2976,7 +2978,7 @@ Deactivates an upgrade.
 =======================================================================================================================================
 */
 void BG_DeactivateUpgrade(int item, int stats[]) {
-	stats[STAT_ACTIVEITEMS] & = ~(1 << item);
+	stats[STAT_ACTIVEITEMS] &= ~(1 << item);
 }
 
 /*
@@ -3258,34 +3260,34 @@ void BG_PackEntityNumbers(entityState_t *es, const int *entityNums, int count) {
 
 		switch (i) {
 			case 0:
-				es->misc|= entityNum;
+				es->misc |= entityNum;
 				break;
 			case 1:
-				es->time|= entityNum;
+				es->time |= entityNum;
 				break;
 			case 2:
-				es->time|= entityNum << GENTITYNUM_BITS;
+				es->time |= entityNum << GENTITYNUM_BITS;
 				break;
 			case 3:
-				es->time|= entityNum << (GENTITYNUM_BITS * 2);
+				es->time |= entityNum << (GENTITYNUM_BITS * 2);
 				break;
 			case 4:
-				es->time2|= entityNum;
+				es->time2 |= entityNum;
 				break;
 			case 5:
-				es->time2|= entityNum << GENTITYNUM_BITS;
+				es->time2 |= entityNum << GENTITYNUM_BITS;
 				break;
 			case 6:
-				es->time2|= entityNum << (GENTITYNUM_BITS * 2);
+				es->time2 |= entityNum << (GENTITYNUM_BITS * 2);
 				break;
 			case 7:
-				es->constantLight|= entityNum;
+				es->constantLight |= entityNum;
 				break;
 			case 8:
-				es->constantLight|= entityNum << GENTITYNUM_BITS;
+				es->constantLight |= entityNum << GENTITYNUM_BITS;
 				break;
 			case 9:
-				es->constantLight|= entityNum << (GENTITYNUM_BITS * 2);
+				es->constantLight |= entityNum << (GENTITYNUM_BITS * 2);
 				break;
 			default: Com_Error(ERR_FATAL, "Entity index %d not handled", i);
 				break;
@@ -3335,7 +3337,7 @@ int BG_UnpackEntityNumbers(entityState_t *es, int *entityNums, int count) {
 				break;
 		}
 
-		*entityNum & = GENTITYNUM_MASK;
+		*entityNum &= GENTITYNUM_MASK;
 
 		if (*entityNum == ENTITYNUM_NONE) {
 			break;
@@ -3531,15 +3533,12 @@ void BG_InitAllowedGameElements(void) {
 	char cvar[MAX_CVAR_VALUE_STRING];
 
 	trap_Cvar_VariableStringBuffer("g_disabledEquipment", cvar, MAX_CVAR_VALUE_STRING);
-
 	BG_ParseCSVEquipmentList(cvar, bg_disabledGameElements.weapons, WP_NUM_WEAPONS, bg_disabledGameElements.upgrades, UP_NUM_UPGRADES);
 
 	trap_Cvar_VariableStringBuffer("g_disabledClasses", cvar, MAX_CVAR_VALUE_STRING);
-
 	BG_ParseCSVClassList(cvar, bg_disabledGameElements.classes, PCL_NUM_CLASSES);
 
 	trap_Cvar_VariableStringBuffer("g_disabledBuildables", cvar, MAX_CVAR_VALUE_STRING);
-
 	BG_ParseCSVBuildableList(cvar, bg_disabledGameElements.buildables, BA_NUM_BUILDABLES);
 }
 

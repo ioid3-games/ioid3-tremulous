@@ -28,7 +28,7 @@ qboolean G_SpawnString(const char *key, const char *defaultString, char **out) {
 
 	if (!level.spawning) {
 		*out = (char *)defaultString;
-// 		G_Error("G_SpawnString() called while not spawning");
+//		G_Error("G_SpawnString() called while not spawning");
 		return qfalse;
 	}
 
@@ -76,7 +76,6 @@ qboolean G_SpawnInt(const char *key, const char *defaultString, int *out) {
 G_SpawnVector
 =======================================================================================================================================
 */
-
 qboolean G_SpawnVector(const char *key, const char *defaultString, float *out) {
 	char *s;
 	qboolean present;
@@ -100,9 +99,7 @@ qboolean G_SpawnVector4(const char *key, const char *defaultString, float *out) 
 	return present;
 }
 
-//
 // fields are needed for spawning from the entity string
-//
 typedef enum {
 	F_INT,
 	F_FLOAT,
@@ -153,7 +150,6 @@ field_t fields[] = {
 	{"wait", FOFS(wait), F_FLOAT}
 };
 
-
 typedef struct {
 	char *name;
 	void (*spawn)(gentity_t *ent);
@@ -162,10 +158,8 @@ typedef struct {
 void SP_info_player_start(gentity_t *ent);
 void SP_info_player_deathmatch(gentity_t *ent);
 void SP_info_player_intermission(gentity_t *ent);
-
 void SP_info_alien_intermission(gentity_t *ent);
 void SP_info_human_intermission(gentity_t *ent);
-
 void SP_func_plat(gentity_t *ent);
 void SP_func_static(gentity_t *ent);
 void SP_func_rotating(gentity_t *ent);
@@ -177,7 +171,6 @@ void SP_func_door_rotating(gentity_t *ent);
 void SP_func_door_model(gentity_t *ent);
 void SP_func_train(gentity_t *ent);
 void SP_func_timer(gentity_t *self);
-
 void SP_trigger_always(gentity_t *ent);
 void SP_trigger_multiple(gentity_t *ent);
 void SP_trigger_push(gentity_t *ent);
@@ -191,7 +184,6 @@ void SP_trigger_equipment(gentity_t *ent);
 void SP_trigger_gravity(gentity_t *ent);
 void SP_trigger_heal(gentity_t *ent);
 void SP_trigger_ammo(gentity_t *ent);
-
 void SP_target_delay(gentity_t *ent);
 void SP_target_speaker(gentity_t *ent);
 void SP_target_print(gentity_t *ent);
@@ -206,17 +198,14 @@ void SP_target_rumble(gentity_t *ent);
 void SP_target_alien_win(gentity_t *ent);
 void SP_target_human_win(gentity_t *ent);
 void SP_target_hurt(gentity_t *ent);
-
 void SP_light(gentity_t *self);
 void SP_info_null(gentity_t *self);
 void SP_info_notnull(gentity_t *self);
 void SP_path_corner(gentity_t *self);
-
 void SP_misc_teleporter_dest(gentity_t *self);
 void SP_misc_model(gentity_t *ent);
 void SP_misc_portal_camera(gentity_t *ent);
 void SP_misc_portal_surface(gentity_t *ent);
-
 void SP_misc_particle_system(gentity_t *ent);
 void SP_misc_anim_model(gentity_t *ent);
 void SP_misc_light_flare(gentity_t *ent);
@@ -234,9 +223,7 @@ spawn_t spawns[] = {
 	{"func_static", SP_func_static},
 	{"func_timer", SP_func_timer}, // rename trigger_timer?
 	{"func_train", SP_func_train},
-
-	// info entities don't do anything at all, but provide positional
-	// information for things controlled by other processes
+	// info entities don't do anything at all, but provide positional information for things controlled by other processes
 	{"info_alien_intermission", SP_info_alien_intermission},
 	{"info_human_intermission", SP_info_human_intermission},
 	{"info_notnull", SP_info_notnull}, // use target_position instead
@@ -253,9 +240,7 @@ spawn_t spawns[] = {
 	{"misc_portal_surface", SP_misc_portal_surface},
 	{"misc_teleporter_dest", SP_misc_teleporter_dest},
 	{"path_corner", SP_path_corner},
-
-	// targets perform no action by themselves, but must be triggered
-	// by another entity
+	// targets perform no action by themselves, but must be triggered by another entity
 	{"target_alien_win", SP_target_alien_win},
 	{"target_delay", SP_target_delay},
 	{"target_human_win", SP_target_human_win},
@@ -270,12 +255,8 @@ spawn_t spawns[] = {
 	{"target_score", SP_target_score},
 	{"target_speaker", SP_target_speaker},
 	{"target_teleporter", SP_target_teleporter},
-
-	// triggers are brush objects that cause an effect when contacted
-	// by a living player, usually involving firing targets.
-	// while almost everything could be done with
-	// a single trigger class and different targets, triggered effects
-	// could not be client side predicted(push and teleport).
+	// triggers are brush objects that cause an effect when contacted by a living player, usually involving firing targets.
+	// while almost everything could be done with a single trigger class and different targets, triggered effects could not be client side predicted(push and teleport).
 	{"trigger_always", SP_trigger_always},
 	{"trigger_ammo", SP_trigger_ammo},
 	{"trigger_buildable", SP_trigger_buildable},
@@ -303,14 +284,14 @@ qboolean G_CallSpawn(gentity_t *ent) {
 	buildable_t buildable;
 
 	if (!ent->classname) {
-		G_Printf("G_CallSpawn : NULL classname\n");
+		G_Printf("G_CallSpawn: NULL classname\n");
 		return qfalse;
 	}
 	// check buildable spawn functions
 	buildable = BG_BuildableByEntityName(ent->classname)->number;
 
 	if (buildable != BA_NONE) {
-		// don't spawn built - in buildings if we are using a custom layout
+		// don't spawn built-in buildings if we are using a custom layout
 		if (level.layout[0] && Q_stricmp(level.layout, " * BUILTIN * ")) {
 			return qfalse;
 		}
@@ -340,7 +321,7 @@ qboolean G_CallSpawn(gentity_t *ent) {
 =======================================================================================================================================
 G_NewString
 
-Builds a copy of the string, translating \n to real linefeeds so message texts can be multi - line.
+Builds a copy of the string, translating \n to real linefeeds so message texts can be multi-line.
 =======================================================================================================================================
 */
 char *G_NewString(const char *string) {
@@ -348,6 +329,7 @@ char *G_NewString(const char *string) {
 	int i, l;
 
 	l = strlen(string) + 1;
+
 	newb = BG_Alloc(l);
 	new_p = newb;
 	// turn \n into a real linefeed
@@ -356,12 +338,12 @@ char *G_NewString(const char *string) {
 			i++;
 
 			if (string[i] == 'n') {
-				*new_p+ += '\n';
+				*new_p++ = '\n';
 			} else {
-				*new_p+ += '\\';
+				*new_p++ = '\\';
 			}
 		} else {
-			*new_p+ += string[i];
+			*new_p++ = string[i];
 		}
 	}
 
@@ -472,7 +454,7 @@ char *G_AddSpawnVarToken(const char *string) {
 	l = strlen(string);
 
 	if (level.numSpawnVarChars + l + 1 > MAX_SPAWN_VARS_CHARS) {
-		G_Error("G_AddSpawnVarToken : MAX_SPAWN_CHARS");
+		G_Error("G_AddSpawnVarToken: MAX_SPAWN_CHARS");
 	}
 
 	dest = level.spawnVarChars + level.numSpawnVarChars;
@@ -480,7 +462,6 @@ char *G_AddSpawnVarToken(const char *string) {
 	memcpy(dest, string, l + 1);
 
 	level.numSpawnVarChars += l + 1;
-
 	return dest;
 }
 
@@ -488,7 +469,7 @@ char *G_AddSpawnVarToken(const char *string) {
 =======================================================================================================================================
 G_ParseSpawnVars
 
-Parses a brace bounded set of key / value pairs out of the level's entity strings into level.spawnVars[].
+Parses a brace bounded set of key/value pairs out of the level's entity strings into level.spawnVars[].
 This does not actually spawn an entity.
 =======================================================================================================================================
 */
@@ -505,13 +486,13 @@ qboolean G_ParseSpawnVars(void) {
 	}
 
 	if (com_token[0] != '{') {
-		G_Error("G_ParseSpawnVars : found %s when expecting {", com_token);
+		G_Error("G_ParseSpawnVars: found %s when expecting {", com_token);
 	}
-	// go through all the key / value pairs
+	// go through all the key/value pairs
 	while (1) {
 		// parse key
 		if (!trap_GetEntityToken(keyname, sizeof(keyname))) {
-			G_Error("G_ParseSpawnVars : EOF without closing brace");
+			G_Error("G_ParseSpawnVars: EOF without closing brace");
 		}
 
 		if (keyname[0] == '}') {
@@ -519,15 +500,15 @@ qboolean G_ParseSpawnVars(void) {
 		}
 		// parse value
 		if (!trap_GetEntityToken(com_token, sizeof(com_token))) {
-			G_Error("G_ParseSpawnVars : EOF without closing brace");
+			G_Error("G_ParseSpawnVars: EOF without closing brace");
 		}
 
 		if (com_token[0] == '}') {
-			G_Error("G_ParseSpawnVars : closing brace without data");
+			G_Error("G_ParseSpawnVars: closing brace without data");
 		}
 
 		if (level.numSpawnVars == MAX_SPAWN_VARS) {
-			G_Error("G_ParseSpawnVars : MAX_SPAWN_VARS");
+			G_Error("G_ParseSpawnVars: MAX_SPAWN_VARS");
 		}
 
 		level.spawnVars[level.numSpawnVars][0] = G_AddSpawnVarToken(keyname);
@@ -538,12 +519,12 @@ qboolean G_ParseSpawnVars(void) {
 	return qtrue;
 }
 
-/*QUAKED worldspawn(0 0 0) ?
+/*QUAKED worldspawn (0 0 0) ?
 
 Every map should have exactly one worldspawn.
-"music"   music wav file
-"gravity" 800 is default gravity
-"message" Text to print during connection process
+"music"		music wav file
+"gravity"	800 is default gravity
+"message"	Text to print during connection process
 */
 void SP_worldspawn(void) {
 	char *s;
@@ -551,11 +532,10 @@ void SP_worldspawn(void) {
 	G_SpawnString("classname", "", &s);
 
 	if (Q_stricmp(s, "worldspawn")) {
-		G_Error("SP_worldspawn : The first entity isn't 'worldspawn'");
+		G_Error("SP_worldspawn: The first entity isn't 'worldspawn'");
 	}
 	// make some data visible to connecting client
 	trap_SetConfigstring(CS_GAME_VERSION, GAME_VERSION);
-
 	trap_SetConfigstring(CS_LEVEL_START_TIME, va("%i", level.startTime));
 
 	G_SpawnString("music", "", &s);
@@ -599,7 +579,7 @@ void SP_worldspawn(void) {
 	if (g_doWarmup.integer) {
 		level.warmupTime = level.time - level.startTime + (g_warmup.integer * 1000);
 		trap_SetConfigstring(CS_WARMUP, va("%i", level.warmupTime));
-		G_LogPrintf("Warmup : %i\n", g_warmup.integer);
+		G_LogPrintf("Warmup: %i\n", g_warmup.integer);
 	}
 }
 
@@ -613,10 +593,10 @@ Parses textual entity definitions out of an entstring and spawns gentities.
 void G_SpawnEntitiesFromString(void) {
 
 	level.numSpawnVars = 0;
-	// the worldspawn is not an actual entity, but it still has a "spawn" function to perform any global setup
-	// needed by a level (setting configstrings or cvars, etc.)
+	// the worldspawn is not an actual entity, but it still has a "spawn" function to perform any global setup needed by a level
+	// (setting configstrings or cvars, etc.)
 	if (!G_ParseSpawnVars()) {
-		G_Error("SpawnEntities : no entities");
+		G_Error("SpawnEntities: no entities");
 	}
 
 	SP_worldspawn();
@@ -625,4 +605,3 @@ void G_SpawnEntitiesFromString(void) {
 		G_SpawnGEntityFromSpawnVars();
 	}
 }
-

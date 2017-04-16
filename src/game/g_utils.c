@@ -16,7 +16,9 @@ Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 =======================================================================================================================================
 */
 
-// g_utils.c--misc utility functions for game module
+/**************************************************************************************************************************************
+ Misc utility functions for game module.
+**************************************************************************************************************************************/
 
 #include "g_local.h"
 
@@ -69,7 +71,7 @@ const char *BuildShaderStateConfig(void) {
 	memset(buff, 0, MAX_STRING_CHARS);
 
 	for (i = 0; i < remapCount; i++) {
-		Com_sprintf(out, (MAX_QPATH * 2) + 5, "%s = %s:%5.2f@", remappedShaders[i].oldShader, remappedShaders[i].newShader, remappedShaders[i].timeOffset);
+		Com_sprintf(out, (MAX_QPATH * 2) + 5, "%s=%s:%5.2f@", remappedShaders[i].oldShader, remappedShaders[i].newShader, remappedShaders[i].timeOffset);
 		Q_strcat(buff, sizeof(buff), out);
 	}
 
@@ -79,7 +81,7 @@ const char *BuildShaderStateConfig(void) {
 /*
 =======================================================================================================================================
 
-model / sound configstring indexes
+	Model / Sound configstring indexes.
 
 =======================================================================================================================================
 */
@@ -163,7 +165,9 @@ int G_SoundIndex(char *name) {
 G_Find
 
 Searches all active entities for the next one that holds the matching string at fieldofs (use the FOFS() macro) in the structure.
-Searches beginning at the entity after from, or the beginning if NULL. NULL will be returned if the end of the list is reached.
+
+Searches beginning at the entity after from, or the beginning if NULL.
+NULL will be returned if the end of the list is reached.
 =======================================================================================================================================
 */
 gentity_t *G_Find(gentity_t *from, int fieldofs, const char *match) {
@@ -180,7 +184,7 @@ gentity_t *G_Find(gentity_t *from, int fieldofs, const char *match) {
 			continue;
 		}
 
-		s = * (char **)((byte *)from + fieldofs);
+		s = *(char **)((byte *)from + fieldofs);
 
 		if (!s) {
 			continue;
@@ -227,7 +231,7 @@ gentity_t *G_PickTarget(char *targetname) {
 	}
 
 	if (!num_choices) {
-		G_Printf("G_PickTarget : target %s not found\n", targetname);
+		G_Printf("G_PickTarget: target %s not found\n", targetname);
 		return NULL;
 	}
 
@@ -240,13 +244,13 @@ G_UseTargets
 
 "activator" should be set to the entity that initiated the firing.
 
-Search for (string)targetname in all entities that match (string)self.target and call their .use function
+Search for (string)targetname in all entities that match (string)self.target and call their .use function.
 =======================================================================================================================================
 */
 void G_UseTargets(gentity_t *ent, gentity_t *activator) {
 	gentity_t *t;
 
-	if (!ent)
+	if (!ent) {
 		return;
 	}
 
@@ -282,7 +286,7 @@ void G_UseTargets(gentity_t *ent, gentity_t *activator) {
 =======================================================================================================================================
 tv
 
-This is just a convenience function for making temporary vectors for function calls.
+TempVector: This is just a convenience function for making temporary vectors for function calls.
 =======================================================================================================================================
 */
 float *tv(float x, float y, float z) {
@@ -292,12 +296,10 @@ float *tv(float x, float y, float z) {
 
 	// use an array so that multiple tempvectors won't collide for a while
 	v = vecs[index];
-	index = (index + 1) & 7;
-
+	index = (index + 1)&7;
 	v[0] = x;
 	v[1] = y;
 	v[2] = z;
-
 	return v;
 }
 
@@ -305,7 +307,7 @@ float *tv(float x, float y, float z) {
 =======================================================================================================================================
 vtos
 
-This is just a convenience function for printing vectors.
+VectorToString: This is just a convenience function for printing vectors.
 =======================================================================================================================================
 */
 char *vtos(const vec3_t v) {
@@ -315,10 +317,9 @@ char *vtos(const vec3_t v) {
 
 	// use an array so that multiple vtos won't collide
 	s = str[index];
-	index = (index + 1) & 7;
+	index = (index + 1)&7;
 
 	Com_sprintf(s, 32, "(%i %i %i)", (int)v[0], (int)v[1], (int)v[2]);
-
 	return s;
 }
 
@@ -326,7 +327,7 @@ char *vtos(const vec3_t v) {
 =======================================================================================================================================
 G_SetMovedir
 
-The editor only specifies a single value for angles(yaw), but we have special constants to generate an up or down direction.
+The editor only specifies a single value for angles (yaw), but we have special constants to generate an up or down direction.
 Angles will be cleared, because it is being used to represent a direction instead of an orientation.
 =======================================================================================================================================
 */
@@ -406,7 +407,7 @@ gentity_t *G_Spawn(void) {
 	i = 0; // shut up warning
 
 	for (force = 0; force < 2; force++) {
-		// if we go through all entities and can't find one to free, // override the normal minimum times before use
+		// if we go through all entities and can't find one to free, override the normal minimum times before use
 		e = &g_entities[MAX_CLIENTS];
 
 		for (i = MAX_CLIENTS; i < level.num_entities; i++, e++) {
@@ -429,10 +430,10 @@ gentity_t *G_Spawn(void) {
 
 	if (i == ENTITYNUM_MAX_NORMAL) {
 		for (i = 0; i < MAX_GENTITIES; i++) {
-			G_Printf("%4i : %s\n", i, g_entities[i].classname);
+			G_Printf("%4i: %s\n", i, g_entities[i].classname);
 		}
 
-		G_Error("G_Spawn : no free entities");
+		G_Error("G_Spawn: no free entities");
 	}
 	// open up a new slot
 	level.num_entities++;
@@ -491,8 +492,8 @@ void G_FreeEntity(gentity_t *ent) {
 =======================================================================================================================================
 G_TempEntity
 
-Spawns an event entity that will be auto - removed. The origin will be snapped to save net bandwidth, so care must be taken if the
-origin is right on a surface (snap towards start vector first).
+Spawns an event entity that will be auto-removed. The origin will be snapped to save net bandwidth, so care must be taken if the origin
+is right on a surface (snap towards start vector first).
 =======================================================================================================================================
 */
 gentity_t *G_TempEntity(vec3_t origin, int event) {
@@ -516,13 +517,6 @@ gentity_t *G_TempEntity(vec3_t origin, int event) {
 
 /*
 =======================================================================================================================================
-
-Kill box
-=======================================================================================================================================
-*/
-
-/*
-=======================================================================================================================================
 G_KillBox
 
 Kills all entities that would touch the proposed new positioning of ent. Ent should be unlinked before calling this!
@@ -536,6 +530,7 @@ void G_KillBox(gentity_t *ent) {
 
 	VectorAdd(ent->r.currentOrigin, ent->r.mins, mins);
 	VectorAdd(ent->r.currentOrigin, ent->r.maxs, maxs);
+
 	num = trap_EntitiesInBox(mins, maxs, touch, MAX_GENTITIES);
 
 	for (i = 0; i < num; i++) {
@@ -557,7 +552,7 @@ void G_KillBox(gentity_t *ent) {
 =======================================================================================================================================
 G_AddPredictableEvent
 
-Use for non - pmove events that would also be predicted on the client side: jumppads and item pickups.
+Use for non-pmove events that would also be predicted on the client side: jumppads and item pickups.
 Adds an event + parm and twiddles the event counter.
 =======================================================================================================================================
 */
@@ -581,7 +576,7 @@ void G_AddEvent(gentity_t *ent, int event, int eventParm) {
 	int bits;
 
 	if (!event) {
-		G_Printf("G_AddEvent : zero event added for entity %i\n", ent->s.number);
+		G_Printf("G_AddEvent: zero event added for entity %i\n", ent->s.number);
 		return;
 	}
 	// eventParm is converted to uint8_t(0 - 255) in msg.c 
@@ -592,12 +587,14 @@ void G_AddEvent(gentity_t *ent, int event, int eventParm) {
 	if (ent->client) {
 		bits = ent->client->ps.externalEvent & EV_EVENT_BITS;
 		bits = (bits + EV_EVENT_BIT1) & EV_EVENT_BITS;
+
 		ent->client->ps.externalEvent = event|bits;
 		ent->client->ps.externalEventParm = eventParm;
 		ent->client->ps.externalEventTime = level.time;
 	} else {
 		bits = ent->s.event & EV_EVENT_BITS;
 		bits = (bits + EV_EVENT_BIT1) & EV_EVENT_BITS;
+
 		ent->s.event = event|bits;
 		ent->s.eventParm = eventParm;
 	}

@@ -16,7 +16,9 @@ Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 =======================================================================================================================================
 */
 
-// this file holds commands that can be executed by the server console, but not remote clients
+/**************************************************************************************************************************************
+ This file holds commands that can be executed by the server console, but not remote clients.
+**************************************************************************************************************************************/
 
 #include "g_local.h"
 

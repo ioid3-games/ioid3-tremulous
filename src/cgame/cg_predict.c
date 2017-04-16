@@ -552,12 +552,12 @@ void CG_PredictPlayerState(void) {
 	cg_pmove.pmove_fixed = pmove_fixed.integer; // |cg_pmove_fixed.integer;
 	cg_pmove.pmove_msec = pmove_msec.integer;
 	// like the comments described above, a player's state is entirely
-	// re - predicted from the last valid snapshot every client frame, which
-	// can be really, really, really slow.  Every old command has to be
-	// run again.  For every client frame that is *not * directly after a
+	// re-predicted from the last valid snapshot every client frame, which
+	// can be really, really, really slow. Every old command has to be
+	// run again. For every client frame that is *not* directly after a
 	// snapshot, this is unnecessary, since we have no new information.
 	// for those, we'll play back the predictions from the last frame and
-	// predict only the newest commands.  Essentially, we'll be doing
+	// predict only the newest commands. Essentially, we'll be doing
 	// an incremental predict instead of a full predict.
 
 	// if we have a new snapshot, we can compare its player state's command
@@ -567,7 +567,7 @@ void CG_PredictPlayerState(void) {
 
 	// with this method, we get incremental predicts on every client frame
 	// except a frame following a new snapshot in which there was a prediction
-	// error.  This yeilds anywhere from a 15% to 40% performance increase,
+	// error. This yeilds anywhere from a 15% to 40% performance increase,
 	// depending on how much of a bottleneck the CPU is.
 	if (cg_optimizePrediction.integer) {
 		if (cg.nextFrameTeleport || cg.thisFrameTeleport) {
@@ -730,7 +730,7 @@ void CG_PredictPlayerState(void) {
 		// add push trigger movement effects
 		CG_TouchTriggerPrediction();
 		// check for predictable events that changed from previous predictions
-		// CG_CheckChangedPredictableEvents(&cg.predictedPlayerState);
+		//CG_CheckChangedPredictableEvents(&cg.predictedPlayerState);
 	}
 	// adjust for the movement of the groundentity
 	CG_AdjustPositionForMover(cg.predictedPlayerState.origin, cg.predictedPlayerState.groundEntityNum, cg.physicsTime, cg.time, cg.predictedPlayerState.origin);

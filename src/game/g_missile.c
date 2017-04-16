@@ -18,7 +18,7 @@ Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
 #include "g_local.h"
 
-#define MISSILE_PRESTEP_TIME  50
+#define MISSILE_PRESTEP_TIME 50
 
 /*
 =======================================================================================================================================
@@ -193,7 +193,7 @@ void G_MissileImpact(gentity_t *ent, trace_t *trace) {
 	SnapVectorTowards(trace->endpos, ent->s.pos.trBase); // save net bandwidth
 
 	G_SetOrigin(ent, trace->endpos);
-	// splash damage(doesn't apply to person directly hit)
+	// splash damage (doesn't apply to person directly hit)
 	if (ent->splashDamage) {
 		G_RadiusDamage(trace->endpos, ent->parent, ent->splashDamage, ent->splashRadius, other, ent->splashMethodOfDeath);
 	}
@@ -698,7 +698,7 @@ gentity_t *fire_paraLockBlob(gentity_t *self, vec3_t start, vec3_t dir) {
 
 /*
 =======================================================================================================================================
-fire_bounceBall.
+fire_bounceBall
 =======================================================================================================================================
 */
 gentity_t *fire_bounceBall(gentity_t *self, vec3_t start, vec3_t dir) {

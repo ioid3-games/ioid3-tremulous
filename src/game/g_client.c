@@ -16,19 +16,21 @@ Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 =======================================================================================================================================
 */
 
+/**************************************************************************************************************************************
+ Client functions that don't happen every frame.
+**************************************************************************************************************************************/
+
 #include "g_local.h"
 
-// g_client.c--client functions that don't happen every frame
-
-static vec3_t playerMins = {- 15, -15, -24};
+static vec3_t playerMins = {-15, -15, -24};
 static vec3_t playerMaxs = {15, 15, 32};
 
-/*QUAKED info_player_deathmatch(1 0 1)(-16 - 16 - 24)(16 16 32) initial
+/*QUAKED info_player_deathmatch (1 0 1) (-16 -16 -24) (16 16 32) initial
 potential spawning position for deathmatch games.
 The first time a player enters the game, they will be at an 'initial' spot.
 Targets will be fired when someone spawns in on them.
 "nobots" will prevent bots from using this spot.
-"nohumans" will prevent non - bots from using this spot.
+"nohumans" will prevent non-bots from using this spot.
 */
 void SP_info_player_deathmatch(gentity_t *ent) {
 	int i;
@@ -36,40 +38,44 @@ void SP_info_player_deathmatch(gentity_t *ent) {
 	G_SpawnInt("nobots", "0", &i);
 
 	if (i) {
-		ent->flags|= FL_NO_BOTS;
+		ent->flags |= FL_NO_BOTS;
 	}
 
 	G_SpawnInt("nohumans", "0", &i);
 
 	if (i) {
-		ent->flags|= FL_NO_HUMANS;
+		ent->flags |= FL_NO_HUMANS;
 	}
 }
 
-/*QUAKED info_player_start(1 0 0)(-16 - 16 - 24)(16 16 32)
+/*QUAKED info_player_start (1 0 0) (-16 -16 -24) (16 16 32)
 equivelant to info_player_deathmatch
 */
 void SP_info_player_start(gentity_t *ent) {
+
 	ent->classname = "info_player_deathmatch";
 	SP_info_player_deathmatch(ent);
 }
 
-/*QUAKED info_player_intermission(1 0 1)(-16 - 16 - 24)(16 16 32)
-The intermission will be viewed from this point.  Target an info_notnull for the view direction.
+/*QUAKED info_player_intermission (1 0 1) (-16 -16 -24) (16 16 32)
+The intermission will be viewed from this point. Target an info_notnull for the view direction.
 */
 void SP_info_player_intermission(gentity_t *ent) {
+
 }
 
-/*QUAKED info_alien_intermission(1 0 1)(-16 - 16 - 24)(16 16 32)
-The intermission will be viewed from this point.  Target an info_notnull for the view direction.
+/*QUAKED info_alien_intermission (1 0 1) (-16 -16 -24) (16 16 32)
+The intermission will be viewed from this point. Target an info_notnull for the view direction.
 */
 void SP_info_alien_intermission(gentity_t *ent) {
+
 }
 
-/*QUAKED info_human_intermission(1 0 1)(-16 - 16 - 24)(16 16 32)
-The intermission will be viewed from this point.  Target an info_notnull for the view direction.
+/*QUAKED info_human_intermission (1 0 1) (-16 -16 -24) (16 16 32)
+The intermission will be viewed from this point. Target an info_notnull for the view direction.
 */
 void SP_info_human_intermission(gentity_t *ent) {
+
 }
 
 /*
@@ -123,7 +129,7 @@ qboolean SpotWouldTelefrag(gentity_t *spot) {
 
 	for (i = 0; i < num; i++) {
 		hit = &g_entities[touch[i]];
-		// if (hit->client && hit->client->ps.stats[STAT_HEALTH] > 0) {
+		//if (hit->client && hit->client->ps.stats[STAT_HEALTH] > 0) {
 		if (hit->client) {
 			return qtrue;
 		}
@@ -171,6 +177,7 @@ static gentity_t *G_SelectRandomFurthestSpawnPoint(vec3_t avoidPoint, vec3_t ori
 
 				list_dist[i] = dist;
 				list_spot[i] = spot;
+
 				numSpots++;
 
 				if (numSpots > 64) {
@@ -746,9 +753,10 @@ static qboolean G_NonSegModel(const char *filename) {
 
 /*
 =======================================================================================================================================
-ClientUserInfoChanged
+ClientUserinfoChanged
 
 Called from ClientConnect when the player first connects and directly by the server system when the player updates a userinfo variable.
+
 The game can override any of the settings and call trap_SetUserinfo if desired.
 =======================================================================================================================================
 */
@@ -949,11 +957,17 @@ char *ClientUserinfoChanged(int clientNum, qboolean forceName) {
 =======================================================================================================================================
 ClientConnect
 
-Called when a player begins connecting to the server. Called again for every map change or tournement restart.
+Called when a player begins connecting to the server.
+Called again for every map change or tournament restart.
+
 The session information will be valid after exit.
+
 Return NULL if the client should be allowed, otherwise return a string with the reason for denial.
+
 Otherwise, the client will be sent the current gamestate and will eventually get to ClientBegin.
-firstTime will be qtrue the very first time a client connects to the server machine, but qfalse on map changes and tournement restarts.
+
+'firstTime' will be qtrue the very first time a client connects to the server machine, but qfalse on map changes and tournament
+restarts.
 =======================================================================================================================================
 */
 const char *ClientConnect(int clientNum, qboolean firstTime) {
@@ -1115,8 +1129,9 @@ void ClientBegin(int clientNum) {
 =======================================================================================================================================
 ClientSpawn
 
-Called every time a client is placed fresh in the world: after the first ClientBegin, and after each respawn´.
-Initializes all non - persistant parts of playerState.
+Called every time a client is placed fresh in the world: After the first ClientBegin, and after each respawn.
+
+Initializes all non-persistant parts of playerState.
 =======================================================================================================================================
 */
 void ClientSpawn(gentity_t *ent, gentity_t *spawn, vec3_t origin, vec3_t angles) {
@@ -1227,7 +1242,7 @@ void ClientSpawn(gentity_t *ent, gentity_t *spawn, vec3_t origin, vec3_t angles)
 	trap_GetUserinfo(index, userinfo, sizeof(userinfo));
 
 	client->ps.eFlags = flags;
-	// com_Printf("ent->client->pers->pclass = %i\n", ent->client->pers.classSelection);
+	//Com_Printf("ent->client->pers->pclass = %i\n", ent->client->pers.classSelection);
 	ent->s.groundEntityNum = ENTITYNUM_NONE;
 	ent->client = &level.clients[index];
 	ent->takedamage = qtrue;
@@ -1322,7 +1337,7 @@ void ClientSpawn(gentity_t *ent, gentity_t *spawn, vec3_t origin, vec3_t angles)
 		AngleNormalize360(spawn_angles[YAW]);
 	}
 	// the respawned flag will be cleared after the attack and jump keys come up
-	client->ps.pm_flags|= PMF_RESPAWNED;
+	client->ps.pm_flags |= PMF_RESPAWNED;
 
 	trap_GetUsercmd(client - level.clients, &ent->client->pers.cmd);
 	G_SetClientViewAngle(ent, spawn_angles);
@@ -1337,7 +1352,7 @@ void ClientSpawn(gentity_t *ent, gentity_t *spawn, vec3_t origin, vec3_t angles)
 		client->ps.weaponstate = WEAPON_READY;
 	}
 	// don't allow full run speed for a bit
-	client->ps.pm_flags|= PMF_TIME_KNOCKBACK;
+	client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
 	client->ps.pm_time = 100;
 	client->respawnTime = level.time;
 

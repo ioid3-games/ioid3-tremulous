@@ -107,12 +107,12 @@ void Touch_Multi(gentity_t *self, gentity_t *other, trace_t *trace) {
 	multi_trigger(self, other);
 }
 
-/*QUAKED trigger_multiple(.5 .5 .5) ?
+/*QUAKED trigger_multiple (.5 .5 .5) ?
 "wait" : Seconds between triggerings, 0.5 default, -1 = one time only.
-"random"  wait variance, default is 0
-Variable sized repeatable trigger.  Must be targeted at one or more entities.
+"random" wait variance, default is 0
+Variable sized repeatable trigger. Must be targeted at one or more entities.
 so, the basic time between firing is a random time between
-(wait - random) and(wait + random)
+(wait - random) and (wait + random)
 */
 void SP_trigger_multiple(gentity_t *ent) {
 	G_SpawnFloat("wait", "0.5", &ent->wait);
@@ -194,16 +194,17 @@ void AimAtTarget(gentity_t *self) {
 	}
 	// set s.origin2 to the push velocity
 	VectorSubtract(ent->s.origin, origin, self->s.origin2);
+
 	self->s.origin2[2] = 0;
 	dist = VectorNormalize(self->s.origin2);
-
 	forward = dist / time;
+
 	VectorScale(self->s.origin2, forward, self->s.origin2);
 
 	self->s.origin2[2] = time * gravity;
 }
 
-/*QUAKED trigger_push(.5 .5 .5) ?
+/*QUAKED trigger_push (.5 .5 .5) ?
 Must point at a target_position, which will be the apex of the leap.
 This will be client side predicted, unlike target_push
 */
@@ -211,7 +212,7 @@ void SP_trigger_push(gentity_t *self) {
 
 	InitTrigger(self);
 	// unlike other triggers, we need to send this one to the client
-	self->r.svFlags & = ~SVF_NOCLIENT;
+	self->r.svFlags &= ~SVF_NOCLIENT;
 	self->s.eType = ET_PUSH_TRIGGER;
 	self->touch = trigger_push_touch;
 	self->think = AimAtTarget;
@@ -320,7 +321,7 @@ void SP_trigger_teleport(gentity_t *self) {
 	if (self->spawnflags & 1) {
 		self->r.svFlags|= SVF_NOCLIENT;
 	} else {
-		self->r.svFlags & = ~SVF_NOCLIENT;
+		self->r.svFlags &= ~SVF_NOCLIENT;
 	}
 	// SPAWN_DISABLED
 	if (self->spawnflags & 2) {
@@ -342,7 +343,7 @@ trigger_hurt
 =======================================================================================================================================
 */
 
-/*QUAKED trigger_hurt(.5 .5 .5) ? START_OFF - SILENT NO_PROTECTION SLOW
+/*QUAKED trigger_hurt (.5 .5 .5) ? START_OFF - SILENT NO_PROTECTION SLOW
 Any entity that touches this will be hurt.
 It does dmg points of damage each server frame
 Targeting the trigger will toggle its on / off state.
@@ -426,13 +427,12 @@ void SP_trigger_hurt(gentity_t *self) {
 /*
 =======================================================================================================================================
 
-TIMER
+	TIMER
 
 =======================================================================================================================================
 */
 
-
-/*QUAKED func_timer(0.3 0.1 0.6)(-8 - 8 - 8)(8 8 8) START_ON
+/*QUAKED func_timer(0.3 0.1 0.6) (-8 -8 -8) (8 8 8) START_ON
 This should be renamed trigger_timer...
 Repeatedly fires its targets.
 Can be turned on or off by using.

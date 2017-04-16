@@ -18,29 +18,28 @@ Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
 #include "g_local.h"
 
-
-/*QUAKED func_group(0 0 0) ?
-Used to group brushes together just for editor convenience.  They are turned into normal brushes by the utilities.
+/*QUAKED func_group (0 0 0) ?
+Used to group brushes together just for editor convenience. They are turned into normal brushes by the utilities.
 */
 
 
-/*QUAKED info_null(0 0.5 0)(-4 - 4 - 4)(4 4 4)
-Used as a positional target for calculations in the utilities(spotlights, etc), but removed during gameplay.
+/*QUAKED info_null (0 0.5 0) (-4 -4 -4) (4 4 4)
+Used as a positional target for calculations in the utilities (spotlights, etc.), but removed during gameplay.
 */
 void SP_info_null(gentity_t *self) {
 	G_FreeEntity(self);
 }
 
-/*QUAKED info_notnull(0 0.5 0)(-4 - 4 - 4)(4 4 4)
-Used as a positional target for in - game calculation, like jumppad targets.
+/*QUAKED info_notnull (0 0.5 0) (-4 -4 -4) (4 4 4)
+Used as a positional target for in-game calculation, like jumppad targets.
 target_position does the same thing
 */
 void SP_info_notnull(gentity_t *self) {
 	G_SetOrigin(self, self->s.origin);
 }
 
-/*QUAKED light(0 1 0)(-8 - 8 - 8)(8 8 8) linear
-Non - displayed light.
+/*QUAKED light (0 1 0) (-8 -8 -8) (8 8 8) linear
+Non-displayed light.
 "light" overrides the default 300 intensity.
 Linear checbox gives linear falloff instead of inverse square
 Lights pointed at a target will be spotlights.
@@ -55,6 +54,12 @@ void SP_light(gentity_t *self) {
 
 	TELEPORTERS
 
+=======================================================================================================================================
+*/
+
+/*
+=======================================================================================================================================
+TeleportPlayer
 =======================================================================================================================================
 */
 void TeleportPlayer(gentity_t *player, vec3_t origin, vec3_t angles) {
@@ -90,24 +95,25 @@ void TeleportPlayer(gentity_t *player, vec3_t origin, vec3_t angles) {
 	}
 }
 
-/*QUAKED misc_teleporter_dest(1 0 0)(-32 - 32 - 24)(32 32 - 16)
+/*QUAKED misc_teleporter_dest (1 0 0) (-32 -32 -24) (32 32 -16)
 Point teleporters at these.
 Now that we don't have teleport destination pads, this is just
 an info_notnull
 */
 void SP_misc_teleporter_dest(gentity_t *ent) {
+
 }
 
-// =========================================================== 
-
-/*QUAKED misc_model(1 0 0)(-16 - 16 - 16)(16 16 16)
-"model"   arbitrary .md3 file to display
+/*QUAKED misc_model (1 0 0) (-16 -16 -16) (16 16 16)
+"model" arbitrary .md3 file to display
 */
 void SP_misc_model(gentity_t *ent) {
 #if 0
 	ent->s.modelindex = G_ModelIndex(ent->model);
+
 	VectorSet(ent->mins, -16, -16, -16);
 	VectorSet(ent->maxs, 16, 16, 16);
+
 	trap_LinkEntity(ent);
 
 	G_SetOrigin(ent, ent->s.origin);
@@ -166,7 +172,7 @@ void locateCamera(gentity_t *ent) {
 	ent->s.eventParm = DirToByte(dir);
 }
 
-/*QUAKED misc_portal_surface(0 0 1)(-8 - 8 - 8)(8 8 8)
+/*QUAKED misc_portal_surface (0 0 1) (-8 -8 -8) (8 8 8)
 The portal surface nearest this entity will show a view from the targeted misc_portal_camera, or a mirror view if untargeted.
 This must be within 64 world units of the surface!
 */
@@ -174,6 +180,7 @@ void SP_misc_portal_surface(gentity_t *ent) {
 
 	VectorClear(ent->r.mins);
 	VectorClear(ent->r.maxs);
+
 	trap_LinkEntity(ent);
 
 	ent->r.svFlags = SVF_PORTAL;
@@ -187,9 +194,8 @@ void SP_misc_portal_surface(gentity_t *ent) {
 	}
 }
 
-/*QUAKED misc_portal_camera(0 0 1)(-8 - 8 - 8)(8 8 8) slowrotate fastrotate noswing
-
-The target for a misc_portal_director.  You can set either angles or target another entity to determine the direction of view.
+/*QUAKED misc_portal_camera (0 0 1) (-8 -8 -8) (8 8 8) slowrotate fastrotate noswing
+The target for a misc_portal_director. You can set either angles or target another entity to determine the direction of view.
 "roll" an angle modifier to orient the camera around the target vector;
 */
 void SP_misc_portal_camera(gentity_t *ent) {
@@ -197,6 +203,7 @@ void SP_misc_portal_camera(gentity_t *ent) {
 
 	VectorClear(ent->r.mins);
 	VectorClear(ent->r.maxs);
+
 	trap_LinkEntity(ent);
 
 	G_SpawnFloat("roll", "0", &roll);
