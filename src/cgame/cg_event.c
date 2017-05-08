@@ -507,18 +507,18 @@ void CG_PainEvent(centity_t *cent, int health) {
 	char *snd;
 
 	// don't do more than two pain sounds a second
-	if (cg.time - cent->pe.painTime < 500)
+	if (cg.time - cent->pe.painTime < 500) {
 		return;
 	}
 
 	if (health < 25) {
-		snd = " * pain25_1.wav";
+		snd = "*pain25_1.wav";
 	} else if (health < 50) {
-		snd = " * pain50_1.wav";
+		snd = "*pain50_1.wav";
 	} else if (health < 75) {
-		snd = " * pain75_1.wav";
+		snd = "*pain75_1.wav";
 	} else {
-		snd = " * pain100_1.wav";
+		snd = "*pain100_1.wav";
 	}
 
 	trap_S_StartSound(NULL, cent->currentState.number, CHAN_VOICE, CG_CustomSound(cent->currentState.number, snd));
@@ -681,7 +681,7 @@ void CG_EntityEvent(centity_t *cent, vec3_t position) {
 			break;
 		case EV_FALL_MEDIUM:
 			// use normal pain sound
-			trap_S_StartSound(NULL, es->number, CHAN_VOICE, CG_CustomSound(es->number, " * pain100_1.wav"));
+			trap_S_StartSound(NULL, es->number, CHAN_VOICE, CG_CustomSound(es->number, "*pain100_1.wav"));
 
 			if (clientNum == cg.predictedPlayerState.clientNum) {
 				// smooth landing z changes
@@ -691,7 +691,7 @@ void CG_EntityEvent(centity_t *cent, vec3_t position) {
 
 			break;
 		case EV_FALL_FAR:
-			trap_S_StartSound(NULL, es->number, CHAN_AUTO, CG_CustomSound(es->number, " * fall1.wav"));
+			trap_S_StartSound(NULL, es->number, CHAN_AUTO, CG_CustomSound(es->number, "*fall1.wav"));
 			cent->pe.painTime = cg.time; // don't play a pain sound right after this
 
 			if (clientNum == cg.predictedPlayerState.clientNum) {
@@ -702,7 +702,7 @@ void CG_EntityEvent(centity_t *cent, vec3_t position) {
 
 			break;
 		case EV_FALLING:
-			trap_S_StartSound(NULL, es->number, CHAN_AUTO, CG_CustomSound(es->number, " * falling1.wav"));
+			trap_S_StartSound(NULL, es->number, CHAN_AUTO, CG_CustomSound(es->number, "*falling1.wav"));
 			break;
 		case EV_STEP_4:
 		case EV_STEP_8:
@@ -751,7 +751,7 @@ void CG_EntityEvent(centity_t *cent, vec3_t position) {
 				break;
 			}
 		case EV_JUMP:
-			trap_S_StartSound(NULL, es->number, CHAN_VOICE, CG_CustomSound(es->number, " * jump1.wav"));
+			trap_S_StartSound(NULL, es->number, CHAN_VOICE, CG_CustomSound(es->number, "*jump1.wav"));
 
 			if (BG_ClassHasAbility(cg.predictedPlayerState.stats[STAT_CLASS], SCA_WALLJUMPER)) {
 				vec3_t surfNormal, refNormal = {0.0f, 0.0f, 1.0f};
@@ -786,7 +786,7 @@ void CG_EntityEvent(centity_t *cent, vec3_t position) {
 			break;
 		case EV_TAUNT:
 			if (!cg_noTaunt.integer) {
-				trap_S_StartSound(NULL, es->number, CHAN_VOICE, CG_CustomSound(es->number, " * taunt.wav"));
+				trap_S_StartSound(NULL, es->number, CHAN_VOICE, CG_CustomSound(es->number, "*taunt.wav"));
 			}
 
 			break;
@@ -800,7 +800,7 @@ void CG_EntityEvent(centity_t *cent, vec3_t position) {
 			trap_S_StartSound(NULL, es->number, CHAN_AUTO, cgs.media.watrUnSound);
 			break;
 		case EV_WATER_CLEAR:
-			trap_S_StartSound(NULL, es->number, CHAN_AUTO, CG_CustomSound(es->number, " * gasp.wav"));
+			trap_S_StartSound(NULL, es->number, CHAN_AUTO, CG_CustomSound(es->number, "*gasp.wav"));
 			break;
 		// weapon events
 		case EV_NOAMMO:
@@ -924,7 +924,7 @@ void CG_EntityEvent(centity_t *cent, vec3_t position) {
 		case EV_DEATH1:
 		case EV_DEATH2:
 		case EV_DEATH3:
-			trap_S_StartSound(NULL, es->number, CHAN_VOICE, CG_CustomSound(es->number, va(" * death%i.wav", event - EV_DEATH1 + 1)));
+			trap_S_StartSound(NULL, es->number, CHAN_VOICE, CG_CustomSound(es->number, va("*death%i.wav", event - EV_DEATH1 + 1)));
 			break;
 		case EV_OBITUARY:
 			CG_Obituary(es);

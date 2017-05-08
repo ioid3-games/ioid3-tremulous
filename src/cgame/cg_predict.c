@@ -83,6 +83,7 @@ static void CG_ClipMoveToEntities(const vec3_t start, const vec3_t mins, const v
 	vec3_t bmins, bmaxs;
 	vec3_t origin, angles;
 	centity_t *cent;
+
 	// SUPAR HACK
 	// this causes a trace to collide with the local player
 	if (skipNumber == MAGIC_TRACE_HACK) {
@@ -551,24 +552,17 @@ void CG_PredictPlayerState(void) {
 
 	cg_pmove.pmove_fixed = pmove_fixed.integer; // |cg_pmove_fixed.integer;
 	cg_pmove.pmove_msec = pmove_msec.integer;
-	// like the comments described above, a player's state is entirely
-	// re-predicted from the last valid snapshot every client frame, which
-	// can be really, really, really slow. Every old command has to be
-	// run again. For every client frame that is *not* directly after a
+	// like the comments described above, a player's state is entirely re-predicted from the last valid snapshot every client frame, which
+	// can be really, really, really slow. Every old command has to be run again. For every client frame that is *not* directly after a
 	// snapshot, this is unnecessary, since we have no new information.
-	// for those, we'll play back the predictions from the last frame and
-	// predict only the newest commands. Essentially, we'll be doing
+	// for those, we'll play back the predictions from the last frame and predict only the newest commands. Essentially, we'll be doing
 	// an incremental predict instead of a full predict.
 
-	// if we have a new snapshot, we can compare its player state's command
-	// time to the command times in the queue to find a match. If we find
-	// a matching state, and the predicted version has not deviated, we can
-	// use the predicted state as a base - and also do an incremental predict.
+	// if we have a new snapshot, we can compare its player state's command time to the command times in the queue to find a match. If we find
+	// a matching state, and the predicted version has not deviated, we can use the predicted state as a base - and also do an incremental predict.
 
-	// with this method, we get incremental predicts on every client frame
-	// except a frame following a new snapshot in which there was a prediction
-	// error. This yeilds anywhere from a 15% to 40% performance increase,
-	// depending on how much of a bottleneck the CPU is.
+	// with this method, we get incremental predicts on every client frame except a frame following a new snapshot in which there was a prediction
+	// error. This yeilds anywhere from a 15% to 40% performance increase, depending on how much of a bottleneck the CPU is.
 	if (cg_optimizePrediction.integer) {
 		if (cg.nextFrameTeleport || cg.thisFrameTeleport) {
 			// do a full predict
@@ -588,8 +582,7 @@ void CG_PredictPlayerState(void) {
 			// loop through the saved states queue
 			for (i = cg.stateHead; i != cg.stateTail;
 				i = (i + 1) % NUM_SAVED_STATES) {
-				// if we find a predicted state whose commandTime matches the snapshot
-				// player state's commandTime
+				// if we find a predicted state whose commandTime matches the snapshot player state's commandTime
 				if (cg.savedPmoveStates[i].commandTime != cg.predictedPlayerState.commandTime) {
 					continue;
 				}
@@ -717,8 +710,7 @@ void CG_PredictPlayerState(void) {
 			cg.lastPredictedCommand = cmdNum;
 			// if we haven't run out of space in the saved states queue
 			if ((stateIndex + 1) % NUM_SAVED_STATES != cg.stateHead) {
-				// save the state for the false case(of cmdNum >= predictCmd)
-				// in later calls to this function
+				// save the state for the false case (of cmdNum >= predictCmd) in later calls to this function
 				cg.savedPmoveStates[stateIndex] = *cg_pmove.ps;
 				stateIndex = (stateIndex + 1) % NUM_SAVED_STATES;
 				cg.stateTail = stateIndex;

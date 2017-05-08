@@ -101,12 +101,12 @@ qboolean GetNews(qboolean begin) {
 	if (begin) { // if not already using curl, start the download
 		if (!clc.downloadCURLM) {
 			if (!CL_cURL_Init()) {
-				Cvar_Set("cl_newsString", "^1Error : Could not load cURL library");
+				Cvar_Set("cl_newsString", "^1Error: Could not load cURL library");
 				return qtrue;
 			}
 
 			clc.activeCURLNotGameRelated = qtrue;
-			CL_cURL_BeginDownload("news.dat", "http:// grangerhub.com / wp - content / uploads / clientnews.txt");
+			CL_cURL_BeginDownload("news.dat", "http://grangerhub.com/wp-content/uploads/clientnews.txt");
 			return qfalse;
 		}
 	}

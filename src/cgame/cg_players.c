@@ -193,7 +193,7 @@ static qboolean CG_ParseAnimationFile(const char *filename, clientInfo_t *ci) {
 			break;
 		}
 
-		Com_Printf("unknown token '%s' is %s\n", token, filename);
+		Com_Printf("unknown token '%s' in %s\n", token, filename);
 	}
 
 	if (!ci->nonsegmented) {
@@ -271,9 +271,11 @@ static qboolean CG_ParseAnimationFile(const char *filename, clientInfo_t *ci) {
 		}
 		// crouch backward animation
 		memcpy(&animations[LEGS_BACKCR], &animations[LEGS_WALKCR], sizeof(animation_t));
+
 		animations[LEGS_BACKCR].reversed = qtrue;
 		// walk backward animation
 		memcpy(&animations[LEGS_BACKWALK], &animations[LEGS_WALK], sizeof(animation_t));
+
 		animations[LEGS_BACKWALK].reversed = qtrue;
 		// flag moving fast
 		animations[FLAG_RUN].firstFrame = 0;
@@ -424,7 +426,6 @@ static qboolean CG_RegisterClientModelname(clientInfo_t *ci, const char *modelNa
 		return qfalse;
 	}
 	// load cmodels before models so filecache works
-
 	if (!ci->nonsegmented) {
 		Com_sprintf(filename, sizeof(filename), "models/players/%s/lower.md3", modelName);
 		ci->legsModel = trap_R_RegisterModel(filename);
@@ -711,13 +712,10 @@ void CG_NewClientInfo(int clientNum) {
 	// team
 	v = Info_ValueForKey(configstring, "t");
 	newInfo.team = atoi(v);
-	// if this is us, execute team - specific config files
-	// the spectator config is a little unreliable because it's easy to get on
-	// to the spectator team without joining it - e.g. when a new game starts.
-	// it's not a big deal because the spec config is the least important
-	// slash used anyway.
-	// i guess it's possible for someone to change teams during a restart and
-	// for that to then be missed here. But that's rare enough that people can
+	// if this is us, execute team-specific config files
+	// the spectator config is a little unreliable because it's easy to get on to the spectator team without joining it - e.g. when a new game starts.
+	// it's not a big deal because the spec config is the least important slash used anyway.
+	// I guess it's possible for someone to change teams during a restart and for that to then be missed here. But that's rare enough that people can
 	// just exec the configs manually, I think.
 	if (clientNum == cg.clientNum && ci->infoValid && ci->team != newInfo.team) {
 		char config[MAX_CVAR_VALUE_STRING];
@@ -1202,6 +1200,7 @@ static void CG_PlayerNonSegAngles(centity_t *cent, vec3_t srcAngles, vec3_t nonS
 	vec3_t ceilingNormal = {0.0f, 0.0f, -1.0f};
 
 	VectorCopy(srcAngles, localAngles);
+
 	localAngles[YAW] = AngleMod(localAngles[YAW]);
 	localAngles[PITCH] = 0.0f;
 	localAngles[ROLL] = 0.0f;
@@ -1271,7 +1270,7 @@ static void CG_PlayerNonSegAngles(centity_t *cent, vec3_t srcAngles, vec3_t nonS
 	}
 	// FIXME: PAIN[123] animations?
 	// pain twitch
-	// cG_AddPainTwitch(cent, torsoAngles);
+	// CG_AddPainTwitch(cent, torsoAngles);
 
 	AnglesToAxis(localAngles, nonSegAxis);
 }
@@ -1789,10 +1788,10 @@ void CG_Player(centity_t *cent) {
 	CG_PlayerSplash(cent, class);
 
 	if (cg_shadows.integer == 3 && shadow) {
-		renderfx|= RF_SHADOW_PLANE;
+		renderfx |= RF_SHADOW_PLANE;
 	}
 
-	renderfx|= RF_LIGHTING_ORIGIN; // use the same origin for all
+	renderfx |= RF_LIGHTING_ORIGIN; // use the same origin for all
 	// add the legs
 	if (!ci->nonsegmented) {
 		legs.hModel = ci->legsModel;
@@ -2027,7 +2026,6 @@ void CG_Corpse(centity_t *cent) {
 	}
 
 	VectorCopy(origin, legs.origin);
-
 	VectorCopy(origin, legs.lightingOrigin);
 
 	legs.shadowPlane = shadowPlane;

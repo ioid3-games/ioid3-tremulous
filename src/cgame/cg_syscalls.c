@@ -881,7 +881,8 @@ int trap_CIN_PlayCinematic(const char *arg0, int xpos, int ypos, int width, int 
 =======================================================================================================================================
 trap_CIN_StopCinematic
 
-Stops playing the cinematic and ends it. Should always return FMV_EOF. Cinematics must be stopped in reverse order of when they are started.
+Stops playing the cinematic and ends it. Should always return FMV_EOF. Cinematics must be stopped in reverse order of when they are
+started.
 =======================================================================================================================================
 */
 e_status trap_CIN_StopCinematic(int handle) {

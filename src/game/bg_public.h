@@ -19,11 +19,15 @@ Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 #ifndef _BG_PUBLIC_H_
 #define _BG_PUBLIC_H_
 
-// bg_public.h--definitions shared by both the server game and client game modules
+/**************************************************************************************************************************************
+ Definitions shared by both the server game and client game modules.
+**************************************************************************************************************************************/
+
+// because games can change separately from the main system version, we need a second version that must match between game and cgame
 
 // tremulous balance header
 #include "tremulous.h"
-// because games can change separately from the main system version, we need a second version that must match between game and cgame
+
 #define GAME_VERSION "base"
 #define DEFAULT_GRAVITY 800
 #define VOTE_TIME 30000 // 30 seconds before vote times out
@@ -38,9 +42,14 @@ typedef enum {
 	TEAM_HUMANS,
 	NUM_TEAMS
 } team_t;
-// config strings are a general means of communicating variable length strings from the server to all connected clients.
 
-// cS_SERVERINFO and CS_SYSTEMINFO are defined in q_shared.h
+/**************************************************************************************************************************************
+
+	config strings are a general means of communicating variable length strings from the server to all connected clients.
+
+**************************************************************************************************************************************/
+
+// CS_SERVERINFO and CS_SYSTEMINFO are defined in q_shared.h
 enum {
 	CS_MUSIC = 2,
 	CS_MESSAGE, // from the map worldspawn's message field
@@ -79,15 +88,14 @@ typedef enum {
 	GENDER_NEUTER
 } gender_t;
 
-/*
-=======================================================================================================================================
+/**************************************************************************************************************************************
 
-PMOVE MODULE
+	PMOVE MODULE
 
-The pmove code takes a player_state_t and a usercmd_t and generates a new player_state_t and some other output data.	Used for local
-prediction on the client game and true movement on the server game.
-=======================================================================================================================================
-*/
+	The pmove code takes a player_state_t and a usercmd_t and generates a new player_state_t and some other output data. Used for local
+	prediction on the client game and true movement on the server game.
+
+**************************************************************************************************************************************/
 
 typedef enum {
 	PM_NORMAL,		// can accelerate and turn
@@ -172,7 +180,14 @@ typedef struct pmove_s {
 void PM_UpdateViewAngles(playerState_t *ps, const usercmd_t *cmd);
 void Pmove(pmove_t *pmove);
 
-// player_state->stats[] indexes
+/**************************************************************************************************************************************
+
+	player_state->stats[] indexes
+
+	NOTE: may not have more than 16.
+
+**************************************************************************************************************************************/
+
 typedef enum {
 	STAT_HEALTH,
 	STAT_ITEMS,
@@ -215,8 +230,15 @@ typedef enum {
 
 #define SB_VALID_TOGGLEBIT		0x00002000
 
-// player_state->persistant[] indexes
-// these fields are the only part of player_state that isn't cleared on respawn
+/**************************************************************************************************************************************
+
+	player_state->persistant[] indexes
+
+	These fields are the only part of player_state that isn't cleared on respawn.
+	NOTE: may not have more than 16.
+
+**************************************************************************************************************************************/
+
 typedef enum {
 	PERS_SCORE,			// !!! MUST NOT CHANGE, SERVER AND GAME BOTH REFERENCE !!!
 	PERS_HITS,			// total points damage inflicted so damage beeps can sound on change
@@ -359,19 +381,14 @@ typedef enum {
 #define PLAYEREVENT_DENIEDREWARD	0x0001
 #define PLAYEREVENT_GAUNTLETREWARD	0x0002
 #define PLAYEREVENT_HOLYSHIT		0x0004
-
 // entityState_t->event values
-// entity events are for effects that take place reletive
-// to an existing entities origin. Very network efficient.
-
-// two bits at the top of the entityState->event field
-// will be incremented with each change in the event so
-// that an identical event started twice in a row can
-// be distinguished. And off the value with ~EV_EVENT_BITS
+// entity events are for effects that take place relative to an existing entities origin. Very network efficient.
+// two bits at the top of the entityState->event field will be incremented with each change in the event so
+// that an identical event started twice in a row can be distinguished. And off the value with ~EV_EVENT_BITS
 // to retrieve the actual event number
 #define EV_EVENT_BIT1 0x00000100
 #define EV_EVENT_BIT2 0x00000200
-#define EV_EVENT_BITS(EV_EVENT_BIT1|EV_EVENT_BIT2)
+#define EV_EVENT_BITS (EV_EVENT_BIT1|EV_EVENT_BIT2)
 
 #define EVENT_VALID_MSEC 300
 
@@ -398,10 +415,10 @@ typedef enum {
 	EV_FALL_FAR,
 	EV_FALLING,
 	EV_JUMP,
-	EV_WATER_TOUCH, // foot touches
-	EV_WATER_LEAVE, // foot leaves
-	EV_WATER_UNDER, // head touches
-	EV_WATER_CLEAR, // head leaves
+	EV_WATER_TOUCH,			// foot touches
+	EV_WATER_LEAVE,			// foot leaves
+	EV_WATER_UNDER,			// head touches
+	EV_WATER_CLEAR,			// head leaves
 	EV_NOAMMO,
 	EV_CHANGE_WEAPON,
 	EV_FIRE_WEAPON,
@@ -410,9 +427,9 @@ typedef enum {
 	EV_PLAYER_RESPAWN, // for fovwarp effects
 	EV_PLAYER_TELEPORT_IN,
 	EV_PLAYER_TELEPORT_OUT,
-	EV_GRENADE_BOUNCE, // eventParm will be the soundindex
+	EV_GRENADE_BOUNCE,		// eventParm will be the soundindex
 	EV_GENERAL_SOUND,
-	EV_GLOBAL_SOUND, // no attenuation
+	EV_GLOBAL_SOUND,		// no attenuation
 	EV_BULLET_HIT_FLESH,
 	EV_BULLET_HIT_WALL,
 	EV_SHOTGUN,
@@ -421,7 +438,7 @@ typedef enum {
 	EV_MISSILE_MISS,
 	EV_MISSILE_MISS_METAL,
 	EV_TESLATRAIL,
-	EV_BULLET, // otherEntity is the shooter
+	EV_BULLET,				// otherEntity is the shooter
 	EV_LEV1_GRAB,
 	EV_LEV4_TRAMPLE_PREPARE,
 	EV_LEV4_TRAMPLE_START,
@@ -430,12 +447,12 @@ typedef enum {
 	EV_DEATH2,
 	EV_DEATH3,
 	EV_OBITUARY,
-	EV_GIB_PLAYER, // gib a previously living player
+	EV_GIB_PLAYER,			// gib a previously living player
 	EV_BUILD_CONSTRUCT,
 	EV_BUILD_DESTROY,
-	EV_BUILD_DELAY, // can't build yet
-	EV_BUILD_REPAIR, // repairing buildable
-	EV_BUILD_REPAIRED, // buildable has full health
+	EV_BUILD_DELAY,			// can't build yet
+	EV_BUILD_REPAIR,		// repairing buildable
+	EV_BUILD_REPAIRED,		// buildable has full health
 	EV_HUMAN_BUILDABLE_EXPLOSION,
 	EV_ALIEN_BUILDABLE_EXPLOSION,
 	EV_ALIEN_ACIDTUBE,
@@ -445,12 +462,12 @@ typedef enum {
 	EV_DEBUG_LINE,
 	EV_STOPLOOPINGSOUND,
 	EV_TAUNT,
-	EV_OVERMIND_ATTACK, // overmind under attack
-	EV_OVERMIND_DYING, // overmind close to death
-	EV_OVERMIND_SPAWNS, // overmind needs spawns
-	EV_DCC_ATTACK, // dcc under attack
-	EV_MGTURRET_SPINUP, // turret spinup sound should play
-	EV_RPTUSE_SOUND, // trigger a sound
+	EV_OVERMIND_ATTACK,		// overmind under attack
+	EV_OVERMIND_DYING,		// overmind close to death
+	EV_OVERMIND_SPAWNS,		// overmind needs spawns
+	EV_DCC_ATTACK,			// dcc under attack
+	EV_MGTURRET_SPINUP,		// turret spinup sound should play
+	EV_RPTUSE_SOUND,		// trigger a sound
 	EV_LEV2_ZAP
 } entity_event_t;
 
@@ -528,15 +545,15 @@ typedef enum {
 	BOTH_DEAD2,
 	BOTH_DEATH3,
 	BOTH_DEAD3,
-
+//-------------------------
 	TORSO_GESTURE,
 	TORSO_ATTACK,
 	TORSO_ATTACK2,
 	TORSO_DROP,
-	TORSO_RAISE
+	TORSO_RAISE,
 	TORSO_STAND,
 	TORSO_STAND2,
-
+//-------------------------
 	LEGS_WALKCR,
 	LEGS_WALK,
 	LEGS_RUN,
@@ -549,22 +566,23 @@ typedef enum {
 	LEGS_IDLE,
 	LEGS_IDLECR,
 	LEGS_TURN,
-
+//-------------------------
 	TORSO_GETFLAG,
 	TORSO_GUARDBASE,
 	TORSO_PATROL,
 	TORSO_FOLLOWME,
 	TORSO_AFFIRMATIVE,
 	TORSO_NEGATIVE,
-
+//-------------------------
 	MAX_PLAYER_ANIMATIONS,
-
+//-------------------------
 	LEGS_BACKCR,
 	LEGS_BACKWALK,
+//-------------------------
 	FLAG_RUN,
 	FLAG_STAND,
 	FLAG_STAND2RUN,
-
+//-------------------------
 	MAX_PLAYER_TOTALANIMATIONS
 } playerAnimNumber_t;
 
@@ -646,16 +664,13 @@ typedef struct animation_s {
 	int frameLerp;		// msec between frames
 	int initialLerp;	// msec to get to first frame
 	int reversed;		// true if animation is reversed
-	int flipflop;	// true if animation should flipflop back to base
+	int flipflop;		// true if animation should flipflop back to base
 } animation_t;
-// flip the togglebit every time an animation
-// changes so a restart of the same anim can be detected
+// flip the togglebit every time an animation changes so a restart of the same anim can be detected
 #define ANIM_TOGGLEBIT	0x80
 #define ANIM_FORCEBIT	0x40
-
 // time between location updates
 #define TEAM_LOCATION_UPDATE_TIME 500
-
 // player classes
 typedef enum {
 	PCL_NONE,
@@ -931,14 +946,13 @@ const upgradeAttributes_t *BG_UpgradeByName(const char *name);
 const upgradeAttributes_t *BG_Upgrade(upgrade_t upgrade);
 qboolean BG_UpgradeAllowedInStage(upgrade_t upgrade, stage_t stage);
 // content masks
-#define MASK_ALL (-1)
-#define MASK_SOLID (CONTENTS_SOLID)
-#define MASK_PLAYERSOLID (CONTENTS_SOLID|CONTENTS_PLAYERCLIP|CONTENTS_BODY)
-#define MASK_DEADSOLID (CONTENTS_SOLID|CONTENTS_PLAYERCLIP)
-#define MASK_WATER (CONTENTS_WATER|CONTENTS_LAVA|CONTENTS_SLIME)
-#define MASK_OPAQUE (CONTENTS_SOLID|CONTENTS_SLIME|CONTENTS_LAVA)
-#define MASK_SHOT (CONTENTS_SOLID|CONTENTS_BODY)
-
+#define MASK_ALL			(-1)
+#define MASK_SOLID			(CONTENTS_SOLID)
+#define MASK_PLAYERSOLID	(CONTENTS_SOLID|CONTENTS_PLAYERCLIP|CONTENTS_BODY)
+#define MASK_DEADSOLID		(CONTENTS_SOLID|CONTENTS_PLAYERCLIP)
+#define MASK_WATER			(CONTENTS_WATER|CONTENTS_LAVA|CONTENTS_SLIME)
+#define MASK_OPAQUE			(CONTENTS_SOLID|CONTENTS_SLIME|CONTENTS_LAVA)
+#define MASK_SHOT			(CONTENTS_SOLID|CONTENTS_BODY)
 // entityState_t->eType
 typedef enum {
 	ET_GENERAL,
@@ -962,8 +976,7 @@ typedef enum {
 	ET_LIGHTFLARE,
 	ET_LEV2_ZAP_CHAIN,
 	ET_WEAPON_DROP,
-	ET_EVENTS // any of the EV_ * events can be added freestanding by setting eType to ET_EVENTS + eventNum
-				// this avoids having to set eFlags and eventNum
+	ET_EVENTS // any of the EV_ * events can be added freestanding by setting eType to ET_EVENTS + eventNum this avoids having to set eFlags and eventNum
 } entityType_t;
 
 void *BG_Alloc(int size);
@@ -976,10 +989,10 @@ void BG_EvaluateTrajectoryDelta(const trajectory_t *tr, int atTime, vec3_t resul
 void BG_AddPredictableEventToPlayerstate(int newEvent, int eventParm, playerState_t *ps);
 void BG_PlayerStateToEntityState(playerState_t *ps, entityState_t *s, qboolean snap);
 void BG_PlayerStateToEntityStateExtraPolate(playerState_t *ps, entityState_t *s, int time, qboolean snap);
-
 qboolean BG_PlayerTouchesItem(playerState_t *ps, entityState_t *item, int atTime);
 
 #define ARENAS_PER_TIER 4
+
 #define MAX_ARENAS 1024
 #define MAX_ARENAS_TEXT 8192
 #define MAX_BOTS 1024

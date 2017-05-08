@@ -299,13 +299,13 @@ void CG_OffsetThirdPersonView(void) {
 		range = 30.0f;
 	}
 	// calculate the angle of the camera's position around the player.
-	// unless in demo, PLAYING in third person, or in dead - third - person cam, allow the player  to control camera position offsets using the mouse position.
+	// unless in demo, PLAYING in third person, or in dead-third-person cam, allow the player  to control camera position offsets using the mouse position.
 	if (cg.demoPlayback || ((cg.snap->ps.pm_flags & PMF_FOLLOW) && (cg.predictedPlayerState.stats[STAT_HEALTH] > 0))) {
 		// collect our input values from the mouse.
 		cmdNum = trap_GetCurrentCmdNumber();
 		trap_GetUserCmd(cmdNum, &cmd);
 		trap_GetUserCmd(cmdNum - 1, &oldCmd);
-		// prevent pitch from wrapping and clamp it within a [- 75, 90] range.
+		// prevent pitch from wrapping and clamp it within a [-75, 90] range.
 		// cgame has no access to ps.delta_angles[] here, so we need to reproduce it ourselves.
 		deltaPitch = SHORT2ANGLE(cmd.angles[PITCH] - oldCmd.angles[PITCH]);
 
@@ -699,12 +699,12 @@ void CG_OffsetFirstPersonView(void) {
 		angles[YAW] += fraction * PCLOUD_ROLL_AMPLITUDE;
 		angles[PITCH] += pitchFraction * PCLOUD_ROLL_AMPLITUDE / 2.0f;
 	}
-	// this *feels * more realisitic for humans
+	// this *feels* more realisitic for humans
 	if (cg.predictedPlayerState.stats[STAT_TEAM] == TEAM_HUMANS && (cg.predictedPlayerState.pm_type == PM_NORMAL || cg.predictedPlayerState.pm_type == PM_JETPACK)) {
 		angles[PITCH] += cg.bobfracsin * bob2 * 0.5;
 		// heavy breathing effects // FIXME: sound
 		if (cg.predictedPlayerState.stats[STAT_STAMINA] < STAMINA_BREATHING_LEVEL) {
-			float deltaBreath = (cg.predictedPlayerState.stats[STAT_STAMINA] - STAMINA_BREATHING_LEVEL) / - 250.0;
+			float deltaBreath = (cg.predictedPlayerState.stats[STAT_STAMINA] - STAMINA_BREATHING_LEVEL) / -250.0;
 			float deltaAngle = cos((float)cg.time / 150.0) * deltaBreath;
 
 			deltaAngle += (deltaAngle < 0 ? -deltaAngle : deltaAngle) * 0.5;
@@ -1152,7 +1152,7 @@ static int CG_CalcViewValues(void) {
 	AnglesToAxis(cg.refdefViewAngles, cg.refdef.viewaxis);
 
 	if (cg.hyperspace) {
-		cg.refdef.rdflags|= RDF_NOWORLDMODEL|RDF_HYPERSPACE;
+		cg.refdef.rdflags |= RDF_NOWORLDMODEL|RDF_HYPERSPACE;
 	}
 	// draw the surface normal looking at
 	if (cg_drawSurfNormal.integer) {

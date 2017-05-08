@@ -729,6 +729,7 @@ static void CG_RegisterGraphics(void) {
 
 	memset(cg_weapons, 0, sizeof(cg_weapons));
 	memset(cg_upgrades, 0, sizeof(cg_upgrades));
+
 	cgs.media.shadowMarkShader = trap_R_RegisterShader("gfx/marks/shadow");
 	cgs.media.wakeMarkShader = trap_R_RegisterShader("gfx/marks/wake");
 	cgs.media.poisonCloudPS = CG_RegisterParticleSystem("firstPersonPoisonCloudPS");
@@ -1734,8 +1735,7 @@ void CG_Init(int serverMessageNum, int serverCommandSequence, int clientNum) {
 	// old servers
 	// get the gamestate from the client system
 	trap_GetGameState(&cgs.gameState);
-	// copy vote display strings so they don't show up blank if we see
-	// the same one directly after connecting
+	// copy vote display strings so they don't show up blank if we see the same one directly after connecting
 	Q_strncpyz(cgs.voteString[TEAM_NONE], CG_ConfigString(CS_VOTE_STRING + TEAM_NONE), sizeof(cgs.voteString));
 	Q_strncpyz(cgs.voteString[TEAM_ALIENS], CG_ConfigString(CS_VOTE_STRING + TEAM_ALIENS), sizeof(cgs.voteString[TEAM_ALIENS]));
 	Q_strncpyz(cgs.voteString[TEAM_HUMANS], CG_ConfigString(CS_VOTE_STRING + TEAM_ALIENS), sizeof(cgs.voteString[TEAM_HUMANS]));
@@ -1832,7 +1832,7 @@ static char *CG_VoIPString(void) {
 			slen += nlen;
 		}
 		// notice that if the snprintf was truncated, slen was not updated
-		// so this will remove any trailing commas or partially - completed numbers
+		// so this will remove any trailing commas or partially-completed numbers
 		voipString[slen] = '\0';
 	} else if (Q_stricmp(voipSendTarget, "crosshair") == 0) {
 		Com_sprintf(voipString, sizeof(voipString), "%d", CG_CrosshairPlayer());

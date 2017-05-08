@@ -787,7 +787,7 @@ void CG_InitWeapons(void) {
 =======================================================================================================================================
 CG_SetWeaponLerpFrameAnimation
 
-may include ANIM_TOGGLEBIT.
+May include ANIM_TOGGLEBIT.
 =======================================================================================================================================
 */
 static void CG_SetWeaponLerpFrameAnimation(weapon_t weapon, lerpFrame_t *lf, int newAnimation) {
@@ -812,7 +812,7 @@ static void CG_SetWeaponLerpFrameAnimation(weapon_t weapon, lerpFrame_t *lf, int
 
 /*
 =======================================================================================================================================
-CG_WeaponAnimation.
+CG_WeaponAnimation
 =======================================================================================================================================
 */
 static void CG_WeaponAnimation(centity_t *cent, int *old, int *now, float *backLerp) {
@@ -990,7 +990,7 @@ void CG_AddPlayerWeapon(refEntity_t *parent, playerState_t *ps, centity_t *cent)
 		gun.shaderRGBA[1] = 255;
 		gun.shaderRGBA[2] = 255;
 		gun.shaderRGBA[3] = 255;
-		// set weapon[1 / 2]Time when respective buttons change state
+		// set weapon[1/2]Time when respective buttons change state
 		if (cg.weapon1Firing != (cg.predictedPlayerState.eFlags & EF_FIRING)) {
 			cg.weapon1Time = cg.time;
 			cg.weapon1Firing = (cg.predictedPlayerState.eFlags & EF_FIRING);
@@ -1967,7 +1967,7 @@ static void CG_ShotgunPattern(vec3_t origin, vec3_t origin2, int seed, int other
 
 /*
 =======================================================================================================================================
-CG_ShotgunFire.
+CG_ShotgunFire
 =======================================================================================================================================
 */
 void CG_ShotgunFire(entityState_t *es) {

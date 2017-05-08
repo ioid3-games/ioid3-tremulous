@@ -337,7 +337,7 @@ static void CG_WeaponDrop(centity_t *cent) {
 		frac = 1.0;
 	}
 	// items without glow textures need to keep a minimum light value so they are always visible
-	ent.renderfx|= RF_MINLIGHT;
+	ent.renderfx |= RF_MINLIGHT;
 	// increase the size of the weapons when they are presented as items
 	VectorScale(ent.axis[0], 1.5, ent.axis[0]);
 	VectorScale(ent.axis[1], 1.5, ent.axis[1]);
@@ -659,8 +659,7 @@ static void CG_LightFlare(centity_t *cent) {
 	}
 
 	CG_Trace(&tr, cg.refdef.vieworg, NULL, NULL, es->angles2, entityNum, MASK_SHOT);
-	// if there is no los between the view and the flare source
-	// it definately cannot be seen
+	// if there is no los between the view and the flare source it definately cannot be seen
 	if (tr.fraction < 1.0f || tr.allsolid) {
 		return;
 	}

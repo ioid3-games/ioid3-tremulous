@@ -346,9 +346,9 @@ typedef struct baseTrailBeam_s {
 	float backAlpha;
 	byte frontColor[3];
 	byte backColor[3];
-	// the time it takes for a segment to vanish(single attached only)
+	// the time it takes for a segment to vanish (single attached only)
 	int segmentTime;
-	// the time it takes for a beam to fade out(double attached only)
+	// the time it takes for a beam to fade out (double attached only)
 	int fadeOutTime;
 	char shaderName[MAX_QPATH];
 	qhandle_t shader;
@@ -432,7 +432,7 @@ typedef struct {
 typedef struct lightFlareStatus_s {
 	float lastRadius;	// caching of likely flare radius
 	float lastRatio;	// caching of likely flare ratio
-	int lastTime;		// last time flare was visible / occluded
+	int lastTime;		// last time flare was visible/occluded
 	qboolean status;	// flare is visble?
 } lightFlareStatus_t;
 
@@ -472,7 +472,7 @@ typedef struct centity_s {
 	int errorTime;				// decay the error from this time
 	vec3_t errorOrigin;
 	vec3_t errorAngles;
-	qboolean extrapolated;		// false if origin / angles is an interpolation
+	qboolean extrapolated;		// false if origin/angles is an interpolation
 	vec3_t rawOrigin;
 	vec3_t rawAngles;
 	vec3_t beamEnd;
@@ -509,6 +509,12 @@ typedef struct centity_s {
 	struct centity_s *nextLocation;
 } centity_t;
 
+/**************************************************************************************************************************************
+
+	local entities are created as a result of events or predicted actions, and live independantly from all server transmitted entities.
+
+**************************************************************************************************************************************/
+
 typedef struct markPoly_s {
 	struct markPoly_s *prevMark, *nextMark;
 	int time;
@@ -526,7 +532,7 @@ typedef struct {
 	int time;
 	int team;
 	weapon_t weapon;
-  upgrade_t upgrade;
+	upgrade_t upgrade;
 } score_t;
 
 /**************************************************************************************************************************************
@@ -634,6 +640,12 @@ typedef struct weaponInfo_s {
 	qboolean disableIn3rdPerson;
 	weaponInfoMode_t wim[WPM_NUM_WEAPONMODES];
 } weaponInfo_t;
+
+/**************************************************************************************************************************************
+
+	Each IT_* item has an associated itemInfo_t that constains media references necessary to present the item and its effects.
+
+**************************************************************************************************************************************/
 
 typedef struct upgradeInfo_s {
 	qboolean registered;
@@ -1398,8 +1410,17 @@ int CG_ReadPTRCode(void);
 void CG_WritePTRCode(int code);
 // cg_tutorial.c
 const char *CG_TutorialText(void);
-// system traps
-// these functions are how the cgame communicates with the main game system
+
+/*
+=======================================================================================================================================
+
+	SYSTEM TRAPS
+
+	These functions are how the cgame communicates with the main game system.
+
+=======================================================================================================================================
+*/
+
 // print message on the local console
 void trap_Print(const char *fmt);
 // abort the game
@@ -1459,15 +1480,13 @@ void trap_S_ClearLoopingSounds(qboolean killall);
 void trap_S_AddLoopingSound(int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfx);
 void trap_S_AddRealLoopingSound(int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfx);
 void trap_S_UpdateEntityPosition(int entityNum, const vec3_t origin);
-// respatialize recalculates the volumes of sound as they should be heard by the
-// given entityNum and position
+// respatialize recalculates the volumes of sound as they should be heard by the given entityNum and position
 void trap_S_Respatialize(int entityNum, const vec3_t origin, vec3_t axis[3], int inwater);
 sfxHandle_t trap_S_RegisterSound(const char *sample, qboolean compressed); // returns buzz if not found
 void trap_S_StartBackgroundTrack(const char *intro, const char *loop); // empty name stops music
 void trap_S_StopBackgroundTrack(void);
 void trap_R_LoadWorldMap(const char *mapname);
-// all media should be registered during level startup to prevent
-// hitches during gameplay
+// all media should be registered during level startup to prevent hitches during gameplay
 qhandle_t trap_R_RegisterModel(const char *name);		// returns rgb axis if not found
 qhandle_t trap_R_RegisterSkin(const char *name);		// returns all white if not found
 qhandle_t trap_R_RegisterShader(const char *name);		// returns all white if not found
@@ -1549,5 +1568,5 @@ typedef enum {
 	DT_INTERACTIVE,		// team, class, armoury
 	DT_ARMOURYEVOLVE,	// insufficient funds et al
 	DT_BUILD,			// build errors
-	DT_COMMAND,			// you must be living / human / spec etc.
+	DT_COMMAND,			// you must be living/human/spec etc.
 } dialogType_t;

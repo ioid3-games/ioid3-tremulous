@@ -284,7 +284,7 @@ static void CG_DrawProgressBar(rectDef_t *rect, vec4_t color, float scale, int a
 	}
 }
 
-// =============== TA : was cg_newdraw.c
+// ======================================================= TA: was cg_newdraw.c =======================================================
 
 #define NO_CREDITS_TIME 2000
 
@@ -450,7 +450,6 @@ static void CG_DrawPlayerClipsRing(rectDef_t *rect, vec4_t backColor, vec4_t for
 
 			Vector4Lerp(progress, backColor, foreColor, color);
 			break;
-
 		default:
 			if (ps->weaponstate == WEAPON_RELOADING) {
 				maxDelay = (float)BG_Weapon(cent->currentState.weapon)->reloadTime;
@@ -603,6 +602,11 @@ static void CG_DrawPlayerWallclimbing(rectDef_t *rect, vec4_t backColor, vec4_t 
 	trap_R_SetColor(NULL);
 }
 
+/*
+=======================================================================================================================================
+CG_DrawPlayerAmmoValue
+=======================================================================================================================================
+*/
 static void CG_DrawPlayerAmmoValue(rectDef_t *rect, vec4_t color) {
 	int value;
 	int valueMarked = -1;
@@ -723,11 +727,12 @@ static void CG_DrawUsableBuildable(rectDef_t *rect, qhandle_t shader, vec4_t col
 		CG_DrawPic(rect->x, rect->y, rect->w, rect->h, shader);
 		trap_R_SetColor(NULL);
 		cg.nearUsableBuildable = es->modelindex;
-	} else
+	} else {
 		cg.nearUsableBuildable = BA_NONE;
+	}
 }
 
-#define BUILD_DELAY_TIME  2000
+#define BUILD_DELAY_TIME 2000
 
 /*
 =======================================================================================================================================
@@ -788,7 +793,6 @@ static void CG_DrawPlayerClipsValue(rectDef_t *rect, vec4_t color) {
 		case WP_ABUILD2:
 		case WP_HBUILD:
 			return;
-
 		default:
 			value = ps->clips;
 
@@ -822,6 +826,7 @@ static void CG_DrawPlayerHealthCross(rectDef_t *rect, vec4_t ref_color) {
 	qhandle_t shader;
 	vec4_t color;
 	float ref_alpha;
+
 	// pick the current icon
 	shader = cgs.media.healthCross;
 
@@ -1479,8 +1484,8 @@ static void CG_DrawStageReport(rectDef_t *rect, float text_x, float text_y, vec4
 CG_DrawFPS
 =======================================================================================================================================
 */
-#define FPS_FRAMES  20
-#define FPS_STRING  "fps"
+#define FPS_FRAMES 20
+#define FPS_STRING "fps"
 static void CG_DrawFPS(rectDef_t *rect, float text_x, float text_y, float scale, vec4_t color, int textalign, int textvalign, int textStyle, qboolean scalableText) {
 	const char *s;
 	float tx, ty;
@@ -1559,7 +1564,6 @@ static void CG_DrawTimerMins(rectDef_t *rect, vec4_t color) {
 	}
 
 	msec = cg.time - cgs.levelStartTime;
-
 	seconds = msec / 1000;
 	mins = seconds / 60;
 	seconds -= mins * 60;
@@ -1583,7 +1587,6 @@ static void CG_DrawTimerSecs(rectDef_t *rect, vec4_t color) {
 	}
 
 	msec = cg.time - cgs.levelStartTime;
-
 	seconds = msec / 1000;
 	mins = seconds / 60;
 	seconds -= mins * 60;
@@ -1973,7 +1976,7 @@ static void CG_DrawKillMsg(rectDef_t *rect, float text_x, float text_y, float sc
 =======================================================================================================================================
 */
 
-#define LAG_SAMPLES   128
+#define LAG_SAMPLES 128
 
 typedef struct {
 	int frameSamples[LAG_SAMPLES];
@@ -1989,7 +1992,7 @@ lagometer_t lagometer;
 =======================================================================================================================================
 CG_AddLagometerFrameInfo
 
-Adds the current interpolate / extrapolate bar for this frame.
+Adds the current interpolate/extrapolate bar for this frame.
 =======================================================================================================================================
 */
 void CG_AddLagometerFrameInfo(void) {
@@ -2005,7 +2008,6 @@ void CG_AddLagometerFrameInfo(void) {
 CG_AddLagometerSnapshotInfo
 
 Each time a snapshot is received, log its ping time and the number of snapshots that were dropped before it.
-
 Pass NULL for a dropped packet.
 =======================================================================================================================================
 */
@@ -2044,7 +2046,7 @@ void CG_AddLagometerSnapshotInfo(snapshot_t *snap) {
 =======================================================================================================================================
 CG_DrawDisconnect
 
-Should we draw something differnet for long lag vs no packets?.
+Should we draw something differnet for long lag vs no packets?
 =======================================================================================================================================
 */
 static void CG_DrawDisconnect(void) {
@@ -2126,7 +2128,7 @@ static void CG_DrawLagometer(rectDef_t *rect, float text_x, float text_y, float 
 	mid = ay + range;
 
 	vscale = range / MAX_LAGOMETER_RANGE;
-	// draw the frame interpoalte / extrapolate graph
+	// draw the frame interpoalte/extrapolate graph
 	for (a = 0; a < aw; a++) {
 		i = (lagometer.frameCount - 1 - a) &(LAG_SAMPLES - 1);
 		v = lagometer.frameSamples[i];
@@ -2158,7 +2160,7 @@ static void CG_DrawLagometer(rectDef_t *rect, float text_x, float text_y, float 
 			trap_R_DrawStretchPic(ax + aw - a, mid, 1, v, 0, 0, 0, 0, cgs.media.whiteShader);
 		}
 	}
-	// draw the snapshot latency / drop graph
+	// draw the snapshot latency/drop graph
 	range = ah / 2;
 	vscale = range / MAX_LAGOMETER_PING;
 
@@ -2169,7 +2171,7 @@ static void CG_DrawLagometer(rectDef_t *rect, float text_x, float text_y, float 
 		if (v > 0) {
 			if (lagometer.snapshotFlags[i] & SNAPFLAG_RATE_DELAYED) {
 				if (color != 5) {
-					color = 5; // yELLOW for rate delay
+					color = 5; // YELLOW for rate delay
 					trap_R_SetColor(g_color_table[ColorIndex(COLOR_YELLOW)]);
 				}
 			} else {
@@ -2189,7 +2191,7 @@ static void CG_DrawLagometer(rectDef_t *rect, float text_x, float text_y, float 
 			trap_R_DrawStretchPic(ax + aw - a, ay + ah - v, 1, v, 0, 0, 0, 0, cgs.media.whiteShader);
 		} else if (v < 0) {
 			if (color != 4) {
-				color = 4; // rED for dropped snapshots
+				color = 4; // RED for dropped snapshots
 				trap_R_SetColor(g_color_table[ColorIndex(COLOR_RED)]);
 			}
 
@@ -2228,7 +2230,7 @@ int maxSpeedSample = 0;
 =======================================================================================================================================
 CG_AddSpeed
 
-append a speed to the sample history.
+Append a speed to the sample history.
 =======================================================================================================================================
 */
 void CG_AddSpeed(void) {
@@ -2439,7 +2441,7 @@ void CG_DrawWeaponIcon(rectDef_t *rect, vec4_t color) {
 /*
 =======================================================================================================================================
 
-C	ROSSHAIR
+CROSSHAIR
 
 =======================================================================================================================================
 */
@@ -2482,8 +2484,7 @@ static void CG_DrawCrosshair(rectDef_t *rect, vec4_t color) {
 
 	w = h = wi->crossHairSize * cg_crosshairSize.value;
 	w *= cgDC.aspectScale;
-	// FIXME: this still ignores the width / height of the rect, but at least it's
-	// neater than cg_crosshairX / cg_crosshairY
+	// FIXME: this still ignores the width/height of the rect, but at least it's neater than cg_crosshairX / cg_crosshairY
 	x = rect->x + (rect->w / 2) - (w / 2);
 	y = rect->y + (rect->h / 2) - (h / 2);
 
@@ -2568,7 +2569,6 @@ static void CG_DrawLocation(rectDef_t *rect, float scale, int textalign, vec4_t 
 	}
 
 	maxX = rect->x + rect->w;
-
 	locent = CG_GetPlayerLocation();
 
 	if (locent) {
@@ -2827,7 +2827,6 @@ void CG_OwnerDraw(float x, float y, float w, float h, float text_x, float text_y
 		case CG_PLAYER_THZ_SCANNER:
 			THZ_DrawScanner(&rect);
 			break;
-
 		default:
 			break;
 	}
@@ -2858,7 +2857,7 @@ void CG_MouseEvent(int x, int y) {
 
 	if (cgs.cursorY < 0) {
 		cgs.cursorY = 0;
-	} velse if (cgs.cursorY > 480) {
+	} else if (cgs.cursorY > 480) {
 		cgs.cursorY = 480;
 	}
 
@@ -2967,7 +2966,7 @@ CG_RunMenuScript
 */
 void CG_RunMenuScript(char **args) {
 }
-// eND TA UI
+// END TA UI
 /*
 =======================================================================================================================================
 CG_DrawLighting
@@ -3146,7 +3145,7 @@ static qboolean CG_DrawScoreboard(void) {
 	static qboolean firstTime = qtrue;
 
 	if (menuScoreboard) {
-		menuScoreboard->window.flags & = ~WINDOW_FORCED;
+		menuScoreboard->window.flags &= ~WINDOW_FORCED;
 	}
 
 	if (cg_paused.integer) {
@@ -3230,10 +3229,18 @@ static qboolean CG_DrawQueue(void) {
 			break;
 		default:
 			switch (position % 10) {
-				case 1:  ordinal = "st"; break;
-				case 2:  ordinal = "nd"; break;
-				case 3:  ordinal = "rd"; break;
-				default: ordinal = "th"; break;
+				case 1:
+					ordinal = "st";
+					break;
+				case 2:
+					ordinal = "nd";
+					break;
+				case 3:
+					ordinal = "rd";
+					break;
+				default:
+					ordinal = "th";
+					break;
 			}
 
 			break;
@@ -3521,4 +3528,3 @@ void CG_DrawActive(stereoFrame_t stereoView) {
 	// draw status bar and other floating elements
 	CG_Draw2D();
 }
-

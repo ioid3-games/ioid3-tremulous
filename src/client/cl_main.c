@@ -944,9 +944,16 @@ static int CL_WalkDemoExt(char *arg, char *name, int *demofile) {
 	Com_sprintf(name, MAX_OSPATH, "demos/%s.%s%d", arg, DEMOEXT, PROTOCOL_VERSION);
 	FS_FOpenFileRead(name, demofile, qtrue);
 
-	if (*demofile) {
-		Com_Printf("Demo file: %s\n", name);
-		return PROTOCOL_VERSION;
+	if (com_protocol->integer != com_legacyprotocol->integer)
+#endif
+	{
+		Com_sprintf(name, MAX_OSPATH, "demos/%s.%s%d", arg, DEMOEXT, com_protocol->integer);
+		FS_FOpenFileRead(name, demofile, qtrue);
+
+		if (*demofile) {
+			Com_Printf("Demo file: %s\n", name);
+			return com_protocol->integer;
+		}
 	}
 
 	Com_Printf("Not found: %s\n", name);
@@ -2455,7 +2462,7 @@ void CL_ServersResponsePacket(const netadr_t *from, msg_t *msg, qboolean extende
 				Com_DPrintf("CL_ServersResponsePacket: received packet %d again, ignoring\n", ind);
 				return;
 			}
-			// TODO : detect dropped packets and make another request
+			// TODO: detect dropped packets and make another request
 			Com_DPrintf("CL_ServersResponsePacket: packet %d of %d\n", ind, cls.numMasterPackets);
 			cls.receivedMasterPackets|= (1 << (ind - 1));
 

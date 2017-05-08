@@ -572,6 +572,7 @@ static qboolean PM_CheckPounce(void) {
 	}
 
 	VectorMA(pm->ps->velocity, jumpMagnitude, pml.forward, pm->ps->velocity);
+
 	PM_AddEvent(EV_JUMP);
 	// play jumping animation
 	if (pm->cmd.forwardmove >= 0) {
@@ -1250,8 +1251,7 @@ static void PM_ClimbMove(void) {
 			wishspeed = pm->ps->speed * waterScale;
 		}
 	}
-	// when a player gets hit, they temporarily lose
-	// full control, which allows them to be moved a bit
+	// when a player gets hit, they temporarily lose full control, which allows them to be moved a bit
 	if ((pml.groundTrace.surfaceFlags & SURF_SLICK) || pm->ps->pm_flags & PMF_TIME_KNOCKBACK) {
 		accelerate = BG_Class(pm->ps->stats[STAT_CLASS])->airAcceleration;
 	} else {
@@ -1381,7 +1381,8 @@ static void PM_WalkMove(void) {
 	}
 
 	PM_StepSlideMove(qfalse, qfalse);
-	// Com_Printf("velocity2 = %1.1f\n", VectorLength(pm->ps->velocity));
+
+	//Com_Printf("velocity2 = %1.1f\n", VectorLength(pm->ps->velocity));
 }
 
 /*
@@ -1410,6 +1411,7 @@ static void PM_LadderMove(void) {
 	wishvel[2] += scale * pm->cmd.upmove;
 
 	VectorCopy(wishvel, wishdir);
+
 	wishspeed = VectorNormalize(wishdir);
 
 	if (wishspeed > pm->ps->speed * pm_swimScale) {
@@ -1950,7 +1952,7 @@ static void PM_GroundClimbTrace(void) {
 			}
 
 			pml.groundTrace = trace;
-			// so everything knows where we're wallclimbing(ie client side)
+			// so everything knows where we're wallclimbing (ie client side)
 			pm->ps->eFlags |= EF_WALLCLIMB;
 			// if we're not stuck to the ceiling then set grapplePoint to be a surface normal
 			if (!VectorCompareEpsilon(trace.plane.normal, ceilingNormal, eps)) {
@@ -1958,7 +1960,7 @@ static void PM_GroundClimbTrace(void) {
 				VectorCopy(trace.plane.normal, pm->ps->grapplePoint);
 				pm->ps->eFlags &= ~EF_WALLCLIMBCEILING;
 			}
-			// IMPORTANT : break out of the for loop if we've hit something
+			// IMPORTANT: break out of the for loop if we've hit something
 			break;
 		} else if (trace.allsolid) {
 			// do something corrective if the trace starts in a solid...
@@ -2875,7 +2877,6 @@ static void PM_Weapon(void) {
 			}
 
 			break;
-
 		default:
 			if (!attack1 && !attack2 && !attack3) {
 				pm->ps->weaponTime = 0;
@@ -3141,7 +3142,7 @@ void PM_UpdateViewAngles(playerState_t *ps, const usercmd_t *cmd) {
 			// guard against speed hack
 			temp[i] = ps->delta_angles[i];
 #ifdef CGAME
-			// assert here so that if cmd->angles[i] becomes non - zero
+			// assert here so that if cmd->angles[i] becomes non-zero
 			// for a legitimate reason we can tell where and why it's being ignored
 			assert(cmd->angles[i] == 0);
 #endif
