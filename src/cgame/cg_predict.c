@@ -652,6 +652,7 @@ void CG_PredictPlayerState(void) {
 				cg.thisFrameTeleport = qfalse;
 			} else {
 				vec3_t adjusted;
+
 				CG_AdjustPositionForMover(cg.predictedPlayerState.origin, cg.predictedPlayerState.groundEntityNum, cg.physicsTime, cg.oldTime, adjusted);
 
 				if (cg_showmiss.integer) {

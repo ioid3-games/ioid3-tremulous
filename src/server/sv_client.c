@@ -224,6 +224,7 @@ void SV_DirectConnect(netadr_t from) {
 		}
 
 		Com_Printf("Client %i connecting with %i challenge ping\n", i, ping);
+
 		challengeptr->connected = qtrue;
 	}
 
@@ -648,6 +649,7 @@ int SV_WriteDownloadToClient(client_t *cl, msg_t *msg) {
 	if (!cl->download) {
 		// Chop off filename extension.
 		Com_sprintf(pakbuf, sizeof(pakbuf), "%s", cl->downloadName);
+
 		pakptr = strrchr(pakbuf, '.');
 
 		if (pakptr) {
@@ -657,6 +659,7 @@ int SV_WriteDownloadToClient(client_t *cl, msg_t *msg) {
 				const char *referencedPaks = FS_ReferencedPakNames();
 				// Check whether the file appears in the list of referenced paks to prevent downloading of arbitrary files.
 				Cmd_TokenizeStringIgnoreQuotes(referencedPaks);
+
 				numRefPaks = Cmd_Argc();
 
 				for (curindex = 0; curindex < numRefPaks; curindex++) {
@@ -1023,6 +1026,7 @@ SV_ResetPureClient_f
 =======================================================================================================================================
 */
 static void SV_ResetPureClient_f(client_t *cl) {
+
 	cl->pureAuthentic = 0;
 	cl->gotCP = qfalse;
 }

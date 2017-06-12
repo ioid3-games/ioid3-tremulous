@@ -892,6 +892,7 @@ void CG_StartMusic(void) {
 
 	// start the background music
 	s = (char *)CG_ConfigString(CS_MUSIC);
+
 	Q_strncpyz(parm1, COM_Parse(&s), sizeof(parm1));
 	Q_strncpyz(parm2, COM_Parse(&s), sizeof(parm2));
 

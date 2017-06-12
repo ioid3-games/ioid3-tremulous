@@ -170,6 +170,7 @@ void CG_ImpactMark(qhandle_t markShader, const vec3_t origin, const vec3_t dir, 
 		polyVert_t *v;
 		polyVert_t verts[MAX_VERTS_ON_POLY];
 		markPoly_t *mark;
+
 		// we have an upper limit on the complexity of polygons that we store persistantly
 		if (mf->numPoints > MAX_VERTS_ON_POLY) {
 			mf->numPoints = MAX_VERTS_ON_POLY;
@@ -207,14 +208,14 @@ void CG_ImpactMark(qhandle_t markShader, const vec3_t origin, const vec3_t dir, 
 	}
 }
 
+#define MARK_TOTAL_TIME 10000
+#define MARK_FADE_TIME 1000
+
 /*
 =======================================================================================================================================
 CG_AddMarks
 =======================================================================================================================================
 */
-#define MARK_TOTAL_TIME 10000
-#define MARK_FADE_TIME 1000
-
 void CG_AddMarks(void) {
 	int j;
 	markPoly_t *mp, *next;

@@ -161,8 +161,7 @@ void SV_AddServerCommand(client_t *client, const char *cmd) {
 =======================================================================================================================================
 SV_SendServerCommand
 
-Sends a reliable command string to be interpreted by the client game module:
-"cp", "print", "chat", etc.
+Sends a reliable command string to be interpreted by the client game module: "cp", "print", "chat", etc.
 A NULL client will broadcast to all clients.
 =======================================================================================================================================
 */
@@ -204,6 +203,8 @@ void QDECL SV_SendServerCommand(client_t *cl, const char *fmt, ...) {
 =======================================================================================================================================
 */
 
+#define HEARTBEAT_MSEC 300 * 1000
+
 /*
 =======================================================================================================================================
 SV_MasterHeartbeat
@@ -213,7 +214,6 @@ We will also have a heartbeat sent when a server changes from empty to non-empty
 or exit.
 =======================================================================================================================================
 */
-#define HEARTBEAT_MSEC 300 * 1000
 void SV_MasterHeartbeat(const char *message) {
 	static netadr_t adr[MAX_MASTER_SERVERS][2]; // [2] for v4 and v6 address for the same address string.
 	int i;
@@ -259,6 +259,7 @@ void SV_MasterHeartbeat(const char *message) {
 
 			if (netenabled & NET_ENABLEV6) {
 				Com_Printf("Resolving %s (IPv6)\n", sv_master[i]->string);
+
 				res = NET_StringToAdr(sv_master[i]->string, &adr[i][1], NA_IP6);
 
 				if (res == 2) {
@@ -515,6 +516,7 @@ Rate limit for a particular address.
 qboolean SVC_RateLimitAddress(netadr_t from, int burst, int period) {
 
 	leakyBucket_t *bucket = SVC_BucketForAddress(from, burst, period);
+
 	return SVC_RateLimit(bucket, burst, period);
 }
 
@@ -692,9 +694,11 @@ static void SVC_RemoteCommand(netadr_t from, msg_t *msg) {
 		}
 
 		valid = qfalse;
+
 		Com_Printf("Bad rcon from %s: %s\n", NET_AdrToString(from), Cmd_ArgsFrom(2));
 	} else {
 		valid = qtrue;
+
 		Com_Printf("Rcon from %s: %s\n", NET_AdrToString(from), Cmd_ArgsFrom(2));
 	}
 	// start redirecting all print outputs to the packet
