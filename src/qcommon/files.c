@@ -1057,6 +1057,7 @@ long FS_FOpenFileReadDir(const char *filename, searchpath_t *search, fileHandle_
 
 	if (file == NULL) {
 		// just wants to see if file is there
+
 		// is the element a pak file?
 		if (search->pack) {
 			hash = FS_HashFileName(filename, search->pack->hashSize);
@@ -2811,6 +2812,7 @@ void FS_AddGameDirectory(const char *path, const char *dir) {
 	curpath[strlen(curpath) - 1] = '\0'; // strip the trailing slash
 	// get .pk3 files
 	pakfiles = Sys_ListFiles(curpath, ".pk3", NULL, &numfiles, qfalse);
+
 	qsort(pakfiles, numfiles, sizeof(char *), paksort);
 
 	if (fs_numServerPaks) {
@@ -3071,7 +3073,7 @@ void FS_Shutdown(qboolean closemfp) {
 =======================================================================================================================================
 FS_ReorderPurePaks
 
-NOTE TTimo: The reordering that happens here is not reflected in the cvars (\cvarlist *pak*). This can lead to misleading situations,
+NOTE: The reordering that happens here is not reflected in the cvars (\cvarlist *pak*). This can lead to misleading situations,
 see https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=540.
 =======================================================================================================================================
 */
@@ -3145,7 +3147,7 @@ static void FS_Startup(const char *gameName) {
 	if (fs_apppath->string[0]) {
 		FS_AddGameDirectory(fs_apppath->string, gameName);
 		FS_AddGameDirectory(fs_apppath->string, "base");
-		}
+	}
 #endif
 	// NOTE: same filtering below for mods and basegame
 	if (fs_homepath->string[0] && Q_stricmp(fs_homepath->string, fs_basepath->string)) {
@@ -3291,7 +3293,6 @@ const char *FS_ReferencedPakChecksums(void) {
 	searchpath_t *search;
 
 	info[0] = 0;
-
 
 	for (search = fs_searchpaths; search; search = search->next) {
 		// is the element a pak file?
@@ -3545,12 +3546,12 @@ void FS_InitFilesystem(void) {
 	// screen when the font fails to load
 	if (FS_ReadFile("default.cfg", NULL) <= 0) {
 #ifdef USE_RESTCLIENT
-				GetTremulousPk3s(Sys_DefaultHomePath(), BASEGAME);
-				FS_Restart(0);
+		GetTremulousPk3s(Sys_DefaultHomePath(), BASEGAME);
+		FS_Restart(0);
 
-			if (FS_ReadFile("default.cfg", NULL) <= 0)
+		if (FS_ReadFile("default.cfg", NULL) <= 0)
 #endif
-				Com_Error(ERR_FATAL, "Couldn't load default.cfg");
+			Com_Error(ERR_FATAL, "Couldn't load default.cfg");
 	}
 
 	Q_strncpyz(lastValidBase, fs_basepath->string, sizeof(lastValidBase));

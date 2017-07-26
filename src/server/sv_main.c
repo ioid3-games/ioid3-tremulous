@@ -243,6 +243,7 @@ void SV_MasterHeartbeat(const char *message) {
 
 			if (netenabled & NET_ENABLEV4) {
 				Com_Printf("Resolving %s (IPv4)\n", sv_master[i]->string);
+
 				res = NET_StringToAdr(sv_master[i]->string, &adr[i][0], NA_IP);
 
 				if (res == 2) {
@@ -1098,6 +1099,8 @@ void SV_Frame(int msec) {
 	SV_MasterHeartbeat(HEARTBEAT_FOR_MASTER);
 }
 
+#define UDPIP_HEADER_SIZE 28
+#define UDPIP6_HEADER_SIZE 48
 /*
 =======================================================================================================================================
 SV_RateMsec
@@ -1105,9 +1108,6 @@ SV_RateMsec
 Return the number of msec until another message can be sent to a client based on its rate settings.
 =======================================================================================================================================
 */
-#define UDPIP_HEADER_SIZE 28
-#define UDPIP6_HEADER_SIZE 48
-
 int SV_RateMsec(client_t *client) {
 	int rate, rateMsec;
 	int messageSize;

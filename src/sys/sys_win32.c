@@ -398,6 +398,7 @@ char **Sys_ListFiles(const char *directory, const char *extension, char *filter,
 	if (filter) {
 		nfiles = 0;
 		Sys_ListFilteredFiles(directory, "", filter, list, &nfiles);
+
 		list[nfiles] = 0;
 		*numfiles = nfiles;
 
@@ -480,6 +481,7 @@ char **Sys_ListFiles(const char *directory, const char *extension, char *filter,
 		for (i = 1; i < nfiles; i++) {
 			if (strgtr(listCopy[i - 1], listCopy[i])) {
 				char *temp = listCopy[i];
+
 				listCopy[i] = listCopy[i - 1];
 				listCopy[i - 1] = temp;
 				flag = 1;

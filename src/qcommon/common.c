@@ -397,6 +397,7 @@ Break it up into multiple console lines.
 */
 void Com_ParseCommandLine(char *commandLine) {
 	int inq = 0;
+
 	com_consoleLines[0] = commandLine;
 	com_numConsoleLines = 1;
 
@@ -477,9 +478,7 @@ void Com_StartupVariable(const char *match) {
 =======================================================================================================================================
 Com_AddStartupCommands
 
-Adds command line parameters as script statements.
-Commands are separated by + signs.
-
+Adds command line parameters as script statements. Commands are separated by + signs.
 Returns qtrue if any late commands were added, which will keep the demoloop from immediately starting.
 =======================================================================================================================================
 */
@@ -1145,8 +1144,10 @@ void Z_LogZoneHeap(memzone_t *zone, char *name) {
 			}
 
 			dump[j] = '\0';
+
 			Com_sprintf(buf, sizeof(buf), "size = %8d: %s, line: %d (%s) [%s]\r\n", block->d.allocSize, block->d.file, block->d.line, block->d.label, dump);
 			FS_Write(buf, strlen(buf), logfile);
+
 			allocSize += block->d.allocSize;
 #endif
 			size += block->size;
@@ -1161,6 +1162,7 @@ void Z_LogZoneHeap(memzone_t *zone, char *name) {
 #endif
 	Com_sprintf(buf, sizeof(buf), "%d %s memory in %d blocks\r\n", size, name, numBlocks);
 	FS_Write(buf, strlen(buf), logfile);
+
 	Com_sprintf(buf, sizeof(buf), "%d %s memory overhead\r\n", size - allocSize, name);
 	FS_Write(buf, strlen(buf), logfile);
 }
@@ -1199,7 +1201,7 @@ memstatic_t numberstring[] = {
 =======================================================================================================================================
 CopyString
 
-NOTE: Never write over the memory CopyString returns because memory from a memstatic_t might be returned.
+NOTE: never write over the memory CopyString returns because memory from a memstatic_t might be returned.
 =======================================================================================================================================
 */
 char *CopyString(const char *in) {
@@ -1439,6 +1441,7 @@ Com_InitSmallZoneMemory
 =======================================================================================================================================
 */
 void Com_InitSmallZoneMemory(void) {
+
 	s_smallZoneTotal = 512 * 1024;
 	smallzone = calloc(s_smallZoneTotal, 1);
 
@@ -1614,6 +1617,7 @@ void Com_InitHunkMemory(void) {
 	}
 	// cacheline align
 	s_hunkData = (byte *)(((intptr_t)s_hunkData + 31) & ~31);
+
 	Hunk_Clear();
 
 	Cmd_AddCommand("meminfo", Com_Meminfo_f);
@@ -1648,6 +1652,7 @@ The server calls this after the level and game VM have been loaded.
 =======================================================================================================================================
 */
 void Hunk_SetMark(void) {
+
 	hunk_low.mark = hunk_low.permanent;
 	hunk_high.mark = hunk_high.permanent;
 }
@@ -1660,6 +1665,7 @@ The client calls this before starting a vid_restart or snd_restart.
 =======================================================================================================================================
 */
 void Hunk_ClearToMark(void) {
+
 	hunk_low.permanent = hunk_low.temp = hunk_low.mark;
 	hunk_high.permanent = hunk_high.temp = hunk_high.mark;
 }
@@ -1712,6 +1718,7 @@ void Hunk_Clear(void) {
 	hunk_temp = &hunk_high;
 
 	Com_Printf("Hunk_Clear: reset the hunk ok\n");
+
 	VM_Clear();
 #ifdef HUNK_DEBUG
 	hunkblocks = NULL;
@@ -2464,6 +2471,7 @@ static void Com_DetectAltivec(void) {
 	}
 }
 
+#if id386 || idx64
 /*
 =======================================================================================================================================
 Com_DetectSSE
@@ -2471,7 +2479,6 @@ Com_DetectSSE
 Find out whether we have SSE support for Q_ftol function.
 =======================================================================================================================================
 */
-#if id386 || idx64
 static void Com_DetectSSE(void) {
 #if !idx64
 	cpuFeatures_t feat;
@@ -2540,18 +2547,15 @@ void Com_Init(char *commandLine) {
 	// do this before anything else decides to push events
 	Com_InitPushEvent();
 	Com_InitSmallZoneMemory();
-
 	Cvar_Init();
 	// prepare enough of the subsystems to handle cvar and command buffer management
 	Com_ParseCommandLine(commandLine);
 //	Swap_Init();
 	Cbuf_Init();
-
 	Com_DetectSSE();
 	// override anything from the config files with command line args
 	Com_StartupVariable(NULL);
 	Com_InitZoneMemory();
-
 	Cmd_Init();
 	// get the developer cvar set as early as possible
 	com_developer = Cvar_Get("developer", "0", CVAR_TEMP);
@@ -2567,7 +2571,6 @@ void Com_Init(char *commandLine) {
 	}
 
 	FS_InitFilesystem();
-
 	Com_InitJournaling();
 	// add some commands here already so users can use them from config files
 	Cmd_AddCommand("setenv", Com_Setenv_f);
@@ -2583,7 +2586,6 @@ void Com_Init(char *commandLine) {
 	Cmd_AddCommand("writeconfig", Com_WriteConfig_f);
 	Cmd_SetCommandCompletionFunc("writeconfig", Cmd_CompleteCfgName);
 	Cmd_AddCommand("game_restart", Com_GameRestart_f);
-
 	Com_ExecuteCfg();
 	// override anything from the config files with command line args
 	Com_StartupVariable(NULL);
@@ -2634,13 +2636,10 @@ void Com_Init(char *commandLine) {
 	com_version = Cvar_Get("version", s, CVAR_ROM|CVAR_SERVERINFO);
 	Cvar_Get("protocol", va("%i", PROTOCOL_VERSION), CVAR_SERVERINFO|CVAR_ROM);
 	com_gamename = Cvar_Get("com_gamename", GAMENAME_FOR_MASTER, CVAR_SERVERINFO|CVAR_INIT);
-
 	Sys_Init();
 	// pick a random port value
 	Com_RandomBytes((byte *)&qport, sizeof(int));
-
 	Netchan_Init(qport & 0xffff);
-
 	VM_Init();
 	SV_Init();
 
@@ -3011,6 +3010,7 @@ void Com_Frame(void) {
 		extern int c_pointcontents;
 
 		Com_Printf("%4i traces (%ib %ip) %4i points\n", c_traces, c_brush_traces, c_patch_traces, c_pointcontents);
+
 		c_traces = 0;
 		c_brush_traces = 0;
 		c_patch_traces = 0;

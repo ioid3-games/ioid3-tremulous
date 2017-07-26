@@ -425,19 +425,18 @@ intptr_t SV_GameSystemCalls(intptr_t *args) {
 			SV_GetUsercmd(args[1], VMA(2));
 			return 0;
 		case G_GET_ENTITY_TOKEN:
-		{
-			const char *s;
+			{
+				const char *s;
 
-			s = COM_Parse(&sv.entityParsePoint);
-			Q_strncpyz(VMA(1), s, args[2]);
+				s = COM_Parse(&sv.entityParsePoint);
+				Q_strncpyz(VMA(1), s, args[2]);
 
-			if (!sv.entityParsePoint && !s[0]) {
-				return qfalse;
-			} else {
-				return qtrue;
+				if (!sv.entityParsePoint && !s[0]) {
+					return qfalse;
+				} else {
+					return qtrue;
+				}
 			}
-		}
-
 		case G_REAL_TIME:
 			return Com_RealTime(VMA(1));
 		case G_SNAPVECTOR:

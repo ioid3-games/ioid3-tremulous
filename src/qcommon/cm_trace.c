@@ -67,6 +67,7 @@ CreateRotationMatrix
 =======================================================================================================================================
 */
 void CreateRotationMatrix(const vec3_t angles, vec3_t matrix[3]) {
+
 	AngleVectors(angles, matrix[0], matrix[1], matrix[2]);
 	VectorInverse(matrix[1]);
 }
@@ -316,7 +317,9 @@ void CM_TestCapsuleInCapsule(traceWork_t *tw, clipHandle_t model) {
 	r = Square(tw->sphere.radius + radius);
 	// check if any of the spheres overlap
 	VectorCopy(offset, p1);
+
 	p1[2] += offs;
+
 	VectorSubtract(p1, top, tmp);
 
 	if (VectorLengthSquared(tmp) < r) {
@@ -332,7 +335,9 @@ void CM_TestCapsuleInCapsule(traceWork_t *tw, clipHandle_t model) {
 	}
 
 	VectorCopy(offset, p2);
+
 	p2[2] -= offs;
+
 	VectorSubtract(p2, top, tmp);
 
 	if (VectorLengthSquared(tmp) < r) {
@@ -1080,7 +1085,9 @@ void CM_TraceThroughVerticalCylinder(traceWork_t *tw, vec3_t origin, float radiu
 			// if the intersection is between the cylinder lower and upper bound
 			if (intersection[2] <= origin[2] + halfheight && intersection[2] >= origin[2] - halfheight) {
 				tw->trace.fraction = fraction;
+
 				VectorSubtract(intersection, origin, dir);
+
 				dir[2] = 0;
 #ifdef CAPSULE_DEBUG
 				l2 = VectorLength(dir);
@@ -1090,9 +1097,11 @@ void CM_TraceThroughVerticalCylinder(traceWork_t *tw, vec3_t origin, float radiu
 				}
 #endif
 				scale = 1 / (radius + RADIUS_EPSILON);
+
 				VectorScale(dir, scale, dir);
 				VectorCopy(dir, tw->trace.plane.normal);
 				VectorAdd(tw->modelOrigin, intersection, intersection);
+
 				tw->trace.plane.dist = DotProduct(tw->trace.plane.normal, intersection);
 				tw->trace.contents = CONTENTS_BODY;
 			}
@@ -1192,6 +1201,7 @@ void CM_TraceBoundingBoxThroughCapsule(traceWork_t *tw, clipHandle_t model) {
 	h = CM_TempBoxModel(tw->size[0], tw->size[1], qfalse);
 	// calculate collision
 	cmod = CM_ClipHandleToModel(h);
+
 	CM_TraceThroughLeaf(tw, &cmod->leaf);
 }
 

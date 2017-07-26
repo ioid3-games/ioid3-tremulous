@@ -71,24 +71,24 @@ char *Sys_DefaultHomePath(void) {
 }
 
 /*
-=======================================================================================================================================
-Sys_Milliseconds
-=======================================================================================================================================
-*/
-/*
  base time in seconds, that's our origin
  timeval:tv_sec is an int:
  assuming this wraps every 0x7fffffff - ~68 years since the Epoch (1970) - we're safe till 2038
 */
 unsigned long sys_timeBase = 0;
-/* current time in ms, using sys_timeBase as origin
+/*
+ current time in ms, using sys_timeBase as origin
  NOTE: sys_timeBase * 1000 + curtime -> ms since the Epoch
  0x7fffffff ms - ~24 days
- although timeval:tv_usec is an int, I'm not sure whether it is actually used as an unsigned int
- (which would affect the wrap period)
+ although timeval:tv_usec is an int, I'm not sure whether it is actually used as an unsigned int (which would affect the wrap period)
 */
 int curtime;
 
+/*
+=======================================================================================================================================
+Sys_Milliseconds
+=======================================================================================================================================
+*/
 int Sys_Milliseconds(void) {
 	struct timeval tp;
 
@@ -506,9 +506,8 @@ void Sys_ErrorDialog(const char *error) {
 		Com_Printf("ERROR: couldn't create path '%s' for crash log.\n", dirpath);
 		return;
 	}
-	// we might be crashing because we maxed out the Quake MAX_FILE_HANDLES,
-	// which will come through here, so we don't want to recurse forever by
-	// calling FS_FOpenFileWrite()...use the Unix system APIs instead.
+	// we might be crashing because we maxed out the Quake MAX_FILE_HANDLES, which will come through here, so we don't want to recurse
+	// forever by calling FS_FOpenFileWrite()...use the Unix system APIs instead.
 	f = open(ospath, O_CREAT|O_TRUNC|O_WRONLY, 0640);
 
 	if (f == -1) {
@@ -782,6 +781,7 @@ Unix specific deinitialisation.
 =======================================================================================================================================
 */
 void Sys_PlatformExit(void) {
+
 }
 
 /*

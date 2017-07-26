@@ -139,6 +139,7 @@ static void SV_MapRestart_f(void) {
 	// generate a new serverid
 	// TTimo - don't update restartedserverId there, otherwise we won't deal correctly with multiple map_restart
 	sv.serverId = com_frameTime;
+
 	Cvar_Set("sv_serverid", va("%i", sv.serverId));
 	// if a map_restart occurs while a client is changing maps, we need to give them the correct time so that when they finish loading
 	// they don't violate the backwards time check in cl_cgame.c
@@ -157,6 +158,7 @@ static void SV_MapRestart_f(void) {
 	// run a few frames to allow everything to settle
 	for (i = 0; i < 3; i++) {
 		VM_Call(gvm, GAME_RUN_FRAME, sv.time);
+
 		sv.time += 100;
 		svs.time += 100;
 	}
@@ -192,6 +194,7 @@ static void SV_MapRestart_f(void) {
 	}
 	// run another frame to allow things to look at all the players
 	VM_Call(gvm, GAME_RUN_FRAME, sv.time);
+
 	sv.time += 100;
 	svs.time += 100;
 }
