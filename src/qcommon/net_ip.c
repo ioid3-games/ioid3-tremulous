@@ -1148,6 +1148,7 @@ void NET_OpenSocks(int port) {
 		// build the request
 		ulen = strlen(net_socksUsername->string);
 		plen = strlen(net_socksPassword->string);
+
 		buf[0] = 1; // username/password authentication version
 		buf[1] = ulen;
 
@@ -1417,7 +1418,7 @@ static qboolean NET_GetCvars(void) {
 	// I want server owners to explicitly turn on ipv6 support.
 	net_enabled = Cvar_Get("net_enabled", "1", CVAR_LATCH|CVAR_ARCHIVE);
 #else
-	// End users have it enabled so they can connect to ipv6-only hosts, but ipv4 will be used if available due to ping
+	// end users have it enabled so they can connect to ipv6-only hosts, but ipv4 will be used if available due to ping
 	net_enabled = Cvar_Get("net_enabled", "3", CVAR_LATCH|CVAR_ARCHIVE);
 #endif
 	modified = net_enabled->modified;
@@ -1438,7 +1439,7 @@ static qboolean NET_GetCvars(void) {
 	net_port6 = Cvar_Get("net_port6", va("%i", PORT_SERVER), CVAR_LATCH);
 	modified += net_port6->modified;
 	net_port6->modified = qfalse;
-	// Some cvars for configuring multicast options which facilitates scanning for servers on local subnets.
+	// some cvars for configuring multicast options which facilitates scanning for servers on local subnets.
 	net_mcast6addr = Cvar_Get("net_mcast6addr", NET_MULTICAST_IP6, CVAR_LATCH|CVAR_ARCHIVE);
 	modified += net_mcast6addr->modified;
 	net_mcast6addr->modified = qfalse;
@@ -1566,10 +1567,10 @@ void NET_Init(void) {
 	}
 
 	winsockInitialized = qtrue;
+
 	Com_Printf("Winsock Initialized\n");
 #endif
 	NET_Config(qtrue);
-
 	Cmd_AddCommand("net_restart", NET_Restart_f);
 }
 
@@ -1587,6 +1588,7 @@ void NET_Shutdown(void) {
 	NET_Config(qfalse);
 #ifdef _WIN32
 	WSACleanup();
+
 	winsockInitialized = qfalse;
 #endif
 }

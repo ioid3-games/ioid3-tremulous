@@ -695,11 +695,9 @@ static void SVC_RemoteCommand(netadr_t from, msg_t *msg) {
 		}
 
 		valid = qfalse;
-
 		Com_Printf("Bad rcon from %s: %s\n", NET_AdrToString(from), Cmd_ArgsFrom(2));
 	} else {
 		valid = qtrue;
-
 		Com_Printf("Rcon from %s: %s\n", NET_AdrToString(from), Cmd_ArgsFrom(2));
 	}
 	// start redirecting all print outputs to the packet
@@ -1151,6 +1149,8 @@ int SV_RateMsec(client_t *client) {
 	}
 }
 
+#define UDPIP_HEADER_SIZE 28
+#define UDPIP6_HEADER_SIZE 48
 /*
 =======================================================================================================================================
 SV_SendQueuedPackets

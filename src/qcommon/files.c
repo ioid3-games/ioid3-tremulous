@@ -65,8 +65,8 @@ zip files. A game directory can have multiple zip files of the form "pak0.pk3", 
 order from the highest number to the lowest, and will always take precedence over the filesystem.
 This allows a pk3 distributed as a patch to override all existing data.
 
-Because we will have updated executables freely available online, there is no point to trying to restrict demo / oem versions of the game
-with code changes. Demo / oem versions should be exactly the same executables as release versions, but with different data that
+Because we will have updated executables freely available online, there is no point to trying to restrict demo/oem versions of the game
+with code changes. Demo/oem versions should be exactly the same executables as release versions, but with different data that
 automatically restricts where game media can come from to prevent add-ons from working.
 
 File search order: when FS_FOpenFileRead gets called it will go through the fs_searchpaths structure and stop on the first successful
@@ -103,7 +103,7 @@ cd path + BASEGAME's directory
 
 server download, to be written to home path + current game's directory
 
-The filesystem can be safely shutdown and reinitialized with different basedir / cddir / game combinations, but all other subsystems that
+The filesystem can be safely shutdown and reinitialized with different basedir/cddir/game combinations, but all other subsystems that
 rely on it (sound, video) must also be forced to restart.
 
 Because the same files are loaded by both the clip model (CM_) and renderer (TR_) subsystems, a simple single-file caching scheme is used.
@@ -162,10 +162,10 @@ or configs will never get loaded from disk!
 #define MAX_FILEHASH_SIZE 1024
 
 typedef struct fileInPack_s {
-	char *name; // name of the file
-	unsigned long pos; // file info position in zip
-	unsigned long len; // uncompress file size
-	struct fileInPack_s *next; // next file in the hash
+	char *name;					// name of the file
+	unsigned long pos;			// file info position in zip
+	unsigned long len;			// uncompress file size
+	struct fileInPack_s *next;	// next file in the hash
 } fileInPack_t;
 
 typedef struct {
@@ -547,7 +547,6 @@ FS_Remove
 void FS_Remove(const char *osPath) {
 
 	FS_CheckFilenameIsMutable(osPath, __func__);
-
 	remove(osPath);
 }
 
@@ -559,7 +558,6 @@ FS_HomeRemove
 void FS_HomeRemove(const char *homePath) {
 
 	FS_CheckFilenameIsMutable(homePath, __func__);
-
 	remove(FS_BuildOSPath(fs_homepath->string, fs_gamedir, homePath));
 }
 
@@ -589,7 +587,7 @@ FS_FileExists
 
 Tests if the file exists in the current gamedir, this DOES NOT search the paths.
 This is to determine if opening a file to write (which always goes into the current gamedir) will cause any overwrites.
-NOTE: This goes with FS_FOpenFileWrite for opening the file afterwards.
+NOTE: this goes with FS_FOpenFileWrite for opening the file afterwards.
 =======================================================================================================================================
 */
 qboolean FS_FileExists(const char *file) {
@@ -820,7 +818,6 @@ fileHandle_t FS_FOpenFileWrite(const char *filename) {
 
 	f = FS_HandleForFile();
 	fsh[f].zipFile = qfalse;
-
 	ospath = FS_BuildOSPath(fs_homepath->string, fs_gamedir, filename);
 
 	if (fs_debug->integer) {
@@ -1122,8 +1119,8 @@ long FS_FOpenFileReadDir(const char *filename, searchpath_t *search, fileHandle_
 				// case and separator insensitive comparisons
 				if (!FS_FilenameCompare(pakFile->name, filename)) {
 					// found it!
-					// Mark the pak as having been referenced and mark specifics on cgame and ui.
-					// Shaders, txt, and arena files by themselves do not count as a reference as these are loaded from all pk3s.
+					// mark the pak as having been referenced and mark specifics on cgame and ui.
+					// shaders, txt, and arena files by themselves do not count as a reference as these are loaded from all pk3s.
 					len = strlen(filename);
 
 					if (!(pak->referenced & FS_GENERAL_REF)) {
@@ -1152,6 +1149,7 @@ long FS_FOpenFileReadDir(const char *filename, searchpath_t *search, fileHandle_
 					}
 
 					Q_strncpyz(fsh[*file].name, filename, sizeof(fsh[*file].name));
+
 					fsh[*file].zipFile = qtrue;
 					// set the file position in the zip file (also sets the current file info)
 					unzSetOffset(fsh[*file].handleFiles.file.z, pakFile->pos);
@@ -1200,6 +1198,7 @@ long FS_FOpenFileReadDir(const char *filename, searchpath_t *search, fileHandle_
 		}
 
 		Q_strncpyz(fsh[*file].name, filename, sizeof(fsh[*file].name));
+
 		fsh[*file].zipFile = qfalse;
 
 		if (fs_debug->integer) {
@@ -1404,7 +1403,7 @@ int FS_Read(void *buffer, int len, fileHandle_t f) {
 				if (!tries) {
 					tries = 1;
 				} else {
-					return len - remaining; // Com_Error(ERR_FATAL, "FS_Read: 0 bytes read");
+					return len - remaining; //Com_Error(ERR_FATAL, "FS_Read: 0 bytes read");
 				}
 			}
 
@@ -1575,6 +1574,7 @@ int FS_Seek(fileHandle_t f, long offset, int origin) {
 		}
 	} else {
 		FILE *file;
+
 		file = FS_FileForHandle(f);
 
 		switch (origin) {
@@ -1696,6 +1696,7 @@ long FS_ReadFileDir(const char *qpath, void *searchPath, qboolean unpure, void *
 			int r;
 
 			Com_DPrintf("Loading %s from journal file.\n", qpath);
+
 			r = FS_Read(&len, sizeof(len), com_journalDataFile);
 
 			if (r != sizeof(len)) {
@@ -1783,6 +1784,7 @@ long FS_ReadFileDir(const char *qpath, void *searchPath, qboolean unpure, void *
 	FS_Read(buf, len, h);
 	// guarantee that it will have a trailing 0 for string operations
 	buf[len] = 0;
+
 	FS_FCloseFile(h);
 	// if we are journalling and it is a config file, write it to the journal file
 	if (isConfig && com_journal && com_journal->integer == 1) {
@@ -1952,15 +1954,19 @@ static pack_t *FS_LoadZipFile(const char *zipfile, const char *basename) {
 		}
 
 		Q_strlwr(filename_inzip);
+
 		hash = FS_HashFileName(filename_inzip, pack->hashSize);
 		buildBuffer[i].name = namePtr;
+
 		strcpy(buildBuffer[i].name, filename_inzip);
+
 		namePtr += strlen(filename_inzip) + 1;
 		// store the file position in the zip
 		buildBuffer[i].pos = unzGetOffset(uf);
 		buildBuffer[i].len = file_info.uncompressed_size;
 		buildBuffer[i].next = pack->hashTable[hash];
 		pack->hashTable[hash] = &buildBuffer[i];
+
 		unzGoToNextFile(uf);
 	}
 
@@ -1985,6 +1991,7 @@ Frees a pak structure and releases all associated resources.
 static void FS_FreePak(pack_t *thepak) {
 
 	unzClose(thepak->handle);
+
 	Z_Free(thepak->buildBuffer);
 	Z_Free(thepak);
 }
@@ -2323,10 +2330,10 @@ int FS_GetFilteredFiles(const char *path, const char *extension, char *filter, c
 =======================================================================================================================================
 Sys_CountFileList
 
-NOTE: Naive implementation.
+NOTE: naive implementation.
 Concatenates three lists into a new list, and frees the old lists from the heap. bk001129 - from cvs1.17 (mkv).
 
-FIXME: Those two should move to common.c next to Sys_ListFiles.
+FIXME: those two should move to common.c next to Sys_ListFiles.
 =======================================================================================================================================
 */
 static unsigned int Sys_CountFileList(char **list) {
@@ -2353,9 +2360,9 @@ static char **Sys_ConcatenateFileLists(char **list0, char **list1) {
 
 	totalLength += Sys_CountFileList(list0);
 	totalLength += Sys_CountFileList(list1);
-	// Create new list.
+	// create new list.
 	dst = cat = Z_Malloc((totalLength + 1) * sizeof(char *));
-	// Copy over lists.
+	// copy over lists.
 	if (list0) {
 		for (src = list0; *src; src++, dst++) {
 			*dst = *src;
@@ -3073,7 +3080,7 @@ void FS_Shutdown(qboolean closemfp) {
 =======================================================================================================================================
 FS_ReorderPurePaks
 
-NOTE: The reordering that happens here is not reflected in the cvars (\cvarlist *pak*). This can lead to misleading situations,
+NOTE: the reordering that happens here is not reflected in the cvars (\cvarlist *pak*). This can lead to misleading situations,
 see https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=540.
 =======================================================================================================================================
 */

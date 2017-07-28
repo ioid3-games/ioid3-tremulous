@@ -988,12 +988,13 @@ void CM_TraceThroughSphere(traceWork_t *tw, vec3_t origin, float radius, vec3_t 
 
 			if (l2 < radius) {
 				int bah = 1;
-			}
+				}
 #endif
-			scale = 1 / (radius + RADIUS_EPSILON);
-			VectorScale(dir, scale, dir);
-			VectorCopy(dir, tw->trace.plane.normal);
-			VectorAdd(tw->modelOrigin, intersection, intersection);
+				scale = 1 / (radius + RADIUS_EPSILON);
+
+				VectorScale(dir, scale, dir);
+				VectorCopy(dir, tw->trace.plane.normal);
+				VectorAdd(tw->modelOrigin, intersection, intersection);
 			tw->trace.plane.dist = DotProduct(tw->trace.plane.normal, intersection);
 			tw->trace.contents = CONTENTS_BODY;
 		}
