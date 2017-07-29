@@ -136,6 +136,7 @@ trigger_always_think
 =======================================================================================================================================
 */
 void trigger_always_think(gentity_t *ent) {
+
 	G_UseTargets(ent, ent);
 	G_FreeEntity(ent);
 }
@@ -404,9 +405,10 @@ SP_trigger_hurt
 =======================================================================================================================================
 */
 void SP_trigger_hurt(gentity_t *self) {
+
 	InitTrigger(self);
 
-	self->noise_index = G_SoundIndex("sound / misc / electro.wav");
+	self->noise_index = G_SoundIndex("sound/misc/electro.wav");
 	self->touch = hurt_touch;
 
 	if (self->damage <= 0) {

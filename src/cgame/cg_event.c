@@ -586,7 +586,7 @@ static void CG_Level2Zap(entityState_t *es) {
 =======================================================================================================================================
 CG_EntityEvent
 
-An entity has an event value, also called by CG_CheckPlayerstateEvents.
+An entity has an event value. Also called by CG_CheckPlayerstateEvents.
 =======================================================================================================================================
 */
 void CG_EntityEvent(centity_t *cent, vec3_t position) {
@@ -692,6 +692,7 @@ void CG_EntityEvent(centity_t *cent, vec3_t position) {
 			break;
 		case EV_FALL_FAR:
 			trap_S_StartSound(NULL, es->number, CHAN_AUTO, CG_CustomSound(es->number, "*fall1.wav"));
+
 			cent->pe.painTime = cg.time; // don't play a pain sound right after this
 
 			if (clientNum == cg.predictedPlayerState.clientNum) {

@@ -163,7 +163,9 @@ qboolean PM_SlideMove(qboolean gravity) {
 				// slide the original velocity along the crease
 				CrossProduct(planes[i], planes[j], dir);
 				VectorNormalize(dir);
+
 				d = DotProduct(dir, pm->ps->velocity);
+
 				VectorScale(dir, d, clipVelocity);
 
 				CrossProduct(planes[i], planes[j], dir);

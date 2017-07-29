@@ -290,6 +290,7 @@ char *ConcatArgs(int start) {
 
 	for (i = start; i < c; i++) {
 		trap_Argv(i, arg, sizeof(arg));
+
 		tlen = strlen(arg);
 
 		if (len + tlen >= MAX_STRING_CHARS - 1) {

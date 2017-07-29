@@ -903,13 +903,13 @@ static void CG_CalculateWeaponPosition(vec3_t origin, vec3_t angles) {
 	}
 }
 
+#define SPIN_SPEED 0.9
+#define COAST_TIME 1000
 /*
 =======================================================================================================================================
 CG_MachinegunSpinAngle
 =======================================================================================================================================
 */
-#define SPIN_SPEED 0.9
-#define COAST_TIME 1000
 static float CG_MachinegunSpinAngle(centity_t *cent, qboolean firing) {
 	int delta;
 	float angle;
@@ -1103,8 +1103,9 @@ void CG_AddPlayerWeapon(refEntity_t *parent, playerState_t *ps, centity_t *cent)
 	if (flash.hModel) {
 		angles[YAW] = 0;
 		angles[PITCH] = 0;
-		angles[ROLL] = crandom() * 10;
-		AnglesToAxis(angles, flash.axis);
+	angles[ROLL] = crandom() * 10;
+
+	AnglesToAxis(angles, flash.axis);
 
 		if (noGunModel) {
 			CG_PositionRotatedEntityOnTag(&flash, parent, parent->hModel, "tag_weapon");
@@ -1175,7 +1176,7 @@ void CG_AddViewWeapon(playerState_t *ps) {
 		return;
 	}
 
-	cent = &cg.predictedPlayerEntity; // &cg_entities[cg.snap->ps.clientNum];
+	cent = &cg.predictedPlayerEntity; //&cg_entities[cg.snap->ps.clientNum];
 
 	if (ps->persistant[PERS_SPECSTATE] != SPECTATOR_NOT) {
 		return;
@@ -1863,7 +1864,9 @@ static qboolean CG_CalcMuzzlePoint(int entityNum, vec3_t muzzle) {
 
 	if (entityNum == cg.snap->ps.clientNum) {
 		VectorCopy(cg.snap->ps.origin, muzzle);
+
 		muzzle[2] += cg.snap->ps.viewheight;
+
 		AngleVectors(cg.snap->ps.viewangles, forward, NULL, NULL);
 		VectorMA(muzzle, 14, forward, muzzle);
 		return qtrue;

@@ -117,6 +117,7 @@ void CG_ParseServerinfo(void) {
 	cgs.markDeconstruct = atoi(Info_ValueForKey(info, "g_markDeconstruct"));
 
 	mapname = Info_ValueForKey(info, "mapname");
+
 	Com_sprintf(cgs.mapname, sizeof(cgs.mapname), "maps/%s.bsp", mapname);
 }
 

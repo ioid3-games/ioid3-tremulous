@@ -162,6 +162,7 @@ static gentity_t *G_SelectRandomFurthestSpawnPoint(vec3_t avoidPoint, vec3_t ori
 		}
 
 		VectorSubtract(spot->s.origin, avoidPoint, delta);
+
 		dist = VectorLength(delta);
 
 		for (i = 0; i < numSpots; i++) {
@@ -957,15 +958,10 @@ char *ClientUserinfoChanged(int clientNum, qboolean forceName) {
 =======================================================================================================================================
 ClientConnect
 
-Called when a player begins connecting to the server.
-Called again for every map change or tournament restart.
-
+Called when a player begins connecting to the server. Called again for every map change or tournament restart.
 The session information will be valid after exit.
-
 Return NULL if the client should be allowed, otherwise return a string with the reason for denial.
-
 Otherwise, the client will be sent the current gamestate and will eventually get to ClientBegin.
-
 'firstTime' will be qtrue the very first time a client connects to the server machine, but qfalse on map changes and tournament
 restarts.
 =======================================================================================================================================
@@ -1129,8 +1125,7 @@ void ClientBegin(int clientNum) {
 =======================================================================================================================================
 ClientSpawn
 
-Called every time a client is placed fresh in the world: After the first ClientBegin, and after each respawn.
-
+Called every time a client is placed fresh in the world: after the first ClientBegin, and after each respawn.
 Initializes all non-persistant parts of playerState.
 =======================================================================================================================================
 */

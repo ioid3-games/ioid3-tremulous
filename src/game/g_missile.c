@@ -36,6 +36,7 @@ void G_BounceMissile(gentity_t *ent, trace_t *trace) {
 	BG_EvaluateTrajectoryDelta(&ent->s.pos, hitTime, velocity);
 
 	dot = DotProduct(velocity, trace->plane.normal);
+
 	VectorMA(velocity, -2 * dot, trace->plane.normal, ent->s.pos.trDelta);
 
 	if (ent->s.eFlags & EF_BOUNCE_HALF) {
@@ -191,7 +192,6 @@ void G_MissileImpact(gentity_t *ent, trace_t *trace) {
 	ent->s.eType = ET_GENERAL;
 
 	SnapVectorTowards(trace->endpos, ent->s.pos.trBase); // save net bandwidth
-
 	G_SetOrigin(ent, trace->endpos);
 	// splash damage (doesn't apply to person directly hit)
 	if (ent->splashDamage) {

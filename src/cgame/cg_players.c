@@ -115,7 +115,9 @@ static qboolean CG_ParseAnimationFile(const char *filename, clientInfo_t *ci) {
 	skip = 0; // quite the compiler warning
 
 	ci->footsteps = FOOTSTEP_NORMAL;
+
 	VectorClear(ci->headOffset);
+
 	ci->gender = GENDER_MALE;
 	ci->fixedlegs = qfalse;
 	ci->fixedtorso = qfalse;
@@ -1894,9 +1896,8 @@ void CG_Player(centity_t *cent) {
 			return;
 		}
 
-		VectorCopy(cent->lerpOrigin, head.lightingOrigin);
-
-		CG_PositionRotatedEntityOnTag(&head, &torso, ci->torsoModel, "tag_head");
+	VectorCopy(cent->lerpOrigin, head.lightingOrigin);
+	CG_PositionRotatedEntityOnTag(&head, &torso, ci->torsoModel, "tag_head");
 
 		head.shadowPlane = shadowPlane;
 		head.renderfx = renderfx;

@@ -302,7 +302,7 @@ static void CL_VoipNewGeneration(void) {
 =======================================================================================================================================
 CL_VoipParseTargets
 
-sets clc.voipTargets according to cl_voipSendTarget.
+Sets clc.voipTargets according to cl_voipSendTarget.
 Generally we don't want who's listening to change during a transmission, so this is only called when the key is first pressed.
 =======================================================================================================================================
 */
@@ -397,6 +397,7 @@ static void CL_CaptureVoip(void) {
 		}
 
 		Cvar_Set("cl_voipProtocol", cl_voip->integer ? "opus" : "");
+
 		cl_voip->modified = qfalse;
 		cl_rate->modified = qfalse;
 	}
@@ -591,10 +592,12 @@ void CL_WriteDemoMessage(msg_t *msg, int headerBytes) {
 	// write the packet sequence
 	len = clc.serverMessageSequence;
 	swlen = LittleLong(len);
+
 	FS_Write(&swlen, 4, clc.demofile);
 	// skip the packet sequencing information
 	len = msg->cursize - headerBytes;
 	swlen = LittleLong(len);
+
 	FS_Write(&swlen, 4, clc.demofile);
 	FS_Write(msg->data + headerBytes, len, clc.demofile);
 }
@@ -615,12 +618,15 @@ void CL_StopRecord_f(void) {
 	}
 	// finish up
 	len = -1;
+
 	FS_Write(&len, 4, clc.demofile);
 	FS_Write(&len, 4, clc.demofile);
 	FS_FCloseFile(clc.demofile);
+
 	clc.demofile = 0;
 	clc.demorecording = qfalse;
 	clc.spDemoRecording = qfalse;
+
 	Com_Printf("Stopped demo.\n");
 }
 
@@ -708,6 +714,7 @@ void CL_Record_f(void) {
 	}
 	// open the demo file
 	Com_Printf("recording to %s.\n", name);
+
 	clc.demofile = FS_FOpenFileWrite(name);
 
 	if (!clc.demofile) {
@@ -1840,8 +1847,6 @@ void CL_Vid_Restart_f(void) {
 /*
 =======================================================================================================================================
 CL_Snd_Shutdown
-
-Restart the sound subsystem.
 =======================================================================================================================================
 */
 void CL_Snd_Shutdown(void) {
@@ -2007,7 +2012,6 @@ void CL_BeginDownload(const char *localName, const char *remoteName) {
 				"****************************\n", localName, remoteName);
 
 	Q_strncpyz(clc.downloadName, localName, sizeof(clc.downloadName));
-
 	Com_sprintf(clc.downloadTempName, sizeof(clc.downloadTempName), "%s.tmp", localName);
 	// set so UI gets access to it
 	Cvar_Set("cl_downloadName", remoteName);
@@ -2039,6 +2043,7 @@ void CL_NextDownload(void) {
 	// a download has finished, check whether this matches a referenced checksum
 	if (*clc.downloadName && !clc.activeCURLNotGameRelated) {
 		char *zippath = FS_BuildOSPath(Cvar_VariableString("fs_homepath"), clc.downloadName, "");
+
 		zippath[strlen(zippath) - 1] = '\0';
 
 		if (!FS_CompareZipChecksum(zippath)) {
@@ -2264,7 +2269,6 @@ void CL_CheckForResend(void) {
 			// the challenge request shall be followed by a client challenge so no malicious server can hijack this connection.
 			// add the gamename so the server knows we're running the correct game or can reject the client with a meaningful message.
 			Com_sprintf(data, sizeof(data), "getchallenge %d %s", clc.challenge, com_gamename->string);
-
 			NET_OutOfBandPrint(NS_CLIENT, clc.serverAddress, "%s", data);
 			break;
 		case CA_CHALLENGING:
@@ -2871,6 +2875,7 @@ void CL_Frame(int msec) {
 			char serverName[MAX_OSPATH];
 
 			Com_RealTime(&now);
+
 			nowString = va("%04d%02d%02d%02d%02d%02d", 1900 + now.tm_year, 1 + now.tm_mon, now.tm_mday, now.tm_hour, now.tm_min, now.tm_sec);
 
 			Q_strncpyz(serverName, clc.servername, MAX_OSPATH);
@@ -2883,7 +2888,6 @@ void CL_Frame(int msec) {
 
 			Q_strncpyz(mapName, COM_SkipPath(cl.mapname), sizeof(cl.mapname));
 			COM_StripExtension(mapName, mapName, sizeof(mapName));
-
 			Cbuf_ExecuteText(EXEC_NOW, va("record %s-%s-%s", nowString, serverName, mapName));
 		} else if (clc.state != CA_ACTIVE && clc.demorecording) {
 			// recording, but not CA_ACTIVE, so stop recording
@@ -2921,7 +2925,6 @@ void CL_Frame(int msec) {
 #endif
 	// advance local effects for next frame
 	SCR_RunCinematic();
-
 	Con_RunConsole();
 
 	cls.framecount++;
@@ -3487,7 +3490,6 @@ void CL_Init(void) {
 	CL_GenerateQKey();
 	Cvar_Get("cl_guid", "", CVAR_USERINFO|CVAR_ROM);
 	CL_UpdateGUID(NULL, 0);
-
 	Com_Printf("----- Client Initialization Complete -----\n");
 }
 
@@ -3868,6 +3870,7 @@ void CL_ServerStatusResponse(netadr_t from, msg_t *msg) {
 	}
 
 	len = strlen(serverStatus->string);
+
 	Com_sprintf(&serverStatus->string[len], sizeof(serverStatus->string) - len, "\\");
 
 	if (serverStatus->print) {
@@ -3877,6 +3880,7 @@ void CL_ServerStatusResponse(netadr_t from, msg_t *msg) {
 
 	for (i = 0, s = MSG_ReadStringLine(msg); *s; s = MSG_ReadStringLine(msg), i++) {
 		len = strlen(serverStatus->string);
+
 		Com_sprintf(&serverStatus->string[len], sizeof(serverStatus->string) - len, "\\%s", s);
 
 		if (serverStatus->print) {
@@ -3899,6 +3903,7 @@ void CL_ServerStatusResponse(netadr_t from, msg_t *msg) {
 	}
 
 	len = strlen(serverStatus->string);
+
 	Com_sprintf(&serverStatus->string[len], sizeof(serverStatus->string) - len, "\\");
 
 	serverStatus->time = Com_Milliseconds();
@@ -4028,7 +4033,9 @@ void CL_GetPing(int n, char *buf, int buflen, int *pingtime) {
 	}
 
 	str = NET_AdrToStringwPort(cl_pinglist[n].adr);
+
 	Q_strncpyz(buf, str, buflen);
+
 	time = cl_pinglist[n].time;
 
 	if (!time) {
@@ -4222,7 +4229,6 @@ qboolean CL_UpdateVisiblePings_f(int source) {
 	}
 
 	cls.pingUpdateSource = source;
-
 	slots = CL_GetPingQueueCount();
 
 	if (slots < MAX_PINGREQUESTS) {

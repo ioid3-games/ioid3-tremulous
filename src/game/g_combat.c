@@ -1064,7 +1064,6 @@ qboolean CanDamage(gentity_t *targ, vec3_t origin) {
 	// use the midpoint of the bounds instead of the origin, because bmodels may have their origin is 0, 0, 0
 	VectorAdd(targ->r.absmin, targ->r.absmax, midpoint);
 	VectorScale(midpoint, 0.5, midpoint);
-
 	VectorCopy(midpoint, dest);
 	trap_Trace(&tr, origin, vec3_origin, vec3_origin, dest, ENTITYNUM_NONE, MASK_SOLID);
 

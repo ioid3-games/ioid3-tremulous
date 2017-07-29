@@ -111,6 +111,7 @@ Replaces the current view weapon with the given model.
 void CG_TestGun_f(void) {
 
 	CG_TestModel_f();
+
 	cg.testGun = qtrue;
 	cg.testModelEntity.renderfx = RF_MINLIGHT|RF_DEPTHHACK|RF_FIRST_PERSON;
 }
@@ -123,6 +124,7 @@ CG_TestModelNextFrame_f
 void CG_TestModelNextFrame_f(void) {
 
 	cg.testModelEntity.frame++;
+
 	CG_Printf("frame %i\n", cg.testModelEntity.frame);
 }
 
@@ -150,6 +152,7 @@ CG_TestModelNextSkin_f
 void CG_TestModelNextSkin_f(void) {
 
 	cg.testModelEntity.skinNum++;
+
 	CG_Printf("skin %i\n", cg.testModelEntity.skinNum);
 }
 

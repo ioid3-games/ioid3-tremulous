@@ -66,8 +66,8 @@ void TeleportPlayer(gentity_t *player, vec3_t origin, vec3_t angles) {
 
 	// unlink to make sure it can't possibly interfere with G_KillBox
 	trap_UnlinkEntity(player);
-
 	VectorCopy(origin, player->client->ps.origin);
+
 	player->client->ps.origin[2] += 1;
 	// spit the player out
 	AngleVectors(angles, player->client->ps.velocity, NULL, NULL);
@@ -77,6 +77,7 @@ void TeleportPlayer(gentity_t *player, vec3_t origin, vec3_t angles) {
 	player->client->ps.pm_flags|= PMF_TIME_KNOCKBACK;
 	// toggle the teleport bit so the client knows to not lerp
 	player->client->ps.eFlags ^= EF_TELEPORT_BIT;
+
 	G_UnlaggedClear(player);
 	// cut all relevant zap beams
 	G_ClearPlayerZapEffects(player);
@@ -90,7 +91,6 @@ void TeleportPlayer(gentity_t *player, vec3_t origin, vec3_t angles) {
 	if (player->client->sess.spectatorState == SPECTATOR_NOT) {
 		// kill anything at the destination
 		G_KillBox(player);
-
 		trap_LinkEntity(player);
 	}
 }
@@ -113,9 +113,7 @@ void SP_misc_model(gentity_t *ent) {
 
 	VectorSet(ent->mins, -16, -16, -16);
 	VectorSet(ent->maxs, 16, 16, 16);
-
 	trap_LinkEntity(ent);
-
 	G_SetOrigin(ent, ent->s.origin);
 	VectorCopy(ent->s.angles, ent->s.apos.trBase);
 #else
@@ -180,7 +178,6 @@ void SP_misc_portal_surface(gentity_t *ent) {
 
 	VectorClear(ent->r.mins);
 	VectorClear(ent->r.maxs);
-
 	trap_LinkEntity(ent);
 
 	ent->r.svFlags = SVF_PORTAL;
@@ -203,9 +200,7 @@ void SP_misc_portal_camera(gentity_t *ent) {
 
 	VectorClear(ent->r.mins);
 	VectorClear(ent->r.maxs);
-
 	trap_LinkEntity(ent);
-
 	G_SpawnFloat("roll", "0", &roll);
 
 	ent->s.clientNum = roll / 360.0f * 256;
@@ -233,6 +228,7 @@ Use function for particle_system.
 =======================================================================================================================================
 */
 void SP_use_particle_system(gentity_t *self, gentity_t *other, gentity_t *activator) {
+
 	SP_toggle_particle_system(self);
 
 	if (self->wait > 0.0f) {
@@ -377,6 +373,7 @@ void SP_misc_light_flare(gentity_t *self) {
 
 	self->s.eType = ET_LIGHTFLARE;
 	self->s.modelindex = G_ShaderIndex(self->targetShaderName);
+
 	VectorCopy(self->pos2, self->s.origin2);
 	// try to find a spot near to the flare which is empty. This is used to facilitate visibility testing
 	findEmptySpot(self->s.origin, 8.0f, self->s.angles2);
@@ -384,6 +381,7 @@ void SP_misc_light_flare(gentity_t *self) {
 	self->use = SP_use_light_flare;
 
 	G_SpawnFloat("speed", "200", &self->speed);
+
 	self->s.time = self->speed;
 
 	G_SpawnInt("mindist", "0", &self->s.generic1);

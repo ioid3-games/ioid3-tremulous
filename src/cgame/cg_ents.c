@@ -128,6 +128,7 @@ void CG_PositionEntityOnTag(refEntity_t *entity, const refEntity_t *parent, qhan
 	}
 	// had to cast away the const to avoid compiler problems...
 	MatrixMultiply(lerped.axis, ((refEntity_t *)parent)->axis, entity->axis);
+
 	entity->backlerp = parent->backlerp;
 }
 
@@ -179,6 +180,7 @@ void CG_SetEntitySoundPosition(centity_t *cent) {
 		float *v;
 
 		v = cgs.inlineModelMidpoints[cent->currentState.modelindex];
+
 		VectorAdd(cent->lerpOrigin, v, origin);
 		trap_S_UpdateEntityPosition(cent->currentState.number, origin);
 	} else {
@@ -315,6 +317,7 @@ static void CG_WeaponDrop(centity_t *cent) {
 #if 0
 	if (item->giType == IT_WEAPON && item->giTag == WP_RAILGUN) {
 		clientInfo_t *ci = &cgs.clientinfo[cg.snap->ps.clientNum];
+
 		Byte4Copy(ci->c1RGBA, ent.shaderRGBA);
 	}
 #endif
@@ -358,14 +361,15 @@ static void CG_WeaponDrop(centity_t *cent) {
 		barrel.hModel = wi->barrelModel;
 
 		VectorCopy(ent.lightingOrigin, barrel.lightingOrigin);
+
 		barrel.shadowPlane = ent.shadowPlane;
 		barrel.renderfx = ent.renderfx;
 
 		angles[YAW] = 0;
 		angles[PITCH] = 0;
 		angles[ROLL] = 0;
-		AnglesToAxis(angles, barrel.axis);
 
+		AnglesToAxis(angles, barrel.axis);
 		CG_PositionRotatedEntityOnTag(&barrel, &ent, wi->weaponModel, "tag_barrel");
 
 		barrel.nonNormalizedAxes = ent.nonNormalizedAxes;
@@ -605,7 +609,8 @@ static void CG_Portal(centity_t *cent) {
 
 	ByteToDir(s1->eventParm, ent.axis[0]);
 	PerpendicularVector(ent.axis[1], ent.axis[0]);
-	// negating this tends to get the directions like they want we really should have a camera roll value
+	// negating this tends to get the directions like they want
+	// we really should have a camera roll value
 	VectorSubtract(vec3_origin, ent.axis[1], ent.axis[1]);
 	CrossProduct(ent.axis[0], ent.axis[1], ent.axis[2]);
 
