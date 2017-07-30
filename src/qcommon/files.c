@@ -2816,6 +2816,7 @@ void FS_AddGameDirectory(const char *path, const char *dir) {
 	Q_strncpyz(fs_gamedir, dir, sizeof(fs_gamedir));
 	// find all pak files in this directory
 	Q_strncpyz(curpath, FS_BuildOSPath(path, dir, ""), sizeof(curpath));
+
 	curpath[strlen(curpath) - 1] = '\0'; // strip the trailing slash
 	// get .pk3 files
 	pakfiles = Sys_ListFiles(curpath, ".pk3", NULL, &numfiles, qfalse);
@@ -3319,7 +3320,6 @@ FS_ReferencedPakPureChecksums
 
 Returns a space separated string containing the pure checksums of all referenced pk3 files.
 Servers with sv_pure set will get this string back from clients for pure validation.
-
 The string has a specific order, "cgame ui @ ref1 ref2 ref3 ...".
 =======================================================================================================================================
 */

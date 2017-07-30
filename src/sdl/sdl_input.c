@@ -37,7 +37,6 @@ static qboolean mouseActive = qfalse;
 
 static cvar_t *in_mouse = NULL;
 static cvar_t *in_nograb;
-
 static cvar_t *in_joystick = NULL;
 static cvar_t *in_joystickThreshold = NULL;
 static cvar_t *in_joystickNo = NULL;
@@ -556,7 +555,7 @@ static void IN_DeactivateMouse(void) {
 	}
 }
 
-// We translate axes movement into keypresses
+// we translate axes movement into keypresses
 static int joy_keys[16] = {
 	K_LEFTARROW, K_RIGHTARROW,
 	K_UPARROW, K_DOWNARROW,
@@ -568,8 +567,7 @@ static int joy_keys[16] = {
 	K_JOY27, K_JOY28
 };
 
-// translate hat events into keypresses
-// the 4 highest buttons are used for the first hat ...
+// translate hat events into keypresses, the 4 highest buttons are used for the first hat ...
 static int hat_keys[16] = {
 	K_JOY29, K_JOY30,
 	K_JOY31, K_JOY32,
@@ -1301,7 +1299,7 @@ void IN_Frame(void) {
 	}
 
 	IN_ProcessEvents();
-	// In case we had to delay actual restart of video system
+	// in case we had to delay actual restart of video system
 	if ((vidRestartTime != 0) && (vidRestartTime < Sys_Milliseconds())) {
 		vidRestartTime = 0;
 		Cbuf_AddText("vid_restart\n");

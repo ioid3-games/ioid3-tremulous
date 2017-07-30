@@ -302,7 +302,7 @@ static ID_INLINE float _vmf(intptr_t x) {
 
 	CMD
 
-	Command text buffering and command execution
+	Command text buffering and command execution.
 
 =======================================================================================================================================
 */
@@ -575,7 +575,7 @@ qboolean FS_Which(const char *filename, void *searchPath);
 /*
 =======================================================================================================================================
 
-	Edit fields and command line history/completion
+	Edit fields and command line history/completion.
 
 =======================================================================================================================================
 */
@@ -774,7 +774,7 @@ void Com_Shutdown(void);
 /*
 =======================================================================================================================================
 
-	CLIENT / SERVER SYSTEMS
+	CLIENT/SERVER SYSTEMS
 
 =======================================================================================================================================
 */
@@ -796,14 +796,11 @@ void CL_JoystickEvent(int axis, int value, int time);
 void CL_PacketEvent(netadr_t from, msg_t *msg);
 void CL_ConsolePrint(const char *text);
 void CL_MapLoading(void);
-// do a screen update before starting to load a map
-// when the server is going to load a new map, the entire hunk
-// will be cleared, so the client must shutdown cgame, ui, and
-// the renderer
+// do a screen update before starting to load a map when the server is going to load a new map, the entire hunk
+// will be cleared, so the client must shutdown cgame, ui, and the renderer
 void CL_ForwardCommandToServer(const char *string);
 // adds the current command line as a clc_clientCommand to the client message.
-// things like godmode, noclip, etc, are commands directed to the server, 
-// so when they are typed in at the console, they will need to be forwarded.
+// things like godmode, noclip, etc, are commands directed to the server, so when they are typed in at the console, they will need to be forwarded.
 void CL_CDDialog(void);
 // bring up the "need a cd to play" dialog
 void CL_FlushMemory(void);

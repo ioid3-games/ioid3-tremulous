@@ -163,7 +163,6 @@ qint64 LittleLong64(qint64 l) {return _LittleLong64(l);}
 float BigFloat(const float *l) {return _BigFloat(l);}
 float LittleFloat(const float *l) {return _LittleFloat(l);}
 */
-
 /*
 =======================================================================================================================================
 CopyShortSwap
@@ -277,7 +276,6 @@ float FloatSwap(const float *f) {
 
 	out.f = *f;
 	out.ui = LongSwap(out.ui);
-
 	return out.f;
 }
 
@@ -340,8 +338,10 @@ COM_BeginParseSession
 =======================================================================================================================================
 */
 void COM_BeginParseSession(const char *name) {
+
 	com_lines = 1;
 	com_tokenline = 0;
+
 	Com_sprintf(com_parsename, sizeof(com_parsename), "%s", name);
 }
 
@@ -404,9 +404,7 @@ void COM_ParseWarning(char *format, ...) {
 =======================================================================================================================================
 SkipWhitespace
 
-Parse a token out of a string.
-Will never return NULL, just empty strings.
-
+Parse a token out of a string. Will never return NULL, just empty strings.
 If "allowLineBreaks" is qtrue then an empty string will be returned if the next token is a newline.
 =======================================================================================================================================
 */
