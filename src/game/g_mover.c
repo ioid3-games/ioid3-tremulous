@@ -596,7 +596,6 @@ void Think_CloseModelDoor(gentity_t *ent) {
 	}
 
 	ent->moverState = MODEL_2TO1;
-
 	ent->think = Think_ClosedModelDoor;
 	ent->nextthink = level.time + ent->speed;
 }
@@ -635,6 +634,7 @@ Reached_BinaryMover
 =======================================================================================================================================
 */
 void Reached_BinaryMover(gentity_t *ent) {
+
 	// stop the looping sound
 	ent->s.loopSound = ent->soundLoop;
 
@@ -1086,6 +1086,7 @@ static void manualDoorTriggerSpectator(gentity_t *door, gentity_t *player) {
 	// don't skip a door that is already open
 	if (door->moverState == MOVER_1TO2 || door->moverState == MOVER_POS2 || door->moverState == ROTATOR_1TO2 || door->moverState == ROTATOR_POS2 || door->moverState == MODEL_1TO2 || door->moverState == MODEL_POS2) {
 		return;
+	}
 	// find the bounds of everything on the team
 	VectorCopy(door->r.absmin, mins);
 	VectorCopy(door->r.absmax, maxs);
@@ -1108,6 +1109,7 @@ static void manualDoorTriggerSpectator(gentity_t *door, gentity_t *player) {
 
 	VectorCopy(mins, triggerHull.r.absmin);
 	VectorCopy(maxs, triggerHull.r.absmax);
+
 	triggerHull.count = best;
 
 	Touch_DoorTriggerSpectator(&triggerHull, player, NULL);
@@ -2263,6 +2265,7 @@ void SP_func_pendulum(gentity_t *ent) {
 	G_SpawnFloat("speed", "30", &speed);
 	G_SpawnInt("dmg", "2", &ent->damage);
 	G_SpawnFloat("phase", "0", &phase);
+
 	trap_SetBrushModel(ent, ent->model);
 	// find pendulum length
 	length = fabs(ent->r.mins[2]);

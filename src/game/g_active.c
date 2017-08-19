@@ -26,7 +26,7 @@ Called just before a snapshot is sent to the given player. Totals up all damage 
 that client for pain blends and kicks, and global pain sound events for all clients.
 =======================================================================================================================================
 */
-void P_DamageFeedback(gentity_t *player) {
+void G_DamageFeedback(gentity_t *player) {
 	gclient_t *client;
 	float count;
 	vec3_t angles;
@@ -74,12 +74,12 @@ void P_DamageFeedback(gentity_t *player) {
 
 /*
 =======================================================================================================================================
-P_WorldEffects
+G_WorldEffects
 
-Check for lava / slime contents and drowning.
+Check for lava/slime contents and drowning.
 =======================================================================================================================================
 */
-void P_WorldEffects(gentity_t *ent) {
+void G_WorldEffects(gentity_t *ent) {
 	int waterlevel;
 
 	if (ent->client->noclip) {
@@ -745,7 +745,9 @@ void ClientEvents(gentity_t *ent, int oldEventSequence) {
 
 				VectorSet(dir, 0, 0, 1);
 				BG_ClassBoundingBox(class, mins, NULL, NULL, NULL, NULL);
+
 				mins[0] = mins[1] = 0.0f;
+
 				VectorAdd(client->ps.origin, mins, point);
 
 				ent->pain_debounce_time = level.time + 200; // no normal pain sound
@@ -780,8 +782,7 @@ void SendPendingPredictableEvents(playerState_t *ps) {
 
 	// if there are still events pending
 	if (ps->entityEventSequence < ps->eventSequence) {
-		// create a temporary entity for this event which is sent to everyone
-		// except the client who generated the event
+		// create a temporary entity for this event which is sent to everyone except the client who generated the event
 		seq = ps->entityEventSequence &(MAX_PS_EVENTS - 1);
 		event = ps->events[seq]|((ps->entityEventSequence & 3) << 8);
 		// set external event to zero before calling BG_PlayerStateToEntityState
@@ -846,6 +847,7 @@ void G_UnlaggedStore(void) {
 		VectorCopy(ent->r.mins, save->mins);
 		VectorCopy(ent->r.maxs, save->maxs);
 		VectorCopy(ent->s.pos.trBase, save->origin);
+
 		save->used = qtrue;
 	}
 }
@@ -972,7 +974,9 @@ void G_UnlaggedOff(void) {
 		VectorCopy(ent->client->unlaggedBackup.mins, ent->r.mins);
 		VectorCopy(ent->client->unlaggedBackup.maxs, ent->r.maxs);
 		VectorCopy(ent->client->unlaggedBackup.origin, ent->r.currentOrigin);
+
 		ent->client->unlaggedBackup.used = qfalse;
+
 		trap_LinkEntity(ent);
 	}
 }
@@ -1034,11 +1038,13 @@ void G_UnlaggedOn(gentity_t *attacker, vec3_t muzzle, float range) {
 		VectorCopy(ent->r.mins, ent->client->unlaggedBackup.mins);
 		VectorCopy(ent->r.maxs, ent->client->unlaggedBackup.maxs);
 		VectorCopy(ent->r.currentOrigin, ent->client->unlaggedBackup.origin);
+
 		ent->client->unlaggedBackup.used = qtrue;
 		// move the client to the calculated unlagged position
 		VectorCopy(calc->mins, ent->r.mins);
 		VectorCopy(calc->maxs, ent->r.maxs);
 		VectorCopy(calc->origin, ent->r.currentOrigin);
+
 		trap_LinkEntity(ent);
 	}
 }
@@ -1082,8 +1088,7 @@ static void G_UnlaggedDetectCollisions(gentity_t *ent) {
 	}
 
 	range = Distance(ent->client->oldOrigin, ent->client->ps.origin);
-	// increase the range by the player's largest possible radius since it's
-	// the players bounding box that collides, not their origin
+	// increase the range by the player's largest possible radius since it's the players bounding box that collides, not their origin
 	r1 = Distance(calc->origin, calc->mins);
 	r2 = Distance(calc->origin, calc->maxs);
 	range += (r1 > r2) ? r1 : r2;
@@ -1107,7 +1112,7 @@ This will be called once for each client frame, which will usually be a couple t
 If "g_synchronousClients 1" is set, this will be called exactly once for each server frame, which makes for smooth demo recording.
 =======================================================================================================================================
 */
-void ClientThink_real(gentity_t *ent) {
+void ClientThink_Real(gentity_t *ent) {
 	gclient_t *client;
 	pmove_t pm;
 	int oldEventSequence;
@@ -1233,7 +1238,6 @@ void ClientThink_real(gentity_t *ent) {
 
 			client->ps.stats[STAT_STATE] & = ~SS_POISONED;
 			client->poisonImmunityTime = level.time + MEDKIT_POISON_IMMUNITY_TIME;
-
 			client->ps.stats[STAT_STATE]|= SS_HEALING_2X;
 			client->lastMedKitTime = level.time;
 			client->medKitHealthToRestore = client->ps.stats[STAT_MAX_HEALTH] - client->ps.stats[STAT_HEALTH];
@@ -1327,7 +1331,9 @@ void ClientThink_real(gentity_t *ent) {
 		BG_RemoveUpgradeFromInventory(UP_GRENADE, client->ps.stats);
 		// m - M - M - M - MONSTER HACK
 		ent->s.weapon = WP_GRENADE;
+
 		FireWeapon(ent);
+
 		ent->s.weapon = lastWeapon;
 	}
 	// set speed
@@ -1377,7 +1383,6 @@ void ClientThink_real(gentity_t *ent) {
 	pm.pointcontents = trap_PointContents;
 	pm.debugLevel = g_debugMove.integer;
 	pm.noFootsteps = 0;
-
 	pm.pmove_fixed = pmove_fixed.integer|client->pers.pmoveFixed;
 	pm.pmove_msec = pmove_msec.integer;
 
@@ -1490,6 +1495,7 @@ void ClientThink_real(gentity_t *ent) {
 		vec3_t range = {USE_OBJECT_RANGE, USE_OBJECT_RANGE, USE_OBJECT_RANGE};
 		vec3_t mins, maxs;
 		int i, num;
+
 		// look for object infront of player
 		AngleVectors(client->ps.viewangles, view, NULL, NULL);
 		VectorMA(client->ps.origin, USE_OBJECT_RANGE, view, point);
@@ -1501,7 +1507,6 @@ void ClientThink_real(gentity_t *ent) {
 			traceEnt->use(traceEnt, ent, ent); // other and activator are the same in this context
 		} else {
 			// no entity in front of player - do a small area search
-
 			VectorAdd(client->ps.origin, range, maxs);
 			VectorSubtract(client->ps.origin, range, mins);
 
@@ -1534,7 +1539,7 @@ void ClientThink_real(gentity_t *ent) {
 	if (client->ps.persistant[PERS_BP] < 0) {
 		client->ps.persistant[PERS_BP] = 0;
 	}
-	// perform once - a - second actions
+	// perform once-a-second actions
 	ClientTimerActions(ent, msec);
 
 	if (ent->suicideTime > 0 && ent->suicideTime < level.time) {
@@ -1557,12 +1562,13 @@ void ClientThink(int clientNum) {
 	gentity_t *ent;
 
 	ent = g_entities + clientNum;
+
 	trap_GetUsercmd(clientNum, &ent->client->pers.cmd);
 	// mark the time we got info, so we can display the phone jack if they don't get any for a while
 	ent->client->lastCmdTime = level.time;
 
 	if (!g_synchronousClients.integer) {
-		ClientThink_real(ent);
+		ClientThink_Real(ent);
 	}
 }
 
@@ -1579,7 +1585,7 @@ void G_RunClient(gentity_t *ent) {
 
 	ent->client->pers.cmd.serverTime = level.time;
 
-	ClientThink_real(ent);
+	ClientThink_Real(ent);
 }
 
 /*
@@ -1633,9 +1639,9 @@ void ClientEndFrame(gentity_t *ent) {
 		return;
 	}
 	// burn from lava, etc
-	P_WorldEffects(ent);
+	G_WorldEffects(ent);
 	// apply all the damage taken this frame
-	P_DamageFeedback(ent);
+	G_DamageFeedback(ent);
 	// add the EF_CONNECTION flag if we haven't gotten commands recently
 	if (level.time - ent->client->lastCmdTime > 1000) {
 		ent->s.eFlags |= EF_CONNECTION;

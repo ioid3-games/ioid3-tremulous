@@ -68,8 +68,6 @@ void CG_AddToKillMsg(const char *killername, const char *victimname, int icon) {
 			}
 
 			*k = 0;
-
-//			cgs.killMsgMsgTimes[index] = cg.time;
 			k = cgs.killMsgKillers[index];
 			*k = 0;
 			*k++ = Q_COLOR_ESCAPE;

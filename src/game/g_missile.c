@@ -50,6 +50,7 @@ void G_BounceMissile(gentity_t *ent, trace_t *trace) {
 
 	VectorAdd(ent->r.currentOrigin, trace->plane.normal, ent->r.currentOrigin);
 	VectorCopy(ent->r.currentOrigin, ent->s.pos.trBase);
+
 	ent->s.pos.trTime = level.time;
 }
 
@@ -548,7 +549,7 @@ void AHive_SearchAndDestroy(gentity_t *self) {
 
 /*
 =======================================================================================================================================
-fire_hive.
+fire_hive
 =======================================================================================================================================
 */
 gentity_t *fire_hive(gentity_t *self, vec3_t start, vec3_t dir) {

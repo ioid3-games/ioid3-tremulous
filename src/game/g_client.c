@@ -204,15 +204,20 @@ static gentity_t *G_SelectRandomFurthestSpawnPoint(vec3_t avoidPoint, vec3_t ori
 		}
 
 		VectorCopy(spot->s.origin, origin);
+
 		origin[2] += 9;
+
 		VectorCopy(spot->s.angles, angles);
+
 		return spot;
 	}
 	// select a random spot from the spawn points furthest away
 	rnd = random() * (numSpots / 2);
 
 	VectorCopy(list_spot[rnd]->s.origin, origin);
+
 	origin[2] += 9;
+
 	VectorCopy(list_spot[rnd]->s.angles, angles);
 
 	return list_spot[rnd];
@@ -533,10 +538,10 @@ void G_SetClientViewAngle(gentity_t *ent, vec3_t angle) {
 
 /*
 =======================================================================================================================================
-respawn
+ClientRespawn
 =======================================================================================================================================
 */
-void respawn(gentity_t *ent) {
+void ClientRespawn(gentity_t *ent) {
 	int i;
 
 	SpawnCorpse(ent);
@@ -794,6 +799,7 @@ char *ClientUserinfoChanged(int clientNum, qboolean forceName) {
 	client->pers.stickySpec = atoi(s) != 0;
 	// set name
 	Q_strncpyz(oldname, client->pers.netname, sizeof(oldname));
+
 	s = Info_ValueForKey(userinfo, "name");
 	G_ClientCleanName(s, newname, sizeof(newname));
 
@@ -1245,7 +1251,7 @@ void ClientSpawn(gentity_t *ent, gentity_t *spawn, vec3_t origin, vec3_t angles)
 	ent->classname = "player";
 	ent->r.contents = CONTENTS_BODY;
 	ent->clipmask = MASK_PLAYERSOLID;
-	ent->die = player_die;
+	ent->die = PlayerDie;
 	ent->waterlevel = 0;
 	ent->watertype = 0;
 	ent->flags = 0;

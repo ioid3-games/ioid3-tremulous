@@ -397,8 +397,8 @@ static void CG_Speaker(centity_t *cent) {
 	}
 
 	trap_S_StartSound(NULL, cent->currentState.number, CHAN_ITEM, cgs.gameSounds[cent->currentState.eventParm]);
-	// ent->s.frame = ent->wait * 10;
-	// ent->s.clientNum = ent->random * 10;
+	//ent->s.frame = ent->wait * 10;
+	//ent->s.clientNum = ent->random * 10;
 	cent->miscTime = cg.time + cent->currentState.frame * 100 + cent->currentState.clientNum * 100 * crandom();
 }
 
@@ -683,7 +683,9 @@ static void CG_LightFlare(centity_t *cent) {
 	AngleVectors(es->angles, forward, NULL, NULL);
 	VectorCopy(cent->lerpOrigin, flare.origin);
 	VectorSubtract(flare.origin, cg.refdef.vieworg, delta);
+
 	len = VectorLength(delta);
+
 	VectorNormalize(delta);
 	// flare is too close to camera to be drawn
 	if (len < es->generic1) {

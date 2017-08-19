@@ -127,6 +127,7 @@ static void CG_DrawFieldPadded(int x, int y, int width, int cw, int ch, int valu
 	}
 
 	Com_sprintf(num, sizeof(num), "%d", value);
+
 	l = strlen(num);
 
 	if (l > width) {
@@ -344,6 +345,7 @@ static void CG_DrawPlayerCreditsFraction(rectDef_t *rect, vec4_t color, qhandle_
 	fraction = ((float)(cg.predictedPlayerState.persistant[PERS_CREDIT] % ALIEN_CREDITS_PER_KILL)) / ALIEN_CREDITS_PER_KILL;
 
 	CG_AdjustFrom640(&rect->x, &rect->y, &rect->w, &rect->h);
+
 	height = rect->h * fraction;
 
 	trap_R_SetColor(color);
@@ -726,6 +728,7 @@ static void CG_DrawUsableBuildable(rectDef_t *rect, qhandle_t shader, vec4_t col
 		trap_R_SetColor(color);
 		CG_DrawPic(rect->x, rect->y, rect->w, rect->h, shader);
 		trap_R_SetColor(NULL);
+
 		cg.nearUsableBuildable = es->modelindex;
 	} else {
 		cg.nearUsableBuildable = BA_NONE;
@@ -812,6 +815,7 @@ CG_DrawPlayerHealthValue
 =======================================================================================================================================
 */
 static void CG_DrawPlayerHealthValue(rectDef_t *rect, vec4_t color) {
+
 	trap_R_SetColor(color);
 	CG_DrawField(rect->x, rect->y, 4, rect->w / 4, rect->h, cg.snap->ps.stats[STAT_HEALTH]);
 	trap_R_SetColor(NULL);

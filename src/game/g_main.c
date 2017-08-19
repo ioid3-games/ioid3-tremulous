@@ -25,8 +25,8 @@ typedef struct {
 	char *cvarName;
 	char *defaultString;
 	int cvarFlags;
-	int modificationCount; // for tracking changes
-	qboolean trackChange; // track this variable, and announce if changed
+	int modificationCount;	// for tracking changes
+	qboolean trackChange;	// track this variable, and announce if changed
 	// certain cvars can be set in worldspawn, but we don't want those values to persist, so keep track of non-worldspawn changes and restore that on map end. unfortunately, if the server crashes, the value set in worldspawn may persist
 	char *explicit;
 } cvarTable_t;
@@ -231,7 +231,7 @@ void G_CalculateBuildPoints(void);
 =======================================================================================================================================
 vmMain
 
-This is the only way control passes into the module. This must be the very first function compiled into the .q3vm file.
+This is the only way control passes into the module. This must be the very first function compiled into the .qvm file.
 =======================================================================================================================================
 */
 Q_EXPORT intptr_t vmMain(int command, int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7, int arg8, int arg9, int arg10, int arg11) {
@@ -1373,6 +1373,7 @@ This is also used for spectator spawns.
 void FindIntermissionPoint(void) {
 	gentity_t *ent, *target;
 	vec3_t dir;
+
 	// find the intermission spot
 	ent = G_Find(NULL, FOFS(classname), "info_player_intermission");
 
@@ -1395,7 +1396,7 @@ void FindIntermissionPoint(void) {
 
 /*
 =======================================================================================================================================
-BeginIntermission.
+BeginIntermission
 =======================================================================================================================================
 */
 void BeginIntermission(void) {
@@ -1421,7 +1422,7 @@ void BeginIntermission(void) {
 		}
 		// respawn if dead
 		if (client->health <= 0) {
-			respawn(client);
+			ClientRespawn(client);
 		}
 
 		MoveClientToIntermission(client);
@@ -1464,7 +1465,7 @@ void ExitLevel(void) {
 
 		cl->ps.persistant[PERS_SCORE] = 0;
 	}
-	// we need to do this here before chaning to CON_CONNECTING
+	// we need to do this here before changing to CON_CONNECTING
 	G_WriteSessionData();
 	// change all client states to connecting, so the early players into the next level will know the others aren't done reconnecting
 	for (i = 0; i < g_maxclients.integer; i++) {
@@ -1869,6 +1870,11 @@ void G_Vote(gentity_t *ent, team_t team, qboolean voting) {
 */
 
 
+/*
+=======================================================================================================================================
+G_ExecuteVote
+=======================================================================================================================================
+*/
 void G_ExecuteVote(team_t team) {
 	level.voteExecuteTime[team] = 0;
 

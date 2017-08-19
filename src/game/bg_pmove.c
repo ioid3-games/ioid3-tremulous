@@ -1024,6 +1024,7 @@ static void PM_WaterMove(void) {
 	}
 
 	VectorCopy(wishvel, wishdir);
+
 	wishspeed = VectorNormalize(wishdir);
 
 	if (wishspeed > pm->ps->speed * pm_swimScale) {
@@ -1120,6 +1121,7 @@ static void PM_FlyMove(void) {
 	}
 
 	VectorCopy(wishvel, wishdir);
+
 	wishspeed = VectorNormalize(wishdir);
 
 	PM_Accelerate(wishdir, wishspeed, pm_flyaccelerate);
@@ -1164,6 +1166,7 @@ static void PM_AirMove(void) {
 	wishvel[2] = 0;
 
 	VectorCopy(wishvel, wishdir);
+
 	wishspeed = VectorNormalize(wishdir);
 	wishspeed *= scale;
 	// not on ground, so little effect on velocity
@@ -1232,6 +1235,7 @@ static void PM_ClimbMove(void) {
 //	wishvel[2] = 0;
 
 	VectorCopy(wishvel, wishdir);
+
 	wishspeed = VectorNormalize(wishdir);
 	wishspeed *= scale;
 	// clamp the speed lower if ducking
@@ -1676,6 +1680,7 @@ static int PM_CorrectAllSolid(trace_t *trace) {
 		for (j = -1; j <= 1; j++) {
 			for (k = -1; k <= 1; k++) {
 				VectorCopy(pm->ps->origin, point);
+
 				point[0] += (float)i;
 				point[1] += (float)j;
 				point[2] += (float)k;
@@ -1981,7 +1986,6 @@ static void PM_GroundClimbTrace(void) {
 			vec3_t forward, rotated, angles;
 
 			AngleVectors(pm->ps->viewangles, forward, NULL, NULL);
-
 			RotatePointAroundVector(rotated, pm->ps->grapplePoint, forward, 180.0f);
 			vectoangles(rotated, angles);
 
@@ -2054,7 +2058,6 @@ static void PM_GroundTrace(void) {
 			vec3_t forward, rotated, angles;
 
 			AngleVectors(pm->ps->viewangles, forward, NULL, NULL);
-
 			RotatePointAroundVector(rotated, pm->ps->grapplePoint, forward, 180.0f);
 			vectoangles(rotated, angles);
 
@@ -2443,7 +2446,7 @@ static void PM_Footsteps(void) {
 			// splashing
 			PM_AddEvent(EV_FOOTSPLASH);
 		} else if (pm->waterlevel == 2) {
-			// wading / swimming at surface
+			// wading/swimming at surface
 			PM_AddEvent(EV_SWIM);
 		} else if (pm->waterlevel == 3) {
 			// no sound when completely underwater
@@ -2622,13 +2625,14 @@ static void PM_Weapon(void) {
 
 					AngleVectors(pm->ps->viewangles, dir, NULL, NULL);
 					VectorCopy(pm->ps->velocity, vel);
+
 					vel[2] = 0;
 					dir[2] = 0;
+
 					VectorNormalize(vel);
 					VectorNormalize(dir);
 
 					charge *= DotProduct(dir, vel);
-
 					pm->ps->stats[STAT_MISC] += charge;
 				} else {
 					pm->ps->stats[STAT_MISC] = 0;
@@ -3218,13 +3222,12 @@ void PM_UpdateViewAngles(playerState_t *ps, const usercmd_t *cmd) {
 	}
 }
 
+void trap_SnapVector(float *v);
 /*
 =======================================================================================================================================
 PmoveSingle
 =======================================================================================================================================
 */
-void trap_SnapVector(float *v);
-
 void PmoveSingle(pmove_t *pmove) {
 	pm = pmove;
 
@@ -3273,6 +3276,7 @@ void PmoveSingle(pmove_t *pmove) {
 
 		if (pmove->cmd.upmove > 0) {
 			pmove->cmd.upmove = 0;
+		}
 	}
 	// clear all pmove local vars
 	memset(&pml, 0, sizeof(pml));
@@ -3361,6 +3365,7 @@ void PmoveSingle(pmove_t *pmove) {
 	} else if (pm->ps->pm_flags & PMF_TIME_WATERJUMP) {
 		PM_WaterJumpMove();
 	} else if (pm->waterlevel > 1) {
+		// swimming
 		PM_WaterMove();
 	} else if (pml.ladder) {
 		PM_LadderMove();
@@ -3371,6 +3376,7 @@ void PmoveSingle(pmove_t *pmove) {
 			PM_WalkMove(); // walking on ground
 		}
 	} else {
+		// airborne
 		PM_AirMove();
 	}
 
@@ -3384,9 +3390,9 @@ void PmoveSingle(pmove_t *pmove) {
 	PM_Weapon();
 	// torso animation
 	PM_TorsoAnimation();
-	// footstep events / legs animations
+	// footstep events/legs animations
 	PM_Footsteps();
-	// entering / leaving water splashes
+	// entering/leaving water splashes
 	PM_WaterEvents();
 	// snap some parts of playerstate to save network bandwidth
 	trap_SnapVector(pm->ps->velocity);

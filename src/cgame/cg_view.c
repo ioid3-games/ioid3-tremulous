@@ -470,7 +470,6 @@ CG_StepOffset
 NOTE: This causes a compiler bug on mac MrC compiler.
 =======================================================================================================================================
 */
-// this causes a compiler bug on mac MrC compiler
 static void CG_StepOffset(void) {
 	float steptime;
 	int timeDelta;

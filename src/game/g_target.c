@@ -38,10 +38,9 @@ void Use_Target_Delay(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 	ent->activator = activator;
 }
 
-/*
-=======================================================================================================================================
-SP_target_delay
-=======================================================================================================================================
+/*QUAKED target_delay (1 0 0) (-8 -8 -8) (8 8 8)
+"wait" seconds to pause before firing targets.
+"random" delay variance, total delay = delay +/- random seconds
 */
 void SP_target_delay(gentity_t *ent) {
 
@@ -57,9 +56,10 @@ void SP_target_delay(gentity_t *ent) {
 	ent->use = Use_Target_Delay;
 }
 
-/*QUAKED target_score (1 0 0) (-8 -8 -8) (8 8 8)
-"count" number of points to add, default 1
-The activator is given this many points.
+/*
+=======================================================================================================================================
+Use_Target_Score
+=======================================================================================================================================
 */
 void Use_Target_Score(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 
@@ -70,10 +70,10 @@ void Use_Target_Score(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 	AddScore(activator, ent->count);
 }
 
-/*
-=======================================================================================================================================
-SP_target_score
-=======================================================================================================================================
+/*QUAKED target_score (1 0 0) (-8 -8 -8) (8 8 8)
+"count" number of points to add, default 1
+
+The activator is given this many points.
 */
 void SP_target_score(gentity_t *ent) {
 
@@ -84,9 +84,10 @@ void SP_target_score(gentity_t *ent) {
 	ent->use = Use_Target_Score;
 }
 
-/*QUAKED target_print (1 0 0) (-8 -8 -8) (8 8 8) humanteam alienteam private
-"message" text to print
-If "private", only the activator gets the message. If no checks, all clients get the message.
+/*
+=======================================================================================================================================
+Use_Target_Print
+=======================================================================================================================================
 */
 void Use_Target_Print(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 
@@ -113,26 +114,18 @@ void Use_Target_Print(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 	trap_SendServerCommand(-1, va("cp \"%s\"", ent->message));
 }
 
-/*
-=======================================================================================================================================
-SP_target_print
-=======================================================================================================================================
+/*QUAKED target_print (1 0 0) (-8 -8 -8) (8 8 8) redteam blueteam private
+"message"	text to print
+If "private", only the activator gets the message. If no checks, all clients get the message.
 */
 void SP_target_print(gentity_t *ent) {
 	ent->use = Use_Target_Print;
 }
 
-/*QUAKED target_speaker (1 0 0) (-8 - 8 - 8) (8 8 8) looped - on looped - off global activator
-"noise"   wav file to play
-
-A global sound will play full volume throughout the level.
-Activator sounds will play on the player that activated the target.
-Global and activator sounds can't be combined with looping.
-Normal sounds play each time the target is used.
-Looped sounds will be toggled by use functions.
-Multiple identical looping sounds will just increase volume without any speed cost.
-"wait" : Seconds between auto triggerings, 0 = don't auto trigger
-"random"  wait variance, default is 0
+/*
+=======================================================================================================================================
+Use_Target_Speaker
+=======================================================================================================================================
 */
 void Use_Target_Speaker(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 
@@ -153,10 +146,17 @@ void Use_Target_Speaker(gentity_t *ent, gentity_t *other, gentity_t *activator) 
 	}
 }
 
-/*
-=======================================================================================================================================
-SP_target_speaker
-=======================================================================================================================================
+/*QUAKED target_speaker (1 0 0) (-8 -8 -8) (8 8 8) looped-on looped-off global activator
+"noise"		wav file to play
+
+A global sound will play full volume throughout the level.
+Activator sounds will play on the player that activated the target.
+Global and activator sounds can't be combined with looping.
+Normal sounds play each time the target is used.
+Looped sounds will be toggled by use functions.
+Multiple identical looping sounds will just increase volume without any speed cost.
+"wait" : Seconds between auto triggerings, 0 = don't auto trigger
+"random" wait variance, default is 0
 */
 void SP_target_speaker(gentity_t *ent) {
 	char buffer[MAX_QPATH];
@@ -203,10 +203,10 @@ void SP_target_speaker(gentity_t *ent) {
 
 /*
 =======================================================================================================================================
-target_teleporter_use
+Use_Target_Teleporter
 =======================================================================================================================================
 */
-void target_teleporter_use(gentity_t *self, gentity_t *other, gentity_t *activator) {
+void Use_Target_Teleporter(gentity_t *self, gentity_t *other, gentity_t *activator) {
 	gentity_t *dest;
 
 	if (!activator || !activator->client) {
@@ -232,7 +232,7 @@ void SP_target_teleporter(gentity_t *self) {
 		G_Printf("untargeted %s at %s\n", self->classname, vtos(self->s.origin));
 	}
 
-	self->use = target_teleporter_use;
+	self->use = Use_Target_Teleporter;
 }
 
 /*QUAKED target_relay (.5 .5 .5) (-8 -8 -8) (8 8 8) RED_ONLY BLUE_ONLY RANDOM

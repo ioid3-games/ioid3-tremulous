@@ -193,12 +193,12 @@ typedef enum {
 	STAT_ITEMS,
 	STAT_ACTIVEITEMS,
 	STAT_WEAPON,		// current primary weapon
-	STAT_MAX_HEALTH,	// health / armor limit, changable by handicap
+	STAT_MAX_HEALTH,	// health/armor limit, changable by handicap
 	STAT_CLASS,			// player class(for aliens AND humans)
 	STAT_TEAM,			// player team
-	STAT_STAMINA,		// stamina(human only)
+	STAT_STAMINA,		// stamina (human only)
 	STAT_STATE,			// client states e.g. wall climbing
-	STAT_MISC,			// for uh...misc stuff(pounce, trample, lcannon)
+	STAT_MISC,			// for uh...misc stuff (pounce, trample, lcannon)
 	STAT_BUILDABLE,		// which ghost model to display for building
 	STAT_FALLDIST,		// the distance the player fell
 	STAT_VIEWLOCK		// direction to lock the view in
@@ -276,7 +276,7 @@ typedef enum {
 #define EF_WARN_CHARGE		0x0020 // lucifer Cannon is about to overcharge
 #define EF_WALLCLIMB		0x0040 // wall walking
 #define EF_WALLCLIMBCEILING	0x0080 // wall walking ceiling hack
-#define EF_NODRAW			0x0100 // may have an event, but no model(unspawned items)
+#define EF_NODRAW			0x0100 // may have an event, but no model (unspawned items)
 #define EF_FIRING			0x0200 // for lightning gun
 #define EF_FIRING2			0x0400 // alt fire
 #define EF_FIRING3			0x0800 // third fire
@@ -389,7 +389,6 @@ typedef enum {
 #define EV_EVENT_BIT1 0x00000100
 #define EV_EVENT_BIT2 0x00000200
 #define EV_EVENT_BITS (EV_EVENT_BIT1|EV_EVENT_BIT2)
-
 #define EVENT_VALID_MSEC 300
 
 const char *BG_EventName(int num);
@@ -424,7 +423,7 @@ typedef enum {
 	EV_FIRE_WEAPON,
 	EV_FIRE_WEAPON2,
 	EV_FIRE_WEAPON3,
-	EV_PLAYER_RESPAWN, // for fovwarp effects
+	EV_PLAYER_RESPAWN,		// for fovwarp effects
 	EV_PLAYER_TELEPORT_IN,
 	EV_PLAYER_TELEPORT_OUT,
 	EV_GRENADE_BOUNCE,		// eventParm will be the soundindex

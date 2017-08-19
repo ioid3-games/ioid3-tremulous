@@ -155,7 +155,6 @@ void CG_DrawRect(float x, float y, float width, float height, float size, const 
 	trap_R_SetColor(color);
 	CG_DrawTopBottom(x, y, width, height, size);
 	CG_DrawSides(x, y, width, height, size);
-
 	trap_R_SetColor(NULL);
 }
 

@@ -113,6 +113,7 @@ void SP_misc_model(gentity_t *ent) {
 
 	VectorSet(ent->mins, -16, -16, -16);
 	VectorSet(ent->maxs, 16, 16, 16);
+
 	trap_LinkEntity(ent);
 	G_SetOrigin(ent, ent->s.origin);
 	VectorCopy(ent->s.angles, ent->s.apos.trBase);
@@ -123,10 +124,10 @@ void SP_misc_model(gentity_t *ent) {
 
 /*
 =======================================================================================================================================
-locateCamera
+LocateCamera
 =======================================================================================================================================
 */
-void locateCamera(gentity_t *ent) {
+void LocateCamera(gentity_t *ent) {
 	vec3_t dir;
 	gentity_t *target;
 	gentity_t *owner;
@@ -186,7 +187,7 @@ void SP_misc_portal_surface(gentity_t *ent) {
 	if (!ent->target) {
 		VectorCopy(ent->s.origin, ent->s.origin2);
 	} else {
-		ent->think = locateCamera;
+		ent->think = LocateCamera;
 		ent->nextthink = level.time + 100;
 	}
 }
@@ -328,12 +329,12 @@ void SP_use_light_flare(gentity_t *self, gentity_t *other, gentity_t *activator)
 
 /*
 =======================================================================================================================================
-findEmptySpot
+FindEmptySpot
 
 Finds an empty spot radius units from origin.
 =======================================================================================================================================
 */
-static void findEmptySpot(vec3_t origin, float radius, vec3_t spot) {
+static void FindEmptySpot(vec3_t origin, float radius, vec3_t spot) {
 	int i, j, k;
 	vec3_t delta, test, total;
 	trace_t tr;
@@ -376,7 +377,7 @@ void SP_misc_light_flare(gentity_t *self) {
 
 	VectorCopy(self->pos2, self->s.origin2);
 	// try to find a spot near to the flare which is empty. This is used to facilitate visibility testing
-	findEmptySpot(self->s.origin, 8.0f, self->s.angles2);
+	FindEmptySpot(self->s.origin, 8.0f, self->s.angles2);
 
 	self->use = SP_use_light_flare;
 

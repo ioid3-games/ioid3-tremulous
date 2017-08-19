@@ -357,6 +357,7 @@ qboolean PM_PredictStepMove(void) {
 
 	VectorCopy(pm->ps->velocity, velocity);
 	VectorCopy(pm->ps->origin, origin);
+
 	impactSpeed = pml.impactSpeed;
 
 	if (PM_StepSlideMove(qfalse, qtrue)) {
@@ -365,6 +366,7 @@ qboolean PM_PredictStepMove(void) {
 
 	VectorCopy(velocity, pm->ps->velocity);
 	VectorCopy(origin, pm->ps->origin);
+
 	pml.impactSpeed = impactSpeed;
 	return stepped;
 }

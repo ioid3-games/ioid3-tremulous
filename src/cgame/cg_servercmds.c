@@ -351,7 +351,6 @@ static void CG_MapRestart(void) {
 	cg.mapRestart = qtrue;
 
 	CG_StartMusic();
-
 	trap_S_ClearLoopingSounds(qtrue);
 	// we really should clear more parts of cg here and stop sounds
 	trap_Cvar_Set("cg_thirdPerson", "0");
