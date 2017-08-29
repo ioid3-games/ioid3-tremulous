@@ -131,8 +131,7 @@ void UI_SetActiveMenu(uiMenuCommand_t menu);
 =======================================================================================================================================
 vmMain
 
-This is the only way control passes into the module.
-This must be the very first function compiled into the .qvm file.
+This is the only way control passes into the module. This must be the very first function compiled into the .vm file.
 =======================================================================================================================================
 */
 Q_EXPORT intptr_t vmMain(int command, int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7, int arg8, int arg9, int arg10, int arg11) {
@@ -216,6 +215,7 @@ void UI_DrawSides(float x, float y, float w, float h, float size) {
 
 	sizeY = size * uiInfo.uiDC.yscale;
 	size *= uiInfo.uiDC.xscale;
+
 	trap_R_DrawStretchPic(x, y + sizeY, size, h - (sizeY * 2.0f), 0, 0, 0, 0, uiInfo.uiDC.whiteShader);
 	trap_R_DrawStretchPic(x + w - size, y + sizeY, size, h - (sizeY * 2.0f), 0, 0, 0, 0, uiInfo.uiDC.whiteShader);
 }
@@ -527,7 +527,6 @@ static int UI_GetServerStatusInfo(const char *serverAddress, serverStatusInfo_t 
 				}
 
 				score = p;
-
 				p = strchr(p, ' ');
 
 				if (!p) {
@@ -535,9 +534,7 @@ static int UI_GetServerStatusInfo(const char *serverAddress, serverStatusInfo_t 
 				}
 
 				*p++ = '\0';
-
 				ping = p;
-
 				p = strchr(p, ' ');
 
 				if (!p) {
@@ -545,15 +542,12 @@ static int UI_GetServerStatusInfo(const char *serverAddress, serverStatusInfo_t 
 				}
 
 				*p++ = '\0';
-
 				name = p;
 
 				Com_sprintf(&info->pings[len], sizeof(info->pings) - len, "%d", i);
 
 				info->lines[info->numLines][0] = &info->pings[len];
-
 				len += strlen(&info->pings[len]) + 1;
-
 				info->lines[info->numLines][1] = score;
 				info->lines[info->numLines][2] = ping;
 				info->lines[info->numLines][3] = name;
@@ -626,8 +620,10 @@ static void UI_BuildFindPlayerList(qboolean force) {
 		}
 	} else {
 		memset(&uiInfo.pendingServerStatus, 0, sizeof(uiInfo.pendingServerStatus));
+
 		uiInfo.numFoundPlayerServers = 0;
 		uiInfo.currentFoundPlayerServer = 0;
+
 		trap_Cvar_VariableStringBuffer("ui_findPlayer", uiInfo.findPlayerName, sizeof(uiInfo.findPlayerName));
 		Q_CleanStr(uiInfo.findPlayerName);
 		// should have a string of some length
@@ -647,7 +643,9 @@ static void UI_BuildFindPlayerList(qboolean force) {
 		trap_LAN_ServerStatus(NULL, NULL, 0);
 
 		uiInfo.numFoundPlayerServers = 1;
+
 		Com_sprintf(uiInfo.foundPlayerServerNames[uiInfo.numFoundPlayerServers - 1], sizeof(uiInfo.foundPlayerServerNames[uiInfo.numFoundPlayerServers - 1]), "searching %d...", uiInfo.pendingServerStatus.num);
+
 		numFound = 0;
 		numTimeOuts++;
 	}
@@ -679,7 +677,6 @@ static void UI_BuildFindPlayerList(qboolean force) {
 					if (stristr(name, uiInfo.findPlayerName) && !duplicate) {
 						// add to found server list if we have space(always leave space for a line with the number found)
 						if (uiInfo.numFoundPlayerServers < MAX_FOUNDPLAYER_SERVERS - 1) {
-							//
 							Q_strncpyz(uiInfo.foundPlayerServerAddresses[uiInfo.numFoundPlayerServers - 1], uiInfo.pendingServerStatus.server[i].adrstr, sizeof(uiInfo.foundPlayerServerAddresses[0]));
 							Q_strncpyz(uiInfo.foundPlayerServerNames[uiInfo.numFoundPlayerServers - 1], uiInfo.pendingServerStatus.server[i].name, sizeof(uiInfo.foundPlayerServerNames[0]));
 							uiInfo.numFoundPlayerServers++;
@@ -707,14 +704,15 @@ static void UI_BuildFindPlayerList(qboolean force) {
 			// if we didn't try to get the status of all servers in the main browser yet
 			if (uiInfo.pendingServerStatus.num < uiInfo.serverStatus.numDisplayServers) {
 				uiInfo.pendingServerStatus.server[i].startTime = uiInfo.uiDC.realTime;
-				trap_LAN_GetServerAddressString(ui_netSource.integer, uiInfo.serverStatus.displayServers[uiInfo.pendingServerStatus.num], uiInfo.pendingServerStatus.server[i].adrstr, sizeof(uiInfo.pendingServerStatus.server[i].adrstr));
 
+				trap_LAN_GetServerAddressString(ui_netSource.integer, uiInfo.serverStatus.displayServers[uiInfo.pendingServerStatus.num], uiInfo.pendingServerStatus.server[i].adrstr, sizeof(uiInfo.pendingServerStatus.server[i].adrstr));
 				trap_LAN_GetServerInfo(ui_netSource.integer, uiInfo.serverStatus.displayServers[uiInfo.pendingServerStatus.num], infoString, sizeof(infoString));
 
 				Q_strncpyz(uiInfo.pendingServerStatus.server[i].name, Info_ValueForKey(infoString, "hostname"), sizeof(uiInfo.pendingServerStatus.server[0].name));
 
 				uiInfo.pendingServerStatus.server[i].valid = qtrue;
 				uiInfo.pendingServerStatus.num++;
+
 				Com_sprintf(uiInfo.foundPlayerServerNames[uiInfo.numFoundPlayerServers - 1], sizeof(uiInfo.foundPlayerServerNames[uiInfo.numFoundPlayerServers - 1]), "searching %d / %d...", numFound, uiInfo.pendingServerStatus.num);
 			}
 		}
@@ -2566,7 +2564,7 @@ static void UI_Update(const char *name) {
 		}
 	} else if (Q_stricmp(name, "ui_glCustom") == 0) {
 		switch (val) {
-			case 0 : // high quality
+			case 0: // high quality
 				trap_Cvar_SetValue("r_subdivisions", 4);
 				trap_Cvar_SetValue("r_vertexlight", 0);
 				trap_Cvar_SetValue("r_lodbias", 0);
@@ -2580,7 +2578,7 @@ static void UI_Update(const char *name) {
 				trap_Cvar_SetValue("cg_bounceParticles", 1);
 				trap_Cvar_Set("r_texturemode", "GL_LINEAR_MIPMAP_LINEAR");
 				break;
-			case 1 : // normal
+			case 1: // normal
 				trap_Cvar_SetValue("r_subdivisions", 12);
 				trap_Cvar_SetValue("r_vertexlight", 0);
 				trap_Cvar_SetValue("r_lodbias", 0);
@@ -2594,7 +2592,7 @@ static void UI_Update(const char *name) {
 				trap_Cvar_SetValue("cg_shadows", 0);
 				trap_Cvar_SetValue("cg_bounceParticles", 0);
 				break;
-			case 2 : // fast
+			case 2: // fast
 				trap_Cvar_SetValue("r_subdivisions", 8);
 				trap_Cvar_SetValue("r_vertexlight", 0);
 				trap_Cvar_SetValue("r_lodbias", 1);
@@ -2608,7 +2606,7 @@ static void UI_Update(const char *name) {
 				trap_Cvar_SetValue("cg_bounceParticles", 0);
 				trap_Cvar_Set("r_texturemode", "GL_LINEAR_MIPMAP_NEAREST");
 				break;
-			case 3 : // fastest
+			case 3: // fastest
 				trap_Cvar_SetValue("r_subdivisions", 20);
 				trap_Cvar_SetValue("r_vertexlight", 1);
 				trap_Cvar_SetValue("r_lodbias", 2);
@@ -2766,6 +2764,7 @@ static void UI_RunMenuScript(char **args) {
 			}
 		} else if (Q_stricmp(name, "Say") == 0) {
 			char buffer[MAX_CVAR_VALUE_STRING];
+
 			trap_Cvar_VariableStringBuffer("ui_sayBuffer", buffer, sizeof(buffer));
 
 			if (!buffer[0])
@@ -2780,6 +2779,7 @@ static void UI_RunMenuScript(char **args) {
 		} else if (Q_stricmp(name, "SayKeydown") == 0) {
 			if (ui_chatCommands.integer) {
 				char buffer[MAX_CVAR_VALUE_STRING];
+
 				trap_Cvar_VariableStringBuffer("ui_sayBuffer", buffer, sizeof(buffer));
 
 				if (buffer[0] == '/' || buffer[0] == '\\') {
@@ -2884,16 +2884,16 @@ static void UI_RunMenuScript(char **args) {
 		} else if (Q_stricmp(name, "voteKick") == 0) {
 			if (uiInfo.playerIndex >= 0 && uiInfo.playerIndex < uiInfo.playerCount) {
 				char buffer[MAX_CVAR_VALUE_STRING];
-				trap_Cvar_VariableStringBuffer("ui_reason", buffer, sizeof(buffer));
 
+				trap_Cvar_VariableStringBuffer("ui_reason", buffer, sizeof(buffer));
 				trap_Cmd_ExecuteText(EXEC_APPEND, va("callvote kick %d %s\n", uiInfo.clientNums[uiInfo.playerIndex], buffer));
 				trap_Cvar_Set("ui_reason", "");
 			}
 		} else if (Q_stricmp(name, "voteMute") == 0) {
 			if (uiInfo.playerIndex >= 0 && uiInfo.playerIndex < uiInfo.playerCount) {
 				char buffer[MAX_CVAR_VALUE_STRING];
-				trap_Cvar_VariableStringBuffer("ui_reason", buffer, sizeof(buffer));
 
+				trap_Cvar_VariableStringBuffer("ui_reason", buffer, sizeof(buffer));
 				trap_Cmd_ExecuteText(EXEC_APPEND, va("callvote mute %d %s\n", uiInfo.clientNums[uiInfo.playerIndex], buffer));
 				trap_Cvar_Set("ui_reason", "");
 			}
@@ -2904,16 +2904,16 @@ static void UI_RunMenuScript(char **args) {
 		} else if (Q_stricmp(name, "voteTeamKick") == 0) {
 			if (uiInfo.teamPlayerIndex >= 0 && uiInfo.teamPlayerIndex < uiInfo.myTeamCount) {
 				char buffer[MAX_CVAR_VALUE_STRING];
-				trap_Cvar_VariableStringBuffer("ui_reason", buffer, sizeof(buffer));
 
+				trap_Cvar_VariableStringBuffer("ui_reason", buffer, sizeof(buffer));
 				trap_Cmd_ExecuteText(EXEC_APPEND, va("callteamvote kick %d %s\n", uiInfo.teamClientNums[uiInfo.teamPlayerIndex], buffer));
 				trap_Cvar_Set("ui_reason", "");
 			}
 		} else if (Q_stricmp(name, "voteTeamDenyBuild") == 0) {
 			if (uiInfo.teamPlayerIndex >= 0 && uiInfo.teamPlayerIndex < uiInfo.myTeamCount) {
 				char buffer[MAX_CVAR_VALUE_STRING];
-				trap_Cvar_VariableStringBuffer("ui_reason", buffer, sizeof(buffer));
 
+				trap_Cvar_VariableStringBuffer("ui_reason", buffer, sizeof(buffer));
 				trap_Cmd_ExecuteText(EXEC_APPEND, va("callteamvote denybuild %d %s\n", uiInfo.teamClientNums[uiInfo.teamPlayerIndex], buffer));
 				trap_Cvar_Set("ui_reason", "");
 			}
@@ -2928,7 +2928,9 @@ static void UI_RunMenuScript(char **args) {
 				int res;
 
 				trap_LAN_GetServerInfo(ui_netSource.integer, uiInfo.serverStatus.displayServers[uiInfo.serverStatus.currentServer], buff, MAX_STRING_CHARS);
+
 				name[0] = addr[0] = '\0';
+
 				Q_strncpyz(name, Info_ValueForKey(buff, "hostname"), MAX_NAME_LENGTH);
 				Q_strncpyz(addr, Info_ValueForKey(buff, "addr"), MAX_NAME_LENGTH);
 
@@ -2965,6 +2967,7 @@ static void UI_RunMenuScript(char **args) {
 				int res;
 
 				name[0] = addr[0] = '\0';
+
 				Q_strncpyz(name, UI_Cvar_VariableString("ui_favoriteName"), MAX_NAME_LENGTH);
 				Q_strncpyz(addr, UI_Cvar_VariableString("ui_favoriteAddress"), MAX_NAME_LENGTH);
 
@@ -2986,8 +2989,9 @@ static void UI_RunMenuScript(char **args) {
 		} else if (Q_stricmp(name, "glCustom") == 0) {
 			trap_Cvar_Set("ui_glCustom", "4");
 		} else if (Q_stricmp(name, "update") == 0) {
-			if (String_Parse(args, &name2))
+			if (String_Parse(args, &name2)) {
 				UI_Update(name2);
+			}
 		} else if (Q_stricmp(name, "InitIgnoreList") == 0) {
 			UI_BuildPlayerList();
 		} else if (Q_stricmp(name, "ToggleIgnore") == 0) {
@@ -3099,6 +3103,7 @@ UI_SelectedMap
 */
 static const char *UI_SelectedMap(int index, int *actual) {
 	int i, c;
+
 	c = 0;
 	*actual = 0;
 
@@ -3163,6 +3168,7 @@ static const char *UI_FeederItemText(int feederID, int index, int column, qhandl
 
 	if (feederID == FEEDER_MAPS) {
 		int actual;
+
 		return UI_SelectedMap(index, &actual);
 	} else if (feederID == FEEDER_SERVERS) {
 		if (index >= 0 && index < UI_FeederCount(feederID)) {
@@ -3241,11 +3247,11 @@ static const char *UI_FeederItemText(int feederID, int index, int column, qhandl
 	} else if (feederID == FEEDER_NEWS) {
 		if (index >= 0 && index < uiInfo.newsInfo.numLines) {
 			return uiInfo.newsInfo.text[index];
-			}
+		}
 	} else if (feederID == FEEDER_FINDPLAYER) {
 		if (index >= 0 && index < uiInfo.numFoundPlayerServers) {
 			return uiInfo.foundPlayerServerNames[index];
-			}
+		}
 	} else if (feederID == FEEDER_PLAYER_LIST) {
 		if (index >= 0 && index < uiInfo.playerCount) {
 			return uiInfo.playerNames[index];
@@ -3355,7 +3361,9 @@ static qhandle_t UI_FeederItemImage(int feederID, int index) {
 
 	if (feederID == FEEDER_MAPS) {
 		int actual;
+
 		UI_SelectedMap(index, &actual);
+
 		index = actual;
 
 		if (index >= 0 && index < uiInfo.mapCount) {
@@ -3380,6 +3388,7 @@ static void UI_FeederSelection(int feederID, int index) {
 
 	if (feederID == FEEDER_MAPS) {
 		int actual, map;
+
 		map = ui_selectedMap.integer;
 
 		if (uiInfo.mapList[map].cinematic >= 0) {
@@ -3390,14 +3399,18 @@ static void UI_FeederSelection(int feederID, int index) {
 		UI_SelectedMap(index, &actual);
 
 		ui_selectedMap.integer = actual;
+
 		trap_Cvar_Set("ui_selectedMap", va("%d", actual));
+
 		uiInfo.mapList[ui_selectedMap.integer].cinematic = trap_CIN_PlayCinematic(va("%s.roq", uiInfo.mapList[ui_selectedMap.integer].mapLoadName), 0, 0, 0, 0, (CIN_loop|CIN_silent));
 	} else if (feederID == FEEDER_SERVERS) {
 		const char *mapName = NULL;
 
 		uiInfo.serverStatus.currentServer = index;
+
 		trap_LAN_GetServerInfo(ui_netSource.integer, uiInfo.serverStatus.displayServers[index], info, MAX_STRING_CHARS);
-		uiInfo.serverStatus.currentServerPreview = trap_R_RegisterShaderNoMip(va("levelshots / %s", Info_ValueForKey(info, "mapname")));
+
+		uiInfo.serverStatus.currentServerPreview = trap_R_RegisterShaderNoMip(va("levelshots/%s", Info_ValueForKey(info, "mapname")));
 
 		if (uiInfo.serverStatus.currentServerCinematic >= 0) {
 			trap_CIN_StopCinematic(uiInfo.serverStatus.currentServerCinematic);
@@ -3410,6 +3423,7 @@ static void UI_FeederSelection(int feederID, int index) {
 			uiInfo.serverStatus.currentServerCinematic = trap_CIN_PlayCinematic(va("%s.roq", mapName), 0, 0, 0, 0, (CIN_loop|CIN_silent));
 		}
 	} else if (feederID == FEEDER_SERVERSTATUS) {
+
 	} else if (feederID == FEEDER_FINDPLAYER) {
 		uiInfo.currentFoundPlayerServer = index;
 
@@ -3616,7 +3630,7 @@ void UI_Init(qboolean inGameLoad) {
 
 	UI_RegisterCvars();
 	UI_InitMemory();
-	BG_InitMemory(); // fIXIT - M : Merge with UI_InitMemory or something
+	BG_InitMemory(); // FIXIT - M : Merge with UI_InitMemory or something
 	// cache redundant calulations
 	trap_GetGlconfig(&uiInfo.uiDC.glconfig);
 	// for 640x480 virtualized screen
@@ -3785,9 +3799,11 @@ UI_SetActiveMenu
 void UI_SetActiveMenu(uiMenuCommand_t menu) {
 	char buf[256];
 
-	// this should be the ONLY way the menu system is brought up enusure minumum menu data is cached
+	// this should be the ONLY way the menu system is brought up
+	// enusure minimum menu data is cached
 	if (Menu_Count() > 0) {
 		vec3_t v;
+
 		v[0] = v[1] = v[2] = 0;
 
 		switch (menu) {
@@ -3864,6 +3880,7 @@ Assumes time is in msec.
 =======================================================================================================================================
 */
 static void UI_PrintTime(char *buf, int bufsize, int time) {
+
 	time /= 1000; // change to seconds
 
 	if (time > 3600) { // in the hours range
@@ -3910,9 +3927,7 @@ void Text_PaintCenter_AutoWrapped(float x, float y, float xmax, float ystep, flo
 	while (1) {
 		do {
 			s3++;
-		}
-
-		while (*s3 != ' ' && *s3 != '\0');
+		} while (*s3 != ' ' && *s3 != '\0');
 
 		c_bcp = *s3;
 		*s3 = '\0';
@@ -3926,7 +3941,9 @@ void Text_PaintCenter_AutoWrapped(float x, float y, float xmax, float ystep, flo
 			}
 
 			*s2 = '\0';
+
 			Text_PaintCenter(x, y, scale, color, s1, adjust);
+
 			y += ystep;
 
 			if (c_bcp == '\0') {
@@ -3978,6 +3995,7 @@ static void UI_DisplayDownloadInfo(const char *downloadName, float centerPoint, 
 	leftWidth = 320;
 
 	UI_SetColor(colorWhite);
+
 	Text_PaintCenter(centerPoint, yStart + 112, scale, colorWhite, dlText, 0);
 	Text_PaintCenter(centerPoint, yStart + 192, scale, colorWhite, etaText, 0);
 	Text_PaintCenter(centerPoint, yStart + 248, scale, colorWhite, xferText, 0);
@@ -3997,7 +4015,7 @@ static void UI_DisplayDownloadInfo(const char *downloadName, float centerPoint, 
 		Text_PaintCenter(leftWidth, yStart + 216, scale, colorWhite, "estimating", 0);
 		Text_PaintCenter(leftWidth, yStart + 160, scale, colorWhite, va("(%s of %s copied)", dlSizeBuf, totalSizeBuf), 0);
 	} else {
-		if ((uiInfo.uiDC.realTime - downloadTime) / 1000)
+		if ((uiInfo.uiDC.realTime - downloadTime) / 1000) {
 			xferRate = downloadCount / ((uiInfo.uiDC.realTime - downloadTime) / 1000);
 		} else {
 			xferRate = 0;
@@ -4006,9 +4024,9 @@ static void UI_DisplayDownloadInfo(const char *downloadName, float centerPoint, 
 		UI_ReadableSize(xferRateBuf, sizeof xferRateBuf, xferRate);
 		// extrapolate estimated completion time
 		if (downloadSize && xferRate) {
-			int n = downloadSize / xferRate; // estimated time for entire d / l in secs
+			int n = downloadSize / xferRate; // estimated time for entire d/l in secs
 
-			// we do it in K(/ 1024) because we'd overflow around 4MB
+			// we do it in K (/1024) because we'd overflow around 4MB
 			UI_PrintTime(dlTimeBuf, sizeof dlTimeBuf, (n - (((downloadCount / 1024) * n) / (downloadSize / 1024))) * 1000);
 
 			Text_PaintCenter(leftWidth, yStart + 216, scale, colorWhite, dlTimeBuf, 0);
@@ -4024,7 +4042,7 @@ static void UI_DisplayDownloadInfo(const char *downloadName, float centerPoint, 
 		}
 
 		if (xferRate) {
-			Text_PaintCenter(leftWidth, yStart + 272, scale, colorWhite, va("%s / Sec", xferRateBuf), 0);
+			Text_PaintCenter(leftWidth, yStart + 272, scale, colorWhite, va("%s/Sec", xferRateBuf), 0);
 		}
 	}
 }
@@ -4040,6 +4058,7 @@ void UI_DrawConnectScreen(qboolean overlay) {
 	char info[MAX_INFO_VALUE];
 	char text[256];
 	float centerPoint, yStart, scale;
+
 	menuDef_t *menu = Menus_FindByName("Connect");
 
 	if (!overlay && menu) {
@@ -4073,7 +4092,7 @@ void UI_DrawConnectScreen(qboolean overlay) {
 	}
 	// display global MOTD at bottom
 	Text_PaintCenter(centerPoint, 600, scale, colorWhite, Info_ValueForKey(cstate.updateInfoString, "motd"), 0);
-	// print any server info(server full, bad version, etc)
+	// print any server info (server full, bad version, etc.)
 	if (cstate.connState < CA_CONNECTED) {
 		Text_PaintCenter(centerPoint, yStart + 176, scale, colorWhite, cstate.messageString, 0);
 	}
@@ -4091,8 +4110,7 @@ void UI_DrawConnectScreen(qboolean overlay) {
 		case CA_CHALLENGING:
 			s = va("Awaiting challenge...%i", cstate.connectPacketCount);
 			break;
-		case CA_CONNECTED:
-			{
+		case CA_CONNECTED: {
 				char downloadName[MAX_INFO_VALUE];
 				int prompt = trap_Cvar_VariableValue("com_downloadPrompt");
 		
@@ -4117,7 +4135,6 @@ void UI_DrawConnectScreen(qboolean overlay) {
 			return;
 		case CA_PRIMED:
 			return;
-
 		default:
 			return;
 	}
@@ -4125,7 +4142,7 @@ void UI_DrawConnectScreen(qboolean overlay) {
 	if (Q_stricmp(cstate.servername, "localhost")) {
 		Text_PaintCenter(centerPoint, yStart + 80, scale, colorWhite, s, 0);
 	}
-	// password required / connection rejected information goes here
+	// password required/connection rejected information goes here
 }
 
 /*
@@ -4214,4 +4231,3 @@ void UI_UpdateNews(qboolean begin) {
 		uiInfo.newsInfo.refreshActive = qfalse;
 	}
 }
-

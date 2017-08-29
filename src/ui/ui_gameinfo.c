@@ -16,8 +16,6 @@ Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 =======================================================================================================================================
 */
 
-// gameinfo.c
-
 #include "ui_local.h"
 
 // arena and bot info
@@ -116,7 +114,9 @@ static void UI_LoadArenasFromFile(char *filename) {
 	}
 
 	trap_FS_Read(buf, len, f);
+
 	buf[len] = 0;
+
 	trap_FS_FCloseFile(f);
 
 	ui_numArenas += UI_ParseInfos(buf, MAX_ARENAS - ui_numArenas, &ui_arenaInfos[ui_numArenas]);
@@ -164,10 +164,11 @@ void UI_LoadArenas(void) {
 	trap_Print(va("[skipnotify]%i arenas parsed\n", ui_numArenas));
 
 	if (UI_OutOfMemory()) {
-		trap_Print(S_COLOR_YELLOW"WARNING: not enough memory in pool to load all arenas\n");
+		trap_Print(S_COLOR_YELLOW "WARNING: not enough memory in pool to load all arenas\n");
 	}
 
 	for (n = 0; n < ui_numArenas; n++) {
+		// determine type
 		uiInfo.mapList[uiInfo.mapCount].cinematic = -1;
 		uiInfo.mapList[uiInfo.mapCount].mapLoadName = String_Alloc(Info_ValueForKey(ui_arenaInfos[n], "map"));
 		uiInfo.mapList[uiInfo.mapCount].mapName = String_Alloc(Info_ValueForKey(ui_arenaInfos[n], "longname"));
@@ -208,9 +209,10 @@ static void UI_LoadBotsFromFile(char *filename) {
 	}
 
 	trap_FS_Read(buf, len, f);
-	buf[len] = 0;
-	trap_FS_FCloseFile(f);
 
+	buf[len] = 0;
+
+	trap_FS_FCloseFile(f);
 	COM_Compress(buf);
 
 	ui_numBots += UI_ParseInfos(buf, MAX_BOTS - ui_numBots, &ui_botInfos[ui_numBots]);

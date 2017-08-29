@@ -16,6 +16,8 @@ Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 =======================================================================================================================================
 */
 
+// string allocation/managment
+
 #include "ui_shared.h"
 
 #define SCROLL_TIME_START 500
@@ -57,7 +59,7 @@ qboolean voidFunction2(itemDef_t *var1, int var2) {
 static CaptureFunc *captureFunc = voidFunction;
 static int captureFuncExpiry = 0;
 static void *captureData = NULL;
-static itemDef_t *itemCapture = NULL; // item that has the mouse captured(if any)
+static itemDef_t *itemCapture = NULL; // item that has the mouse captured (if any)
 
 displayContextDef_t *DC = NULL;
 
@@ -96,6 +98,7 @@ UI_InstallCaptureFunc
 =======================================================================================================================================
 */
 void UI_InstallCaptureFunc(CaptureFunc *f, void *data, int timeout) {
+
 	captureFunc = f;
 	captureData = data;
 
@@ -112,6 +115,7 @@ UI_RemoveCaptureFunc
 =======================================================================================================================================
 */
 void UI_RemoveCaptureFunc(void) {
+
 	captureFunc = voidFunction;
 	captureData = NULL;
 	captureFuncExpiry = 0;
@@ -139,12 +143,12 @@ void *UI_Alloc(int size) {
 		if (DC->Print) {
 			DC->Print("UI_Alloc: Failure. Out of memory!\n");
 		}
+
 		//DC->trap_Print(S_COLOR_YELLOW "WARNING: UI Out of Memory!\n");
 		return NULL;
 	}
 
 	p = &UI_memoryPool[allocPoint];
-
 	allocPoint += (size + 15) & ~15;
 
 	return p;
@@ -229,7 +233,6 @@ const char *String_Alloc(const char *p) {
 	}
 
 	hash = hashForString(p);
-
 	str = strHandle[hash];
 
 	while (str) {
@@ -244,9 +247,10 @@ const char *String_Alloc(const char *p) {
 
 	if (len + strPoolIndex + 1 < STRING_POOL_SIZE) {
 		int ph = strPoolIndex;
-		strcpy(&strPool[strPoolIndex], p);
-		strPoolIndex += len + 1;
 
+		strcpy(&strPool[strPoolIndex], p);
+
+		strPoolIndex += len + 1;
 		str = strHandle[hash];
 		last = str;
 
@@ -339,6 +343,7 @@ __attribute__((format(printf, 2, 3))) void PC_SourceWarning(int handle, char *fo
 
 	filename[0] = '\0';
 	line = 0;
+
 	trap_Parse_SourceFileAndLine(handle, filename, &line);
 
 	Com_Printf(S_COLOR_YELLOW "WARNING: %s, line %d: %s\n", filename, line, string);
@@ -361,6 +366,7 @@ __attribute__((format(printf, 2, 3))) void PC_SourceError(int handle, char *form
 
 	filename[0] = '\0';
 	line = 0;
+
 	trap_Parse_SourceFileAndLine(handle, filename, &line);
 
 	Com_Printf(S_COLOR_RED "ERROR: %s, line %d: %s\n", filename, line, string);
@@ -393,6 +399,7 @@ Float_Parse
 */
 qboolean Float_Parse(char **p, float *f) {
 	char *token;
+
 	token = COM_ParseExt(p, qfalse);
 
 	if (token && token[0] != 0) {
@@ -717,6 +724,7 @@ Int_Parse
 */
 qboolean Int_Parse(char **p, int *i) {
 	char *token;
+
 	token = COM_ParseExt(p, qfalse);
 
 	if (token && token[0] != 0) {
@@ -857,7 +865,7 @@ qboolean PC_Script_Parse(int handle, const char **out) {
 	pc_token_t token;
 
 	memset(script, 0, sizeof(script));
-	// scripts start with { and have; separated command lists.. commands are command, arg..
+	// scripts start with { and have ; separated command lists.. commands are command, arg..
 	// basically we want everything between the { } as it will be interpreted at run time
 	if (!trap_Parse_ReadToken(handle, &token)) {
 		return qfalse;
@@ -1053,8 +1061,10 @@ static void Border_Paint(Window *w) {
 	} else if (w->border == WINDOW_BORDER_KCGRADIENT) {
 		// this is just two gradient bars along each horz edge
 		rectDef_t r = w->rect;
+
 		r.h = w->borderSize;
 		GradientBar_Paint(&r, w->borderColor);
+
 		r.y = w->rect.y + w->rect.h - 1;
 		GradientBar_Paint(&r, w->borderColor);
 	}
@@ -1094,7 +1104,6 @@ FIXME: consolidate this with nearby stuff.
 */
 void Item_UpdatePosition(itemDef_t *item) {
 	float x, y;
-
 	menuDef_t *menu;
 
 	if (item == NULL || item->parent == NULL) {
@@ -1102,7 +1111,6 @@ void Item_UpdatePosition(itemDef_t *item) {
 	}
 
 	menu = item->parent;
-
 	x = menu->window.rect.x;
 	y = menu->window.rect.y;
 
@@ -1114,12 +1122,13 @@ void Item_UpdatePosition(itemDef_t *item) {
 	Item_SetScreenCoords(item, x, y);
 }
 
+// menus
+
 /*
 =======================================================================================================================================
 Menu_UpdatePosition
 =======================================================================================================================================
 */
-// menus
 void Menu_UpdatePosition(menuDef_t *menu) {
 	int i;
 	float x, y;
@@ -1370,6 +1379,7 @@ void Script_SetAsset(itemDef_t *item, char **args) {
 	if (String_Parse(args, &name)) {
 		// check for a model
 		if (item->type == ITEM_TYPE_MODEL) {
+
 		}
 	}
 }
@@ -1532,6 +1542,7 @@ Menu_RunCloseScript
 =======================================================================================================================================
 */
 static void Menu_RunCloseScript(menuDef_t *menu) {
+
 	if (menu && menu->window.flags & WINDOW_VISIBLE && menu->onClose) {
 		itemDef_t item;
 		item.parent = menu;
@@ -1545,6 +1556,7 @@ Menus_Close
 =======================================================================================================================================
 */
 static void Menus_Close(menuDef_t *menu) {
+
 	if (menu != NULL) {
 		Menu_RunCloseScript(menu);
 		menu->window.flags &= ~(WINDOW_VISIBLE|WINDOW_HASFOCUS);
@@ -1762,6 +1774,7 @@ void Menu_OrbitItemByName(menuDef_t *menu, const char *p, float x, float y, floa
 			item->window.rectEffects.y = cy;
 			item->window.rectClient.x = x;
 			item->window.rectClient.y = y;
+
 			Item_UpdatePosition(item);
 		}
 	}
@@ -2479,7 +2492,8 @@ void Item_RunScript(itemDef_t *item, const char *s) {
 
 		while (1) {
 			const char *command;
-			// expect command then arguments,; ends command, NULL ends script
+
+			// expect command then arguments, ; ends command, NULL ends script
 			if (!String_Parse(&p, &command)) {
 				return;
 			}
@@ -2507,19 +2521,20 @@ Item_EnableShowViaCvar
 */
 qboolean Item_EnableShowViaCvar(itemDef_t *item, int flag) {
 	char script[1024], *p;
+
 	memset(script, 0, sizeof(script));
 
 	if (item && item->enableCvar && *item->enableCvar && item->cvarTest && *item->cvarTest) {
 		char buff[1024];
 
 		DC->getCVarString(item->cvarTest, buff, sizeof(buff));
-
 		Q_strcat(script, 1024, item->enableCvar);
 
 		p = script;
 
 		while (1) {
 			const char *val;
+
 			// expect value then; or NULL, NULL ends list
 			if (!String_Parse(&p, &val)) {
 				return (item->cvarFlags & flag) ? qfalse : qtrue;
@@ -2580,6 +2595,7 @@ qboolean Item_SetFocus(itemDef_t *item, float x, float y) {
 
 	if (item->type == ITEM_TYPE_TEXT) {
 		rectDef_t r;
+
 		r = item->textRect;
 		r.y -= r.h;
 
@@ -2909,8 +2925,7 @@ void Item_ListBox_MouseEnter(itemDef_t *item, float x, float y) {
 		r.x = SCROLLBAR_X(item);
 		r.y = SCROLLBAR_Y(item);
 		r.w = SCROLLBAR_W(item);
-		r.h = listPtr->elementHeight *
-			MIN(Item_ListBox_NumItemsForItemHeight(item), total);
+		r.h = listPtr->elementHeight * MIN(Item_ListBox_NumItemsForItemHeight(item), total);
 
 		if (Rect_ContainsPoint(&r, x, y)) {
 			listPtr->cursorPos = (int)((y - r.y) / listPtr->elementHeight) + listPtr->startPos;
@@ -3422,7 +3437,9 @@ qboolean Item_TextField_HandleKey(itemDef_t *item, int key) {
 
 	if (item->cvar) {
 		Com_Memset(buff, 0, sizeof(buff));
+
 		DC->getCVarString(item->cvar, buff, sizeof(buff));
+
 		len = strlen(buff);
 
 		if (len < item->cursorPos) {
@@ -3439,6 +3456,7 @@ qboolean Item_TextField_HandleKey(itemDef_t *item, int key) {
 			if (key == 'h' - 'a' + 1) { // ctrl-h is backspace
 				if (item->cursorPos > 0) {
 					memmove(&buff[item->cursorPos - 1], &buff[item->cursorPos], len + 1 - item->cursorPos);
+
 					item->cursorPos--;
 				}
 
@@ -3566,11 +3584,13 @@ _Scroll_ListBox_AutoFunc
 =======================================================================================================================================
 */
 static void _Scroll_ListBox_AutoFunc(scrollInfo_t *si) {
+
 	if (DC->realTime > si->nextScrollTime) {
 		// need to scroll which is done by simulating a click to the item
 		// this is done a bit sideways as the autoscroll "knows" that the item is a listbox
 		// so it calls it directly
 		Item_ListBox_HandleKey(si->item, si->scrollKey, qtrue, qfalse);
+
 		si->nextScrollTime = DC->realTime + si->adjustValue;
 	}
 
@@ -3681,6 +3701,7 @@ static void Scroll_Slider_ThumbFunc(void *p) {
 	value /= SLIDER_WIDTH;
 	value *= si->item->typeData.edit->maxVal - si->item->typeData.edit->minVal;
 	value += si->item->typeData.edit->minVal;
+
 	DC->setCVar(si->item->cvar, va("%f", value));
 }
 
@@ -3940,6 +3961,7 @@ static void Menu_CloseCinematics(menuDef_t *menu) {
 
 	if (menu) {
 		int i;
+
 		Window_CloseCinematic(&menu->window);
 
 		for (i = 0; i < menu->itemCount; i++) {
@@ -3947,6 +3969,7 @@ static void Menu_CloseCinematics(menuDef_t *menu) {
 
 			if (menu->items[i]->type == ITEM_TYPE_OWNERDRAW) {
 				DC->stopCinematic(0 - menu->items[i]->window.ownerDraw);
+			}
 		}
 	}
 }
@@ -4053,7 +4076,9 @@ qboolean Menus_ReplaceActive(menuDef_t *menu) {
 
 	if (menu->onOpen) {
 		itemDef_t item;
+
 		item.parent = menu;
+
 		Item_RunScript(&item, menu->onOpen);
 	}
 	// set the cursor position on the new menu to match the active one
@@ -4103,6 +4128,7 @@ void Menus_HandleOOBClick(menuDef_t *menu, int key, qboolean down) {
 
 	if (menu) {
 		int i;
+
 		// basically the behaviour we are looking for is if there are windows in the stack.. see if
 		// the cursor is within any of them.. if not close them otherwise activate them and pass the
 		// key on.. force a mouse move to activate focus and script stuff
@@ -5044,16 +5070,59 @@ typedef struct {
 } configcvar_t;
 
 static bind_t g_bindings[] = {
-		{" + scores", K_TAB, - 1, -1, -1}, {" + button2", K_ENTER, - 1, -1, -1}, {" + speed", K_SHIFT, - 1, -1, -1}, {" + button6", 'z', - 1, -1, -1},// human dodging
-		{" + button8", 'x', - 1, -1, -1}, {" + forward", K_UPARROW, - 1, -1, -1}, {" + back", K_DOWNARROW, -1, -1, -1}, {" + moveleft", ', ', - 1, -1, -1}, {" + moveright", '.', - 1, -1, -1}, {" + moveup", K_SPACE, - 1, -1, -1}, {" + movedown", 'c', - 1, -1, -1}, {" + left", K_LEFTARROW, -1, -1, -1}, {" + right", K_RIGHTARROW, -1, -1, -1}, {" + strafe", K_ALT, - 1, -1, -1}, {" + lookup", K_PGDN, - 1, -1, -1}, {" + lookdown", K_DEL, - 1, -1, -1}, {" + mlook", '/', - 1, -1, -1}, {"centerview", K_END, - 1, -1, -1}, {" + zoom", - 1, - 1, -1, -1}, {"weapon 1", '1', - 1, -1, -1}, {"weapon 2", '2', - 1, -1, -1}, {"weapon 3", '3', - 1, -1, -1}, {"weapon 4", '4', - 1, -1, -1}, {"weapon 5", '5', - 1, -1, -1}, {"weapon 6", '6', - 1, -1, -1}, {"weapon 7", '7', - 1, -1, -1}, {"weapon 8", '8', - 1, -1, -1}, {"weapon 9", '9', - 1, -1, -1}, {"weapon 10", '0', - 1, -1, -1}, {"weapon 11", - 1, - 1, -1, -1}, {"weapon 12", - 1, - 1, -1, -1}, {"weapon 13", - 1, - 1, -1, -1}, {" + attack", K_MOUSE1, - 1, -1, -1}, {" + button5", K_MOUSE2, - 1, -1, -1},// secondary attack
-		{"reload", 'r', - 1, -1, -1},// reload
-		{"buy ammo", 'b', - 1, -1, -1},// buy ammo
-		{"itemact medkit", 'm', - 1, -1, -1},// use medkit
-		{" + button7", 'q', - 1, -1, -1},// buildable use
-		{"deconstruct", 'e', - 1, -1, -1},// buildable destroy
-		{"weapprev", '[', - 1, -1, -1}, {"weapnext", ']', - 1, -1, -1}, {" + button3", K_MOUSE3, - 1, -1, -1}, {" + button4", K_MOUSE4, - 1, -1, -1}, {"vote yes", K_F1, - 1, -1, -1}, {"vote no", K_F2, - 1, -1, -1}, {"teamvote yes", K_F3, - 1, -1, -1}, {"teamvote no", K_F4, - 1, -1, -1}, {"scoresUp", K_KP_PGUP, - 1, -1, -1}, {"scoresDown", K_KP_PGDN, - 1, -1, -1}, {"screenshotJPEG", -1, - 1, -1, -1}, {"messagemode", -1, - 1, -1, -1}, {"messagemode2", -1, - 1, -1, -1}
-	};
-
+	{"+scores", K_TAB, -1, -1, -1},
+	{"+button2", K_ENTER, -1, -1, -1},
+	{"+speed", K_SHIFT, -1, -1, -1},
+	{"+button6", 'z', -1, -1, -1},// human dodging
+	{"+button8", 'x', -1, -1, -1},
+	{"+forward", K_UPARROW, -1, -1, -1},
+	{"+back", K_DOWNARROW, -1, -1, -1},
+	{"+moveleft", ',', -1, -1, -1},
+	{"+moveright", '.', -1, -1, -1},
+	{"+moveup", K_SPACE, -1, -1, -1},
+	{"+movedown", 'c', -1, -1, -1},
+	{"+left", K_LEFTARROW, -1, -1, -1},
+	{"+right", K_RIGHTARROW, -1, -1, -1},
+	{"+strafe", K_ALT, -1, -1, -1},
+	{"+lookup", K_PGDN, -1, -1, -1},
+	{"+lookdown", K_DEL, -1, -1, -1},
+	{"+mlook", '/', -1, -1, -1},
+	{"centerview", K_END, -1, -1, -1},
+	{"+zoom", -1, -1, -1, -1},
+	{"weapon 1", '1', -1, -1, -1},
+	{"weapon 2", '2', -1, -1, -1},
+	{"weapon 3", '3', -1, -1, -1},
+	{"weapon 4", '4', -1, -1, -1},
+	{"weapon 5", '5', -1, -1, -1},
+	{"weapon 6", '6', -1, -1, -1},
+	{"weapon 7", '7', -1, -1, -1},
+	{"weapon 8", '8', -1, -1, -1},
+	{"weapon 9", '9', -1, -1, -1},
+	{"weapon 10", '0', -1, -1, -1},
+	{"weapon 11", -1, -1, -1, -1},
+	{"weapon 12", -1, -1, -1, -1},
+	{"weapon 13", -1, -1, -1, -1},
+	{"+attack", K_MOUSE1, -1, -1, -1},
+	{"+button5", K_MOUSE2, -1, -1, -1},		// secondary attack
+	{"reload", 'r', -1, -1, -1},			// reload
+	{"buy ammo", 'b', -1, -1, -1},			// buy ammo
+	{"itemact medkit", 'm', -1, -1, -1},	// use medkit
+	{"+button7", 'q', -1, -1, -1},			// buildable use
+	{"deconstruct", 'e', -1, -1, -1},		// buildable destroy
+	{"weapprev", '[', -1, -1, -1},
+	{"weapnext", ']', -1, -1, -1},
+	{"+button3", K_MOUSE3, -1, -1, -1},
+	{"+button4", K_MOUSE4, -1, -1, -1},
+	{"vote yes", K_F1, -1, -1, -1},
+	{"vote no", K_F2, -1, -1, -1},
+	{"teamvote yes", K_F3, -1, -1, -1},
+	{"teamvote no", K_F4, -1, -1, -1},
+	{"scoresUp", K_KP_PGUP, -1, -1, -1},
+	{"scoresDown", K_KP_PGDN, -1, -1, -1},
+	{"screenshotJPEG", -1, -1, -1, -1},
+	{"messagemode", -1, -1, -1, -1},
+	{"messagemode2", -1, -1, -1, -1}
+};
 
 static const size_t g_bindCount = ARRAY_LEN(g_bindings);
 
@@ -5327,6 +5396,7 @@ qboolean Item_Bind_HandleKey(itemDef_t *item, int key, qboolean down) {
 				}
 
 				Controls_SetConfig(qtrue);
+
 				g_waitingForKey = qfalse;
 				g_bindItem = NULL;
 				return qtrue;
@@ -5354,11 +5424,13 @@ qboolean Item_Bind_HandleKey(itemDef_t *item, int key, qboolean down) {
 		if (key == -1) {
 			if (g_bindings[id].bind1 != -1) {
 				DC->setBinding(g_bindings[id].bind1, "");
+
 				g_bindings[id].bind1 = -1;
 			}
 
 			if (g_bindings[id].bind2 != -1) {
 				DC->setBinding(g_bindings[id].bind2, "");
+
 				g_bindings[id].bind2 = -1;
 			}
 		} else if (g_bindings[id].bind1 == -1) {
@@ -5368,12 +5440,14 @@ qboolean Item_Bind_HandleKey(itemDef_t *item, int key, qboolean down) {
 		} else {
 			DC->setBinding(g_bindings[id].bind1, "");
 			DC->setBinding(g_bindings[id].bind2, "");
+
 			g_bindings[id].bind1 = key;
 			g_bindings[id].bind2 = -1;
 		}
 	}
 
 	Controls_SetConfig(qtrue);
+
 	g_waitingForKey = qfalse;
 
 	return qtrue;
@@ -5399,6 +5473,7 @@ void Item_Model_Paint(itemDef_t *item) {
 	memset(&refdef, 0, sizeof(refdef));
 
 	refdef.rdflags = RDF_NOWORLDMODEL;
+
 	AxisClear(refdef.viewaxis);
 
 	x = item->window.rect.x + 1;
@@ -5428,7 +5503,6 @@ void Item_Model_Paint(itemDef_t *item) {
 
 	refdef.fov_x = (modelPtr->fov_x) ? modelPtr->fov_x : w;
 	refdef.fov_y = (modelPtr->fov_y) ? modelPtr->fov_y : h;
-
 	//refdef.fov_x = (int)((float)refdef.width / 640.0f * 90.0f);
 	//xx = refdef.width / tan(refdef.fov_x / 360 * M_PI);
 	//refdef.fov_y = atan2(refdef.height, xx);
@@ -5442,6 +5516,7 @@ void Item_Model_Paint(itemDef_t *item) {
 
 	//adjust = 5.0 * sin((float)uis.realtime / 500);
 	//adjust = 360 %(int)((float)uis.realtime / 1000);
+
 	//VectorSet(angles, 0, 0, 1);
 	// use item storage to track
 	if (modelPtr->rotationSpeed) {
@@ -5455,9 +5530,12 @@ void Item_Model_Paint(itemDef_t *item) {
 	AnglesToAxis(angles, ent.axis);
 
 	ent.hModel = item->asset;
+
 	VectorCopy(origin, ent.origin);
 	VectorCopy(origin, ent.lightingOrigin);
+
 	ent.renderfx = RF_LIGHTING_ORIGIN|RF_NOSHADOW;
+
 	VectorCopy(ent.origin, ent.oldorigin);
 
 	DC->addRefEntityToScene(&ent);
@@ -5685,6 +5763,7 @@ void Item_OwnerDraw_Paint(itemDef_t *item) {
 
 	if (DC->ownerDrawItem) {
 		vec4_t color, lowLight;
+
 		Fade(&item->window.flags, &item->window.foreColor[3], parent->fadeClamp, &item->window.nextTime, parent->fadeCycle, qtrue, parent->fadeAmount);
 
 		memcpy(&color, &item->window.foreColor, sizeof(color));
@@ -5771,13 +5850,17 @@ void Item_Paint(itemDef_t *item) {
 			// translate
 			w = item->window.rectClient.w / 2;
 			h = item->window.rectClient.h / 2;
+
 			rx = item->window.rectClient.x + w - item->window.rectEffects.x;
 			ry = item->window.rectClient.y + h - item->window.rectEffects.y;
+
 			a = 3 * M_PI / 180;
 			c = cos(a);
 			s = sin(a);
+
 			item->window.rectClient.x = (rx * c - ry * s) + item->window.rectEffects.x - w;
 			item->window.rectClient.y = (rx * s + ry * c) + item->window.rectEffects.y - h;
+
 			Item_UpdatePosition(item);
 		}
 	}
@@ -5906,6 +5989,7 @@ void Item_Paint(itemDef_t *item) {
 
 		color[1] = color[3] = 1;
 		color[0] = color[2] = 0;
+
 		DC->drawRect(r->x, r->y, r->w, r->h, 1, color);
 	}
 
@@ -6096,6 +6180,7 @@ menuDef_t *Menus_ActivateByName(const char *p) {
 	for (i = 0; i < menuCount; i++) {
 		if (Q_stricmp(Menus[i].window.name, p) == 0) {
 			m = &Menus[i];
+
 			Menus_Activate(m);
 			break;
 		}
@@ -6298,8 +6383,10 @@ void Menu_Paint(menuDef_t *menu, qboolean forcePaint) {
 
 	if (DC->getCVarValue("ui_developer")) {
 		vec4_t color;
+
 		color[0] = color[2] = color[3] = 1;
 		color[1] = 0;
+
 		DC->drawRect(menu->window.rect.x, menu->window.rect.y, menu->window.rect.w, menu->window.rect.h, 1, color);
 	}
 }
@@ -6659,6 +6746,7 @@ ItemParse_decoration
 =======================================================================================================================================
 */
 qboolean ItemParse_decoration(itemDef_t *item, int handle) {
+
 	item->window.flags |= WINDOW_DECORATION;
 	return qtrue;
 }
@@ -8208,6 +8296,7 @@ qboolean MenuParse_itemDef(itemDef_t *item, int handle) {
 		}
 
 		Item_InitControls(menu->items[menu->itemCount]);
+
 		menu->items[menu->itemCount++]->parent = menu;
 	} else {
 		PC_SourceError(handle, "itemDefs per menu may not exceed %d", MAX_MENUITEMS);
@@ -8446,6 +8535,7 @@ qboolean Display_MouseMove(void *p, float x, float y) {
 	} else {
 		menu->window.rect.x += x;
 		menu->window.rect.y += y;
+
 		Menu_UpdatePosition(menu);
 	}
 
@@ -8462,6 +8552,7 @@ int Display_CursorType(int x, int y) {
 
 	for (i = 0; i < menuCount; i++) {
 		rectDef_t r2;
+
 		r2.x = Menus[i].window.rect.x - 3;
 		r2.y = Menus[i].window.rect.y - 3;
 		r2.w = r2.h = 7;
